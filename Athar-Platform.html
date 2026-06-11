@@ -146,15 +146,6 @@ body {
 }
 
 /* ══════════════════════════════════════════
-   LAYOUT FOUNDATIONS
-   ══════════════════════════════════════════ */
-.app-wrap {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-/* ══════════════════════════════════════════
    NAVBAR
    ══════════════════════════════════════════ */
 .navbar {
@@ -214,13 +205,6 @@ body {
   white-space: nowrap;
 }
 .pill-btn:hover { background: var(--sand); }
-
-.pill-btn-olive {
-  background: var(--olive);
-  color: var(--white);
-  border-color: transparent;
-}
-.pill-btn-olive:hover { background: var(--olive-mid); }
 
 .pill-btn-red {
   color: var(--red);
@@ -364,13 +348,11 @@ body {
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+  to   { opacity: 1; transform: translateY(0); }}
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+  to   { opacity: 1; transform: translateY(0); }}
 
 /* ══════════════════════════════════════════
    HOME PAGE — HERO
@@ -1445,48 +1427,6 @@ body {
   box-shadow: 0 8px 20px rgba(90,107,58,0.4);
 }
 
-/* ══════════════════════════════════════════
-   ADMIN PAGE
-   ══════════════════════════════════════════ */
-.admin-page {
-  max-width: var(--content-max);
-  margin: 0 auto;
-  padding: 2rem 1.25rem;
-  background: var(--warm-white);
-}
-
-.admin-page-title { font-size: 1.6rem; font-weight: 900; margin-bottom: 0.3rem; }
-.admin-page-sub { font-size: 0.85rem; color: var(--charcoal-50); margin-bottom: 1.5rem; }
-
-.tab-bar {
-  display: flex;
-  gap: 0.4rem;
-  background: var(--sand);
-  padding: 0.3rem;
-  border-radius: var(--r-full);
-  width: fit-content;
-  margin-bottom: 1.5rem;
-}
-
-.tab-btn {
-  height: 32px;
-  padding: 0 1rem;
-  border: none;
-  border-radius: var(--r-full);
-  font-size: 0.78rem;
-  font-weight: 700;
-  cursor: pointer;
-  background: transparent;
-  color: var(--charcoal-50);
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-.tab-btn.active {
-  background: var(--white);
-  color: var(--charcoal);
-  box-shadow: var(--shadow-sm);
-}
-
 .admin-card {
   background: var(--white);
   border: 1px solid rgba(232,217,196,0.6);
@@ -1525,14 +1465,6 @@ body {
   line-height: 1.4;
 }
 
-.admin-id-img {
-  max-width: 220px;
-  border-radius: var(--r-md);
-  border: 1.5px solid var(--sand-dark);
-  margin-top: 0.75rem;
-  display: block;
-}
-
 .admin-actions { display: flex; gap: 0.6rem; }
 
 .approve-btn {
@@ -1563,25 +1495,6 @@ body {
 }
 .reject-btn:hover { background: rgba(200,76,60,0.06); }
 
-.admin-section-label {
-  font-size: 0.9rem;
-  font-weight: 800;
-  color: var(--charcoal);
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.count-pill {
-  background: var(--olive-pale);
-  color: var(--olive);
-  padding: 0.1rem 0.55rem;
-  border-radius: var(--r-full);
-  font-size: 0.7rem;
-  font-weight: 700;
-}
-
 /* ══════════════════════════════════════════
    MODAL — BOTTOM SHEET
    ══════════════════════════════════════════ */
@@ -1610,8 +1523,7 @@ body {
 
 @keyframes sheetUp {
   from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
-}
+  to   { transform: translateY(0); }}
 
 .modal-handle {
   width: 36px; height: 4px;
@@ -1771,7 +1683,6 @@ input[type="file"]::file-selector-button {
 }
 .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
 .empty-title { font-size: 1rem; font-weight: 800; margin-bottom: 0.35rem; }
-.empty-sub { font-size: 0.82rem; color: var(--charcoal-50); line-height: 1.6; }
 
 /* ══════════════════════════════════════════
    TOAST
@@ -1799,8 +1710,7 @@ input[type="file"]::file-selector-button {
 .toast.warning { background: var(--warn); }
 
 @keyframes toastAnim {
-  to { transform: translateX(-50%) translateY(0); opacity: 1; }
-}
+  to { transform: translateX(-50%) translateY(0); opacity: 1; }}
 
 /* ══════════════════════════════════════════
    RESPONSIVE
@@ -1820,8 +1730,7 @@ input[type="file"]::file-selector-button {
   .hero-title { font-size: 2rem; }
   .hero-content { padding: 3rem 1.25rem 4rem; }
   .nav-end { gap: 0.4rem; }
-  .pill-btn { padding: 0 0.7rem; font-size: 0.72rem; }
-}
+  .pill-btn { padding: 0 0.7rem; font-size: 0.72rem; }}
 
 /* ══════════════════════════════════════════
    ADMIN DASHBOARD — Shell Architecture
@@ -2115,9 +2024,7 @@ input[type="file"]::file-selector-button {
 }
 
 @media (max-width: 380px) {
-  .adm-header-title { display: none; }
-}
-
+  .adm-header-title { display: none; }}
 
 /* ── Admin: Quick Actions ── */
 .adm-quick-grid {
@@ -2143,7 +2050,6 @@ input[type="file"]::file-selector-button {
   text-align: start;
 }
 .adm-quick-btn:active { transform: scale(0.97); background: var(--olive-pale); }
-.adm-quick-ico { font-size: 1.1rem; flex: none; }
 
 /* ── Admin: Filter Chips ── */
 .adm-chips {
@@ -2201,8 +2107,7 @@ input[type="file"]::file-selector-button {
 }
 @keyframes admSlideUp {
   from { transform: translateY(60px); opacity: 0; }
-  to   { transform: translateY(0); opacity: 1; }
-}
+  to   { transform: translateY(0); opacity: 1; }}
 .adm-modal-close {
   position: absolute;
   top: 0.85rem;
@@ -2224,41 +2129,12 @@ input[type="file"]::file-selector-button {
   padding: 1.5rem 1.1rem;
   padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
 }
-.adm-modal-title {
-  font-size: 1.2rem;
-  font-weight: 900;
-  color: var(--charcoal);
-  margin: 0 0 1rem;
-  padding-inline-end: 2.5rem;
-}
 @media (min-width: 768px) {
   .adm-modal-backdrop { align-items: center; padding: 1.5rem; }
-  .adm-modal { border-radius: 1.5rem; max-height: 80vh; }
-}
+  .adm-modal { border-radius: 1.5rem; max-height: 80vh; }}
 
 /* ── Admin: Analytics ── */
 .adm-bar-row { margin-bottom: 0.8rem; }
-.adm-bar-top {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  font-weight: 800;
-  color: var(--charcoal-80);
-  margin-bottom: 0.3rem;
-  gap: 0.5rem;
-}
-.adm-bar-track {
-  height: 10px;
-  background: var(--sand);
-  border-radius: 9999px;
-  overflow: hidden;
-}
-.adm-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--olive), var(--olive-light));
-  border-radius: 9999px;
-  transition: width 0.5s ease;
-}
 
 .adm-lead-row {
   display: flex;
@@ -2267,67 +2143,7 @@ input[type="file"]::file-selector-button {
   padding: 0.6rem 0;
   border-bottom: 1px solid rgba(232,217,196,0.4);
 }
-.adm-lead-row:last-child { border-bottom: none; }
-.adm-lead-rank {
-  width: 30px; height: 30px;
-  flex: none;
-  border-radius: 50%;
-  background: var(--olive-pale);
-  color: var(--olive);
-  font-size: 0.8rem;
-  font-weight: 900;
-  display: flex; align-items: center; justify-content: center;
-}
-.adm-lead-name {
-  flex: 1;
-  min-width: 0;
-  font-size: 0.88rem;
-  font-weight: 800;
-  color: var(--charcoal);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.adm-lead-val {
-  flex: none;
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: var(--olive);
-}
-
-/* ── Admin: Notifications ── */
-.adm-notif {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  background: var(--white);
-  border: 1px solid rgba(232,217,196,0.5);
-  border-radius: 1rem;
-  padding: 0.9rem 1rem;
-  margin-bottom: 0.65rem;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.adm-notif:active { transform: scale(0.99); background: var(--olive-pale); }
-.adm-notif-ico { font-size: 1.25rem; flex: none; }
-.adm-notif-txt { flex: 1; min-width: 0; }
-.adm-notif-title { font-size: 0.86rem; font-weight: 800; color: var(--charcoal); }
-.adm-notif-sub { font-size: 0.75rem; color: var(--charcoal-50); margin-top: 0.15rem; }
-
-/* ── Admin: detail rows inside modal ── */
-.adm-detail-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.6rem 0;
-  border-bottom: 1px solid rgba(232,217,196,0.4);
-  font-size: 0.85rem;
-}
-.adm-detail-row:last-of-type { border-bottom: none; }
-.adm-detail-k { color: var(--charcoal-50); font-weight: 700; flex: none; }
-.adm-detail-v { color: var(--charcoal); font-weight: 800; text-align: end; word-break: break-word; min-width: 0; }
-
-</style>
+.adm-lead-row:last-child { border-bottom: none; }</style>
 </head>
 <body>
 
