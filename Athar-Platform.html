@@ -2266,6 +2266,7 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
   max-width: 340px; margin: 0 auto var(--sp-7); text-align: center; }
 .field-err { width: 100%; }
 .phone-group { flex-wrap: wrap; }
+.auth-guest-link { margin-top: var(--sp-2); align-self: center; }
 </style>
 </head>
 <body>
@@ -2306,6 +2307,7 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
       <div class="auth-actions">
         <button class="auth-btn auth-btn-primary" onclick="Auth.go('login')" data-i18n="getStarted"></button>
         <button class="auth-btn auth-btn-ghost" onclick="Auth.go('register')" data-i18n="joinCta"></button>
+        <button class="auth-link auth-guest-link" onclick="AuthService.continueAsGuest()" data-i18n="continueGuest"></button>
       </div>
     </div>
   </section>
@@ -3026,6 +3028,7 @@ const CONFIG = {
   // Scalable role system (Phase 2). Do NOT hardcode roles elsewhere — read here.
   DEFAULT_ROLE: 'volunteer',
   ROLES: {
+    guest:           { ar: 'ضيف', en: 'Guest', level: 0, permissions: ['view'] },
     volunteer:       { ar: 'متطوّع',     en: 'Volunteer',       level: 1,  permissions: ['view', 'join_campaign', 'create_campaign'] },
     campaign_leader: { ar: 'قائد حملة',  en: 'Campaign Leader', level: 2,  permissions: ['view', 'join_campaign', 'create_campaign', 'manage_own_campaign'] },
     partner:         { ar: 'شريك',       en: 'Partner',         level: 2,  permissions: ['view', 'partner_dashboard'] },
@@ -3057,6 +3060,9 @@ const T = {
     pendingTitle: 'طلبك قيد المراجعة',
     pendingMsg: 'تم استلام طلبك بنجاح. يقوم فريقنا بمراجعة حسابك، وسيتم تفعيله قريباً. شكراً لانضمامك إلى أثر.',
     backToLogin: 'العودة لتسجيل الدخول',
+    continueGuest: 'المتابعة كضيف',
+    guest: 'ضيف',
+    guestPrompt: 'سجّل دخولك أو أنشئ حساباً للمتابعة',
     forgotPw: 'نسيت كلمة المرور؟',
     noAccount: 'ليس لديك حساب؟',
     soon: 'قريباً',
@@ -3157,6 +3163,9 @@ const T = {
     pendingTitle: 'Your request is under review',
     pendingMsg: 'We\u2019ve received your request. Our team is reviewing your account and it will be activated shortly. Thank you for joining ATHAR.',
     backToLogin: 'Back to sign in',
+    continueGuest: 'Continue as guest',
+    guest: 'Guest',
+    guestPrompt: 'Sign in or create an account to continue',
     forgotPw: 'Forgot password?',
     noAccount: 'Don\u2019t have an account?',
     soon: 'Coming soon',
@@ -3468,6 +3477,7 @@ const State = {
   lang:     'ar',
   cu:       null,   // current user
   isAdmin:  false,
+  isGuest:  false,
   prevPage: 'home',
   currentPage: 'home',
   detailCampId: null,
@@ -3479,6 +3489,7 @@ const State = {
   setUser(user) {
     this.cu = user;
     this.isAdmin = Permissions.isAdmin(user);
+    this.isGuest = !!(user && user.isGuest);
   },
   setPage(name) {
     this.prevPage = this.currentPage;
@@ -3618,6 +3629,13 @@ const AuthService = {
     users.push(user);
     UserService.save(users);
     return { ok: true, user };
+  },
+  continueAsGuest() {
+    const guest = { id: 'guest', name: t('guest'), email: '', role: 'guest', status: 'guest', isGuest: true,
+                    volunteerHours: 0, activitiesJoined: 0, achievements: 0, joinedCamps: [] };
+    this.startSession(guest, false);
+    enterApp();
+    return guest;
   },
   logout() {
     State.setUser(null);
@@ -5025,6 +5043,18 @@ function doLogout() {
   document.getElementById('bottomNav').classList.remove('show');
 }
 
+/* ── Guest gate: actions that need a real account (Phase 2) ── */
+function requireAuth() {
+  if (State.cu && !State.isGuest) return true;
+  document.getElementById('appScreen').classList.remove('show');
+  document.getElementById('navbar').style.display = 'none';
+  const bn = document.getElementById('bottomNav'); if (bn) bn.classList.remove('show');
+  const ls = document.getElementById('loginScreen'); if (ls) ls.style.display = 'flex';
+  Auth.go('login');
+  toast(t('guestPrompt'), '');
+  return false;
+}
+
 function enterApp() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('appScreen').classList.add('show');
@@ -5032,9 +5062,9 @@ function enterApp() {
   document.getElementById('bottomNav').classList.add('show');
 
   const ut = document.getElementById('userTag');
-  if (ut) { ut.textContent = State.cu.name; ut.classList.add('show'); }
+  if (ut) { ut.textContent = State.cu ? State.cu.name : t('guest'); ut.classList.add('show'); }
   const lb = document.getElementById('logoutBtn');
-  if (lb) lb.style.display = 'block';
+  if (lb) { lb.style.display = 'block'; lb.textContent = State.isGuest ? t('loginCta') : t('logout'); }
 
   const adminNav = document.getElementById('nav-admin');
   if (adminNav) adminNav.style.display = State.isAdmin ? 'flex' : 'none';
@@ -5046,6 +5076,7 @@ function enterApp() {
 /* ── CAMPAIGNS ── */
 async function doCreate(e) {
   e.preventDefault();
+  if (!requireAuth()) return;
   const form = e.target;
   const btn  = form.querySelector('.submit-btn');
   clearFieldErrors(form);
@@ -5097,6 +5128,7 @@ async function doCreate(e) {
 }
 
 function handleJoin(id) {
+  if (!requireAuth()) return;
   const result = CampaignService.join(id, State.cu);
   if (result.success) {
     toast(result.message, 'success');
@@ -5151,6 +5183,7 @@ function handleCampDone(id) {
 
 /* ── PROFILE ── */
 async function uploadAvatar(event) {
+  if (!requireAuth()) return;
   const file = event.target.files[0];
   if (!file || !State.cu || State.isAdmin) return;
   try {
