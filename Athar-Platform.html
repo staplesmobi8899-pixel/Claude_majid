@@ -1764,7 +1764,7 @@ input[type="file"]::file-selector-button {
 }
 .toast.success { background: var(--olive); }
 .toast.error   { background: var(--red); }
-.toast.warning { background: #c47d1a; }
+.toast.warning { background: var(--warn); }
 
 @keyframes toastAnim {
   to { transform: translateX(-50%) translateY(0); opacity: 1; }
@@ -2223,7 +2223,7 @@ input[type="file"]::file-selector-button {
 }
 .adm-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #5a6b3a, #8a9a6a);
+  background: linear-gradient(90deg, var(--olive), var(--olive-light));
   border-radius: 9999px;
   transition: width 0.5s ease;
 }
@@ -2292,8 +2292,8 @@ input[type="file"]::file-selector-button {
   font-size: 0.85rem;
 }
 .adm-detail-row:last-of-type { border-bottom: none; }
-.adm-detail-k { color: #888888; font-weight: 700; flex: none; }
-.adm-detail-v { color: #1a1a1a; font-weight: 800; text-align: end; word-break: break-word; min-width: 0; }
+.adm-detail-k { color: var(--charcoal-50); font-weight: 700; flex: none; }
+.adm-detail-v { color: var(--charcoal); font-weight: 800; text-align: end; word-break: break-word; min-width: 0; }
 
 </style>
 </head>
