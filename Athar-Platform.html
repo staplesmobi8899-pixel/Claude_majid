@@ -85,6 +85,7 @@
 
   /* ── ALPHA / LINE HELPERS (replace repeated rgba literals) ── */
   --line-sand:        rgba(232,217,196,0.5);
+  --line:             #f0ece2;
   --line-sand-soft:   rgba(232,217,196,0.4);
   --line-sand-strong: rgba(232,217,196,0.7);
   --olive-a40:        rgba(90,107,58,0.4);
@@ -3597,7 +3598,7 @@ function showFieldError(form, fieldName, msg) {
   if (!msg) return;
   const err = document.createElement('div');
   err.className = `field-err field-err-${fieldName}`;
-  err.style.cssText = 'color:#c84c3c;font-size:0.75rem;margin-top:0.25rem;';
+  err.style.cssText = 'color:var(--red);font-size:0.75rem;margin-top:0.25rem;';
   err.textContent = msg;
   input.parentNode.insertBefore(err, input.nextSibling);
   input.style.borderColor = '#c84c3c';
@@ -3892,8 +3893,8 @@ function admTimeAgo(iso) {
 function admBar(label, value, max, color) {
   const pct = max > 0 ? Math.round((value / max) * 100) : 0;
   return '<div class="adm-bar-row">' +
-    '<div style="display:flex;justify-content:space-between;font-size:0.8rem;font-weight:700;color:#333;margin-bottom:0.3rem;"><span>' + label + '</span><span>' + value + '</span></div>' +
-    '<div style="height:8px;background:#f0ece2;border-radius:9999px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:' + color + ';border-radius:9999px;transition:width 0.4s;"></div></div>' +
+    '<div style="display:flex;justify-content:space-between;font-size:0.8rem;font-weight:700;color:var(--charcoal-80);margin-bottom:0.3rem;"><span>' + label + '</span><span>' + value + '</span></div>' +
+    '<div style="height:8px;background:var(--line);border-radius:9999px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:' + color + ';border-radius:9999px;transition:width 0.4s;"></div></div>' +
   '</div>';
 }
 
@@ -4052,9 +4053,9 @@ function admRenderOverview(users, camps, partners) {
       al.innerHTML = events.length === 0
         ? admEmpty('🕐', isAr ? 'لا يوجد نشاطات بعد' : 'No activity yet')
         : events.slice(0, 7).map(ev =>
-          '<div class="adm-activity-row" style="display:flex;align-items:center;gap:0.7rem;padding:0.6rem 0;border-bottom:1px solid #f0ece2;">' +
+          '<div class="adm-activity-row" style="display:flex;align-items:center;gap:0.7rem;padding:0.6rem 0;border-bottom:1px solid var(--line);">' +
             '<span style="font-size:1.1rem;flex:none;">' + ev.icon + '</span>' +
-            '<span style="flex:1;font-size:0.85rem;font-weight:600;color:#333;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + ev.txt + '</span>' +
+            '<span style="flex:1;font-size:0.85rem;font-weight:600;color:var(--charcoal-80);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + ev.txt + '</span>' +
             '<span style="flex:none;font-size:0.72rem;color:#999;">' + admTimeAgo(ev.d) + '</span>' +
           '</div>'
         ).join('');
@@ -4073,14 +4074,14 @@ function admStatDetail(kind) {
     let title = '', rows = [], panel = 'users';
 
     const userRow = u =>
-      '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0;border-bottom:1px solid #f0ece2;cursor:pointer;" onclick="admViewUser(\'' + u.id + '\')">' +
-        '<span style="flex:1;font-size:0.88rem;font-weight:700;color:#1a1a1a;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (u.name || '') + '</span>' +
+      '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0;border-bottom:1px solid var(--line);cursor:pointer;" onclick="admViewUser(\'' + u.id + '\')">' +
+        '<span style="flex:1;font-size:0.88rem;font-weight:700;color:var(--charcoal);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (u.name || '') + '</span>' +
         admStatusChip(u.status) +
       '</div>';
     const campRow = c => {
       const txt = Models.getCampText(c);
-      return '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0;border-bottom:1px solid #f0ece2;cursor:pointer;" onclick="admViewCamp(\'' + c.id + '\')">' +
-        '<span style="flex:1;font-size:0.88rem;font-weight:700;color:#1a1a1a;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (txt.title || '') + '</span>' +
+      return '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0;border-bottom:1px solid var(--line);cursor:pointer;" onclick="admViewCamp(\'' + c.id + '\')">' +
+        '<span style="flex:1;font-size:0.88rem;font-weight:700;color:var(--charcoal);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (txt.title || '') + '</span>' +
         admStatusChip(c.status) +
       '</div>';
     };
@@ -4096,16 +4097,16 @@ function admStatDetail(kind) {
       rows = users.filter(u => (u.volunteerHours || 0) > 0)
         .sort((a, b) => (b.volunteerHours || 0) - (a.volunteerHours || 0))
         .map(u =>
-          '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0;border-bottom:1px solid #f0ece2;cursor:pointer;" onclick="admViewUser(\'' + u.id + '\')">' +
-            '<span style="flex:1;font-size:0.88rem;font-weight:700;color:#1a1a1a;">' + (u.name || '') + '</span>' +
-            '<span style="font-weight:800;color:#5a6b3a;font-size:0.85rem;">' + (u.volunteerHours || 0) + (isAr ? ' س' : ' h') + '</span>' +
+          '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0;border-bottom:1px solid var(--line);cursor:pointer;" onclick="admViewUser(\'' + u.id + '\')">' +
+            '<span style="flex:1;font-size:0.88rem;font-weight:700;color:var(--charcoal);">' + (u.name || '') + '</span>' +
+            '<span style="font-weight:800;color:var(--olive);font-size:0.85rem;">' + (u.volunteerHours || 0) + (isAr ? ' س' : ' h') + '</span>' +
           '</div>');
     }
 
     admOpenModal(
-      '<h3 style="margin:0 0 1rem;font-size:1.15rem;font-weight:900;color:#1a1a1a;">' + title + ' <span style="font-size:0.8rem;font-weight:800;color:#888;">(' + rows.length + ')</span></h3>' +
+      '<h3 style="margin:0 0 1rem;font-size:1.15rem;font-weight:900;color:var(--charcoal);">' + title + ' <span style="font-size:0.8rem;font-weight:800;color:var(--charcoal-50);">(' + rows.length + ')</span></h3>' +
       (rows.length ? rows.join('') : admEmpty('📭', isAr ? 'لا يوجد بيانات' : 'No data')) +
-      '<button style="margin-top:1.1rem;width:100%;padding:0.8rem;border:none;border-radius:0.75rem;background:#5a6b3a;color:#fff;font-weight:800;font-size:0.9rem;cursor:pointer;font-family:inherit;" onclick="admSwitchPanel(\'' + panel + '\')">' + (isAr ? 'عرض القسم كاملاً' : 'Open full section') + '</button>'
+      '<button style="margin-top:1.1rem;width:100%;padding:0.8rem;border:none;border-radius:0.75rem;background:var(--olive);color:#fff;font-weight:800;font-size:0.9rem;cursor:pointer;font-family:inherit;" onclick="admSwitchPanel(\'' + panel + '\')">' + (isAr ? 'عرض القسم كاملاً' : 'Open full section') + '</button>'
     );
   } catch (e) {
     console.error('[admStatDetail] Error:', e);
@@ -4119,14 +4120,14 @@ function admViewUser(id) {
     if (!u) return;
     const isAr = State.lang === 'ar';
     const row = (icon, label, val) => val
-      ? '<div style="display:flex;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid #f0ece2;font-size:0.86rem;"><span style="flex:none;">' + icon + '</span><span style="flex:none;font-weight:700;color:#888;">' + label + ':</span><span style="font-weight:700;color:#1a1a1a;word-break:break-word;">' + val + '</span></div>'
+      ? '<div style="display:flex;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--line);font-size:0.86rem;"><span style="flex:none;">' + icon + '</span><span style="flex:none;font-weight:700;color:var(--charcoal-50);">' + label + ':</span><span style="font-weight:700;color:var(--charcoal);word-break:break-word;">' + val + '</span></div>'
       : '';
     admOpenModal(
       '<div style="text-align:center;margin-bottom:1rem;">' +
         '<div style="width:70px;height:70px;border-radius:50%;background:#eef1e8;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 0.6rem;overflow:hidden;">' +
           (u.profilePic ? '<img src="' + u.profilePic + '" style="width:100%;height:100%;object-fit:cover;">' : '👤') +
         '</div>' +
-        '<div style="font-size:1.15rem;font-weight:900;color:#1a1a1a;">' + (u.name || '') + '</div>' +
+        '<div style="font-size:1.15rem;font-weight:900;color:var(--charcoal);">' + (u.name || '') + '</div>' +
         '<div style="margin-top:0.4rem;">' + admStatusChip(u.status) + '</div>' +
       '</div>' +
       row('📧', isAr ? 'البريد' : 'Email', u.email) +
@@ -4140,8 +4141,8 @@ function admViewUser(id) {
       (u.idPhoto ? '<div style="margin-top:0.8rem;"><img src="' + u.idPhoto + '" style="width:100%;border-radius:0.75rem;cursor:pointer;" onclick="openImageViewer(\'' + u.idPhoto + '\')"></div>' : '') +
       (u.status === 'pending'
         ? '<div style="display:flex;gap:0.6rem;margin-top:1.1rem;">' +
-            '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:#2d7a4f;color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleApproveUser(\'' + u.id + '\');admCloseModal()">✓ ' + (isAr ? 'قبول' : 'Approve') + '</button>' +
-            '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:#c84c3c;color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleRejectUser(\'' + u.id + '\');admCloseModal()">✕ ' + (isAr ? 'رفض' : 'Reject') + '</button>' +
+            '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:var(--success);color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleApproveUser(\'' + u.id + '\');admCloseModal()">✓ ' + (isAr ? 'قبول' : 'Approve') + '</button>' +
+            '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:var(--red);color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleRejectUser(\'' + u.id + '\');admCloseModal()">✕ ' + (isAr ? 'رفض' : 'Reject') + '</button>' +
           '</div>'
         : '')
     );
@@ -4159,12 +4160,12 @@ function admViewCamp(id) {
     const txt = Models.getCampText(c);
     const pct = c.needed ? Math.min(100, Math.round(((c.volunteers || 0) / c.needed) * 100)) : 0;
     const row = (icon, label, val) => val
-      ? '<div style="display:flex;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid #f0ece2;font-size:0.86rem;"><span style="flex:none;">' + icon + '</span><span style="flex:none;font-weight:700;color:#888;">' + label + ':</span><span style="font-weight:700;color:#1a1a1a;word-break:break-word;">' + val + '</span></div>'
+      ? '<div style="display:flex;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--line);font-size:0.86rem;"><span style="flex:none;">' + icon + '</span><span style="flex:none;font-weight:700;color:var(--charcoal-50);">' + label + ':</span><span style="font-weight:700;color:var(--charcoal);word-break:break-word;">' + val + '</span></div>'
       : '';
     let actions = '';
     if (c.status === 'pending') {
-      actions = '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:#2d7a4f;color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleApproveCamp(\'' + c.id + '\');admCloseModal()">✓ ' + (isAr ? 'قبول' : 'Approve') + '</button>' +
-                '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:#c84c3c;color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleRejectCamp(\'' + c.id + '\');admCloseModal()">✕ ' + (isAr ? 'رفض' : 'Reject') + '</button>';
+      actions = '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:var(--success);color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleApproveCamp(\'' + c.id + '\');admCloseModal()">✓ ' + (isAr ? 'قبول' : 'Approve') + '</button>' +
+                '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:var(--red);color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleRejectCamp(\'' + c.id + '\');admCloseModal()">✕ ' + (isAr ? 'رفض' : 'Reject') + '</button>';
     } else if (c.status === 'approved') {
       actions = '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:#1d4ed8;color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleCampUnderProcess(\'' + c.id + '\');admCloseModal()">' + (isAr ? 'قيد التنفيذ' : 'In Progress') + '</button>' +
                 '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:#7c3aed;color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleCampDone(\'' + c.id + '\');admCloseModal()">✓ ' + (isAr ? 'تم انجازها' : 'Mark Done') + '</button>';
@@ -4173,12 +4174,12 @@ function admViewCamp(id) {
     }
     admOpenModal(
       (c.img ? '<img src="' + c.img + '" style="width:100%;height:150px;object-fit:cover;border-radius:0.85rem;margin-bottom:0.9rem;cursor:pointer;" onclick="openImageViewer(\'' + c.img + '\')">' : '') +
-      '<div style="font-size:1.15rem;font-weight:900;color:#1a1a1a;margin-bottom:0.4rem;">' + (txt.title || '') + '</div>' +
+      '<div style="font-size:1.15rem;font-weight:900;color:var(--charcoal);margin-bottom:0.4rem;">' + (txt.title || '') + '</div>' +
       '<div style="margin-bottom:0.8rem;">' + admStatusChip(c.status) + '</div>' +
       (txt.desc ? '<div style="font-size:0.86rem;color:#555;line-height:1.6;margin-bottom:0.8rem;">' + txt.desc + '</div>' : '') +
       '<div style="margin-bottom:0.8rem;">' +
-        '<div style="display:flex;justify-content:space-between;font-size:0.78rem;font-weight:700;color:#888;margin-bottom:0.3rem;"><span>' + (isAr ? 'المتطوعين' : 'Volunteers') + '</span><span>' + (c.volunteers || 0) + ' / ' + (c.needed || 0) + '</span></div>' +
-        '<div style="height:8px;background:#f0ece2;border-radius:9999px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:#5a6b3a;border-radius:9999px;"></div></div>' +
+        '<div style="display:flex;justify-content:space-between;font-size:0.78rem;font-weight:700;color:var(--charcoal-50);margin-bottom:0.3rem;"><span>' + (isAr ? 'المتطوعين' : 'Volunteers') + '</span><span>' + (c.volunteers || 0) + ' / ' + (c.needed || 0) + '</span></div>' +
+        '<div style="height:8px;background:var(--line);border-radius:9999px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:var(--olive);border-radius:9999px;"></div></div>' +
       '</div>' +
       row('🏷️', isAr ? 'الفئة' : 'Category', txt.cat) +
       row('📍', isAr ? 'الموقع' : 'Location', c.location) +
@@ -4201,16 +4202,16 @@ function admViewPartner(idx) {
     const isAr = State.lang === 'ar';
     const typeMap = { gov: isAr ? 'حكومية / عامة' : 'Government / Public', priv: isAr ? 'خاصة / شركة' : 'Private / Company', ngo: isAr ? 'منظمة / جمعية' : 'NGO / Association', ind: isAr ? 'فرد / مبادر' : 'Individual' };
     const row = (icon, label, val) => val
-      ? '<div style="display:flex;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid #f0ece2;font-size:0.86rem;"><span style="flex:none;">' + icon + '</span><span style="flex:none;font-weight:700;color:#888;">' + label + ':</span><span style="font-weight:700;color:#1a1a1a;word-break:break-word;">' + val + '</span></div>'
+      ? '<div style="display:flex;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--line);font-size:0.86rem;"><span style="flex:none;">' + icon + '</span><span style="flex:none;font-weight:700;color:var(--charcoal-50);">' + label + ':</span><span style="font-weight:700;color:var(--charcoal);word-break:break-word;">' + val + '</span></div>'
       : '';
     admOpenModal(
-      '<div style="font-size:1.15rem;font-weight:900;color:#1a1a1a;margin-bottom:1rem;">🤝 ' + (p.org || '') + '</div>' +
+      '<div style="font-size:1.15rem;font-weight:900;color:var(--charcoal);margin-bottom:1rem;">🤝 ' + (p.org || '') + '</div>' +
       row('👤', isAr ? 'المسؤول' : 'Contact', p.contact) +
       row('📧', isAr ? 'البريد' : 'Email', p.email) +
       row('📞', isAr ? 'الهاتف' : 'Phone', p.phone) +
       row('🏷️', isAr ? 'نوع الجهة' : 'Type', typeMap[p.type] || p.type) +
       row('📅', isAr ? 'التاريخ' : 'Date', p.date ? new Date(p.date).toLocaleDateString() : '') +
-      (p.msg ? '<div style="margin-top:0.8rem;padding:0.85rem;background:#f7f4ee;border-radius:0.75rem;font-size:0.86rem;color:#333;line-height:1.6;">' + p.msg + '</div>' : '')
+      (p.msg ? '<div style="margin-top:0.8rem;padding:0.85rem;background:#f7f4ee;border-radius:0.75rem;font-size:0.86rem;color:var(--charcoal-80);line-height:1.6;">' + p.msg + '</div>' : '')
     );
   } catch (e) {
     console.error('[admViewPartner] Error:', e);
@@ -4411,10 +4412,10 @@ function admRenderAnalytics(users, camps) {
       lb.innerHTML = top.length === 0
         ? admEmpty('🏆', isAr ? 'لا يوجد ساعات تطوع بعد' : 'No volunteer hours yet')
         : top.map((u, i) =>
-          '<div class="adm-lead-row" style="display:flex;align-items:center;gap:0.7rem;padding:0.6rem 0;border-bottom:1px solid #f0ece2;cursor:pointer;" onclick="admViewUser(\'' + u.id + '\')">' +
-            '<span style="flex:none;width:28px;text-align:center;font-weight:900;font-size:' + (i < 3 ? '1.1rem' : '0.85rem') + ';color:#888;">' + medals[i] + '</span>' +
-            '<span style="flex:1;font-size:0.88rem;font-weight:700;color:#1a1a1a;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (u.name || '') + '</span>' +
-            '<span style="flex:none;font-weight:800;color:#5a6b3a;font-size:0.85rem;">' + (u.volunteerHours || 0) + (isAr ? ' س' : ' h') + '</span>' +
+          '<div class="adm-lead-row" style="display:flex;align-items:center;gap:0.7rem;padding:0.6rem 0;border-bottom:1px solid var(--line);cursor:pointer;" onclick="admViewUser(\'' + u.id + '\')">' +
+            '<span style="flex:none;width:28px;text-align:center;font-weight:900;font-size:' + (i < 3 ? '1.1rem' : '0.85rem') + ';color:var(--charcoal-50);">' + medals[i] + '</span>' +
+            '<span style="flex:1;font-size:0.88rem;font-weight:700;color:var(--charcoal);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (u.name || '') + '</span>' +
+            '<span style="flex:none;font-weight:800;color:var(--olive);font-size:0.85rem;">' + (u.volunteerHours || 0) + (isAr ? ' س' : ' h') + '</span>' +
           '</div>'
         ).join('');
     }
@@ -4469,7 +4470,7 @@ function admRenderNotifications(users, camps, partners) {
         '<div class="admin-card" onclick="' + n.act + '" style="cursor:pointer;display:flex;align-items:center;gap:0.8rem;">' +
           '<span style="font-size:1.4rem;flex:none;">' + n.icon + '</span>' +
           '<div style="flex:1;min-width:0;">' +
-            '<div style="font-size:0.88rem;font-weight:700;color:#1a1a1a;">' + n.txt + '</div>' +
+            '<div style="font-size:0.88rem;font-weight:700;color:var(--charcoal);">' + n.txt + '</div>' +
             '<div style="font-size:0.72rem;color:#999;margin-top:0.2rem;">' + admTimeAgo(n.d) + '</div>' +
           '</div>' +
         '</div>'
