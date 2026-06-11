@@ -1,0 +1,4947 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>أَثَرْ | ATHAR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* ══════════════════════════════════════════
+   ATHAR DESIGN SYSTEM — Production v2
+   ══════════════════════════════════════════ */
+:root {
+  --olive:       #5a6b3a;
+  --olive-mid:   #6b7a4f;
+  --olive-light: #8a9a6a;
+  --olive-pale:  #eef1e8;
+  --olive-glow:  rgba(90,107,58,0.35);
+  --sand:        #f5ede1;
+  --sand-dark:   #e8d9c4;
+  --warm-white:  #fdfaf6;
+  --charcoal:    #1a1a1a;
+  --charcoal-80: #333333;
+  --charcoal-50: #888888;
+  --charcoal-20: #d4d4d4;
+  --white:       #ffffff;
+  --red:         #c84c3c;
+  --success:     #2d7a4f;
+  --warn:        #c47d1a;
+
+  --r-sm:   0.5rem;
+  --r-md:   1rem;
+  --r-lg:   1.25rem;
+  --r-xl:   1.75rem;
+  --r-2xl:  2.5rem;
+  --r-full: 9999px;
+
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+  --shadow-xl: 0 24px 60px rgba(0,0,0,0.16);
+}
+
+/* ── RESET ── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+body {
+  background: var(--warm-white);
+  color: var(--charcoal);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── TYPOGRAPHY SYSTEM ── */
+/* Arabic */
+[data-lang="ar"] body,
+[data-lang="ar"] button,
+[data-lang="ar"] input,
+[data-lang="ar"] select,
+[data-lang="ar"] textarea {
+  font-family: 'Tajawal', sans-serif;
+}
+
+/* English */
+[data-lang="en"] body,
+[data-lang="en"] button,
+[data-lang="en"] input,
+[data-lang="en"] select,
+[data-lang="en"] textarea {
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: var(--olive-light); border-radius: 2px; }
+
+/* ══════════════════════════════════════════
+   LAYOUT FOUNDATIONS
+   ══════════════════════════════════════════ */
+.app-wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ══════════════════════════════════════════
+   NAVBAR
+   ══════════════════════════════════════════ */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 60px;
+  z-index: 500;
+  background: rgba(253,250,246,0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(232,217,196,0.4);
+}
+
+.navbar-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  height: 100%;
+  padding: 0 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.nav-logo {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--olive);
+  letter-spacing: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: 'Tajawal', sans-serif !important;
+}
+
+.nav-end {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.pill-btn {
+  height: 34px;
+  padding: 0 0.9rem;
+  border-radius: var(--r-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1.5px solid var(--sand-dark);
+  background: transparent;
+  color: var(--charcoal);
+  white-space: nowrap;
+}
+.pill-btn:hover { background: var(--sand); }
+
+.pill-btn-olive {
+  background: var(--olive);
+  color: var(--white);
+  border-color: transparent;
+}
+.pill-btn-olive:hover { background: var(--olive-mid); }
+
+.pill-btn-red {
+  color: var(--red);
+  border-color: rgba(200,76,60,0.25);
+}
+.pill-btn-red:hover { background: rgba(200,76,60,0.06); }
+
+.user-tag {
+  height: 34px;
+  padding: 0 0.8rem;
+  background: var(--olive-pale);
+  border-radius: var(--r-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--olive);
+  display: none;
+  align-items: center;
+}
+.user-tag.show { display: flex; }
+
+/* ══════════════════════════════════════════
+   LOGIN SCREEN
+   ══════════════════════════════════════════ */
+#loginScreen {
+  min-height: 100vh;
+  background: #121810;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-glow-1 {
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(90,107,58,0.4) 0%, transparent 70%);
+  top: -150px; left: -150px;
+  pointer-events: none;
+}
+
+.login-glow-2 {
+  position: absolute;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(90,107,58,0.2) 0%, transparent 70%);
+  bottom: -100px; right: -100px;
+  pointer-events: none;
+}
+
+.login-card {
+  position: relative;
+  z-index: 2;
+  max-width: 360px;
+  width: 90%;
+  text-align: center;
+  animation: fadeUp 0.5s ease both;
+}
+
+.login-logo {
+  font-family: 'Tajawal', sans-serif !important;
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--white);
+  letter-spacing: 6px;
+  margin-bottom: 0.4rem;
+}
+
+.login-tagline {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 0.8rem;
+  letter-spacing: 1px;
+  font-family: 'Tajawal', sans-serif;
+}
+
+.login-divider {
+  width: 36px; height: 2px;
+  background: linear-gradient(90deg, var(--olive-light), transparent);
+  margin: 0 auto 2.5rem;
+  border-radius: 1px;
+}
+
+.login-actions { display: grid; gap: 0.7rem; }
+
+.login-btn-primary {
+  width: 100%; height: 52px;
+  background: var(--olive);
+  color: var(--white);
+  border: none;
+  border-radius: var(--r-full);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  letter-spacing: 0.3px;
+}
+.login-btn-primary:hover {
+  background: var(--olive-mid);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(90,107,58,0.4);
+}
+
+.login-btn-secondary {
+  width: 100%; height: 52px;
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.6);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: var(--r-full);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.login-btn-secondary:hover {
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.85);
+}
+
+/* ══════════════════════════════════════════
+   APP SHELL
+   ══════════════════════════════════════════ */
+#appScreen {
+  display: none;
+  padding-top: 60px;
+  padding-bottom: 70px;
+  min-height: 100vh;
+}
+#appScreen.show { display: block; }
+
+/* ── PAGES ── */
+.page {
+  display: none;
+  background: var(--warm-white);
+}
+.page.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════════
+   HOME PAGE — HERO
+   ══════════════════════════════════════════ */
+.hero {
+  min-height: 68vh;
+  background: #121810;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.hero-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 70% at 10% 60%, rgba(90,107,58,0.45) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 50% at 90% 20%, rgba(90,107,58,0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size: 52px 52px;
+  pointer-events: none;
+}
+
+.hero-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(90,107,58,0.12);
+  pointer-events: none;
+}
+
+.hero-ring-1 { width: 400px; height: 400px; top: -150px; right: -100px; }
+.hero-ring-2 { width: 280px; height: 280px; top: -60px;  right: -40px; border-color: rgba(90,107,58,0.06); }
+
+.hero-arc {
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 56px;
+  background: var(--warm-white);
+  clip-path: ellipse(55% 100% at 50% 100%);
+  z-index: 3;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 4rem 1.5rem 4.5rem;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 2rem;
+}
+
+.hero-eyebrow-dot {
+  width: 5px; height: 5px;
+  background: var(--olive-light);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.hero-eyebrow-text {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 3.5px;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+}
+
+.hero-title {
+  font-size: clamp(2.2rem, 7vw, 3.6rem);
+  font-weight: 900;
+  color: var(--white);
+  line-height: 1.18;
+  margin-bottom: 1.4rem;
+  letter-spacing: 0.8px;
+}
+
+.hero-title-accent {
+  color: var(--olive-light);
+  display: block;
+}
+
+.hero-rule {
+  width: 28px; height: 2px;
+  background: linear-gradient(90deg, var(--olive-light), transparent);
+  margin-bottom: 1.4rem;
+  border-radius: 1px;
+}
+
+.hero-subtitle {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.42);
+  line-height: 1.9;
+  max-width: 360px;
+  margin-bottom: 2.2rem;
+  font-weight: 400;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.hero-btn {
+  height: 44px;
+  padding: 0 1.5rem;
+  background: var(--olive);
+  color: var(--white);
+  border: none;
+  border-radius: var(--r-full);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  white-space: nowrap;
+}
+.hero-btn:hover {
+  background: var(--olive-mid);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(90,107,58,0.4);
+}
+
+.hero-link {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.32);
+  cursor: pointer;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.hero-link:hover { color: rgba(255,255,255,0.6); }
+
+/* ══════════════════════════════════════════
+   IMPACT COUNTER
+   ══════════════════════════════════════════ */
+.impact-wrap {
+  padding: 0 1.25rem;
+  background: var(--warm-white);
+  position: relative;
+  z-index: 10;
+}
+
+.impact-card {
+  max-width: 1280px;
+  margin: -24px auto 0;
+  background: var(--white);
+  border-radius: var(--r-xl);
+  border: 1px solid rgba(232,217,196,0.7);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  z-index: 5;
+}
+
+.impact-item {
+  text-align: center;
+  padding: 1.3rem 0.6rem;
+  border-inline-end: 1px solid rgba(232,217,196,0.6);
+  transition: background 0.2s;
+}
+.impact-item:last-child { border-inline-end: none; }
+.impact-item:hover { background: var(--sand); }
+
+.impact-num {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--olive);
+  line-height: 1;
+  font-family: 'Inter', sans-serif;
+}
+
+.impact-lbl {
+  font-size: 0.62rem;
+  color: var(--charcoal-50);
+  margin-top: 0.35rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* ══════════════════════════════════════════
+   SECTION WRAPPER
+   ══════════════════════════════════════════ */
+.section {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 2.5rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid rgba(232,217,196,0.5);
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--charcoal);
+}
+
+.section-link {
+  font-size: 0.8rem;
+  color: var(--olive);
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.section-link:hover { opacity: 0.65; }
+
+/* ══════════════════════════════════════════
+   CAMPAIGN CARDS
+   ══════════════════════════════════════════ */
+.camps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.1rem;
+}
+
+.camp-card {
+  background: var(--white);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  border: 1px solid rgba(232,217,196,0.5);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.camp-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+  border-color: transparent;
+}
+
+.camp-img {
+  height: 185px;
+  position: relative;
+  overflow: hidden;
+}
+
+.camp-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.camp-card:hover .camp-img img { transform: scale(1.04); }
+
+.camp-img-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.8rem;
+}
+
+.camp-img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%);
+}
+
+.camp-badge {
+  position: absolute;
+  top: 0.9rem;
+  padding: 0.28rem 0.65rem;
+  border-radius: var(--r-full);
+  font-size: 0.68rem;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+}
+
+[data-lang="ar"] .camp-badge { right: 0.9rem; }
+[data-lang="en"] .camp-badge { left: 0.9rem; }
+
+.camp-badge-cat {
+  position: absolute;
+  top: 0.9rem;
+  background: rgba(255,255,255,0.88);
+  color: var(--olive);
+}
+[data-lang="ar"] .camp-badge-cat { left: 0.9rem; }
+[data-lang="en"] .camp-badge-cat { right: 0.9rem; }
+
+.status-approved { background: rgba(220,252,231,0.9); color: #166534; }
+.status-pending  { background: rgba(254,243,199,0.9); color: #92400e; }
+.status-rejected { background: rgba(254,226,226,0.9); color: #991b1b; }
+.status-done     { background: rgba(224,231,255,0.9); color: #3730a3; }
+
+.camp-body { padding: 1.2rem; }
+
+.camp-title {
+  font-size: 0.98rem;
+  font-weight: 800;
+  margin-bottom: 0.4rem;
+  color: var(--charcoal);
+  line-height: 1.35;
+}
+
+.camp-desc {
+  font-size: 0.8rem;
+  color: var(--charcoal-50);
+  line-height: 1.65;
+  margin-bottom: 0.9rem;
+}
+
+.camp-meta {
+  display: grid;
+  gap: 0.28rem;
+  margin-bottom: 0.9rem;
+}
+
+.camp-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.76rem;
+  color: var(--charcoal-50);
+}
+
+.camp-meta-dot {
+  width: 4px; height: 4px;
+  background: var(--olive-light);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.prog-track {
+  height: 4px;
+  background: var(--sand);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 0.28rem;
+}
+.prog-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--olive), var(--olive-light));
+  border-radius: 2px;
+  transition: width 0.8s ease;
+}
+
+.prog-label {
+  font-size: 0.7rem;
+  color: var(--charcoal-50);
+  margin-bottom: 0.9rem;
+}
+
+.camp-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.camp-pct {
+  font-size: 0.78rem;
+  color: var(--charcoal-50);
+}
+.camp-pct strong { color: var(--olive); }
+
+.join-btn {
+  height: 36px;
+  padding: 0 1.1rem;
+  background: var(--olive);
+  color: var(--white);
+  border: none;
+  border-radius: var(--r-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.join-btn:hover:not(:disabled) {
+  background: var(--olive-mid);
+  transform: translateY(-1px);
+}
+.join-btn:disabled {
+  background: var(--olive-pale);
+  color: var(--olive-light);
+  cursor: not-allowed;
+}
+
+/* ══════════════════════════════════════════
+   CAMPAIGN DETAIL PAGE
+   ══════════════════════════════════════════ */
+.detail-hero {
+  height: 320px;
+  position: relative;
+  overflow: hidden;
+  background: #1a2010;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.detail-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.05) 70%);
+}
+
+.detail-back {
+  position: absolute;
+  top: 1rem;
+  width: 38px; height: 38px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: background 0.2s;
+}
+.detail-back:hover { background: rgba(255,255,255,0.25); }
+[data-lang="ar"] .detail-back { right: 1rem; }
+[data-lang="en"] .detail-back { left: 1rem; }
+
+.detail-body {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.75rem 1.25rem 3rem;
+}
+
+.detail-cat {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  color: var(--olive-light);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.detail-title {
+  font-size: 1.65rem;
+  font-weight: 900;
+  color: var(--charcoal);
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+}
+
+.detail-desc {
+  font-size: 0.92rem;
+  color: var(--charcoal-50);
+  line-height: 1.85;
+  margin-bottom: 1.75rem;
+}
+
+.detail-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.detail-info-card {
+  background: var(--white);
+  border: 1px solid rgba(232,217,196,0.6);
+  border-radius: var(--r-lg);
+  padding: 1rem 1.1rem;
+}
+
+.detail-info-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--charcoal-50);
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+
+.detail-info-value {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--charcoal);
+}
+
+.detail-progress-card {
+  background: var(--white);
+  border: 1px solid rgba(232,217,196,0.6);
+  border-radius: var(--r-lg);
+  padding: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.detail-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.detail-progress-label {
+  font-size: 0.8rem;
+  color: var(--charcoal-50);
+  font-weight: 600;
+}
+
+.detail-progress-pct {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--olive);
+}
+
+.detail-join-btn {
+  width: 100%;
+  height: 52px;
+  background: var(--olive);
+  color: var(--white);
+  border: none;
+  border-radius: var(--r-full);
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.25s;
+  letter-spacing: 0.3px;
+}
+.detail-join-btn:hover:not(:disabled) {
+  background: var(--olive-mid);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(90,107,58,0.35);
+}
+.detail-join-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ══════════════════════════════════════════
+   EXPLORE PAGE
+   ══════════════════════════════════════════ */
+.explore-header {
+  background: var(--charcoal);
+  padding: 2rem 1.25rem 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.explore-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 100% at 0% 100%, var(--olive-glow) 0%, transparent 60%);
+}
+
+.explore-header h1 {
+  position: relative;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--white);
+  margin-bottom: 0.4rem;
+}
+
+.explore-header p {
+  position: relative;
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.4);
+}
+
+/* ══════════════════════════════════════════
+   CREATE PAGE
+   ══════════════════════════════════════════ */
+.create-hero {
+  background: var(--charcoal);
+  padding: 2.5rem 1.25rem 3rem;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.create-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(90,107,58,0.3) 0%, transparent 60%);
+}
+.create-hero > * { position: relative; z-index: 1; }
+
+.create-hero h1 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+}
+
+.create-hero p {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.38);
+  margin-bottom: 1.75rem;
+  line-height: 1.7;
+}
+
+.create-btn {
+  height: 48px;
+  padding: 0 2rem;
+  background: var(--olive);
+  color: var(--white);
+  border: none;
+  border-radius: var(--r-full);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.create-btn:hover {
+  background: var(--olive-mid);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(90,107,58,0.4);
+}
+
+.my-camps-section {
+  max-width: 1280px;
+  margin: 1.75rem auto 0;
+  padding: 0 1.25rem;
+}
+
+.my-camps-title {
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: var(--charcoal);
+}
+
+.my-camp-row {
+  background: var(--white);
+  border: 1px solid rgba(232,217,196,0.6);
+  border-radius: var(--r-lg);
+  padding: 1rem 1.1rem;
+  margin-bottom: 0.7rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.my-camp-info-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.2rem; }
+.my-camp-info-sub { font-size: 0.75rem; color: var(--charcoal-50); }
+
+.status-chip {
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--r-full);
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════
+   PROFILE PAGE
+   ══════════════════════════════════════════ */
+.profile-cover {
+  height: 180px;
+  background: var(--charcoal);
+  position: relative;
+  overflow: visible;
+}
+
+.profile-cover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 100% at 0% 100%, rgba(90,107,58,0.45) 0%, transparent 55%);
+}
+
+.profile-avatar-ring {
+  position: absolute;
+  top: 20px;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--warm-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+[data-lang="ar"] .profile-avatar-ring { right: 20px; }
+[data-lang="en"] .profile-avatar-ring { left: 20px; }
+
+.profile-avatar {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  border: 3px solid var(--warm-white);
+  background: var(--sand);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  position: relative;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.profile-meta-bar {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.profile-name-wrap .name {
+  font-size: 1.2rem;
+  font-weight: 900;
+  margin-bottom: 0.2rem;
+}
+
+.profile-name-wrap .loc {
+  font-size: 0.78rem;
+  color: var(--charcoal-50);
+}
+
+.change-pic-label {
+  height: 34px;
+  padding: 0 0.9rem;
+  border: 1.5px solid var(--sand-dark);
+  border-radius: var(--r-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  background: transparent;
+  transition: background 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.change-pic-label:hover { background: var(--sand); }
+.change-pic-label:hover { background: var(--sand); }
+
+.profile-stats {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.stats-card {
+  background: var(--white);
+  border: 1px solid rgba(232,217,196,0.6);
+  border-radius: var(--r-xl);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+.stat-cell {
+  text-align: center;
+  padding: 1.2rem 0.5rem;
+  border-inline-end: 1px solid rgba(232,217,196,0.6);
+}
+.stat-cell:last-child { border-inline-end: none; }
+
+.stat-num {
+  font-size: 1.7rem;
+  font-weight: 900;
+  color: var(--olive);
+  font-family: 'Inter', sans-serif;
+}
+
+.stat-lbl {
+  font-size: 0.65rem;
+  color: var(--charcoal-50);
+  margin-top: 0.25rem;
+  font-weight: 600;
+}
+
+/* Profile Menu */
+.profile-menu {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.25rem 2rem;
+}
+
+.menu-card {
+  background: var(--white);
+  border: 1px solid rgba(232,217,196,0.6);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+}
+
+.menu-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  transition: background 0.18s;
+  border-bottom: 1px solid rgba(232,217,196,0.4);
+}
+.menu-row:last-child { border-bottom: none; }
+.menu-row:hover { background: var(--sand); }
+
+.menu-icon {
+  width: 38px; height: 38px;
+  border-radius: var(--r-sm);
+  background: var(--olive-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+
+.menu-texts { flex: 1; min-width: 0; }
+.menu-title { font-size: 0.88rem; font-weight: 700; }
+.menu-sub { font-size: 0.72rem; color: var(--charcoal-50); margin-top: 0.1rem; }
+
+.menu-arrow {
+  font-size: 1rem;
+  color: var(--charcoal-20);
+  transition: transform 0.2s;
+}
+
+.menu-section-body {
+  display: none;
+  background: var(--sand);
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid rgba(232,217,196,0.4);
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0.9rem;
+  background: var(--white);
+  border-radius: var(--r-md);
+  margin-bottom: 0.5rem;
+}
+.info-item:last-child { margin-bottom: 0; }
+.info-lbl { font-size: 0.75rem; color: var(--charcoal-50); }
+.info-val { font-size: 0.82rem; font-weight: 700; }
+
+.status-banner-wrap {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem;
+}
+
+.status-banner {
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--r-lg);
+  font-size: 0.83rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.banner-pending  { background: #fef9ec; color: #92400e; }
+.banner-approved { background: #f0fdf4; color: #166534; }
+.banner-rejected { background: #fef2f2; color: #991b1b; }
+
+/* ══════════════════════════════════════════
+   ABOUT PAGE
+   ══════════════════════════════════════════ */
+.about-hero {
+  background: var(--charcoal);
+  padding: 3.5rem 1.25rem 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.about-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 80% at 50% 30%, rgba(90,107,58,0.35) 0%, transparent 60%);
+}
+.about-hero > * { position: relative; z-index: 1; }
+
+.about-hero-title {
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 900;
+  color: var(--white);
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+.about-hero-title em { color: var(--olive-light); font-style: normal; display: block; }
+
+.about-hero-sub {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.38);
+  line-height: 1.85;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.about-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+}
+
+.about-block {
+  background: var(--white);
+  border: 1px solid rgba(232,217,196,0.6);
+  border-radius: var(--r-xl);
+  padding: 2rem;
+  margin-bottom: 1rem;
+}
+.about-block h2 {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--olive);
+  margin-bottom: 0.75rem;
+}
+.about-block p {
+  font-size: 0.88rem;
+  color: var(--charcoal-50);
+  line-height: 1.85;
+}
+
+/* Partnership */
+.partner-section {
+  background: #121810;
+  border-radius: var(--r-2xl);
+  padding: 2.5rem 1.5rem;
+  margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.partner-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(90,107,58,0.28) 0%, transparent 55%);
+}
+.partner-section > * { position: relative; z-index: 1; }
+
+.partner-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--white);
+  margin-bottom: 0.75rem;
+  line-height: 1.25;
+}
+
+.partner-sub {
+  font-size: 0.84rem;
+  color: rgba(255,255,255,0.38);
+  line-height: 1.8;
+  max-width: 400px;
+  margin: 0 auto 2rem;
+}
+
+.partner-form {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--r-xl);
+  padding: 1.75rem;
+  text-align: start;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.partner-form-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 0.35rem;
+}
+
+.partner-form-sub {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 1.4rem;
+  line-height: 1.6;
+}
+
+.dark-field { margin-bottom: 0.75rem; }
+.dark-field label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+
+.dark-input {
+  width: 100%;
+  height: 44px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--r-md);
+  color: var(--white);
+  font-size: 0.88rem;
+  padding: 0 0.9rem;
+  transition: all 0.2s;
+}
+.dark-input::placeholder { color: rgba(255,255,255,0.2); }
+.dark-input:focus {
+  outline: none;
+  border-color: var(--olive-light);
+  background: rgba(255,255,255,0.08);
+}
+
+.dark-textarea {
+  height: 90px;
+  resize: none;
+  padding: 0.75rem 0.9rem;
+}
+
+.dark-select { cursor: pointer; appearance: none; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+.dark-submit {
+  width: 100%;
+  height: 48px;
+  background: var(--olive);
+  color: var(--white);
+  border: none;
+  border-radius: var(--r-full);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  margin-top: 0.5rem;
+}
+.dark-submit:hover {
+  background: var(--olive-mid);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(90,107,58,0.4);
+}
+
+/* ══════════════════════════════════════════
+   ADMIN PAGE
+   ══════════════════════════════════════════ */
+.admin-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+  background: var(--warm-white);
+}
+
+.admin-page-title { font-size: 1.6rem; font-weight: 900; margin-bottom: 0.3rem; }
+.admin-page-sub { font-size: 0.85rem; color: var(--charcoal-50); margin-bottom: 1.5rem; }
+
+.tab-bar {
+  display: flex;
+  gap: 0.4rem;
+  background: var(--sand);
+  padding: 0.3rem;
+  border-radius: var(--r-full);
+  width: fit-content;
+  margin-bottom: 1.5rem;
+}
+
+.tab-btn {
+  height: 32px;
+  padding: 0 1rem;
+  border: none;
+  border-radius: var(--r-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: transparent;
+  color: var(--charcoal-50);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.tab-btn.active {
+  background: var(--white);
+  color: var(--charcoal);
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-card {
+  background: var(--white);
+  border: 1px solid rgba(232,217,196,0.6);
+  border-radius: var(--r-xl);
+  padding: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.admin-card-head {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: flex-start;
+}
+
+.admin-ava {
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  background: var(--sand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 2px solid var(--sand-dark);
+}
+.admin-ava img { width:100%; height:100%; object-fit:cover; }
+
+.admin-info { flex: 1; min-width: 0; }
+.admin-info-name { font-size: 0.95rem; font-weight: 800; margin-bottom: 0.25rem; }
+.admin-info-row {
+  font-size: 0.78rem;
+  color: var(--charcoal-50);
+  margin-top: 0.2rem;
+  line-height: 1.4;
+}
+
+.admin-id-img {
+  max-width: 220px;
+  border-radius: var(--r-md);
+  border: 1.5px solid var(--sand-dark);
+  margin-top: 0.75rem;
+  display: block;
+}
+
+.admin-actions { display: flex; gap: 0.6rem; }
+
+.approve-btn {
+  flex: 1;
+  height: 40px;
+  background: var(--olive);
+  color: var(--white);
+  border: none;
+  border-radius: var(--r-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.approve-btn:hover { background: var(--olive-mid); }
+
+.reject-btn {
+  flex: 1;
+  height: 40px;
+  background: transparent;
+  color: var(--red);
+  border: 1.5px solid rgba(200,76,60,0.25);
+  border-radius: var(--r-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.reject-btn:hover { background: rgba(200,76,60,0.06); }
+
+.admin-section-label {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--charcoal);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.count-pill {
+  background: var(--olive-pale);
+  color: var(--olive);
+  padding: 0.1rem 0.55rem;
+  border-radius: var(--r-full);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* ══════════════════════════════════════════
+   MODAL — BOTTOM SHEET
+   ══════════════════════════════════════════ */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 600;
+  align-items: flex-end;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+}
+.modal-overlay.open { display: flex; }
+
+.modal-sheet {
+  background: var(--white);
+  border-radius: var(--r-2xl) var(--r-2xl) 0 0;
+  padding: 0 1.5rem 3rem;
+  width: 100%;
+  max-width: 580px;
+  max-height: 92vh;
+  overflow-y: auto;
+  animation: sheetUp 0.32s cubic-bezier(0.4,0,0.2,1);
+}
+
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.modal-handle {
+  width: 36px; height: 4px;
+  background: var(--sand-dark);
+  border-radius: 2px;
+  margin: 1.1rem auto 1.5rem;
+}
+
+.modal-title {
+  font-size: 1.3rem;
+  font-weight: 900;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Form fields */
+.field { margin-bottom: 1rem; }
+.field label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--charcoal-50);
+  letter-spacing: 0.5px;
+  margin-bottom: 0.4rem;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  height: 46px;
+  padding: 0 1rem;
+  background: var(--sand);
+  border: 1.5px solid transparent;
+  border-radius: var(--r-md);
+  font-size: 0.9rem;
+  color: var(--charcoal);
+  transition: all 0.2s;
+}
+
+.field textarea { height: 90px; padding: 0.75rem 1rem; resize: none; }
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--olive);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(90,107,58,0.08);
+}
+
+.field input[type="file"] {
+  height: auto;
+  padding: 0.65rem;
+  cursor: pointer;
+}
+
+input[type="file"]::file-selector-button {
+  background: var(--olive);
+  color: white;
+  padding: 0.35rem 0.8rem;
+  border: none;
+  border-radius: var(--r-full);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-inline-end: 0.6rem;
+}
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+
+.submit-btn {
+  width: 100%;
+  height: 52px;
+  background: var(--olive);
+  color: var(--white);
+  border: none;
+  border-radius: var(--r-full);
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.25s;
+  margin-top: 0.5rem;
+  letter-spacing: 0.3px;
+}
+.submit-btn:hover {
+  background: var(--olive-mid);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(90,107,58,0.35);
+}
+
+/* ══════════════════════════════════════════
+   BOTTOM NAV
+   ══════════════════════════════════════════ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 64px;
+  z-index: 400;
+  background: rgba(253,250,246,0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(232,217,196,0.5);
+  display: none;
+}
+.bottom-nav.show { display: block; }
+
+.bottom-nav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 0.5rem;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.22rem;
+  flex: 1;
+  height: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--charcoal-50);
+  font-size: 0.62rem;
+  font-weight: 700;
+  transition: color 0.2s;
+  padding: 0.6rem 0;
+}
+.nav-btn:hover { color: var(--olive); }
+.nav-btn.active { color: var(--olive); }
+
+.nav-btn svg {
+  width: 22px; height: 22px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+  transition: stroke 0.2s;
+}
+
+.nav-btn-text { line-height: 1; }
+
+/* ══════════════════════════════════════════
+   EMPTY STATE
+   ══════════════════════════════════════════ */
+.empty-state {
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  background: var(--white);
+  border-radius: var(--r-xl);
+  border: 1px solid rgba(232,217,196,0.5);
+}
+.empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.empty-title { font-size: 1rem; font-weight: 800; margin-bottom: 0.35rem; }
+.empty-sub { font-size: 0.82rem; color: var(--charcoal-50); line-height: 1.6; }
+
+/* ══════════════════════════════════════════
+   TOAST
+   ══════════════════════════════════════════ */
+.toast {
+  position: fixed;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: var(--charcoal);
+  color: var(--white);
+  padding: 0.75rem 1.4rem;
+  border-radius: var(--r-full);
+  font-size: 0.82rem;
+  font-weight: 600;
+  z-index: 999;
+  white-space: nowrap;
+  animation: toastAnim 0.3s ease forwards;
+  box-shadow: var(--shadow-lg);
+  max-width: 90vw;
+  text-align: center;
+}
+.toast.success { background: var(--olive); }
+.toast.error   { background: var(--red); }
+.toast.warning { background: #c47d1a; }
+
+@keyframes toastAnim {
+  to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .camps-grid { grid-template-columns: 1fr; }
+  .impact-card { grid-template-columns: repeat(2,1fr); }
+  .impact-item:nth-child(2) { border-inline-end: none; }
+  .detail-info-grid { grid-template-columns: 1fr 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .field-row { grid-template-columns: 1fr; }
+  .admin-card-head { flex-direction: column; }
+  .partner-form { padding: 1.25rem; }
+}
+
+@media (max-width: 380px) {
+  .hero-title { font-size: 2rem; }
+  .hero-content { padding: 3rem 1.25rem 4rem; }
+  .nav-end { gap: 0.4rem; }
+  .pill-btn { padding: 0 0.7rem; font-size: 0.72rem; }
+}
+
+/* ══════════════════════════════════════════
+   ADMIN DASHBOARD — Shell Architecture
+   ══════════════════════════════════════════ */
+
+#adminPage { padding-top: 60px; }
+
+.adm-shell {
+  min-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  background: #f7f4ee;
+  padding-bottom: calc(72px + env(safe-area-inset-bottom));
+}
+
+/* ── Header ── */
+.adm-header {
+  position: sticky;
+  top: 60px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.9rem;
+  background: rgba(253,250,246,0.97);
+  border-bottom: 1px solid rgba(232,217,196,0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.adm-sidebar-toggle,
+.adm-header-back {
+  width: 40px; height: 40px;
+  flex: none;
+  border: none;
+  background: var(--sand);
+  border-radius: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.adm-sidebar-toggle:active,
+.adm-header-back:active { background: var(--sand-dark); }
+.adm-sidebar-toggle svg,
+.adm-header-back svg {
+  width: 20px; height: 20px;
+  stroke: var(--charcoal-80);
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.adm-header-title {
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--charcoal);
+  margin: 0;
+  flex: none;
+  white-space: nowrap;
+}
+
+.adm-header-search { flex: 1; min-width: 0; }
+.adm-header-search input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem 0.8rem;
+  border: 1.5px solid rgba(232,217,196,0.7);
+  border-radius: 0.65rem;
+  background: var(--white);
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: var(--charcoal);
+}
+.adm-header-search input:focus {
+  outline: none;
+  border-color: var(--olive-light);
+}
+
+/* ── Sidebar (mobile drawer) ── */
+.adm-sidebar {
+  position: fixed;
+  top: 0;
+  inset-inline-start: 0;
+  bottom: 0;
+  width: 272px;
+  max-width: 80vw;
+  background: var(--white);
+  z-index: 620;
+  transform: translateX(-110%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.12);
+  padding-top: env(safe-area-inset-top);
+}
+[dir="rtl"] .adm-sidebar { transform: translateX(110%); }
+.adm-sidebar.open { transform: translateX(0) !important; }
+
+.adm-sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 610;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.adm-sidebar-overlay.show { opacity: 1; pointer-events: auto; }
+
+.adm-sidebar-header {
+  padding: 1.25rem 1.1rem 1rem;
+  border-bottom: 1px solid rgba(232,217,196,0.5);
+}
+.adm-sidebar-logo { display: flex; align-items: baseline; gap: 0.5rem; }
+.adm-logo-text {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--olive);
+  letter-spacing: 2px;
+}
+.adm-logo-sub {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--charcoal-50);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.adm-sidebar-nav { padding: 0.75rem 0; display: flex; flex-direction: column; }
+
+.adm-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  padding: 0.85rem 1.1rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--charcoal-80);
+  border-inline-start: 3px solid transparent;
+  text-align: start;
+  transition: all 0.15s;
+}
+.adm-nav-item svg {
+  width: 20px; height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+.adm-nav-item.active {
+  color: var(--olive);
+  background: var(--olive-pale);
+  border-inline-start-color: var(--olive);
+}
+.adm-nav-badge {
+  margin-inline-start: auto;
+  background: var(--sand);
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.55rem;
+  font-weight: 800;
+  color: var(--charcoal-80);
+}
+.adm-nav-item.active .adm-nav-badge { background: var(--white); color: var(--olive); }
+
+/* ── Content & Panels ── */
+.adm-content { flex: 1; min-width: 0; }
+.adm-content-inner {
+  padding: 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.adm-panel { display: none; }
+.adm-panel.active { display: block; animation: fadeIn 0.25s ease; }
+
+.adm-panel-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.adm-panel-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--charcoal);
+}
+.adm-search {
+  padding: 0.55rem 0.85rem;
+  border: 1.5px solid rgba(232,217,196,0.7);
+  border-radius: 0.65rem;
+  font-size: 0.85rem;
+  background: var(--white);
+  font-family: inherit;
+  color: var(--charcoal);
+  flex: 1;
+  min-width: 0;
+  max-width: 260px;
+  box-sizing: border-box;
+}
+.adm-search:focus { outline: none; border-color: var(--olive-light); }
+
+/* ── Stats Grid ── */
+.adm-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.adm-stat-card {
+  background: var(--white);
+  border: 1px solid rgba(232,217,196,0.5);
+  border-radius: 1rem;
+  padding: 1rem;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  transition: all 0.2s;
+  min-width: 0;
+}
+.adm-stat-card:active { transform: scale(0.98); }
+.adm-stat-num {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--charcoal);
+  line-height: 1.2;
+}
+.adm-stat-lbl {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--charcoal-50);
+  margin-top: 0.25rem;
+}
+.adm-stat-card .adm-stat-accent { color: var(--olive); }
+
+/* ── Generic Card ── */
+.adm-card {
+  background: var(--white);
+  border: 1px solid rgba(232,217,196,0.5);
+  border-radius: 1rem;
+  padding: 1.1rem;
+  margin-bottom: 0.85rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.adm-card h2 {
+  margin: 0 0 0.8rem;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--charcoal);
+}
+
+/* ── Desktop layout ── */
+@media (min-width: 1024px) {
+  .adm-shell {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    grid-template-rows: auto 1fr;
+    padding-bottom: 0;
+  }
+  .adm-header { grid-column: 1 / -1; grid-row: 1; }
+  .adm-sidebar {
+    position: static;
+    grid-column: 1;
+    grid-row: 2;
+    transform: none !important;
+    width: auto;
+    max-width: none;
+    box-shadow: none;
+    border-inline-end: 1px solid rgba(232,217,196,0.5);
+    z-index: 1;
+    padding-top: 0;
+  }
+  .adm-sidebar-overlay { display: none; }
+  .adm-sidebar-toggle { display: none; }
+  .adm-content { grid-column: 2; grid-row: 2; }
+  .adm-stats-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 380px) {
+  .adm-header-title { display: none; }
+}
+
+
+/* ── Admin: Quick Actions ── */
+.adm-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+.adm-quick-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid rgba(232,217,196,0.6);
+  background: var(--white);
+  border-radius: 0.85rem;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--charcoal-80);
+  transition: all 0.15s;
+  text-align: start;
+}
+.adm-quick-btn:active { transform: scale(0.97); background: var(--olive-pale); }
+.adm-quick-ico { font-size: 1.1rem; flex: none; }
+
+/* ── Admin: Filter Chips ── */
+.adm-chips {
+  display: flex;
+  gap: 0.45rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.9rem;
+  scrollbar-width: none;
+}
+.adm-chips::-webkit-scrollbar { display: none; }
+.adm-chip {
+  flex: none;
+  padding: 0.45rem 0.95rem;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(232,217,196,0.8);
+  background: var(--white);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--charcoal-80);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.adm-chip.active {
+  background: var(--olive);
+  border-color: var(--olive);
+  color: var(--white);
+}
+
+/* ── Admin: Modal ── */
+.adm-modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 700;
+  align-items: flex-end;
+  justify-content: center;
+}
+.adm-modal-backdrop.open { display: flex; }
+.adm-modal {
+  position: relative;
+  background: var(--warm-white);
+  width: 100%;
+  max-width: 640px;
+  max-height: 86vh;
+  border-radius: 1.5rem 1.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  animation: admSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.2);
+}
+@keyframes admSlideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+.adm-modal-close {
+  position: absolute;
+  top: 0.85rem;
+  inset-inline-end: 0.85rem;
+  width: 34px; height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: var(--sand);
+  color: var(--charcoal-80);
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  z-index: 2;
+  display: flex; align-items: center; justify-content: center;
+}
+.adm-modal-body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1.5rem 1.1rem;
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+}
+.adm-modal-title {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--charcoal);
+  margin: 0 0 1rem;
+  padding-inline-end: 2.5rem;
+}
+@media (min-width: 768px) {
+  .adm-modal-backdrop { align-items: center; padding: 1.5rem; }
+  .adm-modal { border-radius: 1.5rem; max-height: 80vh; }
+}
+
+/* ── Admin: Analytics ── */
+.adm-bar-row { margin-bottom: 0.8rem; }
+.adm-bar-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--charcoal-80);
+  margin-bottom: 0.3rem;
+  gap: 0.5rem;
+}
+.adm-bar-track {
+  height: 10px;
+  background: var(--sand);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.adm-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #5a6b3a, #8a9a6a);
+  border-radius: 9999px;
+  transition: width 0.5s ease;
+}
+
+.adm-lead-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(232,217,196,0.4);
+}
+.adm-lead-row:last-child { border-bottom: none; }
+.adm-lead-rank {
+  width: 30px; height: 30px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--olive-pale);
+  color: var(--olive);
+  font-size: 0.8rem;
+  font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+}
+.adm-lead-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--charcoal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.adm-lead-val {
+  flex: none;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--olive);
+}
+
+/* ── Admin: Notifications ── */
+.adm-notif {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: var(--white);
+  border: 1px solid rgba(232,217,196,0.5);
+  border-radius: 1rem;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.65rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.adm-notif:active { transform: scale(0.99); background: var(--olive-pale); }
+.adm-notif-ico { font-size: 1.25rem; flex: none; }
+.adm-notif-txt { flex: 1; min-width: 0; }
+.adm-notif-title { font-size: 0.86rem; font-weight: 800; color: var(--charcoal); }
+.adm-notif-sub { font-size: 0.75rem; color: var(--charcoal-50); margin-top: 0.15rem; }
+
+/* ── Admin: detail rows inside modal ── */
+.adm-detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(232,217,196,0.4);
+  font-size: 0.85rem;
+}
+.adm-detail-row:last-of-type { border-bottom: none; }
+.adm-detail-k { color: #888888; font-weight: 700; flex: none; }
+.adm-detail-v { color: #1a1a1a; font-weight: 800; text-align: end; word-break: break-word; min-width: 0; }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════
+     NAVBAR
+     ═══════════════════════════════════ -->
+<nav class="navbar" id="navbar" style="display:none;">
+  <div class="navbar-inner">
+    <div class="nav-logo" onclick="goPage('home')">أَثَرْ</div>
+    <div class="nav-end">
+      <span class="user-tag" id="userTag"></span>
+      <button class="pill-btn" id="langBtn" onclick="toggleLang()">EN</button>
+      <button class="pill-btn pill-btn-red" id="logoutBtn" onclick="doLogout()" style="display:none;" data-i18n="logout"></button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════
+     LOGIN
+     ═══════════════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-glow-1"></div>
+  <div class="login-glow-2"></div>
+  <div class="login-card">
+    <div class="login-logo">أَثَرْ</div>
+    <div class="login-tagline" data-i18n="tagline">أثر يبدأ بخطوة</div>
+    <div class="login-divider"></div>
+    <div class="login-actions">
+      <button class="login-btn-primary" onclick="openModal('signupModal')" data-i18n="joinCta"></button>
+      <button class="login-btn-secondary" onclick="openModal('loginModal')" data-i18n="loginCta"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     APP
+     ═══════════════════════════════════ -->
+<div id="appScreen">
+
+  <!-- HOME -->
+  <div class="page active" id="homePage">
+
+    <div class="hero">
+      <div class="hero-glow"></div>
+      <div class="hero-grid"></div>
+      <div class="hero-ring hero-ring-1"></div>
+      <div class="hero-ring hero-ring-2"></div>
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <div class="hero-eyebrow-dot"></div>
+          <div class="hero-eyebrow-text" data-i18n="eyebrow"></div>
+        </div>
+        <h1 class="hero-title">
+          <span data-i18n="heroLine1" style="display:block;margin-bottom:1.2rem;"></span>
+          <span class="hero-title-accent" data-i18n="heroLine2"></span>
+        </h1>
+        <div class="hero-rule"></div>
+        <p class="hero-subtitle" data-i18n="heroSub"></p>
+        <div class="hero-actions">
+          <button class="hero-btn" onclick="goPage('explore')" data-i18n="heroCta1"></button>
+          <span class="hero-link" onclick="openModal('signupModal')" data-i18n="heroCta2"></span>
+        </div>
+      </div>
+      <div class="hero-arc"></div>
+    </div>
+
+    <div class="impact-wrap">
+      <div class="impact-card">
+        <div class="impact-item">
+          <div class="impact-num" id="cUsers">0</div>
+          <div class="impact-lbl" data-i18n="statVol"></div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-num" id="cCamps">0</div>
+          <div class="impact-lbl" data-i18n="statCamps"></div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-num" id="cHours">0</div>
+          <div class="impact-lbl" data-i18n="statHours"></div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-num" id="cCities">0</div>
+          <div class="impact-lbl" data-i18n="statCities"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title" data-i18n="availCamps"></div>
+        <span class="section-link" onclick="goPage('explore')" data-i18n="seeAll"></span>
+      </div>
+      <div class="camps-grid" id="homeGrid"></div>
+    </div>
+  </div>
+
+  <!-- EXPLORE -->
+  <div class="page" id="explorePage">
+    <div class="explore-header">
+      <h1 data-i18n="explorTitle"></h1>
+      <p data-i18n="explorSub"></p>
+    </div>
+    <div class="section" style="padding-top:1.5rem;">
+      <div class="camps-grid" id="exploreGrid"></div>
+    </div>
+  </div>
+
+  <!-- CREATE -->
+  <div class="page" id="createPage">
+    <div class="create-hero">
+      <h1 data-i18n="createTitle"></h1>
+      <p data-i18n="createSub"></p>
+      <button class="create-btn" onclick="openModal('createModal')" data-i18n="createBtn"></button>
+    </div>
+    <div class="my-camps-section">
+      <div class="my-camps-title" data-i18n="myCamps"></div>
+      <div id="myCampsGrid"></div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="page" id="profilePage">
+    <div class="profile-cover">
+      <div class="profile-avatar-ring" id="avatarRing">
+        <div class="profile-avatar" id="profileAva">👤</div>
+      </div>
+    </div>
+    <div class="profile-meta-bar">
+      <div class="profile-name-wrap">
+        <div class="name" id="profileName"></div>
+        <div class="loc" id="profileLoc"></div>
+      </div>
+      <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
+      <button class="change-pic-label" onclick="document.getElementById('avatarInput').click()" type="button">
+        <span data-i18n="changePic"></span>
+      </button>
+    </div>
+    <div class="status-banner-wrap">
+      <div id="statusBanner"></div>
+    </div>
+    <div class="profile-stats">
+      <div class="stats-card">
+        <div class="stat-cell">
+          <div class="stat-num" id="sH">0</div>
+          <div class="stat-lbl" data-i18n="statHours"></div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num" id="sA">0</div>
+          <div class="stat-lbl" data-i18n="activities"></div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num" id="sB">0</div>
+          <div class="stat-lbl" data-i18n="achievements"></div>
+        </div>
+      </div>
+    </div>
+    <div class="profile-menu">
+      <div class="menu-card">
+        <div class="menu-row" onclick="toggleMenu('m-info')">
+          <div class="menu-icon">👤</div>
+          <div class="menu-texts">
+            <div class="menu-title" data-i18n="menuInfo"></div>
+            <div class="menu-sub" data-i18n="menuInfoSub"></div>
+          </div>
+          <div class="menu-arrow" id="arr-m-info">›</div>
+        </div>
+        <div class="menu-section-body" id="m-info">
+          <div id="infoItems"></div>
+        </div>
+
+        <div class="menu-row" onclick="toggleMenu('m-id')">
+          <div class="menu-icon">🪪</div>
+          <div class="menu-texts">
+            <div class="menu-title" data-i18n="menuId"></div>
+            <div class="menu-sub" data-i18n="menuIdSub"></div>
+          </div>
+          <div class="menu-arrow" id="arr-m-id">›</div>
+        </div>
+        <div class="menu-section-body" id="m-id">
+          <div id="idPhotoBox"></div>
+        </div>
+
+        <div class="menu-row" onclick="toggleMenu('m-camps')">
+          <div class="menu-icon">📋</div>
+          <div class="menu-texts">
+            <div class="menu-title" data-i18n="menuCamps"></div>
+            <div class="menu-sub" data-i18n="menuCampsSub"></div>
+          </div>
+          <div class="menu-arrow" id="arr-m-camps">›</div>
+        </div>
+        <div class="menu-section-body" id="m-camps">
+          <div id="profileCampsBox"></div>
+        </div>
+
+        <div class="menu-row" onclick="toggleMenu('m-hours')">
+          <div class="menu-icon">⏱️</div>
+          <div class="menu-texts">
+            <div class="menu-title" data-i18n="menuHours"></div>
+            <div class="menu-sub" data-i18n="menuHoursSub"></div>
+          </div>
+          <div class="menu-arrow" id="arr-m-hours">›</div>
+        </div>
+        <div class="menu-section-body" id="m-hours">
+          <div id="hoursBox"></div>
+        </div>
+
+        <div class="menu-row" onclick="doLogout()" style="color:var(--red);">
+          <div class="menu-icon" style="background:rgba(200,76,60,0.08);">🚪</div>
+          <div class="menu-texts">
+            <div class="menu-title" style="color:var(--red);" data-i18n="logout"></div>
+          </div>
+          <div class="menu-arrow">›</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="page" id="aboutPage">
+    <div class="about-hero">
+      <h1 class="about-hero-title">
+        <span data-i18n="aboutTitle1"></span>
+        <em data-i18n="aboutTitle2"></em>
+      </h1>
+      <p class="about-hero-sub" data-i18n="aboutHeroSub"></p>
+    </div>
+    <div class="about-content">
+      <div class="about-block">
+        <h2 data-i18n="missionLabel"></h2>
+        <p data-i18n="missionText"></p>
+      </div>
+      <div class="about-block">
+        <h2 data-i18n="visionLabel"></h2>
+        <p data-i18n="visionText"></p>
+      </div>
+      <div class="about-block">
+        <h2 data-i18n="valuesLabel"></h2>
+        <p data-i18n="valuesText"></p>
+      </div>
+
+      <div class="partner-section">
+        <h2 class="partner-title" data-i18n="partnerTitle"></h2>
+        <p class="partner-sub" data-i18n="partnerSub"></p>
+        <div class="partner-form">
+          <div class="partner-form-title" data-i18n="partnerFormTitle"></div>
+          <div class="partner-form-sub" data-i18n="partnerFormSub"></div>
+          <form onsubmit="submitPartner(event)">
+            <div class="form-grid" style="margin-bottom:0.75rem;">
+              <div class="dark-field">
+                <label data-i18n="orgName"></label>
+                <input class="dark-input" name="org" type="text" required>
+              </div>
+              <div class="dark-field">
+                <label data-i18n="contactPerson"></label>
+                <input class="dark-input" name="contact" type="text" required>
+              </div>
+            </div>
+            <div class="form-grid" style="margin-bottom:0.75rem;">
+              <div class="dark-field">
+                <label data-i18n="email"></label>
+                <input class="dark-input" name="email" type="email" required>
+              </div>
+              <div class="dark-field">
+                <label data-i18n="phone"></label>
+                <input class="dark-input" name="phone" type="tel" required>
+              </div>
+            </div>
+            <div class="dark-field">
+              <label data-i18n="orgType"></label>
+              <select class="dark-input dark-select" name="type" required>
+                <option value="" disabled selected></option>
+                <option value="gov" data-i18n-opt="typeGov"></option>
+                <option value="priv" data-i18n-opt="typePriv"></option>
+                <option value="ngo" data-i18n-opt="typeNgo"></option>
+                <option value="ind" data-i18n-opt="typeInd"></option>
+              </select>
+            </div>
+            <div class="dark-field" style="margin-top:0.75rem;">
+              <label data-i18n="message"></label>
+              <textarea class="dark-input dark-textarea" name="msg" required></textarea>
+            </div>
+            <button type="submit" class="dark-submit" data-i18n="sendRequest"></button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="page" id="adminPage">
+    <div class="adm-shell">
+
+      <!-- ADMIN HEADER -->
+      <header class="adm-header">
+        <button class="adm-sidebar-toggle" id="admSidebarToggle" onclick="admToggleSidebar()">
+          <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <h1 class="adm-header-title">Admin Panel</h1>
+        <div class="adm-header-search">
+          <input type="text" id="admGlobalSearch" placeholder="🔍 Search..." oninput="admGlobalSearchFn(this.value)">
+        </div>
+        <button class="adm-header-back" onclick="goPage('home')" title="Back to App">
+          <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+      </header>
+
+      <!-- ADMIN SIDEBAR -->
+      <aside class="adm-sidebar" id="admSidebar">
+        <div class="adm-sidebar-header">
+          <div class="adm-sidebar-logo">
+            <span class="adm-logo-text">أَثَرْ</span>
+            <span class="adm-logo-sub">Admin</span>
+          </div>
+        </div>
+
+        <nav class="adm-sidebar-nav">
+          <button class="adm-nav-item active" data-panel="dashboard" onclick="admSwitchPanel('dashboard')">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            <span class="adm-nav-label">Dashboard</span>
+          </button>
+
+          <button class="adm-nav-item" data-panel="users" onclick="admSwitchPanel('users')">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            <span class="adm-nav-label">Users</span>
+            <span class="adm-nav-badge" id="admBadgeUsers">0</span>
+          </button>
+
+          <button class="adm-nav-item" data-panel="campaigns" onclick="admSwitchPanel('campaigns')">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span class="adm-nav-label">Campaigns</span>
+            <span class="adm-nav-badge" id="admBadgeCamps">0</span>
+          </button>
+
+          <button class="adm-nav-item" data-panel="partners" onclick="admSwitchPanel('partners')">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span class="adm-nav-label">Partners</span>
+            <span class="adm-nav-badge" id="admBadgePartners">0</span>
+          </button>
+
+          <button class="adm-nav-item" data-panel="analytics" onclick="admSwitchPanel('analytics')">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span class="adm-nav-label">Analytics</span>
+          </button>
+
+          <button class="adm-nav-item" data-panel="notifications" onclick="admSwitchPanel('notifications')">
+            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="adm-nav-label">Notifications</span>
+            <span class="adm-nav-badge" id="admBadgeNotifs">0</span>
+          </button>
+        </nav>
+      </aside>
+
+      <!-- SIDEBAR OVERLAY (Mobile) -->
+      <div class="adm-sidebar-overlay" id="admSidebarOverlay" onclick="admCloseSidebar()"></div>
+
+      <!-- MAIN CONTENT -->
+      <main class="adm-content">
+        <div class="adm-content-inner" id="admContentInner">
+
+          <!-- DASHBOARD -->
+          <div class="adm-panel active" id="admPanel-dashboard">
+            <div class="adm-stats-grid" id="admStatsGrid"></div>
+            <div class="adm-quick-grid" id="admQuickActions"></div>
+            <div class="adm-card">
+              <h2 id="admHdPending">Pending Reviews</h2>
+              <div id="admPendingList"></div>
+            </div>
+            <div class="adm-card">
+              <h2 id="admHdActivity">Recent Activity</h2>
+              <div id="admActivityList"></div>
+            </div>
+          </div>
+
+          <!-- USERS -->
+          <div class="adm-panel" id="admPanel-users">
+            <div class="adm-panel-header">
+              <h2 id="admHdUsers">Users</h2>
+              <input type="text" id="admUserSearch" placeholder="Search..." oninput="admRenderUsers()" class="adm-search">
+            </div>
+            <div class="adm-chips" id="admUserChips"></div>
+            <div id="admUsersList"></div>
+          </div>
+
+          <!-- CAMPAIGNS -->
+          <div class="adm-panel" id="admPanel-campaigns">
+            <div class="adm-panel-header">
+              <h2 id="admHdCamps">Campaigns</h2>
+              <input type="text" id="admCampSearch" placeholder="Search..." oninput="admRenderCampaigns()" class="adm-search">
+            </div>
+            <div class="adm-chips" id="admCampChips"></div>
+            <div id="admCampsList"></div>
+          </div>
+
+          <!-- PARTNERS -->
+          <div class="adm-panel" id="admPanel-partners">
+            <div class="adm-panel-header">
+              <h2 id="admHdPartners">Partners</h2>
+              <input type="text" id="admPartnerSearch" placeholder="Search..." oninput="admRenderPartners()" class="adm-search">
+            </div>
+            <div id="admPartnersList"></div>
+          </div>
+
+          <!-- ANALYTICS -->
+          <div class="adm-panel" id="admPanel-analytics">
+            <div class="adm-panel-header"><h2 id="admHdAnalytics">Analytics</h2></div>
+            <div class="adm-card">
+              <h2 id="admHdCats">Campaigns by Category</h2>
+              <div id="admChartCats"></div>
+            </div>
+            <div class="adm-card">
+              <h2 id="admHdTop">Top Volunteers</h2>
+              <div id="admLeaderboard"></div>
+            </div>
+            <div class="adm-card">
+              <h2 id="admHdCities">Volunteers by City</h2>
+              <div id="admChartCities"></div>
+            </div>
+          </div>
+
+          <!-- NOTIFICATIONS -->
+          <div class="adm-panel" id="admPanel-notifications">
+            <div class="adm-panel-header"><h2 id="admHdNotifs">Notifications</h2></div>
+            <div id="admNotifsList"></div>
+          </div>
+
+        </div>
+      </main>
+
+      <!-- ADMIN MODAL -->
+      <div class="adm-modal-backdrop" id="admModal" onclick="if(event.target===this)admCloseModal()">
+        <div class="adm-modal">
+          <button class="adm-modal-close" onclick="admCloseModal()">✕</button>
+          <div class="adm-modal-body" id="admModalContent"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- CAMPAIGN DETAIL -->
+  <div class="page" id="detailPage" style="background:var(--warm-white);">
+    <div class="detail-hero" id="detailHero">
+      <div class="detail-hero-overlay"></div>
+      <button class="detail-back" onclick="goBack()" id="detailBackBtn">‹</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-cat" id="dCat"></div>
+      <div class="detail-title" id="dTitle"></div>
+      <div class="detail-desc" id="dDesc"></div>
+      <div class="detail-info-grid">
+        <div class="detail-info-card">
+          <div class="detail-info-label" data-i18n="dateLabel"></div>
+          <div class="detail-info-value" id="dDate"></div>
+        </div>
+        <div class="detail-info-card">
+          <div class="detail-info-label" data-i18n="locationLabel"></div>
+          <div class="detail-info-value" id="dLoc"></div>
+        </div>
+        <div class="detail-info-card">
+          <div class="detail-info-label" data-i18n="volLabel"></div>
+          <div class="detail-info-value" id="dVol"></div>
+        </div>
+        <div class="detail-info-card">
+          <div class="detail-info-label" data-i18n="organizerLabel"></div>
+          <div class="detail-info-value" id="dOrg"></div>
+        </div>
+      </div>
+      <div class="detail-progress-card">
+        <div class="detail-progress-header">
+          <div class="detail-progress-label" data-i18n="progress"></div>
+          <div class="detail-progress-pct" id="dPct"></div>
+        </div>
+        <div class="prog-track"><div class="prog-fill" id="dBar"></div></div>
+        <div class="prog-label" id="dVolCount" style="margin-top:0.35rem;"></div>
+      </div>
+      <div class="detail-info-card" style="margin-bottom:1.5rem;">
+        <div class="detail-info-label" data-i18n="contactLabel"></div>
+        <div class="detail-info-value" id="dPhone" style="color:var(--olive);"></div>
+      </div>
+      <button class="detail-join-btn" id="dJoinBtn"></button>
+    </div>
+  </div>
+
+</div><!-- /appScreen -->
+
+<!-- ═══════════════════════════════════
+     BOTTOM NAV
+     ═══════════════════════════════════ -->
+<div class="bottom-nav" id="bottomNav">
+  <div class="bottom-nav-inner">
+    <button class="nav-btn active" id="nav-home" onclick="goPage('home')">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      <span class="nav-btn-text" data-i18n="navHome"></span>
+    </button>
+    <button class="nav-btn" id="nav-explore" onclick="goPage('explore')">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="nav-btn-text" data-i18n="navExplore"></span>
+    </button>
+    <button class="nav-btn" id="nav-create" onclick="goPage('create')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      <span class="nav-btn-text" data-i18n="navCreate"></span>
+    </button>
+    <button class="nav-btn" id="nav-profile" onclick="goPage('profile')">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-btn-text" data-i18n="navProfile"></span>
+    </button>
+    <button class="nav-btn" id="nav-about" onclick="goPage('about')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <span class="nav-btn-text" data-i18n="navAbout"></span>
+    </button>
+    <button class="nav-btn" id="nav-admin" style="display:none;" onclick="goPage('admin')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      <span class="nav-btn-text" data-i18n="navAdmin"></span>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     MODALS
+     ═══════════════════════════════════ -->
+<div class="modal-overlay" id="signupModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" data-i18n="signupTitle"></div>
+    <form onsubmit="doSignup(event)">
+      <div class="field-row">
+        <div class="field"><label data-i18n="fullName"></label><input name="name" type="text" required></div>
+        <div class="field"><label data-i18n="phone"></label><input name="phone" type="tel" required></div>
+      </div>
+      <div class="field"><label data-i18n="email"></label><input name="email" type="email" required></div>
+      <div class="field"><label data-i18n="password"></label><input name="password" type="password" minlength="6" required></div>
+      <div class="field-row">
+        <div class="field">
+          <label data-i18n="country"></label>
+          <select name="country" required>
+            <option value=""></option>
+            <option value="Syria" data-i18n-opt="countrySy"></option>
+            <option value="Lebanon" data-i18n-opt="countryLb"></option>
+            <option value="Jordan" data-i18n-opt="countryJo"></option>
+            <option value="Palestine" data-i18n-opt="countryPs"></option>
+          </select>
+        </div>
+        <div class="field"><label data-i18n="city"></label><input name="city" type="text" required></div>
+      </div>
+      <div class="field"><label data-i18n="dob"></label><input name="dob" type="date" required></div>
+      <div class="field"><label data-i18n="profilePic"></label><input name="profilePic" type="file" accept="image/*"></div>
+      <div class="field"><label data-i18n="idPhoto"></label><input name="idPhoto" type="file" accept="image/*" required></div>
+      <div class="field"><label data-i18n="specialNeeds"></label><textarea name="special"></textarea></div>
+      <button type="submit" class="submit-btn" data-i18n="signupBtn"></button>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="loginModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" data-i18n="loginTitle"></div>
+    <form onsubmit="doLogin(event)">
+      <div class="field"><label data-i18n="email"></label><input name="email" type="email" required></div>
+      <div class="field"><label data-i18n="password"></label><input name="password" type="password" required></div>
+      <button type="submit" class="submit-btn" data-i18n="loginBtn2"></button>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="createModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" data-i18n="newInitiative"></div>
+    <form onsubmit="doCreate(event)">
+      <div class="field">
+        <label data-i18n="campTitleLabel"></label>
+        <input name="title" type="text" placeholder="مثال: تشجير بساحة الأمويين" required style="color:#666;font-weight:500;">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label data-i18n="categoryLabel"></label>
+          <select name="category" required>
+            <option value="">اختر الفئة</option>
+            <option value="cleaning">تنظيف</option>
+            <option value="planting">تشجير</option>
+            <option value="improvement">تحسين</option>
+            <option value="support">دعم</option>
+            <option value="education">تعليم</option>
+            <option value="event">فعالية</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-i18n="dateLabel"></label>
+          <input name="date" type="date" id="campDate" required>
+        </div>
+      </div>
+      <div class="field">
+        <label>الموقع بالتحديد</label>
+        <input name="location" type="text" placeholder="مثال: ساحة الأمويين - دمشق" required>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>عدد المتطوعين لإنجاز الحملة</label>
+          <input name="needed" type="number" min="1" placeholder="20" required>
+        </div>
+        <div class="field">
+          <label>عدد الساعات المطلوب لإنجاز الحملة</label>
+          <input name="hours" type="number" min="0.5" step="0.5" placeholder="4" required>
+        </div>
+      </div>
+      <div class="field">
+        <label data-i18n="description"></label>
+        <textarea name="desc" placeholder="اشرح الحملة بالتفصيل..."></textarea>
+      </div>
+      <div class="field">
+        <label data-i18n="campImg"></label>
+        <input name="img" type="file" accept="image/*">
+      </div>
+      <button type="submit" class="submit-btn" data-i18n="publishBtn"></button>
+    </form>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ████████████████████████████████████████████████████
+   ATHAR PLATFORM — Production JS v3.0
+   Architecture: Modular | Strict | Validated
+   Sections:
+     1. CONSTANTS & CONFIG
+     2. TRANSLATIONS
+     3. VALIDATORS
+     4. DATABASE (Persistence Layer)
+     5. MODELS (Data Schemas)
+     6. STATE MANAGEMENT
+     7. SERVICES (Business Logic)
+     8. UI HELPERS
+     9. RENDER FUNCTIONS
+    10. NAVIGATION
+    11. EVENT HANDLERS
+    12. INITIALIZATION
+   ████████████████████████████████████████████████████ */
+
+/* ══════════════════════════════════════════
+   1. CONSTANTS & CONFIG
+   ══════════════════════════════════════════ */
+const CONFIG = {
+  ADMIN_EMAIL:    'admin@athar.sy',
+  ADMIN_PASS:     'Admin@Athar2024',
+  SCHEMA_VERSION: '3.0',
+  DB_KEYS: {
+    USERS:    'athar_users',
+    CAMPS:    'athar_camps',
+    PARTNERS: 'athar_partners',
+    SESSION:  'athar_session',
+    VERSION:  'athar_version'
+  },
+  CAMP_CATEGORIES: {
+    cleaning:    { ar: 'تنظيف',   en: 'Cleaning'    },
+    planting:    { ar: 'تشجير',   en: 'Planting'    },
+    improvement: { ar: 'تحسين',   en: 'Improvement' },
+    support:     { ar: 'دعم',     en: 'Support'     },
+    education:   { ar: 'تعليم',   en: 'Education'   },
+    event:       { ar: 'فعالية',  en: 'Event'       }
+  },
+  CAMP_STATUS: {
+    pending:       { ar: 'قيد المراجعة', en: 'Under Review',   cls: 'status-pending'  },
+    approved:      { ar: 'قيد التنفيذ',  en: 'In Progress',    cls: 'status-approved' },
+    under_process: { ar: 'قيد التنفيذ',  en: 'In Progress',    cls: 'status-approved' },
+    done:          { ar: 'تم انجازها',   en: 'Completed',      cls: 'status-done'     },
+    rejected:      { ar: 'مرفوضة',       en: 'Rejected',       cls: 'status-rejected' }
+  },
+  USER_STATUS: {
+    pending:  { ar: 'قيد المراجعة', en: 'Pending Review' },
+    approved: { ar: 'مفعّل',        en: 'Active'         },
+    rejected: { ar: 'مرفوض',        en: 'Rejected'       }
+  }
+};
+
+/* ══════════════════════════════════════════
+   2. TRANSLATIONS
+   ══════════════════════════════════════════ */
+const T = {
+  ar: {
+    tagline: 'أثر يبدأ بخطوة',
+    joinCta: 'انضم لنصنع أَثَرْ',
+    loginCta: 'تسجيل الدخول',
+    logout: 'خروج',
+    eyebrow: 'حركة شبابية مجتمعية',
+    heroLine1: 'معاً  نصنع',
+    heroLine2: 'أثراً  حقيقياً',
+    heroSub: 'منصة تجمع الشباب لتنظيم مبادرات محلية حقيقية وإحداث تغيير ملموس في مجتمعاتنا.',
+    heroCta1: 'استكشف الحملات',
+    heroCta2: 'انضم الآن ›',
+    statVol: 'متطوع نشيط', statCamps: 'حملة منجزة', statHours: 'ساعة تطوع', statCities: 'مدينة',
+    availCamps: 'الحملات المتاحة', seeAll: 'شاهد الكل',
+    explorTitle: 'الحملات', explorSub: 'جميع المبادرات والفرص التطوعية',
+    createTitle: 'ابدأ مبادرتك', createSub: 'لديك فكرة؟ نظّم حملتك وادعُ المجتمع.', createBtn: '+ إنشاء حملة',
+    myCamps: 'حملاتي',
+    changePic: 'تغيير الصورة',
+    activities: 'الأنشطة', achievements: 'الإنجازات',
+    menuInfo: 'المعلومات الشخصية', menuInfoSub: 'الاسم، البريد، الهاتف',
+    menuId: 'صورة الهوية', menuIdSub: 'عرض وتحميل',
+    menuCamps: 'حملاتي', menuCampsSub: 'الحملات وحالتها',
+    menuHours: 'سجل الساعات', menuHoursSub: 'تفاصيل مشاركاتك',
+    aboutTitle1: 'مجتمع يترك', aboutTitle2: 'أثرًا حقيقيًا',
+    aboutHeroSub: 'أَثَرْ ليس مجرد تطبيق. هو مجتمع شبابي يؤمن بأن التغيير يبدأ بخطوة واحدة.',
+    missionLabel: 'رسالتنا', missionText: 'أَثَرْ منصة مجتمعية شبابية تجمع الشباب لإحداث تغيير حقيقي ومستدام من خلال التطوع والمبادرات المحلية المنظمة والآمنة.',
+    visionLabel: 'رؤيتنا', visionText: 'مجتمع شبابي فعّال يترك أثرًا واضحًا ويخلق بيئة أفضل بأيدي الناس أنفسهم.',
+    valuesLabel: 'قيمنا', valuesText: 'الشفافية • التعاون • التأثير الحقيقي • الأمان',
+    partnerTitle: 'لنصنع أثرًا حقيقيًا معًا', partnerSub: 'إذا كنت تؤمن بأن التغيير المجتمعي يبدأ بالشباب، كن شريك الأثر وادعم حملاتنا الهادفة.',
+    partnerFormTitle: 'كن شريك الأثر', partnerFormSub: 'شارك معنا رؤيتك — سنتواصل معك لنبدأ معًا.',
+    orgName: 'اسم الجهة', contactPerson: 'المسؤول عن التواصل',
+    email: 'البريد الإلكتروني', phone: 'رقم الهاتف',
+    orgType: 'نوع الجهة', typeGov: 'حكومية / عامة', typePriv: 'خاصة / شركة', typeNgo: 'منظمة / جمعية', typeInd: 'فرد / مبادر',
+    message: 'رسالتك', sendRequest: 'أرسل طلبك',
+    adminTitle: 'لوحة الإدارة', adminSub: 'إدارة الحسابات والحملات والشراكات',
+    tabAccounts: 'الحسابات', tabCamps: 'الحملات', tabPartners: 'الشراكات',
+    navHome: 'الرئيسية', navExplore: 'استكشف', navCreate: 'إنشاء', navProfile: 'الملف', navAbout: 'عنا', navAdmin: 'إدارة',
+    signupTitle: 'انضم لأَثَرْ', signupBtn: 'انضم الآن',
+    loginTitle: 'مرحبًا بعودتك', loginBtn2: 'دخول',
+    fullName: 'الاسم الثلاثي', password: 'كلمة المرور', country: 'الدولة', city: 'المدينة',
+    dob: 'تاريخ الميلاد', profilePic: 'صورة شخصية (اختياري)', idPhoto: 'صورة الهوية — وجهين',
+    specialNeeds: 'احتياجات خاصة (اختياري)',
+    countrySy: 'سوريا', countryLb: 'لبنان', countryJo: 'الأردن', countryPs: 'فلسطين',
+    newInitiative: 'مبادرة جديدة',
+    campTitleLabel: 'عنوان المبادرة', categoryLabel: 'الفئة', dateLabel: 'التاريخ',
+    locationLabel: 'الموقع', volNeeded: 'عدد المتطوعين المطلوب', hoursPerVol: 'عدد الساعات لكل متطوع', description: 'الوصف',
+    campImg: 'صورة المبادرة (اختياري)', publishBtn: 'أرسل المبادرة',
+    catClean: 'تنظيف', catPlant: 'تشجير', catImprove: 'تحسين', catSupport: 'دعم', catEdu: 'تعليم',
+    volLabel: 'المتطوعون', organizerLabel: 'المنظم', progress: 'التقدم', contactLabel: 'للتواصل',
+    sApproved: 'متاحة', sPending: 'قيد المراجعة', sRejected: 'مرفوضة', sDone: 'منتهية',
+    joinBtn: 'انضمام', joinedBtn: '✓ منضم', unavailBtn: 'غير متاح',
+    pendingBanner: '⏳ حسابك قيد المراجعة — بانتظار موافقة المسؤول',
+    approvedBanner: '✓ حسابك مفعّل — مرحبًا بك في أَثَرْ',
+    rejectedBanner: '✕ تم رفض حسابك — تواصل مع المسؤول',
+    noData: 'لا توجد بيانات بعد',
+    downloadId: '⬇️ تحميل الصورة',
+    approveBtn: '✓ قبول', rejectBtn: 'رفض',
+    pendingAccounts: 'طلبات الحسابات', pendingCamps: 'طلبات الحملات', partnerRequests: 'طلبات الشراكة',
+    complete: 'مكتمل', of: 'من',
+    successSent: '✓ تم الإرسال بنجاح!', successJoined: '✓ انضممت!',
+    successAccount: '✓ تم إنشاء حسابك!',
+    errorEmail: 'البريد الإلكتروني مستخدم مسبقاً',
+    errorPhone: 'رقم الهاتف مستخدم مسبقاً',
+    errorLogin: 'بيانات الدخول غير صحيحة',
+    errorStatus: 'حسابك لا يزال قيد المراجعة',
+    errorRequired: 'هذا الحقل مطلوب',
+    errorEmailFormat: 'صيغة البريد الإلكتروني غير صحيحة',
+    errorPasswordLength: 'كلمة المرور يجب أن تكون 8 أحرف على الأقل',
+    errorNameLength: 'الاسم يجب أن يكون حرفين على الأقل',
+    approved: 'تم القبول', rejected: 'تم الرفض',
+    allCamps: 'جميع الحملات',
+    campFull: 'هذه الحملة امتلأت',
+    campDone: 'هذه الحملة منتهية',
+    campUnavailable: 'هذه الحملة غير متاحة للانضمام',
+    uploadError: 'خطأ في تحميل الصورة',
+    photoUpdated: '✓ تم تحديث الصورة',
+    campStatusUpdated: '✓ تم تحديث حالة الحملة',
+    campDoneMsg: '✓ تم إنهاء الحملة بنجاح',
+    campCreated: 'تم إنشاء الحملة',
+    campPending: '⏳ تم إرسال حملتك — قيد المراجعة',
+  },
+  en: {
+    tagline: 'Impact starts with a step',
+    joinCta: 'Join us to make ATHAR',
+    loginCta: 'Sign In',
+    logout: 'Logout',
+    eyebrow: 'Youth Community Movement',
+    heroLine1: 'Together we create',
+    heroLine2: 'real impact',
+    heroSub: 'A platform uniting young people to organize real local initiatives and create tangible change in our communities.',
+    heroCta1: 'Explore Campaigns',
+    heroCta2: 'Join Now ›',
+    statVol: 'Active Volunteers', statCamps: 'Campaigns Done', statHours: 'Volunteer Hours', statCities: 'Cities',
+    availCamps: 'Available Campaigns', seeAll: 'See All',
+    explorTitle: 'Campaigns', explorSub: 'All initiatives and volunteering opportunities',
+    createTitle: 'Start an Initiative', createSub: 'Have an idea? Organize your campaign and invite the community.', createBtn: '+ Create Campaign',
+    myCamps: 'My Campaigns',
+    changePic: 'Change Photo',
+    activities: 'Activities', achievements: 'Achievements',
+    menuInfo: 'Personal Info', menuInfoSub: 'Name, Email, Phone',
+    menuId: 'ID Photo', menuIdSub: 'View & Download',
+    menuCamps: 'My Campaigns', menuCampsSub: 'Campaigns & Status',
+    menuHours: 'Hours Log', menuHoursSub: 'Participation Details',
+    aboutTitle1: 'A community that leaves', aboutTitle2: 'real impact',
+    aboutHeroSub: 'ATHAR is not just an app. It is a youth community that believes change starts with one step.',
+    missionLabel: 'Our Mission', missionText: 'ATHAR is a youth community platform bringing people together to create real, sustainable change through organized and safe local volunteering initiatives.',
+    visionLabel: 'Our Vision', visionText: 'An active youth community that leaves a clear impact and creates a better environment through the hands of the people themselves.',
+    valuesLabel: 'Our Values', valuesText: 'Transparency • Collaboration • Real Impact • Safety',
+    partnerTitle: "Let's create real impact together", partnerSub: 'If you believe community change starts with youth, become an ATHAR partner and support our campaigns.',
+    partnerFormTitle: 'Become an ATHAR Partner', partnerFormSub: 'Share your vision with us — we will reach out to start together.',
+    orgName: 'Organization Name', contactPerson: 'Contact Person',
+    email: 'Email Address', phone: 'Phone Number',
+    orgType: 'Organization Type', typeGov: 'Government / Public', typePriv: 'Private / Company', typeNgo: 'NGO / Association', typeInd: 'Individual / Founder',
+    message: 'Your Message', sendRequest: 'Send Request',
+    adminTitle: 'Admin Panel', adminSub: 'Manage accounts, campaigns and partnerships',
+    tabAccounts: 'Accounts', tabCamps: 'Campaigns', tabPartners: 'Partnerships',
+    navHome: 'Home', navExplore: 'Explore', navCreate: 'Create', navProfile: 'Profile', navAbout: 'About', navAdmin: 'Admin',
+    signupTitle: 'Join ATHAR', signupBtn: 'Join Now',
+    loginTitle: 'Welcome Back', loginBtn2: 'Sign In',
+    fullName: 'Full Name', password: 'Password', country: 'Country', city: 'City',
+    dob: 'Date of Birth', profilePic: 'Profile Photo (Optional)', idPhoto: 'ID Photo — Both Sides',
+    specialNeeds: 'Special Needs (Optional)',
+    countrySy: 'Syria', countryLb: 'Lebanon', countryJo: 'Jordan', countryPs: 'Palestine',
+    newInitiative: 'New Initiative',
+    campTitleLabel: 'Initiative Title', categoryLabel: 'Category', dateLabel: 'Date',
+    locationLabel: 'Location', volNeeded: 'Volunteers Needed', hoursPerVol: 'Volunteer Hours per Person', description: 'Description',
+    campImg: 'Campaign Image (Optional)', publishBtn: 'Submit Initiative',
+    catClean: 'Cleaning', catPlant: 'Planting', catImprove: 'Improvement', catSupport: 'Support', catEdu: 'Education',
+    volLabel: 'Volunteers', organizerLabel: 'Organizer', progress: 'Progress', contactLabel: 'Contact',
+    sApproved: 'Available', sPending: 'Under Review', sRejected: 'Rejected', sDone: 'Completed',
+    joinBtn: 'Join', joinedBtn: '✓ Joined', unavailBtn: 'Unavailable',
+    pendingBanner: '⏳ Your account is under review — awaiting admin approval',
+    approvedBanner: '✓ Your account is active — welcome to ATHAR',
+    rejectedBanner: '✕ Your account was rejected — contact the admin',
+    noData: 'No data yet',
+    downloadId: '⬇️ Download Photo',
+    approveBtn: '✓ Approve', rejectBtn: 'Reject',
+    pendingAccounts: 'Pending Accounts', pendingCamps: 'Pending Campaigns', partnerRequests: 'Partnership Requests',
+    complete: 'complete', of: 'of',
+    successSent: '✓ Sent successfully!', successJoined: '✓ Joined!',
+    successAccount: '✓ Account created!',
+    errorEmail: 'Email already in use',
+    errorPhone: 'Phone number already in use',
+    errorLogin: 'Invalid credentials',
+    errorStatus: 'Your account is still under review',
+    errorRequired: 'This field is required',
+    errorEmailFormat: 'Invalid email format',
+    errorPasswordLength: 'Password must be at least 8 characters',
+    errorNameLength: 'Name must be at least 2 characters',
+    approved: 'Approved', rejected: 'Rejected',
+    allCamps: 'All Campaigns',
+    campFull: 'This campaign is full',
+    campDone: 'This campaign has ended',
+    campUnavailable: 'This campaign is unavailable',
+    uploadError: 'Upload error',
+    photoUpdated: '✓ Photo updated',
+    campStatusUpdated: '✓ Campaign status updated',
+    campDoneMsg: '✓ Campaign marked as done',
+    campCreated: 'Campaign created',
+    campPending: '⏳ Campaign submitted — pending review',
+  }
+};
+
+/* ══════════════════════════════════════════
+   3. VALIDATORS
+   ══════════════════════════════════════════ */
+const Validators = {
+  /** Check email format (RFC 5322) */
+  isEmail(v) {
+    return typeof v === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+  },
+  /** Check phone — allows digits, spaces, dashes, plus */
+  isPhone(v) {
+    return !v || /^\+?[\d\s\-\(\)]{7,}$/.test(v.trim());
+  },
+  /** Non-empty string after trim */
+  isRequired(v) {
+    return v !== null && v !== undefined && String(v).trim().length > 0;
+  },
+  /** Password: 8+ characters */
+  isPassword(v) {
+    return typeof v === 'string' && v.length >= 8;
+  },
+  /** Name: 2–100 characters */
+  isName(v) {
+    return typeof v === 'string' && v.trim().length >= 2 && v.trim().length <= 100;
+  },
+  /** Positive integer */
+  isPositiveInt(v) {
+    const n = parseInt(v);
+    return !isNaN(n) && n >= 1;
+  },
+  /** Valid campaign category key */
+  isCampCategory(v) {
+    return Object.keys(CONFIG.CAMP_CATEGORIES).includes(v);
+  },
+  /** Valid sponsor type */
+  isSponsorType(v) {
+    return ['gov','private','ngo','individual'].includes(v);
+  },
+
+  /** Validate full signup form — returns { valid, errors:{field:msg} } */
+  signup(data) {
+    const errors = {};
+    if (!this.isName(data.name))      errors.name     = t('errorNameLength');
+    if (!this.isEmail(data.email))    errors.email    = t('errorEmailFormat');
+    if (!this.isPassword(data.password)) errors.password = t('errorPasswordLength');
+    if (!this.isRequired(data.phone)) errors.phone    = t('errorRequired');
+    if (!this.isRequired(data.country)) errors.country = t('errorRequired');
+    if (!this.isRequired(data.city))  errors.city     = t('errorRequired');
+    return { valid: Object.keys(errors).length === 0, errors };
+  },
+
+  /** Validate login form */
+  login(data) {
+    const errors = {};
+    if (!this.isRequired(data.identifier)) errors.identifier = t('errorRequired');
+    if (!this.isRequired(data.password))   errors.password   = t('errorRequired');
+    return { valid: Object.keys(errors).length === 0, errors };
+  },
+
+  /** Validate campaign creation form */
+  campaign(data) {
+    const errors = {};
+    if (!this.isRequired(data.title))       errors.title    = t('errorRequired');
+    if (!this.isCampCategory(data.category)) errors.category = t('errorRequired');
+    if (!this.isRequired(data.location))    errors.location = t('errorRequired');
+    if (!this.isRequired(data.date))        errors.date     = t('errorRequired');
+    if (!this.isPositiveInt(data.needed))   errors.needed   = t('errorRequired');
+    return { valid: Object.keys(errors).length === 0, errors };
+  },
+
+  /** Validate partner request form */
+  partner(data) {
+    const errors = {};
+    if (!this.isRequired(data.org))      errors.org     = t('errorRequired');
+    if (!this.isRequired(data.contact))  errors.contact = t('errorRequired');
+    if (!this.isEmail(data.email))       errors.email   = t('errorEmailFormat');
+    if (!this.isRequired(data.phone))    errors.phone   = t('errorRequired');
+    if (!this.isSponsorType(data.type))  errors.type    = t('errorRequired');
+    if (!this.isRequired(data.msg))      errors.msg     = t('errorRequired');
+    return { valid: Object.keys(errors).length === 0, errors };
+  }
+};
+
+/* ══════════════════════════════════════════
+   4. DATABASE (Persistence Layer)
+   ══════════════════════════════════════════ */
+const DB = {
+  get(key) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      console.error('[DB.get] Failed to parse key:', key, e);
+      return [];
+    }
+  },
+  getObj(key) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (e) {
+      console.error('[DB.getObj] Failed to parse key:', key, e);
+      return null;
+    }
+  },
+  set(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (e) {
+      console.error('[DB.set] Failed to save key:', key, e);
+      return false;
+    }
+  },
+  setObj(key, value) {
+    return this.set(key, value);
+  },
+  remove(key) {
+    try { localStorage.removeItem(key); return true; }
+    catch (e) { return false; }
+  }
+};
+
+/* ══════════════════════════════════════════
+   5. MODELS (Default Shapes & Factories)
+   ══════════════════════════════════════════ */
+const Models = {
+  /** Create a valid User object from partial data */
+  createUser(data) {
+    return {
+      id:              'u' + Date.now() + Math.random().toString(36).slice(2,6),
+      name:            String(data.name   || '').trim(),
+      email:           String(data.email  || '').toLowerCase().trim(),
+      password:        String(data.password || ''),
+      phone:           String(data.phone  || '').trim(),
+      country:         String(data.country || '').trim(),
+      city:            String(data.city   || '').trim(),
+      dob:             String(data.dob    || '').trim(),
+      special:         String(data.special || '').trim(),
+      profilePic:      data.profilePic || null,
+      idPhoto:         data.idPhoto    || null,
+      status:          'pending',
+      volunteerHours:  0,
+      activitiesJoined:0,
+      achievements:    0,
+      joinedCamps:     [],
+      campHours:       {},
+      createdAt:       new Date().toISOString(),
+      updatedAt:       new Date().toISOString()
+    };
+  },
+
+  /** Create a valid Campaign object from partial data */
+  createCampaign(data, createdBy, isAdminCreate) {
+    const catKey = data.category || 'cleaning';
+    const catAr  = CONFIG.CAMP_CATEGORIES[catKey]?.ar || catKey;
+    const catEn  = CONFIG.CAMP_CATEGORIES[catKey]?.en || catKey;
+    const title  = String(data.title || '').trim();
+    const desc   = String(data.desc  || '').trim();
+    return {
+      id:           'c' + Date.now() + Math.random().toString(36).slice(2,6),
+      ar:           { title, desc, cat: catAr },
+      en:           { title, desc, cat: catEn },
+      category:     catKey,
+      location:     String(data.location || '').trim(),
+      date:         String(data.date     || '').trim(),
+      needed:       Math.max(1, parseInt(data.needed) || 1),
+      volunteers:   0,
+      volunteerHours: Math.max(0.5, parseFloat(data.hours) || 2),
+      status:       isAdminCreate ? 'approved' : 'pending',
+      createdBy:    createdBy.id,
+      creatorName:  String(createdBy.name  || '').trim(),
+      creatorPhone: String(createdBy.phone || '').trim(),
+      img:          data.img || null,
+      joinedUsers:  [],
+      campHours:    {},
+      createdAt:    new Date().toISOString(),
+      updatedAt:    new Date().toISOString()
+    };
+  },
+
+  /** Create a valid Partner request */
+  createPartner(data) {
+    return {
+      id:      'p' + Date.now(),
+      org:     String(data.org     || '').trim(),
+      contact: String(data.contact || '').trim(),
+      email:   String(data.email   || '').toLowerCase().trim(),
+      phone:   String(data.phone   || '').trim(),
+      type:    String(data.type    || 'ngo').trim(),
+      msg:     String(data.msg     || '').trim(),
+      status:  'pending',
+      date:    new Date().toISOString()
+    };
+  },
+
+  /** Safely get text from campaign for current language */
+  getCampText(c) {
+    if (!c) return { title: 'Campaign', desc: '', cat: 'مبادرة' };
+    const obj = c[State.lang] || c.ar || c.en;
+    if (obj && obj.title) return obj;
+    return {
+      title: c.title || 'Campaign',
+      desc:  c.desc  || '',
+      cat:   c.category || 'مبادرة'
+    };
+  },
+
+  /** Get status display info */
+  getStatusInfo(status) {
+    return CONFIG.CAMP_STATUS[status] || CONFIG.CAMP_STATUS.pending;
+  }
+};
+
+/* ══════════════════════════════════════════
+   6. STATE MANAGEMENT
+   ══════════════════════════════════════════ */
+const State = {
+  lang:     'ar',
+  cu:       null,   // current user
+  isAdmin:  false,
+  prevPage: 'home',
+  currentPage: 'home',
+  detailCampId: null,
+  activeAdminTab: 'accounts',
+
+  setLang(newLang) {
+    this.lang = (newLang === 'en') ? 'en' : 'ar';
+  },
+  setUser(user) {
+    this.cu = user;
+    this.isAdmin = (user && user.email === CONFIG.ADMIN_EMAIL);
+  },
+  setPage(name) {
+    this.prevPage = this.currentPage;
+    this.currentPage = name;
+  }
+};
+
+/* Shorthand translation using State.lang */
+const t = k => (T[State.lang] && T[State.lang][k]) ? T[State.lang][k] : k;
+
+/* ══════════════════════════════════════════
+   7. SERVICES (Business Logic)
+   ══════════════════════════════════════════ */
+const UserService = {
+  getAll() { return DB.get(CONFIG.DB_KEYS.USERS); },
+
+  getById(id) {
+    if (!id) return null;
+    return this.getAll().find(u => u.id === id) || null;
+  },
+
+  getByEmail(email) {
+    if (!email) return null;
+    const lower = email.toLowerCase().trim();
+    return this.getAll().find(u => u.email === lower) || null;
+  },
+
+  getByPhone(phone) {
+    if (!phone) return null;
+    return this.getAll().find(u => u.phone === phone.trim()) || null;
+  },
+
+  save(users) { return DB.set(CONFIG.DB_KEYS.USERS, users); },
+
+  updateById(id, changes) {
+    const users = this.getAll();
+    const idx = users.findIndex(u => u.id === id);
+    if (idx === -1) return false;
+    users[idx] = { ...users[idx], ...changes, updatedAt: new Date().toISOString() };
+    this.save(users);
+    // Keep session in sync
+    if (State.cu && State.cu.id === id) {
+      State.setUser(users[idx]);
+      DB.setObj(CONFIG.DB_KEYS.SESSION, users[idx]);
+    }
+    return users[idx];
+  },
+
+  approve(id) { return this.updateById(id, { status: 'approved', joinedDate: new Date().toISOString() }); },
+  reject(id)  { return this.updateById(id, { status: 'rejected' }); }
+};
+
+const CampaignService = {
+  getAll()   { return DB.get(CONFIG.DB_KEYS.CAMPS); },
+
+  getById(id) {
+    if (!id) return null;
+    return this.getAll().find(c => c.id === id) || null;
+  },
+
+  /** Get visible campaigns (approved, under_process, done, OR created by current user) */
+  getVisible() {
+    return this.getAll().filter(c =>
+      c.status === 'approved' ||
+      c.status === 'under_process' ||
+      c.status === 'done' ||
+      (State.cu && c.createdBy === State.cu.id)
+    );
+  },
+
+  save(camps) { return DB.set(CONFIG.DB_KEYS.CAMPS, camps); },
+
+  add(camp) {
+    const camps = this.getAll();
+    camps.unshift(camp);
+    return this.save(camps);
+  },
+
+  updateById(id, changes) {
+    const camps = this.getAll();
+    const idx = camps.findIndex(c => c.id === id);
+    if (idx === -1) return false;
+    camps[idx] = { ...camps[idx], ...changes, updatedAt: new Date().toISOString() };
+    this.save(camps);
+    return camps[idx];
+  },
+
+  approve(id)       { return this.updateById(id, { status: 'approved' }); },
+  reject(id)        { return this.updateById(id, { status: 'rejected' }); },
+  markUnderProcess(id) { return this.updateById(id, { status: 'under_process' }); },
+  markDone(id)      {
+    const camp = this.getById(id);
+    if (!camp) return false;
+    // Grant achievements to all joined users
+    const users = UserService.getAll();
+    (camp.joinedUsers || []).forEach(uid => {
+      const idx = users.findIndex(u => u.id === uid);
+      if (idx !== -1) {
+        users[idx].achievements = (users[idx].achievements || 0) + 1;
+        users[idx].updatedAt = new Date().toISOString();
+      }
+    });
+    DB.set(CONFIG.DB_KEYS.USERS, users);
+    return this.updateById(id, { status: 'done', completedAt: new Date().toISOString() });
+  },
+
+  /** Join a campaign — returns { success, message } */
+  join(campId, user) {
+    if (!user) return { success: false, message: t('errorLogin') };
+    if (user.status !== 'approved') return { success: false, message: t('errorStatus') };
+
+    const camps = this.getAll();
+    const ci = camps.findIndex(c => c.id === campId);
+    if (ci === -1) return { success: false, message: 'Campaign not found' };
+
+    const camp = camps[ci];
+    if ((camp.joinedUsers || []).includes(user.id)) return { success: false, message: t('joinedBtn') };
+    if (camp.status === 'done')     return { success: false, message: t('campDone') };
+    if (camp.status === 'rejected') return { success: false, message: t('campUnavailable') };
+    if (camp.status === 'pending')  return { success: false, message: t('campUnavailable') };
+    if (camp.volunteers >= camp.needed) return { success: false, message: t('campFull') };
+
+    // Update campaign
+    camps[ci].volunteers = (camps[ci].volunteers || 0) + 1;
+    camps[ci].joinedUsers = [...(camps[ci].joinedUsers || []), user.id];
+    if (camps[ci].volunteers >= camps[ci].needed) {
+      camps[ci].status = 'under_process';
+    }
+    camps[ci].updatedAt = new Date().toISOString();
+    this.save(camps);
+
+    // Update user
+    const hours = camp.volunteerHours || 2;
+    const updated = UserService.updateById(user.id, {
+      volunteerHours:   (user.volunteerHours   || 0) + hours,
+      activitiesJoined: (user.activitiesJoined || 0) + 1,
+      joinedCamps:      [...(user.joinedCamps  || []), campId]
+    });
+
+    const msg = `✓ ${t('successJoined')} +${hours} ${State.lang === 'ar' ? 'ساعة' : 'hrs'}`;
+    return { success: true, message: msg, updatedUser: updated };
+  }
+};
+
+const PartnerService = {
+  getAll()    { return DB.get(CONFIG.DB_KEYS.PARTNERS); },
+  add(p)      {
+    const list = this.getAll();
+    list.unshift(p);
+    return DB.set(CONFIG.DB_KEYS.PARTNERS, list);
+  }
+};
+
+/* ══════════════════════════════════════════
+   8. UI HELPERS
+   ══════════════════════════════════════════ */
+
+/** Show a toast notification */
+function toast(msg, type = 'success') {
+  // Remove existing toasts
+  document.querySelectorAll('.toast').forEach(el => el.remove());
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => { if (el.parentNode) el.remove(); }, 3200);
+}
+
+/** Set button loading state */
+function setLoading(btn, loading) {
+  if (!btn) return;
+  btn.disabled = loading;
+  if (loading) {
+    btn._origText = btn.textContent;
+    btn.textContent = State.lang === 'ar' ? '⏳ جاري...' : '⏳ Loading...';
+  } else {
+    btn.textContent = btn._origText || btn.textContent;
+  }
+}
+
+/** Show inline form error under a field */
+function showFieldError(form, fieldName, msg) {
+  if (!form) return;
+  const input = form.querySelector(`[name="${fieldName}"]`);
+  if (!input) return;
+  // Remove old error
+  const old = form.querySelector(`.field-err-${fieldName}`);
+  if (old) old.remove();
+  if (!msg) return;
+  const err = document.createElement('div');
+  err.className = `field-err field-err-${fieldName}`;
+  err.style.cssText = 'color:#c84c3c;font-size:0.75rem;margin-top:0.25rem;';
+  err.textContent = msg;
+  input.parentNode.insertBefore(err, input.nextSibling);
+  input.style.borderColor = '#c84c3c';
+}
+
+/** Clear all field errors in a form */
+function clearFieldErrors(form) {
+  if (!form) return;
+  form.querySelectorAll('.field-err').forEach(el => el.remove());
+  form.querySelectorAll('input, select, textarea').forEach(el => {
+    el.style.borderColor = '';
+  });
+}
+
+/** Convert file to base64 */
+function b64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload  = () => res(r.result);
+    r.onerror = () => rej(new Error('File read error'));
+    r.readAsDataURL(file);
+  });
+}
+
+/** Open image viewer overlay */
+function openImageViewer(src) {
+  if (!src) return;
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.95);display:flex;align-items:center;justify-content:center;z-index:9999;cursor:zoom-out;';
+  modal.innerHTML = `
+    <div style="position:relative;max-width:92vw;max-height:92vh;" onclick="event.stopPropagation()">
+      <img src="${src}" style="max-width:100%;max-height:88vh;object-fit:contain;border-radius:0.5rem;">
+      <button onclick="this.closest('[style*=fixed]').remove()" style="position:absolute;top:-1rem;right:-1rem;background:rgba(255,255,255,0.15);color:white;border:none;width:36px;height:36px;border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);">✕</button>
+    </div>`;
+  modal.onclick = () => modal.remove();
+  document.body.appendChild(modal);
+}
+
+/* ══════════════════════════════════════════
+   9. RENDER FUNCTIONS
+   ══════════════════════════════════════════ */
+
+/** Render a single campaign card HTML */
+function campCardHTML(c) {
+  try {
+    const joined = (State.cu?.joinedCamps || []).includes(c.id);
+    const txt    = Models.getCampText(c);
+    const pct    = c.needed ? Math.min(100, Math.round(((c.volunteers || 0) / c.needed) * 100)) : 0;
+    const si     = Models.getStatusInfo(c.status);
+    const fallbackColor = ['#3a4a28','#2d3a1e','#4a5a32','#1e2a14'][parseInt(String(c.id).slice(-1)) % 4] || '#3a4a28';
+    const title    = txt.title   || 'Campaign';
+    const desc     = txt.desc    || '';
+    const cat      = txt.cat     || 'مبادرة';
+    const location = c.location  || '';
+    const date     = c.date      || '';
+    const phone    = c.creatorPhone || '';
+    const vol      = c.volunteers   || 0;
+    const needed   = c.needed       || 0;
+
+    const imgHtml = c.img
+      ? `<img src="${c.img}" alt="${title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" onclick="event.stopPropagation();openImageViewer('${c.img}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        + `<div class="camp-img-fallback" style="display:none;background:${fallbackColor}">🌿</div>`
+      : `<div class="camp-img-fallback" style="background:${fallbackColor}">🌿</div>`;
+
+    let joinBtnHtml = '';
+    if (c.status === 'done') {
+      joinBtnHtml = `<button class="join-btn" disabled style="opacity:0.5;">✓ ${State.lang === 'ar' ? 'منتهية' : 'Ended'}</button>`;
+    } else if (c.status === 'rejected') {
+      joinBtnHtml = `<button class="join-btn" disabled style="opacity:0.5;background:#ef4444;">✕ ${State.lang === 'ar' ? 'مرفوضة' : 'Rejected'}</button>`;
+    } else if (vol >= needed && needed > 0) {
+      joinBtnHtml = `<button class="join-btn" disabled style="opacity:0.5;background:#f59e0b;">📋 ${State.lang === 'ar' ? 'امتلأت' : 'Full'}</button>`;
+    } else if (c.status === 'approved' || c.status === 'under_process') {
+      joinBtnHtml = `<button class="join-btn" onclick="event.stopPropagation();handleJoin('${c.id}')" ${joined ? 'disabled' : ''}>${joined ? t('joinedBtn') : t('joinBtn')}</button>`;
+    } else {
+      joinBtnHtml = `<button class="join-btn" disabled>${t('unavailBtn')}</button>`;
+    }
+
+    return `
+    <div class="camp-card" onclick="openDetail('${c.id}')">
+      <div class="camp-img">${imgHtml}<div class="camp-img-overlay"></div>
+        <span class="camp-badge camp-badge-status ${si.cls}">${si[State.lang]}</span>
+        <span class="camp-badge camp-badge-cat">${cat}</span>
+      </div>
+      <div class="camp-body">
+        <div class="camp-title">${title}</div>
+        <div class="camp-desc">${desc}</div>
+        <div class="camp-meta">
+          ${location ? `<div class="camp-meta-row"><div class="camp-meta-dot"></div>${location}</div>` : ''}
+          ${date     ? `<div class="camp-meta-row"><div class="camp-meta-dot"></div>${date}</div>`     : ''}
+          ${phone    ? `<div class="camp-meta-row"><div class="camp-meta-dot"></div>📞 ${phone}</div>` : ''}
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
+        <div class="prog-label">${vol} ${t('of')} ${needed}</div>
+        <div class="camp-footer">
+          <div class="camp-pct"><strong>${pct}%</strong> ${t('complete')}</div>
+          ${joinBtnHtml}
+        </div>
+      </div>
+    </div>`;
+  } catch (e) {
+    console.error('[campCardHTML] Error:', e);
+    return '';
+  }
+}
+
+/** Render campaigns to home grid and explore grid */
+function renderCampaigns() {
+  try {
+    const visible = CampaignService.getVisible();
+    const empty = `<div class="empty-state"><div class="empty-icon">🌱</div><div class="empty-title">${t('noData')}</div></div>`;
+    const html  = visible.length ? visible.map(c => campCardHTML(c)).join('') : empty;
+    const hg = document.getElementById('homeGrid');
+    const eg = document.getElementById('exploreGrid');
+    if (hg) hg.innerHTML = html;
+    if (eg) eg.innerHTML = html;
+  } catch (e) {
+    console.error('[renderCampaigns] Error:', e);
+  }
+}
+
+/** Render user's own campaigns in profile */
+function renderMyCamps() {
+  try {
+    const all  = CampaignService.getAll();
+    const mine = all.filter(c => c.createdBy === State.cu?.id);
+    const box1 = document.getElementById('myCampsGrid');
+    const box2 = document.getElementById('profileCampsBox');
+    if (!box1 && !box2) return;
+
+    const empty = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">${t('noData')}</div></div>`;
+    const html  = mine.length === 0 ? empty : mine.map(c => {
+      const txt = Models.getCampText(c);
+      const si  = Models.getStatusInfo(c.status);
+      return `<div class="my-camp-row">
+        <div>
+          <div class="my-camp-info-title">${txt.title}</div>
+          <div class="my-camp-info-sub">📍 ${c.location || ''} · 📅 ${c.date || ''}</div>
+        </div>
+        <span class="status-chip ${si.cls}">${si[State.lang]}</span>
+      </div>`;
+    }).join('');
+
+    if (box1) box1.innerHTML = html;
+    if (box2) box2.innerHTML = html;
+  } catch (e) {
+    console.error('[renderMyCamps] Error:', e);
+  }
+}
+
+/** Render profile page */
+function renderProfile() {
+  if (!State.cu) return;
+  try {
+    // Always read fresh from DB
+    const u = UserService.getById(State.cu.id) || State.cu;
+
+    const sH = document.getElementById('statHours');
+    const sA = document.getElementById('statActivities');
+    const sB = document.getElementById('statBadges');
+    if (sH) sH.textContent = u.volunteerHours   || 0;
+    if (sA) sA.textContent = u.activitiesJoined  || 0;
+    if (sB) sB.textContent = u.achievements      || 0;
+
+    const profileName = document.getElementById('profileName');
+    if (profileName) profileName.textContent = u.name || '';
+
+    const profileLoc = document.getElementById('profileLoc');
+    if (profileLoc) profileLoc.textContent = (u.city && u.country) ? `${u.city}, ${u.country}` : (u.city || u.country || '');
+
+    const profileAva = document.getElementById('profileAva');
+    if (profileAva) {
+      profileAva.innerHTML = u.profilePic
+        ? `<img src="${u.profilePic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+        : '👤';
+    }
+
+    const statusBanner = document.getElementById('statusBanner');
+    if (statusBanner && !State.isAdmin) {
+      const bannerMap = {
+        pending:  ['banner-pending',  t('pendingBanner')],
+        approved: ['banner-approved', t('approvedBanner')],
+        rejected: ['banner-rejected', t('rejectedBanner')]
+      };
+      const [cls, txt] = bannerMap[u.status] || bannerMap.pending;
+      statusBanner.innerHTML = `<div class="status-banner ${cls}">${txt}</div>`;
+    }
+
+    const infoItems = document.getElementById('infoItems');
+    if (infoItems) {
+      const info = [
+        [t('fullName'), u.name],
+        [t('email'),    u.email],
+        [t('phone'),    u.phone],
+        [t('country'),  u.country],
+        [t('city'),     u.city],
+        [t('dob'),      u.dob]
+      ];
+      infoItems.innerHTML = info.map(([label, val]) =>
+        `<div class="info-item"><span class="info-lbl">${label}</span><span class="info-val">${val || '—'}</span></div>`
+      ).join('');
+    }
+
+    const idPhotoBox = document.getElementById('idPhotoBox');
+    if (idPhotoBox) {
+      idPhotoBox.innerHTML = u.idPhoto
+        ? `<img src="${u.idPhoto}" style="width:100%;max-width:300px;border-radius:var(--r-md);border:1.5px solid var(--sand-dark);margin-bottom:1rem;display:block;">
+           <a href="${u.idPhoto}" download="ID.jpg" class="submit-btn">${t('downloadId')}</a>`
+        : `<p style="color:var(--charcoal-50);">${t('noData')}</p>`;
+    }
+
+    renderMyCamps();
+  } catch (e) {
+    console.error('[renderProfile] Error:', e);
+  }
+}
+
+/** Render admin panel */
+/* ══════════════════════════════════════════
+   ADMIN DASHBOARD MODULE (self-contained)
+   ══════════════════════════════════════════ */
+const AdminUI = { panel: 'dashboard', q: '', userFilter: 'all', campFilter: 'all' };
+
+function admToggleSidebar() {
+  const sb = document.getElementById('admSidebar');
+  const ov = document.getElementById('admSidebarOverlay');
+  if (!sb) return;
+  const open = sb.classList.toggle('open');
+  if (ov) ov.classList.toggle('show', open);
+}
+
+function admCloseSidebar() {
+  const sb = document.getElementById('admSidebar');
+  const ov = document.getElementById('admSidebarOverlay');
+  if (sb) sb.classList.remove('open');
+  if (ov) ov.classList.remove('show');
+}
+
+function admSwitchPanel(name) {
+  AdminUI.panel = name;
+  document.querySelectorAll('.adm-panel').forEach(p => p.classList.remove('active'));
+  const pn = document.getElementById('admPanel-' + name);
+  if (pn) pn.classList.add('active');
+  document.querySelectorAll('.adm-nav-item').forEach(b => {
+    b.classList.toggle('active', b.dataset.panel === name);
+  });
+  admCloseSidebar();
+  admCloseModal();
+  window.scrollTo(0, 0);
+}
+
+function admGlobalSearchFn(q) {
+  AdminUI.q = String(q || '').toLowerCase().trim();
+  admRenderUsers();
+  admRenderCampaigns();
+  admRenderPartners();
+}
+
+/* ── Helpers ── */
+function admEl(id) { return document.getElementById(id); }
+
+function admStatusChip(status) {
+  const isAr = State.lang === 'ar';
+  const map = {
+    pending:       { bg: '#fef9ec', txt: '#c47d1a', ar: 'قيد المراجعة', en: 'Pending' },
+    approved:      { bg: '#dcfce7', txt: '#2d7a4f', ar: 'موافق عليه',  en: 'Approved' },
+    under_process: { bg: '#dbeafe', txt: '#1d4ed8', ar: 'قيد التنفيذ', en: 'In Progress' },
+    done:          { bg: '#f3e8ff', txt: '#7c3aed', ar: 'منجزة',       en: 'Done' },
+    rejected:      { bg: '#fecaca', txt: '#c84c3c', ar: 'مرفوض',       en: 'Rejected' }
+  };
+  const s = map[status] || { bg: '#f3f4f6', txt: '#555', ar: status, en: status };
+  return '<span style="display:inline-block;padding:0.25rem 0.7rem;border-radius:0.5rem;font-size:0.7rem;font-weight:800;background:' + s.bg + ';color:' + s.txt + ';">' + (isAr ? s.ar : s.en) + '</span>';
+}
+
+function admEmpty(icon, label) {
+  return '<div class="empty-state"><div class="empty-icon">' + icon + '</div><div class="empty-title">' + label + '</div></div>';
+}
+
+function admTimeAgo(iso) {
+  if (!iso) return '';
+  const isAr = State.lang === 'ar';
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1)    return isAr ? 'الآن' : 'now';
+  if (m < 60)   return isAr ? ('منذ ' + m + ' د') : (m + 'm ago');
+  const h = Math.floor(m / 60);
+  if (h < 24)   return isAr ? ('منذ ' + h + ' س') : (h + 'h ago');
+  const d = Math.floor(h / 24);
+  if (d < 30)   return isAr ? ('منذ ' + d + ' يوم') : (d + 'd ago');
+  return new Date(iso).toLocaleDateString();
+}
+
+function admBar(label, value, max, color) {
+  const pct = max > 0 ? Math.round((value / max) * 100) : 0;
+  return '<div class="adm-bar-row">' +
+    '<div style="display:flex;justify-content:space-between;font-size:0.8rem;font-weight:700;color:#333;margin-bottom:0.3rem;"><span>' + label + '</span><span>' + value + '</span></div>' +
+    '<div style="height:8px;background:#f0ece2;border-radius:9999px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:' + color + ';border-radius:9999px;transition:width 0.4s;"></div></div>' +
+  '</div>';
+}
+
+/* ── Modal ── */
+function admOpenModal(html) {
+  const m = admEl('admModal');
+  const c = admEl('admModalContent');
+  if (!m || !c) return;
+  c.innerHTML = html;
+  m.classList.add('open');
+}
+function admCloseModal() {
+  const m = admEl('admModal');
+  if (m) m.classList.remove('open');
+}
+
+/* ── Main entry ── */
+function renderAdmin() {
+  if (!State.isAdmin) return;
+  try {
+    const users    = UserService.getAll();
+    const camps    = CampaignService.getAll();
+    const partners = PartnerService.getAll();
+    const pendCount = users.filter(u => u.status === 'pending').length
+                    + camps.filter(c => c.status === 'pending').length
+                    + partners.length;
+
+    const bu = admEl('admBadgeUsers');    if (bu) bu.textContent = users.length;
+    const bc = admEl('admBadgeCamps');    if (bc) bc.textContent = camps.length;
+    const bp = admEl('admBadgePartners'); if (bp) bp.textContent = partners.length;
+    const bn = admEl('admBadgeNotifs');   if (bn) bn.textContent = pendCount;
+
+    admRenderHeaders();
+    admRenderOverview(users, camps, partners);
+    admRenderUsers();
+    admRenderCampaigns();
+    admRenderPartners();
+    admRenderAnalytics(users, camps);
+    admRenderNotifications(users, camps, partners);
+  } catch (e) {
+    console.error('[renderAdmin] Error:', e);
+  }
+}
+
+/* ── Bilingual headers ── */
+function admRenderHeaders() {
+  const isAr = State.lang === 'ar';
+  const set = (id, ar, en) => { const el = admEl(id); if (el) el.textContent = isAr ? ar : en; };
+  set('admHdPending',   'بانتظار المراجعة',   'Pending Reviews');
+  set('admHdActivity',  'آخر النشاطات',       'Recent Activity');
+  set('admHdUsers',     'المستخدمين',          'Users');
+  set('admHdCamps',     'الحملات',             'Campaigns');
+  set('admHdPartners',  'طلبات الشراكة',       'Partners');
+  set('admHdAnalytics', 'الإحصائيات',          'Analytics');
+  set('admHdCats',      'الحملات حسب الفئة',   'Campaigns by Category');
+  set('admHdTop',       'أفضل المتطوعين',      'Top Volunteers');
+  set('admHdCities',    'المتطوعون حسب المدينة','Volunteers by City');
+  set('admHdNotifs',    'الإشعارات',           'Notifications');
+}
+
+/* ── Dashboard ── */
+function admRenderOverview(users, camps, partners) {
+  try {
+    users    = users    || UserService.getAll();
+    camps    = camps    || CampaignService.getAll();
+    partners = partners || PartnerService.getAll();
+    const isAr = State.lang === 'ar';
+
+    const approvedUsers = users.filter(u => u.status === 'approved').length;
+    const pendingUsers  = users.filter(u => u.status === 'pending');
+    const activeCamps   = camps.filter(c => c.status === 'approved' || c.status === 'under_process').length;
+    const pendingCamps  = camps.filter(c => c.status === 'pending');
+    const totalHours    = Math.round(users.reduce((s, u) => s + (parseFloat(u.volunteerHours) || 0), 0));
+
+    const stats = [
+      { num: users.length,        lbl: isAr ? 'إجمالي المستخدمين' : 'Total Users',      kind: 'totalUsers' },
+      { num: approvedUsers,       lbl: isAr ? 'مستخدمين مفعّلين'  : 'Approved Users',   kind: 'approvedUsers' },
+      { num: pendingUsers.length, lbl: isAr ? 'بانتظار الموافقة'  : 'Pending Users',    kind: 'pendingUsers', accent: true },
+      { num: camps.length,        lbl: isAr ? 'إجمالي الحملات'    : 'Total Campaigns',  kind: 'totalCamps' },
+      { num: activeCamps,         lbl: isAr ? 'حملات نشطة'        : 'Active Campaigns', kind: 'activeCamps', accent: true },
+      { num: totalHours,          lbl: isAr ? 'ساعات التطوع'      : 'Volunteer Hours',  kind: 'hours' }
+    ];
+
+    const grid = admEl('admStatsGrid');
+    if (grid) {
+      grid.innerHTML = stats.map(s =>
+        '<div class="adm-stat-card" onclick="admStatDetail(\'' + s.kind + '\')">' +
+          '<div class="adm-stat-num' + (s.accent ? ' adm-stat-accent' : '') + '">' + s.num + '</div>' +
+          '<div class="adm-stat-lbl">' + s.lbl + '</div>' +
+        '</div>'
+      ).join('');
+    }
+
+    // Quick actions
+    const qa = admEl('admQuickActions');
+    if (qa) {
+      const acts = [
+        { icon: '👥', ar: 'المستخدمين',  en: 'Users',     panel: 'users' },
+        { icon: '📋', ar: 'الحملات',     en: 'Campaigns', panel: 'campaigns' },
+        { icon: '🤝', ar: 'الشراكات',    en: 'Partners',  panel: 'partners' },
+        { icon: '📊', ar: 'الإحصائيات',  en: 'Analytics', panel: 'analytics' }
+      ];
+      qa.innerHTML = acts.map(a =>
+        '<button class="adm-quick-btn" onclick="admSwitchPanel(\'' + a.panel + '\')">' +
+          '<span style="font-size:1.3rem;">' + a.icon + '</span>' +
+          '<span>' + (isAr ? a.ar : a.en) + '</span>' +
+        '</button>'
+      ).join('');
+    }
+
+    // Pending queue
+    const pl = admEl('admPendingList');
+    if (pl) {
+      let html = '';
+      pendingUsers.forEach(u => {
+        html +=
+          '<div class="admin-card" onclick="admViewUser(\'' + u.id + '\')" style="cursor:pointer;">' +
+            '<div class="admin-card-head">' +
+              '<div class="admin-ava">' + (u.profilePic ? '<img src="' + u.profilePic + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">' : '👤') + '</div>' +
+              '<div class="admin-info">' +
+                '<div class="admin-info-name">' + (u.name || '') + '</div>' +
+                '<div class="admin-info-row">' + (isAr ? 'حساب جديد بانتظار الموافقة' : 'New account awaiting approval') + ' · ' + admTimeAgo(u.createdAt) + '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="admin-actions">' +
+              '<button class="approve-btn" onclick="event.stopPropagation();handleApproveUser(\'' + u.id + '\')">✓ ' + (isAr ? 'قبول' : 'Approve') + '</button>' +
+              '<button class="reject-btn" onclick="event.stopPropagation();handleRejectUser(\'' + u.id + '\')">✕ ' + (isAr ? 'رفض' : 'Reject') + '</button>' +
+            '</div>' +
+          '</div>';
+      });
+      pendingCamps.forEach(c => {
+        const txt = Models.getCampText(c);
+        html +=
+          '<div class="admin-card" onclick="admViewCamp(\'' + c.id + '\')" style="cursor:pointer;">' +
+            '<div class="admin-info">' +
+              '<div class="admin-info-name">📍 ' + (txt.title || '') + '</div>' +
+              '<div class="admin-info-row">' + (isAr ? 'حملة جديدة بانتظار الموافقة' : 'New campaign awaiting approval') + ' · 👤 ' + (c.creatorName || '') + '</div>' +
+            '</div>' +
+            '<div class="admin-actions">' +
+              '<button class="approve-btn" onclick="event.stopPropagation();handleApproveCamp(\'' + c.id + '\')">✓ ' + (isAr ? 'قبول' : 'Approve') + '</button>' +
+              '<button class="reject-btn" onclick="event.stopPropagation();handleRejectCamp(\'' + c.id + '\')">✕ ' + (isAr ? 'رفض' : 'Reject') + '</button>' +
+            '</div>' +
+          '</div>';
+      });
+      pl.innerHTML = html || admEmpty('✅', isAr ? 'لا يوجد طلبات معلّقة' : 'No pending reviews');
+    }
+
+    // Recent activity
+    const al = admEl('admActivityList');
+    if (al) {
+      const events = [];
+      users.forEach(u => { if (u.createdAt) events.push({ d: u.createdAt, icon: '👤', txt: (isAr ? 'انضم: ' : 'Joined: ') + (u.name || '') }); });
+      camps.forEach(c => { if (c.createdAt) events.push({ d: c.createdAt, icon: '📋', txt: (isAr ? 'حملة: ' : 'Campaign: ') + (Models.getCampText(c).title || '') }); });
+      partners.forEach(p => { if (p.date) events.push({ d: p.date, icon: '🤝', txt: (isAr ? 'طلب شراكة: ' : 'Partner request: ') + (p.org || '') }); });
+      events.sort((a, b) => new Date(b.d) - new Date(a.d));
+      al.innerHTML = events.length === 0
+        ? admEmpty('🕐', isAr ? 'لا يوجد نشاطات بعد' : 'No activity yet')
+        : events.slice(0, 7).map(ev =>
+          '<div class="adm-activity-row" style="display:flex;align-items:center;gap:0.7rem;padding:0.6rem 0;border-bottom:1px solid #f0ece2;">' +
+            '<span style="font-size:1.1rem;flex:none;">' + ev.icon + '</span>' +
+            '<span style="flex:1;font-size:0.85rem;font-weight:600;color:#333;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + ev.txt + '</span>' +
+            '<span style="flex:none;font-size:0.72rem;color:#999;">' + admTimeAgo(ev.d) + '</span>' +
+          '</div>'
+        ).join('');
+    }
+  } catch (e) {
+    console.error('[admRenderOverview] Error:', e);
+  }
+}
+
+/* ── Stat detail modal ── */
+function admStatDetail(kind) {
+  try {
+    const isAr = State.lang === 'ar';
+    const users = UserService.getAll();
+    const camps = CampaignService.getAll();
+    let title = '', rows = [], panel = 'users';
+
+    const userRow = u =>
+      '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0;border-bottom:1px solid #f0ece2;cursor:pointer;" onclick="admViewUser(\'' + u.id + '\')">' +
+        '<span style="flex:1;font-size:0.88rem;font-weight:700;color:#1a1a1a;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (u.name || '') + '</span>' +
+        admStatusChip(u.status) +
+      '</div>';
+    const campRow = c => {
+      const txt = Models.getCampText(c);
+      return '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0;border-bottom:1px solid #f0ece2;cursor:pointer;" onclick="admViewCamp(\'' + c.id + '\')">' +
+        '<span style="flex:1;font-size:0.88rem;font-weight:700;color:#1a1a1a;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (txt.title || '') + '</span>' +
+        admStatusChip(c.status) +
+      '</div>';
+    };
+
+    if (kind === 'totalUsers')    { title = isAr ? 'إجمالي المستخدمين' : 'Total Users';      rows = users.map(userRow); panel = 'users'; }
+    if (kind === 'approvedUsers') { title = isAr ? 'مستخدمين مفعّلين'  : 'Approved Users';   rows = users.filter(u => u.status === 'approved').map(userRow); panel = 'users'; }
+    if (kind === 'pendingUsers')  { title = isAr ? 'بانتظار الموافقة'  : 'Pending Users';    rows = users.filter(u => u.status === 'pending').map(userRow); panel = 'users'; }
+    if (kind === 'totalCamps')    { title = isAr ? 'إجمالي الحملات'    : 'Total Campaigns';  rows = camps.map(campRow); panel = 'campaigns'; }
+    if (kind === 'activeCamps')   { title = isAr ? 'حملات نشطة'        : 'Active Campaigns'; rows = camps.filter(c => c.status === 'approved' || c.status === 'under_process').map(campRow); panel = 'campaigns'; }
+    if (kind === 'hours') {
+      title = isAr ? 'ساعات التطوع' : 'Volunteer Hours';
+      panel = 'analytics';
+      rows = users.filter(u => (u.volunteerHours || 0) > 0)
+        .sort((a, b) => (b.volunteerHours || 0) - (a.volunteerHours || 0))
+        .map(u =>
+          '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0;border-bottom:1px solid #f0ece2;cursor:pointer;" onclick="admViewUser(\'' + u.id + '\')">' +
+            '<span style="flex:1;font-size:0.88rem;font-weight:700;color:#1a1a1a;">' + (u.name || '') + '</span>' +
+            '<span style="font-weight:800;color:#5a6b3a;font-size:0.85rem;">' + (u.volunteerHours || 0) + (isAr ? ' س' : ' h') + '</span>' +
+          '</div>');
+    }
+
+    admOpenModal(
+      '<h3 style="margin:0 0 1rem;font-size:1.15rem;font-weight:900;color:#1a1a1a;">' + title + ' <span style="font-size:0.8rem;font-weight:800;color:#888;">(' + rows.length + ')</span></h3>' +
+      (rows.length ? rows.join('') : admEmpty('📭', isAr ? 'لا يوجد بيانات' : 'No data')) +
+      '<button style="margin-top:1.1rem;width:100%;padding:0.8rem;border:none;border-radius:0.75rem;background:#5a6b3a;color:#fff;font-weight:800;font-size:0.9rem;cursor:pointer;font-family:inherit;" onclick="admSwitchPanel(\'' + panel + '\')">' + (isAr ? 'عرض القسم كاملاً' : 'Open full section') + '</button>'
+    );
+  } catch (e) {
+    console.error('[admStatDetail] Error:', e);
+  }
+}
+
+/* ── User detail modal ── */
+function admViewUser(id) {
+  try {
+    const u = UserService.getById ? UserService.getById(id) : UserService.getAll().find(x => x.id === id);
+    if (!u) return;
+    const isAr = State.lang === 'ar';
+    const row = (icon, label, val) => val
+      ? '<div style="display:flex;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid #f0ece2;font-size:0.86rem;"><span style="flex:none;">' + icon + '</span><span style="flex:none;font-weight:700;color:#888;">' + label + ':</span><span style="font-weight:700;color:#1a1a1a;word-break:break-word;">' + val + '</span></div>'
+      : '';
+    admOpenModal(
+      '<div style="text-align:center;margin-bottom:1rem;">' +
+        '<div style="width:70px;height:70px;border-radius:50%;background:#eef1e8;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 0.6rem;overflow:hidden;">' +
+          (u.profilePic ? '<img src="' + u.profilePic + '" style="width:100%;height:100%;object-fit:cover;">' : '👤') +
+        '</div>' +
+        '<div style="font-size:1.15rem;font-weight:900;color:#1a1a1a;">' + (u.name || '') + '</div>' +
+        '<div style="margin-top:0.4rem;">' + admStatusChip(u.status) + '</div>' +
+      '</div>' +
+      row('📧', isAr ? 'البريد' : 'Email', u.email) +
+      row('📞', isAr ? 'الهاتف' : 'Phone', u.phone) +
+      row('🏙️', isAr ? 'المدينة' : 'City', [u.city, u.country].filter(Boolean).join(', ')) +
+      row('🎂', isAr ? 'الميلاد' : 'DOB', u.dob) +
+      row('♿', isAr ? 'احتياجات خاصة' : 'Special needs', u.special) +
+      row('🕐', isAr ? 'ساعات التطوع' : 'Volunteer hrs', String(u.volunteerHours || 0)) +
+      row('📋', isAr ? 'حملات منضم لها' : 'Joined camps', String((u.joinedCamps || []).length)) +
+      row('📅', isAr ? 'تاريخ التسجيل' : 'Registered', u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '') +
+      (u.idPhoto ? '<div style="margin-top:0.8rem;"><img src="' + u.idPhoto + '" style="width:100%;border-radius:0.75rem;cursor:pointer;" onclick="openImageViewer(\'' + u.idPhoto + '\')"></div>' : '') +
+      (u.status === 'pending'
+        ? '<div style="display:flex;gap:0.6rem;margin-top:1.1rem;">' +
+            '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:#2d7a4f;color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleApproveUser(\'' + u.id + '\');admCloseModal()">✓ ' + (isAr ? 'قبول' : 'Approve') + '</button>' +
+            '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:#c84c3c;color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleRejectUser(\'' + u.id + '\');admCloseModal()">✕ ' + (isAr ? 'رفض' : 'Reject') + '</button>' +
+          '</div>'
+        : '')
+    );
+  } catch (e) {
+    console.error('[admViewUser] Error:', e);
+  }
+}
+
+/* ── Campaign detail modal ── */
+function admViewCamp(id) {
+  try {
+    const c = CampaignService.getById ? CampaignService.getById(id) : CampaignService.getAll().find(x => x.id === id);
+    if (!c) return;
+    const isAr = State.lang === 'ar';
+    const txt = Models.getCampText(c);
+    const pct = c.needed ? Math.min(100, Math.round(((c.volunteers || 0) / c.needed) * 100)) : 0;
+    const row = (icon, label, val) => val
+      ? '<div style="display:flex;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid #f0ece2;font-size:0.86rem;"><span style="flex:none;">' + icon + '</span><span style="flex:none;font-weight:700;color:#888;">' + label + ':</span><span style="font-weight:700;color:#1a1a1a;word-break:break-word;">' + val + '</span></div>'
+      : '';
+    let actions = '';
+    if (c.status === 'pending') {
+      actions = '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:#2d7a4f;color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleApproveCamp(\'' + c.id + '\');admCloseModal()">✓ ' + (isAr ? 'قبول' : 'Approve') + '</button>' +
+                '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:#c84c3c;color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleRejectCamp(\'' + c.id + '\');admCloseModal()">✕ ' + (isAr ? 'رفض' : 'Reject') + '</button>';
+    } else if (c.status === 'approved') {
+      actions = '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:#1d4ed8;color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleCampUnderProcess(\'' + c.id + '\');admCloseModal()">' + (isAr ? 'قيد التنفيذ' : 'In Progress') + '</button>' +
+                '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:#7c3aed;color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleCampDone(\'' + c.id + '\');admCloseModal()">✓ ' + (isAr ? 'تم انجازها' : 'Mark Done') + '</button>';
+    } else if (c.status === 'under_process') {
+      actions = '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:#7c3aed;color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleCampDone(\'' + c.id + '\');admCloseModal()">✓ ' + (isAr ? 'تم انجازها' : 'Mark Done') + '</button>';
+    }
+    admOpenModal(
+      (c.img ? '<img src="' + c.img + '" style="width:100%;height:150px;object-fit:cover;border-radius:0.85rem;margin-bottom:0.9rem;cursor:pointer;" onclick="openImageViewer(\'' + c.img + '\')">' : '') +
+      '<div style="font-size:1.15rem;font-weight:900;color:#1a1a1a;margin-bottom:0.4rem;">' + (txt.title || '') + '</div>' +
+      '<div style="margin-bottom:0.8rem;">' + admStatusChip(c.status) + '</div>' +
+      (txt.desc ? '<div style="font-size:0.86rem;color:#555;line-height:1.6;margin-bottom:0.8rem;">' + txt.desc + '</div>' : '') +
+      '<div style="margin-bottom:0.8rem;">' +
+        '<div style="display:flex;justify-content:space-between;font-size:0.78rem;font-weight:700;color:#888;margin-bottom:0.3rem;"><span>' + (isAr ? 'المتطوعين' : 'Volunteers') + '</span><span>' + (c.volunteers || 0) + ' / ' + (c.needed || 0) + '</span></div>' +
+        '<div style="height:8px;background:#f0ece2;border-radius:9999px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:#5a6b3a;border-radius:9999px;"></div></div>' +
+      '</div>' +
+      row('🏷️', isAr ? 'الفئة' : 'Category', txt.cat) +
+      row('📍', isAr ? 'الموقع' : 'Location', c.location) +
+      row('📅', isAr ? 'التاريخ' : 'Date', c.date) +
+      row('🕐', isAr ? 'ساعات لكل متطوع' : 'Hours / volunteer', String(c.volunteerHours || 2)) +
+      row('👤', isAr ? 'المنظّم' : 'Organizer', c.creatorName) +
+      row('📞', isAr ? 'هاتف المنظّم' : 'Organizer phone', c.creatorPhone) +
+      (actions ? '<div style="display:flex;gap:0.6rem;margin-top:1.1rem;">' + actions + '</div>' : '')
+    );
+  } catch (e) {
+    console.error('[admViewCamp] Error:', e);
+  }
+}
+
+/* ── Partner detail modal ── */
+function admViewPartner(idx) {
+  try {
+    const p = PartnerService.getAll()[idx];
+    if (!p) return;
+    const isAr = State.lang === 'ar';
+    const typeMap = { gov: isAr ? 'حكومية / عامة' : 'Government / Public', priv: isAr ? 'خاصة / شركة' : 'Private / Company', ngo: isAr ? 'منظمة / جمعية' : 'NGO / Association', ind: isAr ? 'فرد / مبادر' : 'Individual' };
+    const row = (icon, label, val) => val
+      ? '<div style="display:flex;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid #f0ece2;font-size:0.86rem;"><span style="flex:none;">' + icon + '</span><span style="flex:none;font-weight:700;color:#888;">' + label + ':</span><span style="font-weight:700;color:#1a1a1a;word-break:break-word;">' + val + '</span></div>'
+      : '';
+    admOpenModal(
+      '<div style="font-size:1.15rem;font-weight:900;color:#1a1a1a;margin-bottom:1rem;">🤝 ' + (p.org || '') + '</div>' +
+      row('👤', isAr ? 'المسؤول' : 'Contact', p.contact) +
+      row('📧', isAr ? 'البريد' : 'Email', p.email) +
+      row('📞', isAr ? 'الهاتف' : 'Phone', p.phone) +
+      row('🏷️', isAr ? 'نوع الجهة' : 'Type', typeMap[p.type] || p.type) +
+      row('📅', isAr ? 'التاريخ' : 'Date', p.date ? new Date(p.date).toLocaleDateString() : '') +
+      (p.msg ? '<div style="margin-top:0.8rem;padding:0.85rem;background:#f7f4ee;border-radius:0.75rem;font-size:0.86rem;color:#333;line-height:1.6;">' + p.msg + '</div>' : '')
+    );
+  } catch (e) {
+    console.error('[admViewPartner] Error:', e);
+  }
+}
+
+/* ── Users panel (with filter chips) ── */
+function admSetUserFilter(f) { AdminUI.userFilter = f; admRenderUsers(); }
+
+function admRenderUsers() {
+  try {
+    const list = admEl('admUsersList');
+    if (!list) return;
+    const isAr = State.lang === 'ar';
+    const local = String((admEl('admUserSearch') || {}).value || '').toLowerCase().trim();
+    const q = local || AdminUI.q;
+
+    // Chips
+    const chips = admEl('admUserChips');
+    if (chips) {
+      const all = UserService.getAll();
+      const opts = [
+        { k: 'all',      ar: 'الكل',          en: 'All',      n: all.length },
+        { k: 'pending',  ar: 'قيد المراجعة',  en: 'Pending',  n: all.filter(u => u.status === 'pending').length },
+        { k: 'approved', ar: 'مفعّل',          en: 'Approved', n: all.filter(u => u.status === 'approved').length },
+        { k: 'rejected', ar: 'مرفوض',          en: 'Rejected', n: all.filter(u => u.status === 'rejected').length }
+      ];
+      chips.innerHTML = opts.map(o =>
+        '<button class="adm-chip' + (AdminUI.userFilter === o.k ? ' active' : '') + '" onclick="admSetUserFilter(\'' + o.k + '\')">' + (isAr ? o.ar : o.en) + ' (' + o.n + ')</button>'
+      ).join('');
+    }
+
+    let users = UserService.getAll();
+    if (AdminUI.userFilter !== 'all') users = users.filter(u => u.status === AdminUI.userFilter);
+    if (q) {
+      users = users.filter(u =>
+        String(u.name  || '').toLowerCase().includes(q) ||
+        String(u.email || '').toLowerCase().includes(q) ||
+        String(u.phone || '').toLowerCase().includes(q) ||
+        String(u.city  || '').toLowerCase().includes(q)
+      );
+    }
+
+    list.innerHTML = users.length === 0
+      ? admEmpty('👤', isAr ? 'لا يوجد مستخدمين' : 'No users found')
+      : users.map(u =>
+        '<div class="admin-card" onclick="admViewUser(\'' + u.id + '\')" style="cursor:pointer;">' +
+          '<div class="admin-card-head">' +
+            '<div class="admin-ava">' + (u.profilePic ? '<img src="' + u.profilePic + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">' : '👤') + '</div>' +
+            '<div class="admin-info">' +
+              '<div class="admin-info-name">' + (u.name || '') + ' ' + admStatusChip(u.status) + '</div>' +
+              '<div class="admin-info-row">📧 ' + (u.email || '') + '</div>' +
+              '<div class="admin-info-row">🏙️ ' + [u.city, u.country].filter(Boolean).join(', ') + ' · 🕐 ' + (u.volunteerHours || 0) + (isAr ? ' س' : ' h') + '</div>' +
+            '</div>' +
+          '</div>' +
+          (u.status === 'pending'
+            ? '<div class="admin-actions">' +
+                '<button class="approve-btn" onclick="event.stopPropagation();handleApproveUser(\'' + u.id + '\')">✓ ' + (isAr ? 'قبول' : 'Approve') + '</button>' +
+                '<button class="reject-btn" onclick="event.stopPropagation();handleRejectUser(\'' + u.id + '\')">✕ ' + (isAr ? 'رفض' : 'Reject') + '</button>' +
+              '</div>'
+            : '') +
+        '</div>'
+      ).join('');
+  } catch (e) {
+    console.error('[admRenderUsers] Error:', e);
+  }
+}
+
+/* ── Campaigns panel (with filter chips) ── */
+function admSetCampFilter(f) { AdminUI.campFilter = f; admRenderCampaigns(); }
+
+function admRenderCampaigns() {
+  try {
+    const list = admEl('admCampsList');
+    if (!list) return;
+    const isAr = State.lang === 'ar';
+    const local = String((admEl('admCampSearch') || {}).value || '').toLowerCase().trim();
+    const q = local || AdminUI.q;
+
+    const chips = admEl('admCampChips');
+    if (chips) {
+      const all = CampaignService.getAll();
+      const opts = [
+        { k: 'all',           ar: 'الكل',         en: 'All',         n: all.length },
+        { k: 'pending',       ar: 'قيد المراجعة', en: 'Pending',     n: all.filter(c => c.status === 'pending').length },
+        { k: 'approved',      ar: 'موافق عليها',  en: 'Approved',    n: all.filter(c => c.status === 'approved').length },
+        { k: 'under_process', ar: 'قيد التنفيذ',  en: 'In Progress', n: all.filter(c => c.status === 'under_process').length },
+        { k: 'done',          ar: 'منجزة',        en: 'Done',        n: all.filter(c => c.status === 'done').length }
+      ];
+      chips.innerHTML = opts.map(o =>
+        '<button class="adm-chip' + (AdminUI.campFilter === o.k ? ' active' : '') + '" onclick="admSetCampFilter(\'' + o.k + '\')">' + (isAr ? o.ar : o.en) + ' (' + o.n + ')</button>'
+      ).join('');
+    }
+
+    let camps = CampaignService.getAll();
+    if (AdminUI.campFilter !== 'all') camps = camps.filter(c => c.status === AdminUI.campFilter);
+    if (q) {
+      camps = camps.filter(c => {
+        const txt = Models.getCampText(c);
+        return String(txt.title || '').toLowerCase().includes(q) ||
+               String(c.location || '').toLowerCase().includes(q) ||
+               String(c.creatorName || '').toLowerCase().includes(q);
+      });
+    }
+
+    list.innerHTML = camps.length === 0
+      ? admEmpty('📋', isAr ? 'لا يوجد حملات' : 'No campaigns found')
+      : camps.map(c => {
+        const txt = Models.getCampText(c);
+        let actions = '';
+        if (c.status === 'pending') {
+          actions = '<button class="approve-btn" style="flex:1;" onclick="event.stopPropagation();handleApproveCamp(\'' + c.id + '\')">✓ ' + (isAr ? 'قبول' : 'Approve') + '</button>' +
+                    '<button class="reject-btn" style="flex:1;" onclick="event.stopPropagation();handleRejectCamp(\'' + c.id + '\')">✕ ' + (isAr ? 'رفض' : 'Reject') + '</button>';
+        } else if (c.status === 'approved') {
+          actions = '<button class="approve-btn" style="flex:1;" onclick="event.stopPropagation();handleCampUnderProcess(\'' + c.id + '\')">' + (isAr ? 'قيد التنفيذ' : 'In Progress') + '</button>' +
+                    '<button class="approve-btn" style="flex:1;background:#8b5cf6;" onclick="event.stopPropagation();handleCampDone(\'' + c.id + '\')">' + (isAr ? 'تم انجازها' : 'Mark Done') + '</button>';
+        } else if (c.status === 'under_process') {
+          actions = '<button class="approve-btn" style="flex:1;" onclick="event.stopPropagation();handleCampDone(\'' + c.id + '\')">' + (isAr ? 'تم انجازها' : 'Mark Done') + '</button>';
+        }
+        return '<div class="admin-card" onclick="admViewCamp(\'' + c.id + '\')" style="cursor:pointer;">' +
+          '<div class="admin-info">' +
+            '<div class="admin-info-name">' + (txt.title || '') + ' ' + admStatusChip(c.status) + '</div>' +
+            '<div class="admin-info-row">📍 ' + (c.location || '') + ' · 📅 ' + (c.date || '') + '</div>' +
+            '<div class="admin-info-row">👥 ' + (c.volunteers || 0) + '/' + (c.needed || 0) + ' · 🕐 ' + (c.volunteerHours || 2) + 'h · 👤 ' + (c.creatorName || '') + '</div>' +
+          '</div>' +
+          (actions ? '<div class="admin-actions">' + actions + '</div>' : '') +
+        '</div>';
+      }).join('');
+  } catch (e) {
+    console.error('[admRenderCampaigns] Error:', e);
+  }
+}
+
+/* ── Partners panel ── */
+function admRenderPartners() {
+  try {
+    const list = admEl('admPartnersList');
+    if (!list) return;
+    const isAr = State.lang === 'ar';
+    const local = String((admEl('admPartnerSearch') || {}).value || '').toLowerCase().trim();
+    const q = local || AdminUI.q;
+
+    const all = PartnerService.getAll();
+    const items = all.map((p, i) => ({ p: p, i: i })).filter(x => {
+      if (!q) return true;
+      return String(x.p.org || '').toLowerCase().includes(q) ||
+             String(x.p.contact || '').toLowerCase().includes(q) ||
+             String(x.p.email || '').toLowerCase().includes(q);
+    });
+
+    list.innerHTML = items.length === 0
+      ? admEmpty('🤝', isAr ? 'لا يوجد طلبات شراكة' : 'No partnership requests')
+      : items.map(x =>
+        '<div class="admin-card" onclick="admViewPartner(' + x.i + ')" style="cursor:pointer;">' +
+          '<div class="admin-info">' +
+            '<div class="admin-info-name">🤝 ' + (x.p.org || '') + '</div>' +
+            '<div class="admin-info-row">👤 ' + (x.p.contact || '') + ' · 📧 ' + (x.p.email || '') + '</div>' +
+            '<div class="admin-info-row" style="opacity:0.5;">📅 ' + (x.p.date ? new Date(x.p.date).toLocaleDateString() : '') + '</div>' +
+          '</div>' +
+        '</div>'
+      ).join('');
+  } catch (e) {
+    console.error('[admRenderPartners] Error:', e);
+  }
+}
+
+/* ── Analytics panel ── */
+function admRenderAnalytics(users, camps) {
+  try {
+    users = users || UserService.getAll();
+    camps = camps || CampaignService.getAll();
+    const isAr = State.lang === 'ar';
+
+    // Campaigns by category
+    const catEl = admEl('admChartCats');
+    if (catEl) {
+      const counts = {};
+      camps.forEach(c => { const k = c.category || 'other'; counts[k] = (counts[k] || 0) + 1; });
+      const keys = Object.keys(counts);
+      const max = Math.max.apply(null, keys.map(k => counts[k]).concat([1]));
+      const colors = ['#5a6b3a', '#8a9a6a', '#c47d1a', '#1d4ed8', '#7c3aed', '#c84c3c'];
+      catEl.innerHTML = keys.length === 0
+        ? admEmpty('📊', isAr ? 'لا يوجد حملات بعد' : 'No campaigns yet')
+        : keys.map((k, i) => {
+            const cfg = (CONFIG.CAMP_CATEGORIES || {})[k] || {};
+            const label = isAr ? (cfg.ar || k) : (cfg.en || k);
+            return admBar(label, counts[k], max, colors[i % colors.length]);
+          }).join('');
+    }
+
+    // Top volunteers leaderboard
+    const lb = admEl('admLeaderboard');
+    if (lb) {
+      const top = users.filter(u => (u.volunteerHours || 0) > 0)
+        .sort((a, b) => (b.volunteerHours || 0) - (a.volunteerHours || 0))
+        .slice(0, 5);
+      const medals = ['🥇', '🥈', '🥉', '4', '5'];
+      lb.innerHTML = top.length === 0
+        ? admEmpty('🏆', isAr ? 'لا يوجد ساعات تطوع بعد' : 'No volunteer hours yet')
+        : top.map((u, i) =>
+          '<div class="adm-lead-row" style="display:flex;align-items:center;gap:0.7rem;padding:0.6rem 0;border-bottom:1px solid #f0ece2;cursor:pointer;" onclick="admViewUser(\'' + u.id + '\')">' +
+            '<span style="flex:none;width:28px;text-align:center;font-weight:900;font-size:' + (i < 3 ? '1.1rem' : '0.85rem') + ';color:#888;">' + medals[i] + '</span>' +
+            '<span style="flex:1;font-size:0.88rem;font-weight:700;color:#1a1a1a;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (u.name || '') + '</span>' +
+            '<span style="flex:none;font-weight:800;color:#5a6b3a;font-size:0.85rem;">' + (u.volunteerHours || 0) + (isAr ? ' س' : ' h') + '</span>' +
+          '</div>'
+        ).join('');
+    }
+
+    // Volunteers by city
+    const cityEl = admEl('admChartCities');
+    if (cityEl) {
+      const counts = {};
+      users.forEach(u => { const k = (u.city || '').trim(); if (k) counts[k] = (counts[k] || 0) + 1; });
+      const keys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 6);
+      const max = Math.max.apply(null, keys.map(k => counts[k]).concat([1]));
+      cityEl.innerHTML = keys.length === 0
+        ? admEmpty('🏙️', isAr ? 'لا يوجد بيانات مدن' : 'No city data')
+        : keys.map(k => admBar(k, counts[k], max, '#8a9a6a')).join('');
+    }
+  } catch (e) {
+    console.error('[admRenderAnalytics] Error:', e);
+  }
+}
+
+/* ── Notifications panel ── */
+function admRenderNotifications(users, camps, partners) {
+  try {
+    const nl = admEl('admNotifsList');
+    if (!nl) return;
+    users    = users    || UserService.getAll();
+    camps    = camps    || CampaignService.getAll();
+    partners = partners || PartnerService.getAll();
+    const isAr = State.lang === 'ar';
+
+    const notifs = [];
+    users.filter(u => u.status === 'pending').forEach(u => notifs.push({
+      d: u.createdAt, icon: '👤',
+      txt: (isAr ? 'حساب جديد بانتظار الموافقة: ' : 'New account pending: ') + (u.name || ''),
+      act: 'admViewUser(\'' + u.id + '\')'
+    }));
+    camps.filter(c => c.status === 'pending').forEach(c => notifs.push({
+      d: c.createdAt, icon: '📋',
+      txt: (isAr ? 'حملة بانتظار الموافقة: ' : 'Campaign pending: ') + (Models.getCampText(c).title || ''),
+      act: 'admViewCamp(\'' + c.id + '\')'
+    }));
+    partners.forEach((p, i) => notifs.push({
+      d: p.date, icon: '🤝',
+      txt: (isAr ? 'طلب شراكة من: ' : 'Partner request from: ') + (p.org || ''),
+      act: 'admViewPartner(' + i + ')'
+    }));
+    notifs.sort((a, b) => new Date(b.d || 0) - new Date(a.d || 0));
+
+    nl.innerHTML = notifs.length === 0
+      ? admEmpty('🔔', isAr ? 'لا يوجد إشعارات' : 'No notifications')
+      : notifs.map(n =>
+        '<div class="admin-card" onclick="' + n.act + '" style="cursor:pointer;display:flex;align-items:center;gap:0.8rem;">' +
+          '<span style="font-size:1.4rem;flex:none;">' + n.icon + '</span>' +
+          '<div style="flex:1;min-width:0;">' +
+            '<div style="font-size:0.88rem;font-weight:700;color:#1a1a1a;">' + n.txt + '</div>' +
+            '<div style="font-size:0.72rem;color:#999;margin-top:0.2rem;">' + admTimeAgo(n.d) + '</div>' +
+          '</div>' +
+        '</div>'
+      ).join('');
+  } catch (e) {
+    console.error('[admRenderNotifications] Error:', e);
+  }
+}
+
+/** Open campaign detail page */
+function openDetail(id) {
+  try {
+    const c = CampaignService.getById(id);
+    if (!c) { console.warn('[openDetail] Campaign not found:', id); return; }
+
+    State.prevPage = State.currentPage;
+    State.detailCampId = id;
+
+    const txt = Models.getCampText(c);
+    const si  = Models.getStatusInfo(c.status);
+    const pct = c.needed ? Math.min(100, Math.round(((c.volunteers || 0) / c.needed) * 100)) : 0;
+
+    // Hero
+    const hero = document.getElementById('detailHero');
+    if (hero) {
+      hero.innerHTML = '';
+      hero.style.background = '';
+      if (c.img) {
+        const img = document.createElement('img');
+        img.src = c.img;
+        img.alt = txt.title;
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+        img.onerror = () => { hero.style.background = 'linear-gradient(135deg,#3a4a28,#5a6b3a)'; img.remove(); };
+        hero.appendChild(img);
+      } else {
+        hero.style.background = 'linear-gradient(135deg,#3a4a28,#5a6b3a)';
+      }
+      const overlay = document.createElement('div');
+      overlay.className = 'detail-hero-overlay';
+      hero.appendChild(overlay);
+
+      const backBtn = document.createElement('button');
+      backBtn.className = 'detail-back';
+      backBtn.id = 'detailBackBtn';
+      backBtn.textContent = State.lang === 'ar' ? '‹' : '›';
+      backBtn.addEventListener('click', goBack);
+      hero.appendChild(backBtn);
+    }
+
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    set('dCat',      txt.cat || '');
+    set('dTitle',    txt.title || '');
+    set('dDesc',     txt.desc || '');
+    set('dDate',     c.date || '');
+    set('dLoc',      c.location || '');
+    set('dVol',      `${c.volunteers || 0} / ${c.needed || 0}`);
+    set('dOrg',      c.creatorName || '');
+    set('dPhone',    c.creatorPhone ? `📞 ${c.creatorPhone}` : '');
+    set('dPct',      pct + '%');
+    set('dVolCount', `${c.volunteers || 0} ${t('of')} ${c.needed || 0}`);
+
+    const bar = document.getElementById('dBar');
+    if (bar) bar.style.width = pct + '%';
+
+    _updateDetailJoinBtn(id);
+    goPage('detail');
+  } catch (e) {
+    console.error('[openDetail] Error:', e);
+  }
+}
+
+function _updateDetailJoinBtn(id) {
+  const btn = document.getElementById('dJoinBtn');
+  if (!btn) return;
+  const c = CampaignService.getById(id);
+  if (!c) return;
+  const joined = (State.cu?.joinedCamps || []).includes(id);
+  btn.textContent = joined ? t('joinedBtn') : t('joinBtn');
+  btn.disabled    = joined || (c.status !== 'approved' && c.status !== 'under_process');
+  btn.onclick     = () => handleJoin(id);
+}
+
+/** Animate home stat counters */
+function animateCounters() {
+  try {
+    const users = UserService.getAll();
+    const camps = CampaignService.getAll();
+    const targets = {
+      cUsers: users.length,
+      cCamps: camps.filter(c => c.status === 'done').length,
+      cHours: users.reduce((s, u) => s + (u.volunteerHours || 0), 0),
+      cCities: 20
+    };
+    Object.entries(targets).forEach(([id, target]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      let count = 0;
+      const step = Math.max(1, Math.ceil(target / 60));
+      const timer = setInterval(() => {
+        count = Math.min(count + step, target);
+        el.textContent = id === 'cCities' ? count + '+' : count.toLocaleString('en-US');
+        if (count >= target) clearInterval(timer);
+      }, 22);
+    });
+  } catch (e) { console.error('[animateCounters] Error:', e); }
+}
+
+/* ══════════════════════════════════════════
+   10. NAVIGATION
+   ══════════════════════════════════════════ */
+function goPage(name) {
+  try {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
+
+    const pg = document.getElementById(name + 'Page');
+    const nb = document.getElementById('nav-' + name);
+    if (pg) pg.classList.add('active');
+    if (nb) nb.classList.add('active');
+
+    State.setPage(name);
+
+    if (name === 'home' || name === 'explore') renderCampaigns();
+    if (name === 'create') { renderCampaigns(); renderMyCamps(); }
+    if (name === 'profile') renderProfile();
+    if (name === 'admin')   renderAdmin();
+    window.scrollTo(0, 0);
+  } catch (e) { console.error('[goPage] Error:', e); }
+}
+
+function goBack() { goPage(State.prevPage || 'home'); }
+
+function toggleMenu(id) {
+  const body = document.getElementById(id);
+  const arr  = document.getElementById('arr-' + id);
+  if (!body) return;
+  const isOpen = body.style.display === 'block';
+  document.querySelectorAll('.menu-section-body').forEach(b => b.style.display = 'none');
+  document.querySelectorAll('[id^="arr-"]').forEach(a => a.textContent = '›');
+  if (!isOpen) { body.style.display = 'block'; if (arr) arr.textContent = '⌄'; }
+}
+
+function openModal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('open');
+  if (id === 'createModal') {
+    const today = new Date().toISOString().split('T')[0];
+    const di = document.getElementById('campDate');
+    if (di) { di.min = today; if (!di.value) di.value = today; }
+  }
+}
+
+function closeModal(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('open');
+}
+
+function switchTab(tab) {
+  State.activeAdminTab = tab;
+  ['accounts', 'campaigns', 'partners'].forEach(name => {
+    const panel = document.getElementById('admin' + name.charAt(0).toUpperCase() + name.slice(1));
+    const tabEl = document.getElementById('tab-' + name);
+    if (panel) panel.style.display = (name === tab) ? 'block' : 'none';
+    if (tabEl) tabEl.classList.toggle('active', name === tab);
+  });
+  renderAdmin();
+}
+
+/* ══════════════════════════════════════════
+   11. EVENT HANDLERS
+   ══════════════════════════════════════════ */
+
+/* ── I18N ── */
+function applyI18n() {
+  try {
+    const isAr = State.lang === 'ar';
+    document.documentElement.lang = State.lang;
+    document.documentElement.dir  = isAr ? 'rtl' : 'ltr';
+    document.documentElement.setAttribute('data-lang', State.lang);
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (T[State.lang][key] !== undefined) el.textContent = T[State.lang][key];
+    });
+    document.querySelectorAll('[data-i18n-opt]').forEach(el => {
+      const key = el.getAttribute('data-i18n-opt');
+      if (T[State.lang][key] !== undefined) el.textContent = T[State.lang][key];
+    });
+    const langBtn = document.getElementById('langBtn');
+    if (langBtn) langBtn.textContent = isAr ? 'EN' : 'ع';
+    const backBtn = document.getElementById('detailBackBtn');
+    if (backBtn) backBtn.textContent = isAr ? '‹' : '›';
+    // Refresh rendered content for language change
+    const page = State.currentPage;
+    if (page === 'home' || page === 'explore') renderCampaigns();
+    if (page === 'profile') renderProfile();
+    if (page === 'admin')   renderAdmin();
+  } catch (e) { console.error('[applyI18n] Error:', e); }
+}
+
+function toggleLang() {
+  State.setLang(State.lang === 'ar' ? 'en' : 'ar');
+  applyI18n();
+}
+
+/* ── AUTH ── */
+async function doSignup(e) {
+  e.preventDefault();
+  const form = e.target;
+  const btn  = form.querySelector('.submit-btn');
+  clearFieldErrors(form);
+
+  const data = {
+    name:     form.querySelector('[name="name"]')?.value    || '',
+    email:    form.querySelector('[name="email"]')?.value   || '',
+    password: form.querySelector('[name="password"]')?.value || '',
+    phone:    form.querySelector('[name="phone"]')?.value   || '',
+    country:  form.querySelector('[name="country"]')?.value || '',
+    city:     form.querySelector('[name="city"]')?.value    || '',
+    dob:      form.querySelector('[name="dob"]')?.value     || '',
+    special:  form.querySelector('[name="special"]')?.value || ''
+  };
+
+  // Validate
+  const { valid, errors } = Validators.signup(data);
+  if (!valid) {
+    Object.entries(errors).forEach(([field, msg]) => showFieldError(form, field, msg));
+    btn && (btn.disabled = false);
+    return;
+  }
+
+  // Check uniqueness
+  if (UserService.getByEmail(data.email)) {
+    showFieldError(form, 'email', t('errorEmail'));
+    return;
+  }
+
+  setLoading(btn, true);
+  try {
+    const ppFile = form.querySelector('[name="profilePic"]');
+    const idFile = form.querySelector('[name="idPhoto"]');
+    const pp = ppFile?.files[0] ? await b64(ppFile.files[0]) : null;
+    const id = idFile?.files[0] ? await b64(idFile.files[0]) : null;
+
+    const user = Models.createUser({ ...data, profilePic: pp, idPhoto: id });
+    const users = UserService.getAll();
+    users.push(user);
+    UserService.save(users);
+
+    closeModal('signupModal');
+    form.reset();
+    toast(t('successAccount') + ' — ' + t('errorStatus'), 'success');
+  } catch (err) {
+    console.error('[doSignup] Error:', err);
+    toast(State.lang === 'ar' ? 'حدث خطأ، حاول مجدداً' : 'An error occurred, please try again', 'error');
+  }
+  setLoading(btn, false);
+}
+
+function doLogin(e) {
+  e.preventDefault();
+  const form  = e.target;
+  clearFieldErrors(form);
+  const identifier = form.querySelector('[name="email"]')?.value?.trim()    || '';
+  const password   = form.querySelector('[name="password"]')?.value?.trim() || '';
+
+  if (!identifier || !password) {
+    if (!identifier) showFieldError(form, 'email', t('errorRequired'));
+    if (!password)   showFieldError(form, 'password', t('errorRequired'));
+    return;
+  }
+
+  // Admin check
+  if (identifier === CONFIG.ADMIN_EMAIL && password === CONFIG.ADMIN_PASS) {
+    const adminUser = { id: 'admin', name: 'Admin', email: CONFIG.ADMIN_EMAIL, status: 'approved', volunteerHours: 0, activitiesJoined: 0, achievements: 0, joinedCamps: [] };
+    State.setUser(adminUser);
+    DB.setObj(CONFIG.DB_KEYS.SESSION, adminUser);
+    closeModal('loginModal');
+    enterApp();
+    return;
+  }
+
+  // Regular user check
+  const users = UserService.getAll();
+  const u = users.find(u =>
+    (u.email === identifier.toLowerCase() || u.phone === identifier || u.name === identifier) &&
+    u.password === password
+  );
+
+  if (!u) {
+    showFieldError(form, 'email', t('errorLogin'));
+    showFieldError(form, 'password', ' ');
+    return;
+  }
+
+  if (u.status === 'rejected') {
+    toast(t('rejectedBanner'), 'error');
+    return;
+  }
+
+  State.setUser(u);
+  DB.setObj(CONFIG.DB_KEYS.SESSION, u);
+  closeModal('loginModal');
+  enterApp();
+}
+
+function doLogout() {
+  State.setUser(null);
+  State.isAdmin = false;
+  DB.remove(CONFIG.DB_KEYS.SESSION);
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('appScreen').classList.remove('show');
+  document.getElementById('navbar').style.display = 'none';
+  document.getElementById('bottomNav').classList.remove('show');
+}
+
+function enterApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appScreen').classList.add('show');
+  document.getElementById('navbar').style.display = 'block';
+  document.getElementById('bottomNav').classList.add('show');
+
+  const ut = document.getElementById('userTag');
+  if (ut) { ut.textContent = State.cu.name; ut.classList.add('show'); }
+  const lb = document.getElementById('logoutBtn');
+  if (lb) lb.style.display = 'block';
+
+  const adminNav = document.getElementById('nav-admin');
+  if (adminNav) adminNav.style.display = State.isAdmin ? 'flex' : 'none';
+
+  goPage('home');
+  animateCounters();
+}
+
+/* ── CAMPAIGNS ── */
+async function doCreate(e) {
+  e.preventDefault();
+  const form = e.target;
+  const btn  = form.querySelector('.submit-btn');
+  clearFieldErrors(form);
+
+  if (!State.isAdmin && State.cu?.status !== 'approved') {
+    toast(t('errorStatus'), 'warning');
+    return;
+  }
+
+  const data = {
+    title:    form.querySelector('[name="title"]')?.value    || '',
+    category: form.querySelector('[name="category"]')?.value || '',
+    location: form.querySelector('[name="location"]')?.value || '',
+    date:     form.querySelector('[name="date"]')?.value     || '',
+    needed:   form.querySelector('[name="needed"]')?.value   || '',
+    hours:    form.querySelector('[name="hours"]')?.value    || '2',
+    desc:     form.querySelector('[name="desc"]')?.value     || ''
+  };
+
+  const { valid, errors } = Validators.campaign(data);
+  if (!valid) {
+    Object.entries(errors).forEach(([field, msg]) => showFieldError(form, field, msg));
+    return;
+  }
+
+  setLoading(btn, true);
+  try {
+    const imgFile = form.querySelector('[name="img"]');
+    const img = imgFile?.files[0] ? await b64(imgFile.files[0]) : null;
+
+    const camp = Models.createCampaign({ ...data, img }, State.cu, State.isAdmin);
+    CampaignService.add(camp);
+
+    // Increment activity count for creator
+    UserService.updateById(State.cu.id, {
+      activitiesJoined: (State.cu.activitiesJoined || 0) + 1
+    });
+
+    closeModal('createModal');
+    form.reset();
+    toast(State.isAdmin ? t('campCreated') : t('campPending'), 'success');
+    renderCampaigns();
+    renderMyCamps();
+  } catch (err) {
+    console.error('[doCreate] Error:', err);
+    toast(State.lang === 'ar' ? 'حدث خطأ' : 'An error occurred', 'error');
+  }
+  setLoading(btn, false);
+}
+
+function handleJoin(id) {
+  const result = CampaignService.join(id, State.cu);
+  if (result.success) {
+    toast(result.message, 'success');
+    if (result.updatedUser) State.setUser(result.updatedUser);
+    renderCampaigns();
+    _updateDetailJoinBtn(id);
+    animateCounters();
+  } else {
+    toast(result.message, 'warning');
+  }
+}
+
+/* ── ADMIN ACTIONS ── */
+function handleApproveUser(id) {
+  const result = UserService.approve(id);
+  if (result) { toast(t('approved'), 'success'); renderAdmin(); }
+}
+
+function handleRejectUser(id) {
+  const result = UserService.reject(id);
+  if (result) { toast(t('rejected'), 'warning'); renderAdmin(); }
+}
+
+function handleApproveCamp(id) {
+  CampaignService.approve(id);
+  toast(t('approved'), 'success');
+  renderAdmin();
+  renderCampaigns();
+}
+
+function handleRejectCamp(id) {
+  CampaignService.reject(id);
+  toast(t('rejected'), 'warning');
+  renderAdmin();
+  renderCampaigns();
+}
+
+function handleCampUnderProcess(id) {
+  CampaignService.markUnderProcess(id);
+  toast(t('campStatusUpdated'), 'success');
+  renderAdmin();
+  renderCampaigns();
+}
+
+function handleCampDone(id) {
+  CampaignService.markDone(id);
+  toast(t('campDoneMsg'), 'success');
+  renderAdmin();
+  renderCampaigns();
+  animateCounters();
+}
+
+/* ── PROFILE ── */
+async function uploadAvatar(event) {
+  const file = event.target.files[0];
+  if (!file || !State.cu || State.isAdmin) return;
+  try {
+    const data  = await b64(file);
+    const result = UserService.updateById(State.cu.id, { profilePic: data });
+    if (result) {
+      toast(t('photoUpdated'), 'success');
+      renderProfile();
+    }
+  } catch (e) {
+    console.error('[uploadAvatar] Error:', e);
+    toast(t('uploadError'), 'error');
+  }
+  event.target.value = '';
+}
+
+/* ── PARTNER FORM ── */
+function submitPartner(e) {
+  e.preventDefault();
+  const form = e.target;
+  const btn  = form.querySelector('.submit-btn') || form.querySelector('button[type="submit"]');
+  clearFieldErrors(form);
+
+  const data = {
+    org:     form.querySelector('[name="org"]')?.value     || '',
+    contact: form.querySelector('[name="contact"]')?.value || '',
+    email:   form.querySelector('[name="email"]')?.value   || '',
+    phone:   form.querySelector('[name="phone"]')?.value   || '',
+    type:    form.querySelector('[name="type"]')?.value    || '',
+    msg:     form.querySelector('[name="msg"]')?.value     || ''
+  };
+
+  const { valid, errors } = Validators.partner(data);
+  if (!valid) {
+    Object.entries(errors).forEach(([field, msg]) => showFieldError(form, field, msg));
+    return;
+  }
+
+  setLoading(btn, true);
+  const partner = Models.createPartner(data);
+  PartnerService.add(partner);
+  form.reset();
+  toast(t('successSent'), 'success');
+  setLoading(btn, false);
+}
+
+/* ══════════════════════════════════════════
+   12. INITIALIZATION
+   ══════════════════════════════════════════ */
+function initData() {
+  if (DB.getObj(CONFIG.DB_KEYS.VERSION) === CONFIG.SCHEMA_VERSION) return;
+
+  DB.set(CONFIG.DB_KEYS.USERS, [
+    { id:'u001', name:'أحمد السيد',   email:'ahmed@test.com',  password:'Test123!', phone:'0912345678', country:'سوريا', city:'دمشق',  dob:'1999-03-15', special:'', profilePic:null, idPhoto:null, status:'approved', volunteerHours:12, activitiesJoined:3, achievements:1, joinedCamps:[], campHours:{}, joinedDate:'2024-01-10', createdAt:'2024-01-08T10:00:00.000Z', updatedAt:'2024-01-08T10:00:00.000Z' },
+    { id:'u002', name:'فاطمة الزهراء',email:'fatima@test.com', password:'Test123!', phone:'0923456789', country:'سوريا', city:'حلب',   dob:'2000-07-22', special:'', profilePic:null, idPhoto:null, status:'approved', volunteerHours:8,  activitiesJoined:2, achievements:0, joinedCamps:[], campHours:{}, joinedDate:'2024-01-15', createdAt:'2024-01-12T09:00:00.000Z', updatedAt:'2024-01-12T09:00:00.000Z' },
+    { id:'u003', name:'محمد الحسن',   email:'hassan@test.com', password:'Test123!', phone:'0934567890', country:'سوريا', city:'حمص',   dob:'1997-11-05', special:'', profilePic:null, idPhoto:null, status:'pending',  volunteerHours:0,  activitiesJoined:0, achievements:0, joinedCamps:[], campHours:{}, joinedDate:null, createdAt:'2024-02-01T14:00:00.000Z', updatedAt:'2024-02-01T14:00:00.000Z' },
+    { id:'u004', name:'سارة محمود',   email:'sara@test.com',   password:'Test123!', phone:'0945678901', country:'سوريا', city:'اللاذقية', dob:'2001-04-18', special:'', profilePic:null, idPhoto:null, status:'pending', volunteerHours:0, activitiesJoined:0, achievements:0, joinedCamps:[], campHours:{}, joinedDate:null, createdAt:'2024-02-10T11:00:00.000Z', updatedAt:'2024-02-10T11:00:00.000Z' },
+    { id:'u005', name:'خالد إبراهيم', email:'khalid@test.com', password:'Test123!', phone:'0956789012', country:'سوريا', city:'دير الزور', dob:'1998-09-30', special:'', profilePic:null, idPhoto:null, status:'approved', volunteerHours:20, activitiesJoined:5, achievements:2, joinedCamps:[], campHours:{}, joinedDate:'2024-01-20', createdAt:'2024-01-18T08:00:00.000Z', updatedAt:'2024-01-18T08:00:00.000Z' },
+    { id:'u006', name:'ليلى أحمد',    email:'layla@test.com',  password:'Test123!', phone:'0967890123', country:'سوريا', city:'حماة',  dob:'2002-12-03', special:'', profilePic:null, idPhoto:null, status:'rejected', volunteerHours:0, activitiesJoined:0, achievements:0, joinedCamps:[], campHours:{}, joinedDate:null, createdAt:'2024-02-15T16:00:00.000Z', updatedAt:'2024-02-15T16:00:00.000Z' },
+    { id:'u007', name:'عمر الرشيد',   email:'omar@test.com',   password:'Test123!', phone:'0978901234', country:'سوريا', city:'القامشلي', dob:'1996-06-14', special:'', profilePic:null, idPhoto:null, status:'pending', volunteerHours:0, activitiesJoined:0, achievements:0, joinedCamps:[], campHours:{}, joinedDate:null, createdAt:'2024-02-20T13:00:00.000Z', updatedAt:'2024-02-20T13:00:00.000Z' },
+    { id:'u008', name:'نور الدين',    email:'nour@test.com',   password:'Test123!', phone:'0989012345', country:'سوريا', city:'طرطوس', dob:'1999-02-25', special:'', profilePic:null, idPhoto:null, status:'pending', volunteerHours:0, activitiesJoined:0, achievements:0, joinedCamps:[], campHours:{}, joinedDate:null, createdAt:'2024-02-25T10:00:00.000Z', updatedAt:'2024-02-25T10:00:00.000Z' }
+  ]);
+
+  DB.set(CONFIG.DB_KEYS.CAMPS, [
+    { id:'c001', ar:{title:'تنظيف شاطئ الرمل الذهبي',desc:'نحتاج إلى متطوعين لتنظيف شاطئ الرمل الذهبي وإزالة النفايات المتراكمة.',cat:'تنظيف'}, en:{title:'Clean the Golden Beach',desc:'We need volunteers to clean Golden Beach and remove accumulated waste.',cat:'Cleaning'}, category:'cleaning', location:'اللاذقية', date:'2026-07-15', needed:30, volunteers:8, volunteerHours:4, status:'approved', createdBy:'admin', creatorName:'Admin', creatorPhone:'', img:null, joinedUsers:[], campHours:{}, createdAt:'2026-06-01T10:00:00.000Z', updatedAt:'2026-06-01T10:00:00.000Z' },
+    { id:'c002', ar:{title:'زراعة أشجار في حديقة الشهداء',desc:'مبادرة لزراعة 200 شجرة في حديقة الشهداء لتحسين البيئة.',cat:'تشجير'}, en:{title:'Plant Trees in Martyrs Park',desc:'An initiative to plant 200 trees in Martyrs Park to improve the environment.',cat:'Planting'}, category:'planting', location:'دمشق', date:'2026-08-10', needed:50, volunteers:22, volunteerHours:3, status:'approved', createdBy:'admin', creatorName:'Admin', creatorPhone:'', img:null, joinedUsers:[], campHours:{}, createdAt:'2026-06-05T10:00:00.000Z', updatedAt:'2026-06-05T10:00:00.000Z' },
+    { id:'c003', ar:{title:'دعم أطفال الأحياء الشعبية',desc:'توزيع الكتب واللوازم المدرسية على الأطفال المحتاجين.',cat:'دعم'}, en:{title:'Support Children in Local Communities',desc:'Distributing books and school supplies to children in need.',cat:'Support'}, category:'support', location:'حلب', date:'2026-09-01', needed:20, volunteers:5, volunteerHours:5, status:'pending', createdBy:'u001', creatorName:'أحمد السيد', creatorPhone:'0912345678', img:null, joinedUsers:[], campHours:{}, createdAt:'2026-06-08T10:00:00.000Z', updatedAt:'2026-06-08T10:00:00.000Z' }
+  ]);
+
+  DB.set(CONFIG.DB_KEYS.PARTNERS, [
+    { id:'p001', org:'منظمة الأمل للتنمية', contact:'سامر الخطيب', email:'samer@amal.org', phone:'0911223344', type:'ngo', msg:'نريد دعم حملاتكم البيئية وتوفير المعدات اللازمة.', status:'pending', date:'2026-06-01T10:00:00.000Z' },
+    { id:'p002', org:'شركة المستقبل للتكنولوجيا', contact:'رنا العلي', email:'rana@mustaqbal.com', phone:'0922334455', type:'private', msg:'يسعدنا الشراكة معكم في مبادرات التعليم والتقنية.', status:'pending', date:'2026-06-03T10:00:00.000Z' },
+    { id:'p003', org:'بلدية دمشق', contact:'المهندس طارق نور', email:'tarek@damascus.gov.sy', phone:'0933445566', type:'gov', msg:'نقدم دعماً لوجستياً لجميع المبادرات البيئية.', status:'pending', date:'2026-06-05T10:00:00.000Z' }
+  ]);
+
+  DB.setObj(CONFIG.DB_KEYS.VERSION, CONFIG.SCHEMA_VERSION);
+  console.log('[ATHAR] Data initialized — schema v' + CONFIG.SCHEMA_VERSION);
+}
+
+/* ── BOOTSTRAP ── */
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    initData();
+    applyI18n();
+
+    // Restore session
+    const session = DB.getObj(CONFIG.DB_KEYS.SESSION);
+    if (session && session.id) {
+      // Sync with latest user data from DB (admin stays as-is)
+      const freshUser = session.email === CONFIG.ADMIN_EMAIL
+        ? session
+        : (UserService.getById(session.id) || session);
+      State.setUser(freshUser);
+      enterApp();
+    }
+
+    // Attach modal backdrop close handlers
+    document.querySelectorAll('.modal-overlay').forEach(m => {
+      m.addEventListener('click', e => {
+        if (e.target === m) m.classList.remove('open');
+      });
+    });
+  } catch (e) {
+    console.error('[ATHAR Bootstrap] Fatal error:', e);
+  }
+});
+</script>
+</body>
+</html>
