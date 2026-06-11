@@ -2826,6 +2826,16 @@ const CONFIG = {
     pending:  { ar: 'قيد المراجعة', en: 'Pending Review' },
     approved: { ar: 'مفعّل',        en: 'Active'         },
     rejected: { ar: 'مرفوض',        en: 'Rejected'       }
+  },
+
+  // Scalable role system (Phase 2). Do NOT hardcode roles elsewhere — read here.
+  DEFAULT_ROLE: 'volunteer',
+  ROLES: {
+    volunteer:       { ar: 'متطوّع',     en: 'Volunteer',       level: 1,  permissions: ['view', 'join_campaign', 'create_campaign'] },
+    campaign_leader: { ar: 'قائد حملة',  en: 'Campaign Leader', level: 2,  permissions: ['view', 'join_campaign', 'create_campaign', 'manage_own_campaign'] },
+    partner:         { ar: 'شريك',       en: 'Partner',         level: 2,  permissions: ['view', 'partner_dashboard'] },
+    moderator:       { ar: 'مشرف',       en: 'Moderator',       level: 5,  permissions: ['view', 'join_campaign', 'create_campaign', 'moderate', 'approve_campaign'] },
+    admin:           { ar: 'أدمن',       en: 'Admin',           level: 10, permissions: ['*'] }
   }
 };
 
@@ -3139,6 +3149,11 @@ const Models = {
       profilePic:      data.profilePic || null,
       idPhoto:         data.idPhoto    || null,
       status:          'pending',
+      role:            data.role || CONFIG.DEFAULT_ROLE,
+      verification: {
+        email: { verified: false, code: null, sentAt: null },
+        phone: { verified: false, code: null, sentAt: null }
+      },
       volunteerHours:  0,
       activitiesJoined:0,
       achievements:    0,
@@ -3228,7 +3243,7 @@ const State = {
   },
   setUser(user) {
     this.cu = user;
-    this.isAdmin = (user && user.email === CONFIG.ADMIN_EMAIL);
+    this.isAdmin = Permissions.isAdmin(user);
   },
   setPage(name) {
     this.prevPage = this.currentPage;
@@ -3279,6 +3294,114 @@ const UserService = {
 
   approve(id) { return this.updateById(id, { status: 'approved', joinedDate: new Date().toISOString() }); },
   reject(id)  { return this.updateById(id, { status: 'rejected' }); }
+};
+
+/* ── ROLES & PERMISSIONS (Phase 2 — scalable, no hardcoded roles) ── */
+const Permissions = {
+  roleOf(user) {
+    if (!user) return null;
+    if (user.email === CONFIG.ADMIN_EMAIL) return 'admin';
+    return user.role || CONFIG.DEFAULT_ROLE;
+  },
+  meta(role) { return CONFIG.ROLES[role] || CONFIG.ROLES[CONFIG.DEFAULT_ROLE]; },
+  roleLabel(user) {
+    const m = this.meta(this.roleOf(user) || CONFIG.DEFAULT_ROLE);
+    return State.lang === 'ar' ? m.ar : m.en;
+  },
+  can(user, action) {
+    const role = this.roleOf(user);
+    if (!role) return false;
+    const perms = this.meta(role).permissions || [];
+    return perms.includes('*') || perms.includes(action);
+  },
+  hasRole(user, role) { return this.roleOf(user) === role; },
+  isAdmin(user) { return this.roleOf(user) === 'admin'; }
+};
+
+/* ── OTP / VERIFICATION (Phase 2 — stub, backend/SMS-ready architecture) ── */
+const OtpService = {
+  generate() { return String(Math.floor(100000 + Math.random() * 900000)); },
+  send(userId, channel) {
+    const user = UserService.getById(userId);
+    if (!user || !user.verification || !user.verification[channel]) return null;
+    const code = this.generate();
+    user.verification[channel].code = code;
+    user.verification[channel].sentAt = new Date().toISOString();
+    UserService.updateById(userId, { verification: user.verification });
+    return code; // a real backend sends via email/SMS; returned here for stub/testing
+  },
+  verify(userId, channel, code) {
+    const user = UserService.getById(userId);
+    if (!user || !user.verification || !user.verification[channel]) return false;
+    if (String(user.verification[channel].code) !== String(code)) return false;
+    user.verification[channel].verified = true;
+    user.verification[channel].code = null;
+    UserService.updateById(userId, { verification: user.verification });
+    return true;
+  }
+};
+
+/* ── AUTH (Phase 2 — single source of truth for auth flows) ── */
+const AuthService = {
+  buildAdminUser() {
+    return { id: 'admin', name: 'Admin', email: CONFIG.ADMIN_EMAIL, role: 'admin',
+             status: 'approved', volunteerHours: 0, activitiesJoined: 0, achievements: 0, joinedCamps: [] };
+  },
+  startSession(user) {
+    State.setUser(user);
+    DB.setObj(CONFIG.DB_KEYS.SESSION, user);
+    return user;
+  },
+  restoreSession() {
+    const session = DB.getObj(CONFIG.DB_KEYS.SESSION);
+    if (!session || !session.id) return null;
+    const fresh = (session.email === CONFIG.ADMIN_EMAIL) ? session : (UserService.getById(session.id) || session);
+    State.setUser(fresh);
+    return fresh;
+  },
+  login(identifier, password) {
+    identifier = String(identifier || '').trim();
+    password   = String(password || '').trim();
+    if (!identifier || !password) return { ok: false, error: 'required' };
+    if (identifier === CONFIG.ADMIN_EMAIL && password === CONFIG.ADMIN_PASS) {
+      return { ok: true, user: this.buildAdminUser() };
+    }
+    const id = identifier.toLowerCase();
+    const u = UserService.getAll().find(x =>
+      (x.email === id || x.phone === identifier || x.name === identifier) && x.password === password);
+    if (!u) return { ok: false, error: 'invalid' };
+    if (u.status === 'rejected') return { ok: false, error: 'rejected', user: u };
+    return { ok: true, user: u, status: u.status };
+  },
+  register(data) {
+    const { valid, errors } = Validators.signup(data);
+    if (!valid) return { ok: false, errors };
+    if (UserService.getByEmail(data.email)) return { ok: false, errors: { email: t('errorEmail') } };
+    const user = Models.createUser(data);
+    const users = UserService.getAll();
+    users.push(user);
+    UserService.save(users);
+    return { ok: true, user };
+  },
+  logout() {
+    State.setUser(null);
+    DB.remove(CONFIG.DB_KEYS.SESSION);
+  },
+  // Phase 2.5 (forgot password) — architecture-ready
+  requestReset(identifier) {
+    const u = UserService.getByEmail(identifier) || UserService.getByPhone(identifier);
+    if (!u) return { ok: false, error: 'not_found' };
+    const channel = Validators.isEmail(identifier) ? 'email' : 'phone';
+    const code = OtpService.send(u.id, channel);
+    return { ok: true, userId: u.id, channel, code };
+  },
+  resetPassword(userId, code, newPassword) {
+    const u = UserService.getById(userId);
+    if (!u) return { ok: false, error: 'not_found' };
+    if (!Validators.isPassword(newPassword)) return { ok: false, error: 'weak' };
+    UserService.updateById(userId, { password: newPassword });
+    return { ok: true };
+  }
 };
 
 const CampaignService = {
@@ -4516,15 +4639,13 @@ async function doSignup(e) {
     special:  form.querySelector('[name="special"]')?.value || ''
   };
 
-  // Validate
+  // Validate (early, before loading/file reads)
   const { valid, errors } = Validators.signup(data);
   if (!valid) {
     Object.entries(errors).forEach(([field, msg]) => showFieldError(form, field, msg));
     btn && (btn.disabled = false);
     return;
   }
-
-  // Check uniqueness
   if (UserService.getByEmail(data.email)) {
     showFieldError(form, 'email', t('errorEmail'));
     return;
@@ -4534,13 +4655,15 @@ async function doSignup(e) {
   try {
     const ppFile = form.querySelector('[name="profilePic"]');
     const idFile = form.querySelector('[name="idPhoto"]');
-    const pp = ppFile?.files[0] ? await b64(ppFile.files[0]) : null;
-    const id = idFile?.files[0] ? await b64(idFile.files[0]) : null;
+    data.profilePic = ppFile?.files[0] ? await b64(ppFile.files[0]) : null;
+    data.idPhoto    = idFile?.files[0] ? await b64(idFile.files[0]) : null;
 
-    const user = Models.createUser({ ...data, profilePic: pp, idPhoto: id });
-    const users = UserService.getAll();
-    users.push(user);
-    UserService.save(users);
+    const res = AuthService.register(data);
+    if (!res.ok) {
+      Object.entries(res.errors).forEach(([field, msg]) => showFieldError(form, field, msg));
+      setLoading(btn, false);
+      return;
+    }
 
     closeModal('signupModal');
     form.reset();
@@ -4556,53 +4679,30 @@ function doLogin(e) {
   e.preventDefault();
   const form  = e.target;
   clearFieldErrors(form);
-  const identifier = form.querySelector('[name="email"]')?.value?.trim()    || '';
-  const password   = form.querySelector('[name="password"]')?.value?.trim() || '';
+  const identifier = form.querySelector('[name="email"]')?.value    || '';
+  const password   = form.querySelector('[name="password"]')?.value || '';
 
-  if (!identifier || !password) {
-    if (!identifier) showFieldError(form, 'email', t('errorRequired'));
-    if (!password)   showFieldError(form, 'password', t('errorRequired'));
+  const res = AuthService.login(identifier, password);
+  if (!res.ok) {
+    if (res.error === 'required') {
+      if (!identifier.trim()) showFieldError(form, 'email', t('errorRequired'));
+      if (!password.trim())   showFieldError(form, 'password', t('errorRequired'));
+    } else if (res.error === 'rejected') {
+      toast(t('rejectedBanner'), 'error');
+    } else {
+      showFieldError(form, 'email', t('errorLogin'));
+      showFieldError(form, 'password', ' ');
+    }
     return;
   }
 
-  // Admin check
-  if (identifier === CONFIG.ADMIN_EMAIL && password === CONFIG.ADMIN_PASS) {
-    const adminUser = { id: 'admin', name: 'Admin', email: CONFIG.ADMIN_EMAIL, status: 'approved', volunteerHours: 0, activitiesJoined: 0, achievements: 0, joinedCamps: [] };
-    State.setUser(adminUser);
-    DB.setObj(CONFIG.DB_KEYS.SESSION, adminUser);
-    closeModal('loginModal');
-    enterApp();
-    return;
-  }
-
-  // Regular user check
-  const users = UserService.getAll();
-  const u = users.find(u =>
-    (u.email === identifier.toLowerCase() || u.phone === identifier || u.name === identifier) &&
-    u.password === password
-  );
-
-  if (!u) {
-    showFieldError(form, 'email', t('errorLogin'));
-    showFieldError(form, 'password', ' ');
-    return;
-  }
-
-  if (u.status === 'rejected') {
-    toast(t('rejectedBanner'), 'error');
-    return;
-  }
-
-  State.setUser(u);
-  DB.setObj(CONFIG.DB_KEYS.SESSION, u);
+  AuthService.startSession(res.user);
   closeModal('loginModal');
   enterApp();
 }
 
 function doLogout() {
-  State.setUser(null);
-  State.isAdmin = false;
-  DB.remove(CONFIG.DB_KEYS.SESSION);
+  AuthService.logout();
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('appScreen').classList.remove('show');
   document.getElementById('navbar').style.display = 'none';
@@ -4820,14 +4920,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initData();
     applyI18n();
 
-    // Restore session
-    const session = DB.getObj(CONFIG.DB_KEYS.SESSION);
-    if (session && session.id) {
-      // Sync with latest user data from DB (admin stays as-is)
-      const freshUser = session.email === CONFIG.ADMIN_EMAIL
-        ? session
-        : (UserService.getById(session.id) || session);
-      State.setUser(freshUser);
+    // Restore session (centralized in AuthService)
+    if (AuthService.restoreSession()) {
       enterApp();
     }
 
