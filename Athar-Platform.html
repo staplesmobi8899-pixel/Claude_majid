@@ -2345,6 +2345,28 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
 .stub-ico svg { width: 32px; height: 32px; fill: none; stroke: currentColor; stroke-width: 1.7; }
 .stub-empty h3 { font-size: var(--fs-md); font-weight: 800; color: var(--charcoal); margin-bottom: var(--sp-2); }
 .stub-empty p { font-size: var(--fs-sm); color: var(--charcoal-50); line-height: 1.8; }
+
+/* ── PHASE 3 — notifications bell + list ── */
+.nav-bell { position: relative; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 36px; height: 36px; border-radius: var(--r-full); border: none; background: transparent;
+  color: var(--olive); cursor: pointer; padding: 0; transition: background 0.2s; }
+.nav-bell:hover { background: var(--sand); }
+.nav-bell svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 2; }
+.nav-bell-badge { position: absolute; top: 1px; inset-inline-end: 1px; min-width: 16px; height: 16px; padding: 0 4px;
+  display: none; align-items: center; justify-content: center; border-radius: var(--r-full);
+  background: var(--red); color: #fff; font-size: 0.6rem; font-weight: 800; line-height: 1;
+  border: 1.5px solid var(--warm-white); }
+.nav-bell-badge.show { display: inline-flex; }
+
+.notif-list { max-width: var(--content-max); margin: 0 auto; padding: var(--sp-2) var(--sp-4) var(--sp-7); }
+.notif-item { display: flex; gap: var(--sp-3); align-items: flex-start; padding: var(--sp-4);
+  border-radius: var(--r-lg); background: var(--white); border: 1px solid rgba(232,217,196,0.5); margin-bottom: var(--sp-3); }
+.notif-item.unread { background: var(--olive-pale); border-color: rgba(90,107,58,0.22); }
+.notif-dot { width: 8px; height: 8px; border-radius: var(--r-full); background: var(--charcoal-20); margin-top: 6px; flex: none; }
+.notif-item.unread .notif-dot { background: var(--olive); }
+.notif-body { flex: 1; min-width: 0; }
+.notif-text { font-size: var(--fs-sm); color: var(--charcoal); line-height: 1.6; }
+.notif-time { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: var(--sp-1); }
 </style>
 </head>
 <body>
@@ -2360,6 +2382,10 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
     </div>
     <div class="nav-end">
       <span class="user-tag" id="userTag"></span>
+      <button class="nav-bell" id="navBell" onclick="goPage('notifications')" aria-label="notifications">
+        <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="nav-bell-badge" id="bellBadge"></span>
+      </button>
       <button class="pill-btn" id="langBtn" onclick="toggleLang()">EN</button>
       <button class="pill-btn pill-btn-red" id="logoutBtn" onclick="doLogout()" style="display:none;" data-i18n="logout"></button>
     </div>
@@ -2712,15 +2738,6 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
           <div id="hoursBox"></div>
         </div>
 
-        <div class="menu-row" onclick="goPage('about')">
-          <div class="menu-icon">ℹ️</div>
-          <div class="menu-texts">
-            <div class="menu-title" data-i18n="navAbout"></div>
-            <div class="menu-sub" data-i18n="aboutRowSub"></div>
-          </div>
-          <div class="menu-arrow">›</div>
-        </div>
-
         <div class="menu-row" id="menuAdminRow" style="display:none;" onclick="goPage('admin')">
           <div class="menu-icon">🛠️</div>
           <div class="menu-texts">
@@ -2831,11 +2848,7 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
       <h1 data-i18n="notifTitle"></h1>
       <p data-i18n="notifSub"></p>
     </div>
-    <div class="stub-empty">
-      <div class="stub-ico"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
-      <h3 data-i18n="notifEmptyTitle"></h3>
-      <p data-i18n="notifEmptyMsg"></p>
-    </div>
+    <div id="notifList"></div>
   </div>
 
 
@@ -3054,9 +3067,9 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
       <span class="nav-btn-text" data-i18n="navCommunity"></span>
     </button>
-    <button class="nav-btn" id="nav-notifications" onclick="goPage('notifications')">
-      <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-      <span class="nav-btn-text" data-i18n="navNotifications"></span>
+    <button class="nav-btn" id="nav-about" onclick="goPage('about')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <span class="nav-btn-text" data-i18n="navAbout"></span>
     </button>
     <button class="nav-btn" id="nav-profile" onclick="goPage('profile')">
       <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -3212,6 +3225,7 @@ const CONFIG = {
     CAMPS:    'athar_camps',
     PARTNERS: 'athar_partners',
     SESSION:  'athar_session',
+    NOTIFS:   'athar_notifs',
     VERSION:  'athar_version'
   },
   CAMP_CATEGORIES: {
@@ -3822,8 +3836,38 @@ const UserService = {
     return users[idx];
   },
 
-  approve(id) { return this.updateById(id, { status: 'approved', joinedDate: new Date().toISOString() }); },
+  approve(id) {
+    const r = this.updateById(id, { status: 'approved', joinedDate: new Date().toISOString() });
+    NotificationService.add(id, 'تم تفعيل حسابك! أهلاً بك في أثر.', 'Your account is now active! Welcome to ATHAR.', 'approval');
+    return r;
+  },
   reject(id)  { return this.updateById(id, { status: 'rejected' }); }
+};
+
+/* ── NOTIFICATIONS (Phase 3 — per-user, unread badge) ── */
+const NotificationService = {
+  _all() { return DB.getObj(CONFIG.DB_KEYS.NOTIFS) || {}; },
+  _save(m) { DB.setObj(CONFIG.DB_KEYS.NOTIFS, m); },
+  getFor(uid) { return (uid && this._all()[uid]) || []; },
+  add(uid, ar, en, type) {
+    if (!uid) return;
+    const m = this._all();
+    if (!m[uid]) m[uid] = [];
+    m[uid].push({ id: 'n' + Date.now() + Math.random().toString(36).slice(2, 5),
+      ar, en, type: type || 'info', read: false, createdAt: new Date().toISOString() });
+    this._save(m);
+  },
+  unreadCount(uid) { return this.getFor(uid).filter(n => !n.read).length; },
+  markAllRead(uid) {
+    const m = this._all(); if (!uid || !m[uid]) return;
+    m[uid].forEach(n => { n.read = true; }); this._save(m);
+  },
+  ensureWelcome(user) {
+    if (!user || !user.id || user.isGuest || user.email === CONFIG.ADMIN_EMAIL) return;
+    if (this.getFor(user.id).length) return;
+    this.add(user.id, 'أهلاً بك في أثر 👋 رحلتك في صناعة الأثر بدأت.',
+                       'Welcome to ATHAR 👋 Your impact journey begins.', 'welcome');
+  }
 };
 
 /* ── ROLES & PERMISSIONS (Phase 2 — scalable, no hardcoded roles) ── */
@@ -5078,7 +5122,7 @@ const ROUTES = {
   home:          { onEnter: () => renderCampaigns() },
   explore:       { onEnter: () => renderCampaigns() },
   community:     { onEnter: () => {} },
-  notifications: { onEnter: () => {} },
+  notifications: { onEnter: () => { renderNotifications(); if (State.cu) NotificationService.markAllRead(State.cu.id); updateBell(); } },
   create:        { auth: true, onEnter: () => { renderCampaigns(); renderMyCamps(); } },
   detail:        { onEnter: () => {} },
   profile:       { onEnter: () => renderProfile() },
@@ -5444,6 +5488,29 @@ const Verify = {
   }
 };
 
+/* ── Notifications UI (Phase 3) ── */
+function updateBell() {
+  const badge = document.getElementById('bellBadge'); if (!badge) return;
+  const n = State.cu ? NotificationService.unreadCount(State.cu.id) : 0;
+  if (n > 0) { badge.textContent = n > 9 ? '9+' : String(n); badge.classList.add('show'); }
+  else { badge.classList.remove('show'); }
+}
+
+function renderNotifications() {
+  const box = document.getElementById('notifList'); if (!box) return;
+  const list = State.cu ? NotificationService.getFor(State.cu.id) : [];
+  if (!list.length) {
+    box.innerHTML = '<div class="stub-empty"><div class="stub-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div><h3>' + t('notifEmptyTitle') + '</h3><p>' + t('notifEmptyMsg') + '</p></div>';
+    return;
+  }
+  const isAr = State.lang === 'ar';
+  box.innerHTML = '<div class="notif-list">' + list.slice().reverse().map(n =>
+    '<div class="notif-item' + (n.read ? '' : ' unread') + '"><div class="notif-dot"></div><div class="notif-body">' +
+    '<div class="notif-text">' + (isAr ? n.ar : n.en) + '</div>' +
+    '<div class="notif-time">' + admTimeAgo(n.createdAt) + '</div></div></div>'
+  ).join('') + '</div>';
+}
+
 function doLogin(e) {
   e.preventDefault();
   const form  = e.target;
@@ -5510,6 +5577,8 @@ function enterApp() {
 
   Verify._dismissed = false;
   Verify.bannerCheck();
+  NotificationService.ensureWelcome(State.cu);
+  updateBell();
 
   if (Onb.needs(State.cu)) {
     Onb.show();
@@ -5579,6 +5648,8 @@ function handleJoin(id) {
   if (result.success) {
     toast(result.message, 'success');
     if (result.updatedUser) State.setUser(result.updatedUser);
+    NotificationService.add(State.cu.id, 'انضممت إلى مبادرة جديدة ✓ شكراً لك!', 'You joined a new initiative ✓ Thank you!', 'join');
+    updateBell();
     renderCampaigns();
     _updateDetailJoinBtn(id);
     animateCounters();
