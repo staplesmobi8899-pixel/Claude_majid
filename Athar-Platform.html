@@ -2546,6 +2546,12 @@ html, body { overflow-x: hidden; }
   border-radius: var(--r-full); border: none; background: rgba(255,255,255,0.9); color: var(--red);
   font-size: 1rem; line-height: 1; cursor: pointer; z-index: 2; box-shadow: var(--shadow-sm); }
 .card-save.saved { background: var(--red); color: #fff; }
+
+/* ── PHASE 5 — create steps + gallery ── */
+.create-step { display: none; }
+.create-step.active { display: block; }
+.detail-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-2); }
+.detail-gallery img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--r-md); cursor: pointer; }
 </style>
 </head>
 <body>
@@ -2810,7 +2816,7 @@ html, body { overflow-x: hidden; }
     <div class="create-hero">
       <h1 data-i18n="createTitle"></h1>
       <p data-i18n="createSub"></p>
-      <button class="create-btn" onclick="openModal('createModal')" data-i18n="createBtn"></button>
+      <button class="create-btn" onclick="CreateUI.open()" data-i18n="createBtn"></button>
     </div>
     <div class="my-camps-section">
       <div class="my-camps-title" data-i18n="myCamps"></div>
@@ -3241,46 +3247,34 @@ html, body { overflow-x: hidden; }
       <div class="modal-handle"></div>
     </div>
     <div class="modal-title" data-i18n="newInitiative"></div>
-    <form onsubmit="doCreate(event)">
-      <div class="field">
-        <label data-i18n="campTitleLabel"></label>
-        <input name="title" type="text" placeholder="مثال: تشجير بساحة الأمويين" required style="color:#666;font-weight:500;">
+    <form onsubmit="doCreate(event)" novalidate>
+      <div class="auth-steps" style="margin-bottom:var(--sp-4);">
+        <span class="auth-step active" data-step="1"></span><span class="auth-step" data-step="2"></span>
       </div>
-      <div class="field-row">
-        <div class="field">
-          <label data-i18n="categoryLabel"></label>
-          <select name="category" required id="createCatSelect">
-            <option value="" data-i18n-opt="chooseCat"></option>
-          </select>
-        </div>
-        <div class="field">
-          <label data-i18n="dateLabel"></label>
-          <input name="date" type="date" id="campDate" required>
-        </div>
+      <div class="create-step active" data-cstep="1">
+        <div class="field"><label data-i18n="campTitleLabel"></label>
+          <input name="title" type="text" placeholder="مثال: تشجير بساحة الأمويين"></div>
+        <div class="field"><label data-i18n="categoryLabel"></label>
+          <select name="category" id="createCatSelect"><option value="" data-i18n-opt="chooseCat"></option></select></div>
+        <div class="field"><label data-i18n="description"></label>
+          <textarea name="desc" placeholder="اشرح الحملة بالتفصيل..."></textarea></div>
+        <button type="button" class="submit-btn" onclick="CreateUI.next()" data-i18n="nextStep"></button>
       </div>
-      <div class="field">
-        <label>الموقع بالتحديد</label>
-        <input name="location" type="text" placeholder="مثال: ساحة الأمويين - دمشق" required>
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label>عدد المتطوعين لإنجاز الحملة</label>
-          <input name="needed" type="number" min="1" placeholder="20" required>
+      <div class="create-step" data-cstep="2">
+        <div class="field"><label data-i18n="locationLabel"></label>
+          <input name="location" type="text" placeholder="مثال: ساحة الأمويين - دمشق"></div>
+        <div class="field-row">
+          <div class="field"><label data-i18n="dateLabel"></label><input name="date" type="date" id="campDate"></div>
+          <div class="field"><label data-i18n="neededLabel"></label><input name="needed" type="number" min="1" placeholder="20"></div>
         </div>
-        <div class="field">
-          <label>عدد الساعات المطلوب لإنجاز الحملة</label>
-          <input name="hours" type="number" min="0.5" step="0.5" placeholder="4" required>
+        <div class="field"><label data-i18n="hoursLabel"></label><input name="hours" type="number" min="0.5" step="0.5" placeholder="4"></div>
+        <div class="field"><label data-i18n="campImg"></label><input name="img" type="file" accept="image/*"></div>
+        <div class="field"><label data-i18n="campGallery"></label><input name="gallery" type="file" accept="image/*" multiple></div>
+        <div style="display:flex;gap:var(--sp-3);">
+          <button type="button" class="manage-btn ghost" onclick="CreateUI.show(1)" data-i18n="prevStep"></button>
+          <button type="submit" class="submit-btn" style="flex:1;margin:0;" data-i18n="publishBtn"></button>
         </div>
       </div>
-      <div class="field">
-        <label data-i18n="description"></label>
-        <textarea name="desc" placeholder="اشرح الحملة بالتفصيل..."></textarea>
-      </div>
-      <div class="field">
-        <label data-i18n="campImg"></label>
-        <input name="img" type="file" accept="image/*">
-      </div>
-      <button type="submit" class="submit-btn" data-i18n="publishBtn"></button>
     </form>
   </div>
 </div>
@@ -3527,7 +3521,8 @@ const T = {
     bannedMsg: 'حسابك محظور حتى', userBanned: 'تم حظر الحساب', userUnbanned: 'تم رفع الحظر',
     manageParticipants: 'المشاركون والحضور', attended: 'حضر', absent: 'لم يحضر', banShort: 'حظر',
     communityReq: 'بطلب من المجتمع', editCamp: 'تعديل الحملة',
-    savedTitle: 'المحفوظات', savedSub: 'المبادرات التي حفظتها', noSaved: 'لا توجد مبادرات محفوظة بعد', campTitleLabel: 'عنوان الحملة', neededLabel: 'عدد المتطوعين', categoryLabel: 'الفئة', saveChanges: 'حفظ التعديلات', changesSaved: 'تم حفظ التعديلات ✓',
+    savedTitle: 'المحفوظات', savedSub: 'المبادرات التي حفظتها', noSaved: 'لا توجد مبادرات محفوظة بعد',
+    hoursLabel: 'الساعات المطلوبة', campGallery: 'معرض الصور (اختياري)', galleryTitle: 'معرض الصور', campTitleLabel: 'عنوان الحملة', neededLabel: 'عدد المتطوعين', categoryLabel: 'الفئة', saveChanges: 'حفظ التعديلات', changesSaved: 'تم حفظ التعديلات ✓',
     allCats: 'الكل', allCities: 'كل المدن', searchPlaceholder: 'ابحث عن مبادرة، فئة، أو مدينة...',
     sortRecent: 'الأحدث', sortPopular: 'الأكثر تفاعلاً', sortUrgent: 'الأقرب موعداً',
     noResults: 'لا توجد نتائج', noResultsSub: 'جرّب كلمات أو فلاتر مختلفة.',
@@ -3678,7 +3673,8 @@ const T = {
     bannedMsg: 'Your account is banned until', userBanned: 'Account banned', userUnbanned: 'Account unbanned',
     manageParticipants: 'Participants & attendance', attended: 'Present', absent: 'Absent', banShort: 'Ban',
     communityReq: 'Community request', editCamp: 'Edit campaign',
-    savedTitle: 'Saved', savedSub: 'Initiatives you bookmarked', noSaved: 'No saved initiatives yet', campTitleLabel: 'Campaign title', neededLabel: 'Volunteers needed', categoryLabel: 'Category', saveChanges: 'Save changes', changesSaved: 'Changes saved ✓',
+    savedTitle: 'Saved', savedSub: 'Initiatives you bookmarked', noSaved: 'No saved initiatives yet',
+    hoursLabel: 'Hours needed', campGallery: 'Gallery (optional)', galleryTitle: 'Gallery', campTitleLabel: 'Campaign title', neededLabel: 'Volunteers needed', categoryLabel: 'Category', saveChanges: 'Save changes', changesSaved: 'Changes saved ✓',
     allCats: 'All', allCities: 'All cities', searchPlaceholder: 'Search initiatives, categories, or cities...',
     sortRecent: 'Recent', sortPopular: 'Most active', sortUrgent: 'Soonest',
     noResults: 'No results', noResultsSub: 'Try different keywords or filters.',
@@ -3922,7 +3918,7 @@ const Models = {
       joinedUsers:  [],
       participants: [],
       attendance:   {},
-      gallery:      [],
+      gallery:      data.gallery || [],
       campHours:    {},
       createdAt:    new Date().toISOString(),
       updatedAt:    new Date().toISOString()
@@ -5598,6 +5594,7 @@ function renderDetail(id) {
         '<div class="detail-info-card"><div class="detail-info-label">' + t('contactLabel') + '</div><div class="detail-info-value" style="color:var(--olive)">' + (c.creatorPhone ? '📞 ' + c.creatorPhone : '—') + '</div></div>' +
       '</div></section>' +
       '<section class="detail-section"><h3 class="detail-h">' + t('participantsTitle') + ' (' + parts.length + ')</h3><div class="detail-parts">' + partHtml + '</div></section>' +
+      ((c.gallery && c.gallery.length) ? '<section class="detail-section"><h3 class="detail-h">' + t('galleryTitle') + '</h3><div class="detail-gallery">' + c.gallery.map(function(g){return '<img src="' + g + '" loading="lazy" onclick="openImageViewer(\'' + g + '\')">';}).join('') + '</div></section>' : '') +
       manage +
     '</div>';
 }
@@ -6282,6 +6279,27 @@ function enterApp() {
 }
 
 /* ── CAMPAIGNS ── */
+/* ── Create campaign multi-step (Phase 5) ── */
+const CreateUI = {
+  step: 1,
+  show(s) {
+    this.step = s;
+    document.querySelectorAll('#createModal .create-step').forEach(el => el.classList.toggle('active', Number(el.dataset.cstep) === s));
+    document.querySelectorAll('#createModal .auth-step').forEach(el => el.classList.toggle('active', Number(el.dataset.step) <= s));
+  },
+  open() { this.show(1); openModal('createModal'); },
+  next() {
+    const form = document.querySelector('#createModal form'); if (!form) return;
+    clearFieldErrors(form);
+    const title = (form.querySelector('[name="title"]').value || '').trim();
+    const cat = form.querySelector('[name="category"]').value;
+    let ok = true;
+    if (!Validators.isRequired(title)) { showFieldError(form, 'title', t('errorRequired')); ok = false; }
+    if (!Validators.isCampCategory(cat)) { showFieldError(form, 'category', t('errorRequired')); ok = false; }
+    if (ok) this.show(2);
+  }
+};
+
 async function doCreate(e) {
   e.preventDefault();
   if (!requireAuth()) return;
@@ -6310,8 +6328,13 @@ async function doCreate(e) {
     return;
   }
 
+  const _galInput = form.querySelector('[name="gallery"]');
+  const _galFiles = (_galInput && _galInput.files) ? Array.from(_galInput.files).slice(0, 6) : [];
   setLoading(btn, true);
   try {
+    const _gallery = [];
+    for (const gf of _galFiles) { try { _gallery.push(await b64(gf)); } catch (err) {} }
+    data.gallery = _gallery;
     const imgFile = form.querySelector('[name="img"]');
     const img = imgFile?.files[0] ? await b64(imgFile.files[0]) : null;
 
