@@ -2318,6 +2318,33 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
 .verify-modal .otp-input { margin-bottom: var(--sp-5); }
 .verify-actions { display: flex; flex-direction: column; gap: var(--sp-3); align-items: center; }
 .verify-actions .auth-btn { width: 100%; }
+
+/* ── PHASE 3.1 — FAB · navbar icon btn · stub pages ── */
+.fab { position: fixed; z-index: 410; display: none; align-items: center; justify-content: center;
+  bottom: calc(64px + env(safe-area-inset-bottom) + var(--sp-3)); inset-inline-end: var(--sp-5);
+  width: 56px; height: 56px; border-radius: var(--r-full); border: none;
+  background: var(--olive); color: var(--off-white); font-size: 1.8rem; line-height: 1; cursor: pointer;
+  box-shadow: 0 8px 24px var(--olive-glow); transition: transform 0.15s, background 0.2s; }
+.fab.show { display: flex; }
+.fab:hover { background: var(--olive-mid); }
+.fab:active { transform: scale(0.92); }
+
+.nav-icon-btn { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 34px; height: 34px; border-radius: var(--r-full); border: 1.5px solid var(--sand-dark);
+  background: transparent; color: var(--olive); cursor: pointer; transition: background 0.2s; padding: 0; }
+.nav-icon-btn:hover { background: var(--sand); }
+.nav-icon-btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+.stub-hero { padding: var(--sp-7) var(--sp-6) var(--sp-4); max-width: var(--content-max); margin: 0 auto; }
+.stub-hero h1 { font-size: var(--fs-2xl); font-weight: 800; color: var(--charcoal); margin-bottom: var(--sp-2); }
+.stub-hero p { font-size: var(--fs-sm); color: var(--charcoal-50); }
+.stub-empty { display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: var(--sp-9) var(--sp-6); max-width: 360px; margin: 0 auto; }
+.stub-ico { width: 72px; height: 72px; border-radius: var(--r-full); display: flex; align-items: center;
+  justify-content: center; background: var(--olive-pale); color: var(--olive); margin-bottom: var(--sp-5); }
+.stub-ico svg { width: 32px; height: 32px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+.stub-empty h3 { font-size: var(--fs-md); font-weight: 800; color: var(--charcoal); margin-bottom: var(--sp-2); }
+.stub-empty p { font-size: var(--fs-sm); color: var(--charcoal-50); line-height: 1.8; }
 </style>
 </head>
 <body>
@@ -2333,6 +2360,12 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
     </div>
     <div class="nav-end">
       <span class="user-tag" id="userTag"></span>
+      <button class="nav-icon-btn" id="navAboutBtn" onclick="goPage('about')" aria-label="about">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      </button>
+      <button class="nav-icon-btn" id="navAdminBtn" onclick="goPage('admin')" style="display:none;" aria-label="admin">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      </button>
       <button class="pill-btn" id="langBtn" onclick="toggleLang()">EN</button>
       <button class="pill-btn pill-btn-red" id="logoutBtn" onclick="doLogout()" style="display:none;" data-i18n="logout"></button>
     </div>
@@ -2767,6 +2800,33 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
     </div>
   </div>
 
+  <!-- COMMUNITY (Phase 3 — structure; content in Phase 9) -->
+  <div class="page" id="communityPage">
+    <div class="stub-hero">
+      <h1 data-i18n="communityTitle"></h1>
+      <p data-i18n="communitySub"></p>
+    </div>
+    <div class="stub-empty">
+      <div class="stub-ico"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+      <h3 data-i18n="communitySoonTitle"></h3>
+      <p data-i18n="communitySoonMsg"></p>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS (Phase 3 — structure) -->
+  <div class="page" id="notificationsPage">
+    <div class="stub-hero">
+      <h1 data-i18n="notifTitle"></h1>
+      <p data-i18n="notifSub"></p>
+    </div>
+    <div class="stub-empty">
+      <div class="stub-ico"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
+      <h3 data-i18n="notifEmptyTitle"></h3>
+      <p data-i18n="notifEmptyMsg"></p>
+    </div>
+  </div>
+
+
   <!-- ADMIN -->
   <div class="page" id="adminPage">
     <div class="adm-shell">
@@ -2978,24 +3038,21 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <span class="nav-btn-text" data-i18n="navExplore"></span>
     </button>
-    <button class="nav-btn" id="nav-create" onclick="goPage('create')">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-      <span class="nav-btn-text" data-i18n="navCreate"></span>
+    <button class="nav-btn" id="nav-community" onclick="goPage('community')">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      <span class="nav-btn-text" data-i18n="navCommunity"></span>
+    </button>
+    <button class="nav-btn" id="nav-notifications" onclick="goPage('notifications')">
+      <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="nav-btn-text" data-i18n="navNotifications"></span>
     </button>
     <button class="nav-btn" id="nav-profile" onclick="goPage('profile')">
       <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       <span class="nav-btn-text" data-i18n="navProfile"></span>
     </button>
-    <button class="nav-btn" id="nav-about" onclick="goPage('about')">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-      <span class="nav-btn-text" data-i18n="navAbout"></span>
-    </button>
-    <button class="nav-btn" id="nav-admin" style="display:none;" onclick="goPage('admin')">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-      <span class="nav-btn-text" data-i18n="navAdmin"></span>
-    </button>
   </div>
 </div>
+<button class="fab" id="createFab" onclick="goPage('create')" aria-label="create">+</button>
 
 <!-- ═══════════════════════════════════
      MODALS
@@ -3278,7 +3335,9 @@ const T = {
     message: 'رسالتك', sendRequest: 'أرسل طلبك',
     adminTitle: 'لوحة الإدارة', adminSub: 'إدارة الحسابات والحملات والشراكات',
     tabAccounts: 'الحسابات', tabCamps: 'الحملات', tabPartners: 'الشراكات',
-    navHome: 'الرئيسية', navExplore: 'استكشف', navCreate: 'إنشاء', navProfile: 'الملف', navAbout: 'عنا', navAdmin: 'إدارة',
+    navHome: 'الرئيسية', navExplore: 'استكشف', navCommunity: 'المجتمع', navNotifications: 'الإشعارات', navCreate: 'إنشاء', navProfile: 'الملف', navAbout: 'عنا', navAdmin: 'إدارة',
+    communityTitle: 'المجتمع', communitySub: 'تواصل مع صُنّاع الأثر حولك.', communitySoonTitle: 'مجتمع أثر قريباً', communitySoonMsg: 'نبني مساحة تجمع المتطوعين لمشاركة قصصهم وإلهام بعضهم. ترقّبوا.',
+    notifTitle: 'الإشعارات', notifSub: 'كل جديد يخصّك في مكان واحد.', notifEmptyTitle: 'لا إشعارات بعد', notifEmptyMsg: 'سنخبرك هنا عند وجود تحديثات على مبادراتك ونشاطك.',
     signupTitle: 'انضم لأَثَرْ', signupBtn: 'انضم الآن',
     loginTitle: 'مرحبًا بعودتك', loginBtn2: 'دخول',
     fullName: 'الاسم الثلاثي', password: 'كلمة المرور', country: 'الدولة', city: 'المدينة',
@@ -3408,7 +3467,9 @@ const T = {
     message: 'Your Message', sendRequest: 'Send Request',
     adminTitle: 'Admin Panel', adminSub: 'Manage accounts, campaigns and partnerships',
     tabAccounts: 'Accounts', tabCamps: 'Campaigns', tabPartners: 'Partnerships',
-    navHome: 'Home', navExplore: 'Explore', navCreate: 'Create', navProfile: 'Profile', navAbout: 'About', navAdmin: 'Admin',
+    navHome: 'Home', navExplore: 'Explore', navCommunity: 'Community', navNotifications: 'Alerts', navCreate: 'Create', navProfile: 'Profile', navAbout: 'About', navAdmin: 'Admin',
+    communityTitle: 'Community', communitySub: 'Connect with changemakers around you.', communitySoonTitle: 'ATHAR Community is coming', communitySoonMsg: 'We are building a space for volunteers to share stories and inspire each other. Stay tuned.',
+    notifTitle: 'Notifications', notifSub: 'Everything that matters to you, in one place.', notifEmptyTitle: 'No notifications yet', notifEmptyMsg: 'We will let you know here when there are updates on your initiatives and activity.',
     signupTitle: 'Join ATHAR', signupBtn: 'Join Now',
     loginTitle: 'Welcome Back', loginBtn2: 'Sign In',
     fullName: 'Full Name', password: 'Password', country: 'Country', city: 'City',
@@ -5000,13 +5061,15 @@ function animateCounters() {
    Pages must NOT hardcode navigation; go through Router/goPage.
    ══════════════════════════════════════════ */
 const ROUTES = {
-  home:    { onEnter: () => renderCampaigns() },
-  explore: { onEnter: () => renderCampaigns() },
-  create:  { onEnter: () => { renderCampaigns(); renderMyCamps(); } },
-  detail:  { onEnter: () => {} },
-  profile: { onEnter: () => renderProfile() },
-  about:   { onEnter: () => {} },
-  admin:   { roles: ['admin'], onEnter: () => renderAdmin() }
+  home:          { onEnter: () => renderCampaigns() },
+  explore:       { onEnter: () => renderCampaigns() },
+  community:     { onEnter: () => {} },
+  notifications: { onEnter: () => {} },
+  create:        { auth: true, onEnter: () => { renderCampaigns(); renderMyCamps(); } },
+  detail:        { onEnter: () => {} },
+  profile:       { onEnter: () => renderProfile() },
+  about:         { onEnter: () => {} },
+  admin:         { roles: ['admin'], onEnter: () => renderAdmin() }
 };
 
 const Router = {
@@ -5401,6 +5464,7 @@ function doLogout() {
   document.getElementById('appScreen').classList.remove('show');
   document.getElementById('navbar').style.display = 'none';
   document.getElementById('bottomNav').classList.remove('show');
+  document.getElementById('createFab').classList.remove('show');
 }
 
 /* ── Guest gate: actions that need a real account (Phase 2) ── */
@@ -5420,14 +5484,15 @@ function enterApp() {
   document.getElementById('appScreen').classList.add('show');
   document.getElementById('navbar').style.display = 'block';
   document.getElementById('bottomNav').classList.add('show');
+  document.getElementById('createFab').classList.add('show');
 
   const ut = document.getElementById('userTag');
   if (ut) { ut.textContent = State.cu ? State.cu.name : t('guest'); ut.classList.add('show'); }
   const lb = document.getElementById('logoutBtn');
   if (lb) { lb.style.display = 'block'; lb.textContent = State.isGuest ? t('loginCta') : t('logout'); }
 
-  const adminNav = document.getElementById('nav-admin');
-  if (adminNav) adminNav.style.display = State.isAdmin ? 'flex' : 'none';
+  const adminBtn = document.getElementById('navAdminBtn');
+  if (adminBtn) adminBtn.style.display = State.isAdmin ? 'inline-flex' : 'none';
 
   Verify._dismissed = false;
   Verify.bannerCheck();
