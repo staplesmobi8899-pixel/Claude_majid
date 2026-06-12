@@ -2383,6 +2383,32 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
 [dir="rtl"] .nav-back { transform: scaleX(-1); }
 .nav-title { font-size: var(--fs-lg); font-weight: 800; color: var(--charcoal);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+
+/* ══════════════════════════════════════════
+   PHASE 3.4 — RESPONSIVE SHELL (tablet / desktop)
+   ══════════════════════════════════════════ */
+html, body { overflow-x: hidden; }
+.bottom-nav-inner { max-width: 540px; }  /* keep tabs grouped on wide screens (mobile: full width) */
+
+/* Tablet: a touch more breathing room */
+@media (min-width: 768px) {
+  .stub-hero { padding-top: var(--sp-8); }
+}
+
+/* Desktop: frame the mobile app as a centered column (keeps the known-good layout) */
+@media (min-width: 1024px) {
+  body { background: var(--sand-dark); }
+  .navbar, .bottom-nav {
+    left: 50%; right: auto; transform: translateX(-50%);
+    width: 100%; max-width: 600px;
+    border-inline: 1px solid rgba(232,217,196,0.5);
+  }
+  #appScreen, #loginScreen {
+    max-width: 600px; margin-inline: auto;
+    box-shadow: 0 0 60px rgba(0,0,0,0.08);
+  }
+  .fab { inset-inline-end: calc(50% - 300px + var(--sp-5)); }
+}
 </style>
 </head>
 <body>
