@@ -4412,6 +4412,15 @@ const HomeUI = {
       this.categories(); this.trending(); this.highlights();
     } catch (e) { console.error('[HomeUI]', e); }
   },
+  enter() {
+    try {
+      this.greeting(); this.quickActions(); this.featured();
+      this.categories(); this.highlights();
+      const el = document.getElementById('homeTrending');
+      if (el) el.innerHTML = skeletonCards(2);
+      setTimeout(() => this.trending(), 240);
+    } catch (e) { console.error('[HomeUI.enter]', e); }
+  },
   greeting() {
     const el = document.getElementById('homeGreet'); if (!el) return;
     const isAr = State.lang === 'ar', u = State.cu, hh = new Date().getHours();
@@ -4487,6 +4496,12 @@ const HomeUI = {
 const ExploreUI = {
   filters: { search: '', category: 'all', city: 'all', sort: 'recent' },
   render() { this.renderChips(); this.renderCityOptions(); this.renderResults(); },
+  enter() {
+    this.renderChips(); this.renderCityOptions();
+    const box = document.getElementById('exploreResults');
+    if (box) box.innerHTML = skeletonCards(4);
+    setTimeout(() => this.renderResults(), 240);
+  },
   renderChips() {
     const box = document.getElementById('exploreChips'); if (!box) return;
     const isAr = State.lang === 'ar';
@@ -5413,8 +5428,8 @@ function animateCounters() {
    Pages must NOT hardcode navigation; go through Router/goPage.
    ══════════════════════════════════════════ */
 const ROUTES = {
-  home:          { title: null,             onEnter: () => renderCampaigns() },
-  explore:       { title: 'navExplore',     onEnter: () => ExploreUI.render() },
+  home:          { title: null,             onEnter: () => HomeUI.enter() },
+  explore:       { title: 'navExplore',     onEnter: () => ExploreUI.enter() },
   community:     { title: 'communityTitle', onEnter: () => {} },
   notifications: { title: 'notifTitle', back: true, onEnter: () => { renderNotifications(); if (State.cu) NotificationService.markAllRead(State.cu.id); updateBell(); } },
   create:        { title: 'createTitle', back: true, auth: true, onEnter: () => { renderCampaigns(); renderMyCamps(); } },
