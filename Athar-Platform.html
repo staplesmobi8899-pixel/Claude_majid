@@ -3485,6 +3485,7 @@ const T = {
     noParticipants: 'كن أول المشاركين!', manageCamp: 'إدارة المبادرة', markDoneBtn: 'إنهاء المبادرة', archiveBtn: 'أرشفة',
     storyTitle: 'القصة', reqTitle: 'المتطلبات', detailsTitle: 'التفاصيل', durationLabel: 'المدة', participantsTitle: 'المشاركون',
     markedDone: 'تم إنهاء المبادرة ✓', archivedToast: 'تمت الأرشفة', shareVia: 'أثر', linkCopied: 'تم نسخ الرابط',
+    bannedMsg: 'حسابك محظور حتى', userBanned: 'تم حظر الحساب', userUnbanned: 'تم رفع الحظر',
     allCats: 'الكل', allCities: 'كل المدن', searchPlaceholder: 'ابحث عن مبادرة، فئة، أو مدينة...',
     sortRecent: 'الأحدث', sortPopular: 'الأكثر تفاعلاً', sortUrgent: 'الأقرب موعداً',
     noResults: 'لا توجد نتائج', noResultsSub: 'جرّب كلمات أو فلاتر مختلفة.',
@@ -3632,6 +3633,7 @@ const T = {
     noParticipants: 'Be the first to join!', manageCamp: 'Manage initiative', markDoneBtn: 'Complete', archiveBtn: 'Archive',
     storyTitle: 'The story', reqTitle: 'Requirements', detailsTitle: 'Details', durationLabel: 'Duration', participantsTitle: 'Participants',
     markedDone: 'Initiative completed ✓', archivedToast: 'Archived', shareVia: 'ATHAR', linkCopied: 'Link copied',
+    bannedMsg: 'Your account is banned until', userBanned: 'Account banned', userUnbanned: 'Account unbanned',
     allCats: 'All', allCities: 'All cities', searchPlaceholder: 'Search initiatives, categories, or cities...',
     sortRecent: 'Recent', sortPopular: 'Most active', sortUrgent: 'Soonest',
     noResults: 'No results', noResultsSub: 'Try different keywords or filters.',
@@ -3839,6 +3841,7 @@ const Models = {
       achievements:    0,
       joinedCamps:     [],
       savedCampaigns:  [],
+      banned:          null,
       campHours:       {},
       onboarded:       false,
       interests:       [],
@@ -3992,7 +3995,15 @@ const UserService = {
     NotificationService.add(id, 'تم تفعيل حسابك! أهلاً بك في أثر.', 'Your account is now active! Welcome to ATHAR.', 'approval');
     return r;
   },
-  reject(id)  { return this.updateById(id, { status: 'rejected' }); }
+  reject(id)  { return this.updateById(id, { status: 'rejected' }); },
+  ban(id, days, reason) {
+    const until = new Date(Date.now() + (Number(days) || 7) * 86400000).toISOString();
+    return this.updateById(id, { banned: { until, reason: reason || '', bannedAt: new Date().toISOString() } });
+  },
+  unban(id) { return this.updateById(id, { banned: null }); },
+  isBanned(user) {
+    return !!(user && user.banned && user.banned.until && new Date(user.banned.until) > new Date());
+  }
 };
 
 /* ── NOTIFICATIONS (Phase 3 — per-user, unread badge) ── */
@@ -4106,6 +4117,7 @@ const AuthService = {
     const u = UserService.getAll().find(x =>
       (x.email === id || x.phone === identifier || x.name === identifier) && x.password === password);
     if (!u) return { ok: false, error: 'invalid' };
+    if (UserService.isBanned(u)) return { ok: false, error: 'banned', user: u };
     if (u.status === 'rejected') return { ok: false, error: 'rejected', user: u };
     return { ok: true, user: u, status: u.status };
   },
@@ -5071,6 +5083,14 @@ function admViewUser(id) {
             '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:var(--success);color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleApproveUser(\'' + u.id + '\');admCloseModal()">✓ ' + (isAr ? 'قبول' : 'Approve') + '</button>' +
             '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:var(--red);color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleRejectUser(\'' + u.id + '\');admCloseModal()">✕ ' + (isAr ? 'رفض' : 'Reject') + '</button>' +
           '</div>'
+        : '') +
+      (u.email !== CONFIG.ADMIN_EMAIL
+        ? (UserService.isBanned(u)
+          ? '<div style="margin-top:1rem;padding:0.8rem;background:var(--red-bg);border-radius:0.75rem;color:var(--red-fg);font-size:var(--fs-sm);text-align:center;font-weight:800;">🚫 ' + (isAr ? 'محظور حتى ' : 'Banned until ') + new Date(u.banned.until).toLocaleDateString() + '</div>' +
+            '<button style="width:100%;margin-top:0.6rem;padding:0.8rem;border:1.5px solid var(--sand-dark);border-radius:0.75rem;background:transparent;color:var(--charcoal);font-weight:800;cursor:pointer;" onclick="handleUnbanUser(\'' + u.id + '\')">' + (isAr ? 'رفع الحظر' : 'Unban') + '</button>'
+          : '<div style="margin-top:1.1rem;"><div style="font-size:var(--fs-sm);font-weight:800;color:var(--charcoal);margin-bottom:0.5rem;">🚫 ' + (isAr ? 'حظر الحساب (عدم حضور) — اختر المدة:' : 'Ban account (no-show) — choose duration:') + '</div><div style="display:flex;gap:0.5rem;">' +
+            [3, 7, 30].map(function (d) { return '<button style="flex:1;padding:0.7rem;border:1.5px solid rgba(200,76,60,0.4);border-radius:0.6rem;background:transparent;color:var(--red);font-weight:800;cursor:pointer;" onclick="handleBanUser(\'' + u.id + '\',' + d + ')">' + d + ' ' + (isAr ? 'يوم' : 'days') + '</button>'; }).join('') +
+            '</div></div>')
         : '')
     );
   } catch (e) {
@@ -6041,6 +6061,9 @@ function doLogin(e) {
     if (res.error === 'required') {
       if (!identifier.trim()) showFieldError(form, 'email', t('errorRequired'));
       if (!password.trim())   showFieldError(form, 'password', t('errorRequired'));
+    } else if (res.error === 'banned') {
+      const until = (res.user && res.user.banned) ? new Date(res.user.banned.until).toLocaleDateString() : '';
+      toast(t('bannedMsg') + ' ' + until, 'error');
     } else if (res.error === 'rejected') {
       toast(t('rejectedBanner'), 'error');
     } else {
@@ -6178,6 +6201,21 @@ function handleJoin(id) {
 }
 
 /* ── ADMIN ACTIONS ── */
+function handleBanUser(id, days) {
+  if (!State.isAdmin) return;
+  UserService.ban(id, days, 'no-show');
+  NotificationService.add(id, 'تم تعليق حسابك لمدة ' + days + ' أيام بسبب عدم الحضور.', 'Your account is suspended for ' + days + ' days due to no-show.', 'ban');
+  toast(t('userBanned'), 'success');
+  admViewUser(id);
+  if (typeof renderAdmin === 'function') renderAdmin();
+}
+function handleUnbanUser(id) {
+  if (!State.isAdmin) return;
+  UserService.unban(id);
+  toast(t('userUnbanned'), 'success');
+  admViewUser(id);
+  if (typeof renderAdmin === 'function') renderAdmin();
+}
 function handleApproveUser(id) {
   const result = UserService.approve(id);
   if (result) { toast(t('approved'), 'success'); renderAdmin(); }
