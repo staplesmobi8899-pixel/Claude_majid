@@ -1028,8 +1028,143 @@ body {
   gap: var(--sp-4);
 }
 
-.my-camp-info-title { font-size: var(--fs-md); font-weight: 700; margin-bottom: var(--sp-1); }
+.my-camp-row { cursor: pointer; transition: background 0.15s; }
+.my-camp-row:hover { background: var(--sand); }
+.my-camp-main { min-width: 0; }
+.my-camp-info-title { font-size: var(--fs-md); font-weight: 700; margin-bottom: var(--sp-1); display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
 .my-camp-info-sub { font-size: var(--fs-sm); color: var(--charcoal-50); }
+.my-camp-tag { font-size: var(--fs-2xs); font-weight: 800; padding: 1px var(--sp-2); border-radius: var(--r-full); letter-spacing: 0.3px; }
+.my-camp-tag.joined { background: var(--olive-pale); color: var(--olive); }
+.my-camp-tag.organizer { background: rgba(46,61,31,0.1); color: var(--forest); }
+
+/* ══════════════════════════════════════════
+   PROFILE — Instagram-style header (6.2 redesign)
+   ══════════════════════════════════════════ */
+.ig-profile {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--sp-6) var(--sp-5) var(--sp-4);
+}
+.ig-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+  margin-bottom: var(--sp-5);
+}
+.ig-avatar {
+  position: relative;
+  width: 86px; height: 86px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.ig-avatar .profile-avatar {
+  width: 86px; height: 86px;
+  border: 2px solid var(--sand-dark);
+  background: var(--sand);
+  font-size: 2rem;
+}
+.ig-avatar-initial {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 2.2rem; font-weight: 800;
+  color: var(--olive);
+  text-transform: uppercase;
+}
+.ig-cam {
+  position: absolute; bottom: 0; inset-inline-end: 0;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--forest); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; font-weight: 700; line-height: 1;
+  border: 2px solid var(--warm-white);
+}
+.ig-stats {
+  flex: 1;
+  display: flex;
+  justify-content: space-around;
+  gap: var(--sp-2);
+}
+.ig-stat { text-align: center; }
+.ig-stat-n {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: var(--fs-xl); font-weight: 800;
+  color: var(--charcoal);
+  line-height: 1.1;
+}
+.ig-stat-l {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--charcoal-50);
+  margin-top: 2px;
+}
+.ig-identity { margin-bottom: var(--sp-4); }
+.ig-name-row { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+.ig-name { font-size: var(--fs-md); font-weight: 800; color: var(--charcoal); }
+.ig-role {
+  font-size: var(--fs-2xs); font-weight: 700;
+  padding: 1px var(--sp-2); border-radius: var(--r-full);
+  background: var(--olive-pale); color: var(--olive);
+}
+.ig-bio {
+  font-size: var(--fs-sm);
+  color: var(--charcoal-80);
+  margin-top: var(--sp-2);
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+.ig-loc { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: var(--sp-1); }
+.ig-actions {
+  display: flex;
+  gap: var(--sp-3);
+}
+.ig-btn {
+  flex: 1;
+  height: 36px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--sand-dark);
+  background: var(--sand);
+  color: var(--charcoal);
+  font-size: var(--fs-sm); font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+.ig-btn:hover { background: var(--sand-dark); }
+.ig-btn.primary { background: var(--forest); color: #fff; border-color: var(--forest); }
+.ig-btn.primary:hover { opacity: 0.92; background: var(--forest); }
+.hidden-file { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+.ig-section-h {
+  max-width: var(--content-max);
+  margin: var(--sp-5) auto var(--sp-3);
+  padding: 0 var(--sp-5);
+  font-size: var(--fs-sm); font-weight: 800;
+  color: var(--charcoal-80);
+  letter-spacing: 0.3px;
+}
+.ig-impact {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 0 var(--sp-5);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-3);
+}
+@media (max-width: 380px) { .ig-impact { grid-template-columns: repeat(2, 1fr); } }
+
+/* Edit profile photo CTA inside edit modal */
+.edit-photo-cta {
+  display: flex; flex-direction: column; align-items: center; gap: var(--sp-2);
+  margin-bottom: var(--sp-5); cursor: pointer;
+}
+.edit-photo-ava {
+  width: 78px; height: 78px; border-radius: 50%;
+  overflow: hidden; background: var(--sand);
+  border: 2px solid var(--sand-dark);
+  display: flex; align-items: center; justify-content: center;
+}
+.edit-photo-ava img { width: 100%; height: 100%; object-fit: cover; }
+.edit-photo-cta span { font-size: var(--fs-sm); font-weight: 700; color: var(--forest); }
 
 .status-chip {
   padding: var(--sp-1) var(--sp-3);
@@ -2622,10 +2757,9 @@ html, body { overflow-x: hidden; }
   display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3); }
 .impact-tile { background: var(--white); border: 1px solid rgba(232,217,196,0.6); border-radius: var(--r-lg);
   padding: var(--sp-4) var(--sp-2); text-align: center; }
-.impact-tile-ico { font-size: 1.3rem; }
-.impact-tile-n { font-size: var(--fs-xl); font-weight: 900; color: var(--olive); margin-top: var(--sp-1); }
+.impact-tile-n { font-family: 'DM Sans', sans-serif; font-size: var(--fs-xl); font-weight: 800; color: var(--charcoal); }
 .impact-tile-l { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: 2px; }
-.badges-grid { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--sp-5);
+.badges-grid { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--sp-5) var(--sp-6);
   display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-3); }
 .badge { text-align: center; opacity: 0.4; filter: grayscale(1); transition: opacity 0.2s, filter 0.2s; }
 .badge.on { opacity: 1; filter: none; }
@@ -2916,46 +3050,38 @@ html, body { overflow-x: hidden; }
 
   <!-- PROFILE -->
   <div class="page" id="profilePage">
-    <div class="profile-cover">
-      <div class="profile-avatar-ring" id="avatarRing" onclick="openAvatarSheet()">
-        <div class="profile-avatar" id="profileAva">👤</div>
-        <div class="avatar-cam">📷</div>
+    <div class="ig-profile">
+      <div class="ig-row">
+        <div class="ig-avatar" id="avatarRing" onclick="openAvatarSheet()">
+          <div class="profile-avatar" id="profileAva"></div>
+          <span class="ig-cam" aria-hidden="true">+</span>
+        </div>
+        <div class="ig-stats" id="profileStats"></div>
       </div>
-    </div>
-    <div class="profile-meta-bar">
-      <div class="profile-name-wrap">
-        <div class="name" id="profileName"></div>
-        <div class="profile-role" id="profileRole"></div>
-        <div class="loc" id="profileLoc"></div>
+      <div class="ig-identity">
+        <div class="ig-name-row">
+          <span class="ig-name" id="profileName"></span>
+          <span class="ig-role" id="profileRole"></span>
+        </div>
+        <div class="ig-bio" id="profileBio"></div>
+        <div class="ig-loc" id="profileLoc"></div>
       </div>
-      <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
-      <button class="change-pic-label" onclick="openAvatarSheet()" type="button">
-        <span data-i18n="changePic"></span>
-      </button>
+      <div class="ig-actions">
+        <button class="ig-btn primary" onclick="openEditProfile()" type="button" data-i18n="editProfileBtn"></button>
+        <button class="ig-btn" onclick="shareProfile()" type="button" data-i18n="shareProfileBtn"></button>
+      </div>
+      <div class="profile-privacy" id="profilePrivacy"></div>
+      <input type="file" id="avatarInput" accept="image/*" class="hidden-file" onchange="uploadAvatar(event)">
     </div>
-    <div class="profile-bio" id="profileBio"></div>
-    <div class="profile-privacy" id="profilePrivacy"></div>
     <div class="status-banner-wrap">
       <div id="statusBanner"></div>
     </div>
-    <div class="profile-section-h" data-i18n="impactTitle"></div>
-    <div class="impact-grid" id="profileImpact"></div>
-    <div class="profile-section-h" data-i18n="badgesTitle"></div>
+    <div class="ig-section-h" data-i18n="impactTitle"></div>
+    <div class="ig-impact" id="profileImpact"></div>
+    <div class="ig-section-h" data-i18n="badgesTitle"></div>
     <div class="badges-grid" id="profileBadges"></div>
     <div class="profile-menu">
       <div class="menu-card">
-        <div class="menu-row" onclick="toggleMenu('m-info')">
-          <div class="menu-icon">👤</div>
-          <div class="menu-texts">
-            <div class="menu-title" data-i18n="menuInfo"></div>
-            <div class="menu-sub" data-i18n="menuInfoSub"></div>
-          </div>
-          <div class="menu-arrow" id="arr-m-info">›</div>
-        </div>
-        <div class="menu-section-body" id="m-info">
-          <div id="infoItems"></div>
-        </div>
-
         <div class="menu-row" onclick="toggleMenu('m-id')">
           <div class="menu-icon">🪪</div>
           <div class="menu-texts">
@@ -3360,6 +3486,16 @@ html, body { overflow-x: hidden; }
     <div class="photo-sheet-actions" id="avatarSheetBody"></div>
   </div>
 </div>
+<div class="modal-overlay" id="editProfileModal">
+  <div class="modal-sheet">
+    <div class="modal-bar">
+      <button type="button" class="modal-close" onclick="closeModal('editProfileModal')" aria-label="back">‹</button>
+      <div class="modal-handle"></div>
+    </div>
+    <div class="modal-title" data-i18n="editProfileBtn"></div>
+    <div id="editProfileBody"></div>
+  </div>
+</div>
 <div class="modal-overlay" id="participantsModal">
   <div class="modal-sheet">
     <div class="modal-bar">
@@ -3582,7 +3718,8 @@ const T = {
     activities: 'الأنشطة', achievements: 'الإنجازات',
     noBio: 'أضف نبذة عنك', impactTitle: 'أثري', badgesTitle: 'الشارات',
     profilePublic: '🌍 ملف عام', profilePrivate: '🔒 ملف خاص', profileNowPublic: 'ملفك أصبح عامًا', profileNowPrivate: 'ملفك أصبح خاصًا', completedLabel: 'مكتملة', citiesLabel: 'مدن', scoreLabel: 'نقاط الأثر',
-    editInfo: 'تعديل', saveChanges: 'حفظ', cancelEdit: 'إلغاء', infoSaved: 'تم حفظ معلوماتك', bioField: 'نبذة عنك', bioPh: 'اكتب نبذة قصيرة تعرّف بك…', emailLocked: 'البريد الإلكتروني لا يمكن تغييره',
+    editInfo: 'تعديل', saveChanges: 'حفظ التعديلات', cancelEdit: 'إلغاء', infoSaved: 'تم حفظ معلوماتك', bioField: 'نبذة عنك', bioPh: 'اكتب نبذة قصيرة تعرّف بك…', emailLocked: 'البريد الإلكتروني لا يمكن تغييره',
+    editProfileBtn: 'تعديل الملف', shareProfileBtn: 'مشاركة الملف', shareCopied: 'تم نسخ رابط ملفك', statCampsShort: 'حملة', statHoursShort: 'ساعة', statBadgesShort: 'شارة', changePhotoCta: 'تغيير صورة الملف', roleJoined: 'مشارِك', roleOrganizer: 'منظِّم',
     photoSheetTitle: 'صورة الملف الشخصي', photoChoose: 'اختر صورة', photoRemove: 'حذف الصورة الحالية', photoRemoved: 'تم حذف الصورة', sheetCancel: 'إلغاء',
     menuInfo: 'المعلومات الشخصية', menuInfoSub: 'الاسم، البريد، الهاتف',
     menuId: 'صورة الهوية', menuIdSub: 'عرض وتحميل',
@@ -3738,7 +3875,8 @@ const T = {
     activities: 'Activities', achievements: 'Achievements',
     noBio: 'Add a short bio', impactTitle: 'My impact', badgesTitle: 'Badges',
     profilePublic: '🌍 Public profile', profilePrivate: '🔒 Private profile', profileNowPublic: 'Your profile is now public', profileNowPrivate: 'Your profile is now private', completedLabel: 'Completed', citiesLabel: 'Cities', scoreLabel: 'Impact score',
-    editInfo: 'Edit', saveChanges: 'Save', cancelEdit: 'Cancel', infoSaved: 'Your info was saved', bioField: 'About you', bioPh: 'Write a short bio about yourself…', emailLocked: 'Email cannot be changed',
+    editInfo: 'Edit', saveChanges: 'Save changes', cancelEdit: 'Cancel', infoSaved: 'Your info was saved', bioField: 'About you', bioPh: 'Write a short bio about yourself…', emailLocked: 'Email cannot be changed',
+    editProfileBtn: 'Edit profile', shareProfileBtn: 'Share profile', shareCopied: 'Profile link copied', statCampsShort: 'Campaigns', statHoursShort: 'Hours', statBadgesShort: 'Badges', changePhotoCta: 'Change profile photo', roleJoined: 'Participant', roleOrganizer: 'Organizer',
     photoSheetTitle: 'Profile photo', photoChoose: 'Choose photo', photoRemove: 'Remove current photo', photoRemoved: 'Photo removed', sheetCancel: 'Cancel',
     menuInfo: 'Personal Info', menuInfoSub: 'Name, Email, Phone',
     menuId: 'ID Photo', menuIdSub: 'View & Download',
@@ -4886,30 +5024,40 @@ function populateCategories() {
 
 function renderCampaigns() { HomeUI.render(); }
 
-/** Render user's own campaigns in profile */
+/** Render user's campaigns (created + joined) */
 function renderMyCamps() {
   try {
+    const uid  = State.cu?.id;
     const all  = CampaignService.getAll();
-    const mine = all.filter(c => c.createdBy === State.cu?.id);
+    const created = all.filter(c => c.createdBy === uid);
+    const joinedIds = (State.cu?.joinedCamps) || [];
+    const joined  = all.filter(c => joinedIds.includes(c.id) && c.createdBy !== uid);
     const box1 = document.getElementById('myCampsGrid');
     const box2 = document.getElementById('profileCampsBox');
     if (!box1 && !box2) return;
 
-    const empty = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">${t('noData')}</div></div>`;
-    const html  = mine.length === 0 ? empty : mine.map(c => {
+    const row = (c, tagKey) => {
       const txt = Models.getCampText(c);
       const si  = Models.getStatusInfo(c.status);
-      return `<div class="my-camp-row">
-        <div>
-          <div class="my-camp-info-title">${txt.title}</div>
-          <div class="my-camp-info-sub">📍 ${c.location || ''} · 📅 ${c.date || ''}</div>
-        </div>
-        <span class="status-chip ${si.cls}">${si[State.lang]}</span>
-      </div>`;
-    }).join('');
+      const tag = tagKey ? '<span class="my-camp-tag ' + tagKey + '">' + t(tagKey === 'joined' ? 'roleJoined' : 'roleOrganizer') + '</span>' : '';
+      return '<div class="my-camp-row" onclick="openDetail(\'' + c.id + '\')">' +
+        '<div class="my-camp-main">' +
+          '<div class="my-camp-info-title">' + txt.title + tag + '</div>' +
+          '<div class="my-camp-info-sub">' + (c.location || '') + ' · ' + (c.date || '') + '</div>' +
+        '</div>' +
+        '<span class="status-chip ' + si.cls + '">' + si[State.lang] + '</span>' +
+      '</div>';
+    };
+    const empty = '<div class="empty-state"><div class="empty-title">' + t('noData') + '</div></div>';
 
-    if (box1) box1.innerHTML = html;
-    if (box2) box2.innerHTML = html;
+    // Create page: only campaigns the user organized
+    if (box1) box1.innerHTML = created.length ? created.map(c => row(c, 'organizer')).join('') : empty;
+
+    // Profile: joined first, then organized
+    if (box2) {
+      const combined = joined.map(c => row(c, 'joined')).concat(created.map(c => row(c, 'organizer'))).join('');
+      box2.innerHTML = combined || empty;
+    }
   } catch (e) {
     console.error('[renderMyCamps] Error:', e);
   }
@@ -4949,17 +5097,33 @@ function renderProfile() {
     }
 
     const stats = StatsService.compute(u);
+    const badgeCount = AchievementService.getUnlocked(u).length;
+
+    // IG-style header stats (3 columns)
+    const statsEl = document.getElementById('profileStats');
+    if (statsEl) {
+      const head = [
+        [(u.joinedCamps || []).length, t('statCampsShort')],
+        [u.volunteerHours || 0,        t('statHoursShort')],
+        [badgeCount,                   t('statBadgesShort')]
+      ];
+      statsEl.innerHTML = head.map(s =>
+        '<div class="ig-stat"><span class="ig-stat-n">' + s[0] + '</span><span class="ig-stat-l">' + s[1] + '</span></div>'
+      ).join('');
+    }
+
+    // Clean impact grid (no decorative emojis)
     const impact = document.getElementById('profileImpact');
     if (impact) {
       const tiles = [
-        ['⏳', u.volunteerHours || 0, t('statHours')],
-        ['🎯', u.activitiesJoined || 0, t('activities')],
-        ['✅', stats.completed, t('completedLabel')],
-        ['📍', stats.citiesCount, t('citiesLabel')],
-        ['⭐', stats.score, t('scoreLabel')],
-        ['🏅', AchievementService.getUnlocked(u).length, t('achievements')]
+        [stats.completed,     t('completedLabel')],
+        [u.activitiesJoined || 0, t('activities')],
+        [stats.citiesCount,   t('citiesLabel')],
+        [stats.score,         t('scoreLabel')]
       ];
-      impact.innerHTML = tiles.map(tl => '<div class="impact-tile"><div class="impact-tile-ico">' + tl[0] + '</div><div class="impact-tile-n">' + tl[1] + '</div><div class="impact-tile-l">' + tl[2] + '</div></div>').join('');
+      impact.innerHTML = tiles.map(tl =>
+        '<div class="impact-tile"><div class="impact-tile-n">' + tl[0] + '</div><div class="impact-tile-l">' + tl[1] + '</div></div>'
+      ).join('');
     }
     const badges = document.getElementById('profileBadges');
     if (badges) {
@@ -4980,7 +5144,7 @@ function renderProfile() {
     if (profileAva) {
       profileAva.innerHTML = u.profilePic
         ? `<img src="${u.profilePic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
-        : '👤';
+        : '<span class="ig-avatar-initial">' + ((u.name || '?').trim().charAt(0) || '?') + '</span>';
     }
 
     const statusBanner = document.getElementById('statusBanner');
@@ -4993,8 +5157,6 @@ function renderProfile() {
       const [cls, txt] = bannerMap[u.status] || bannerMap.pending;
       statusBanner.innerHTML = `<div class="status-banner ${cls}">${txt}</div>`;
     }
-
-    renderInfoSection(u);
 
     const idPhotoBox = document.getElementById('idPhotoBox');
     if (idPhotoBox) {
@@ -6650,37 +6812,20 @@ function removeAvatar() {
   renderProfile();
 }
 
-/* ── PERSONAL INFO: VIEW + EDIT MODE (Phase 6.2) ── */
-function renderInfoSection(u) {
-  const box = document.getElementById('infoItems');
-  if (!box) return;
-  u = u || UserService.getById(State.cu.id) || State.cu;
-  const rows = [
-    [t('fullName'), u.name],
-    [t('email'),    u.email],
-    [t('phone'),    u.phone],
-    [t('country'),  u.country],
-    [t('city'),     u.city],
-    [t('dob'),      u.dob],
-    [t('bioField'), u.bio]
-  ];
-  let html = '';
-  if (!State.isAdmin) {
-    html += '<button type="button" class="info-edit-btn" onclick="startEditInfo()"><span>✎</span><span>' + t('editInfo') + '</span></button>';
-  }
-  html += rows.map(([label, val]) =>
-    '<div class="info-item"><span class="info-lbl">' + label + '</span><span class="info-val">' + (val || '—') + '</span></div>'
-  ).join('');
-  box.innerHTML = html;
-}
-
-function startEditInfo() {
+/* ── EDIT PROFILE (modal) + SHARE (Phase 6.2 redesign) ── */
+function openEditProfile() {
   if (!requireAuth() || State.isAdmin) return;
   const u = UserService.getById(State.cu.id) || State.cu;
-  const box = document.getElementById('infoItems');
+  const box = document.getElementById('editProfileBody');
   if (!box) return;
-  const esc = s => String(s || '').replace(/"/g, '&quot;');
+  const esc = s => String(s == null ? '' : s).replace(/"/g, '&quot;');
   box.innerHTML =
+    '<div class="edit-photo-cta" onclick="closeModal(\'editProfileModal\');openAvatarSheet();">' +
+      '<div class="edit-photo-ava">' + (u.profilePic
+        ? '<img src="' + u.profilePic + '">'
+        : '<span class="ig-avatar-initial">' + ((u.name || '?').trim().charAt(0) || '?') + '</span>') + '</div>' +
+      '<span>' + t('changePhotoCta') + '</span>' +
+    '</div>' +
     '<div class="edit-field"><label>' + t('fullName') + '</label>' +
       '<input id="ed-name" type="text" value="' + esc(u.name) + '"><div class="edit-err" id="err-name"></div></div>' +
     '<div class="edit-field"><label>' + t('email') + '</label>' +
@@ -6692,11 +6837,12 @@ function startEditInfo() {
     '<div class="edit-field"><label>' + t('dob') + '</label>' +
       '<input id="ed-dob" type="date" value="' + esc(u.dob) + '"></div>' +
     '<div class="edit-field"><label>' + t('bioField') + '</label>' +
-      '<textarea id="ed-bio" rows="3" placeholder="' + esc(t('bioPh')) + '">' + (u.bio || '') + '</textarea></div>' +
+      '<textarea id="ed-bio" rows="3" placeholder="' + esc(t('bioPh')) + '">' + esc(u.bio).replace(/&quot;/g, '"') + '</textarea></div>' +
     '<div class="edit-actions">' +
       '<button type="button" class="edit-save" onclick="saveInfo()">' + t('saveChanges') + '</button>' +
-      '<button type="button" class="edit-cancel" onclick="renderInfoSection()">' + t('cancelEdit') + '</button>' +
+      '<button type="button" class="edit-cancel" onclick="closeModal(\'editProfileModal\')">' + t('cancelEdit') + '</button>' +
     '</div>';
+  openModal('editProfileModal');
 }
 
 function saveInfo() {
@@ -6713,8 +6859,21 @@ function saveInfo() {
   const patch = { name, phone, city, dob, bio };
   UserService.updateById(State.cu.id, patch);
   if (State.cu) { Object.assign(State.cu, patch); DB.setObj(CONFIG.DB_KEYS.SESSION, State.cu); }
+  closeModal('editProfileModal');
   toast(t('infoSaved'), 'success');
   renderProfile();
+}
+
+function shareProfile() {
+  const u = State.cu; if (!u) return;
+  const url = location.origin + location.pathname + '#u/' + (u.id || '');
+  const data = { title: (u.name || 'ATHAR'), text: (u.name || '') + ' — ATHAR', url };
+  if (navigator.share) { navigator.share(data).catch(() => {}); return; }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => toast(t('shareCopied'), 'success')).catch(() => toast(t('shareCopied'), 'success'));
+  } else {
+    toast(t('shareCopied'), 'success');
+  }
 }
 
 /* ── PARTNER FORM ── */
