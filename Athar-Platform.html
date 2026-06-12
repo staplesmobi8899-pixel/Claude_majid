@@ -3355,21 +3355,19 @@ const CONFIG = {
     VERSION:  'athar_version'
   },
   CAMP_CATEGORIES: {
-    environment:    { ar: 'البيئة',           en: 'Environment',    icon: '🌿' },
-    education:      { ar: 'التعليم',          en: 'Education',      icon: '📚' },
-    health:         { ar: 'الصحة',            en: 'Health',        icon: '❤️' },
-    community:      { ar: 'دعم المجتمع',      en: 'Community',     icon: '🤝' },
-    youth:          { ar: 'الشباب',           en: 'Youth',         icon: '✨' },
-    sustainability: { ar: 'الاستدامة',        en: 'Sustainability', icon: '♻️' },
-    food_aid:       { ar: 'الإغاثة الغذائية', en: 'Food Aid',      icon: '🍲' },
-    animal_care:    { ar: 'رعاية الحيوان',    en: 'Animal Care',   icon: '🐾' },
-    public_spaces:  { ar: 'الأماكن العامة',   en: 'Public Spaces', icon: '🏛️' },
-    emergency:      { ar: 'الاستجابة الطارئة', en: 'Emergency',     icon: '🚨' }
+    planting:   { ar: 'تشجير',          en: 'Tree Planting', icon: '🌱' },
+    cleaning:   { ar: 'تنظيف',          en: 'Cleaning',      icon: '🧹' },
+    education:  { ar: 'التعليم',         en: 'Education',     icon: '📚' },
+    health:     { ar: 'الصحة',           en: 'Health',        icon: '❤️' },
+    community:  { ar: 'دعم المجتمع',     en: 'Community',     icon: '🤝' },
+    improvement:{ ar: 'تحسين',          en: 'Improvement',   icon: '🛠️' },
+    emergency:  { ar: 'الاستجابة الطارئة', en: 'Emergency',   icon: '🚨' }
   },
   // backward-compat: legacy category keys -> new taxonomy
   CATEGORY_ALIASES: {
-    cleaning: 'environment', planting: 'environment',
-    improvement: 'community', support: 'community', event: 'community'
+    environment: 'cleaning', public_spaces: 'cleaning', sustainability: 'planting',
+    support: 'community', event: 'community', youth: 'community',
+    food_aid: 'community', animal_care: 'community'
   },
   CAMP_STATUS: {
     pending:       { ar: 'قيد المراجعة', en: 'Under Review',   cls: 'status-pending'  },
@@ -3512,7 +3510,7 @@ const T = {
     manageParticipants: 'المشاركون والحضور', attended: 'حضر', absent: 'لم يحضر', banShort: 'حظر',
     communityReq: 'بطلب من المجتمع', editCamp: 'تعديل الحملة',
     savedTitle: 'المحفوظات', savedSub: 'المبادرات التي حفظتها', noSaved: 'لا توجد مبادرات محفوظة بعد',
-    hoursLabel: 'الساعات المطلوبة', campGallery: 'معرض الصور (اختياري)', galleryTitle: 'معرض الصور', campTitleLabel: 'عنوان الحملة', neededLabel: 'عدد المتطوعين', categoryLabel: 'الفئة', saveChanges: 'حفظ التعديلات', changesSaved: 'تم حفظ التعديلات ✓',
+    hoursLabel: 'الساعات المطلوبة', campGallery: 'معرض الصور (اختياري)', galleryTitle: 'معرض الصور', campTitleLabel: 'عنوان الحملة', neededLabel: 'عدد المتطوعين المقدّر', categoryLabel: 'الفئة', saveChanges: 'حفظ التعديلات', changesSaved: 'تم حفظ التعديلات ✓',
     allCats: 'الكل', allCities: 'كل المدن', searchPlaceholder: 'ابحث عن مبادرة، فئة، أو مدينة...',
     sortRecent: 'الأحدث', sortPopular: 'الأكثر تفاعلاً', sortUrgent: 'الأقرب موعداً',
     noResults: 'لا توجد نتائج', noResultsSub: 'جرّب كلمات أو فلاتر مختلفة.',
@@ -3664,7 +3662,7 @@ const T = {
     manageParticipants: 'Participants & attendance', attended: 'Present', absent: 'Absent', banShort: 'Ban',
     communityReq: 'Community request', editCamp: 'Edit campaign',
     savedTitle: 'Saved', savedSub: 'Initiatives you bookmarked', noSaved: 'No saved initiatives yet',
-    hoursLabel: 'Hours needed', campGallery: 'Gallery (optional)', galleryTitle: 'Gallery', campTitleLabel: 'Campaign title', neededLabel: 'Volunteers needed', categoryLabel: 'Category', saveChanges: 'Save changes', changesSaved: 'Changes saved ✓',
+    hoursLabel: 'Hours needed', campGallery: 'Gallery (optional)', galleryTitle: 'Gallery', campTitleLabel: 'Campaign title', neededLabel: 'Estimated volunteers', categoryLabel: 'Category', saveChanges: 'Save changes', changesSaved: 'Changes saved ✓',
     allCats: 'All', allCities: 'All cities', searchPlaceholder: 'Search initiatives, categories, or cities...',
     sortRecent: 'Recent', sortPopular: 'Most active', sortUrgent: 'Soonest',
     noResults: 'No results', noResultsSub: 'Try different keywords or filters.',
@@ -3956,9 +3954,9 @@ const Models = {
   isCommunity(c) { return !!(c && (c.community || (c.createdBy && c.createdBy !== 'admin'))); },
   campImage(c) {
     if (c && c.img) return c.img;
-    const kw = { environment:'cleanup,nature', education:'education,school', health:'health,medical',
-      community:'community,volunteer', youth:'youth,volunteer', sustainability:'recycling,green',
-      food_aid:'food,charity', animal_care:'animal,rescue', public_spaces:'park,city', emergency:'relief,rescue' };
+    const kw = { planting:'tree,planting,nature', cleaning:'cleanup,trash,environment',
+      education:'education,school', health:'health,medical', community:'community,volunteer',
+      improvement:'renovation,repair,community', emergency:'relief,rescue,emergency' };
     const tags = kw[this.catKey(c && c.category)] || 'volunteer,community';
     const lock = Math.abs(String((c && c.id) || '0').split('').reduce((a, ch) => a + ch.charCodeAt(0), 0)) % 1000;
     return 'https://loremflickr.com/800/500/' + tags + '?lock=' + lock;
@@ -5862,9 +5860,9 @@ function openModal(id) {
   if (!el) return;
   el.classList.add('open');
   if (id === 'createModal') {
-    const today = new Date().toISOString().split('T')[0];
+    const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
     const di = document.getElementById('campDate');
-    if (di) { di.min = today; if (!di.value) di.value = today; }
+    if (di) { di.min = tomorrow; if (!di.value) di.value = tomorrow; }
   }
 }
 
