@@ -3335,7 +3335,9 @@ const CONFIG = {
     youth:          { ar: 'الشباب',           en: 'Youth',         icon: '✨' },
     sustainability: { ar: 'الاستدامة',        en: 'Sustainability', icon: '♻️' },
     food_aid:       { ar: 'الإغاثة الغذائية', en: 'Food Aid',      icon: '🍲' },
-    animal_care:    { ar: 'رعاية الحيوان',    en: 'Animal Care',   icon: '🐾' }
+    animal_care:    { ar: 'رعاية الحيوان',    en: 'Animal Care',   icon: '🐾' },
+    public_spaces:  { ar: 'الأماكن العامة',   en: 'Public Spaces', icon: '🏛️' },
+    emergency:      { ar: 'الاستجابة الطارئة', en: 'Emergency',     icon: '🚨' }
   },
   // backward-compat: legacy category keys -> new taxonomy
   CATEGORY_ALIASES: {
@@ -3347,7 +3349,8 @@ const CONFIG = {
     approved:      { ar: 'قيد التنفيذ',  en: 'In Progress',    cls: 'status-approved' },
     under_process: { ar: 'قيد التنفيذ',  en: 'In Progress',    cls: 'status-approved' },
     done:          { ar: 'تم انجازها',   en: 'Completed',      cls: 'status-done'     },
-    rejected:      { ar: 'مرفوضة',       en: 'Rejected',       cls: 'status-rejected' }
+    rejected:      { ar: 'مرفوضة',       en: 'Rejected',       cls: 'status-rejected' },
+    archived:      { ar: 'مؤرشفة',       en: 'Archived',       cls: 'status-rejected' }
   },
   USER_STATUS: {
     pending:  { ar: 'قيد المراجعة', en: 'Pending Review' },
@@ -3471,6 +3474,7 @@ const T = {
     aboutRowSub: 'تعرّف على منصة أثر ورسالتنا', adminRowSub: 'لوحة إدارة المنصة',
     detailHeaderTitle: 'تفاصيل المبادرة',
     chooseCat: 'اختر الفئة', noDataSub: 'كن أول من يطلق مبادرة ويصنع الأثر.',
+    notJoined: 'أنت غير منضم لهذه المبادرة', leftCamp: 'غادرت المبادرة',
     allCats: 'الكل', allCities: 'كل المدن', searchPlaceholder: 'ابحث عن مبادرة، فئة، أو مدينة...',
     sortRecent: 'الأحدث', sortPopular: 'الأكثر تفاعلاً', sortUrgent: 'الأقرب موعداً',
     noResults: 'لا توجد نتائج', noResultsSub: 'جرّب كلمات أو فلاتر مختلفة.',
@@ -3611,6 +3615,7 @@ const T = {
     aboutRowSub: 'Learn about ATHAR and our mission', adminRowSub: 'Platform admin dashboard',
     detailHeaderTitle: 'Initiative Details',
     chooseCat: 'Choose a category', noDataSub: 'Be the first to launch an initiative and make an impact.',
+    notJoined: 'You have not joined this initiative', leftCamp: 'You left the initiative',
     allCats: 'All', allCities: 'All cities', searchPlaceholder: 'Search initiatives, categories, or cities...',
     sortRecent: 'Recent', sortPopular: 'Most active', sortUrgent: 'Soonest',
     noResults: 'No results', noResultsSub: 'Try different keywords or filters.',
@@ -3817,6 +3822,7 @@ const Models = {
       activitiesJoined:0,
       achievements:    0,
       joinedCamps:     [],
+      savedCampaigns:  [],
       campHours:       {},
       onboarded:       false,
       interests:       [],
@@ -3849,6 +3855,8 @@ const Models = {
       creatorPhone: String(createdBy.phone || '').trim(),
       img:          data.img || null,
       joinedUsers:  [],
+      participants: [],
+      gallery:      [],
       campHours:    {},
       createdAt:    new Date().toISOString(),
       updatedAt:    new Date().toISOString()
@@ -4016,7 +4024,12 @@ const Permissions = {
     return perms.includes('*') || perms.includes(action);
   },
   hasRole(user, role) { return this.roleOf(user) === role; },
-  isAdmin(user) { return this.roleOf(user) === 'admin'; }
+  isAdmin(user) { return this.roleOf(user) === 'admin'; },
+  canManageCampaign(user, camp) {
+    if (!user || !camp) return false;
+    if (this.isAdmin(user) || this.hasRole(user, 'moderator')) return true;
+    return camp.createdBy === user.id;
+  }
 };
 
 /* ── OTP / VERIFICATION (Phase 2 — stub, backend/SMS-ready architecture) ── */
@@ -4153,8 +4166,19 @@ const CampaignService = {
     return camps[idx];
   },
 
-  approve(id)       { return this.updateById(id, { status: 'approved' }); },
-  reject(id)        { return this.updateById(id, { status: 'rejected' }); },
+  approve(id) {
+    const c = this.getById(id);
+    const r = this.updateById(id, { status: 'approved' });
+    if (c && c.createdBy) NotificationService.add(c.createdBy, 'تمت الموافقة على مبادرتك ✓', 'Your initiative was approved ✓', 'campaign');
+    return r;
+  },
+  reject(id) {
+    const c = this.getById(id);
+    const r = this.updateById(id, { status: 'rejected' });
+    if (c && c.createdBy) NotificationService.add(c.createdBy, 'لم تتم الموافقة على مبادرتك', 'Your initiative was not approved', 'campaign');
+    return r;
+  },
+  archive(id) { return this.updateById(id, { status: 'archived' }); },
   markUnderProcess(id) { return this.updateById(id, { status: 'under_process' }); },
   markDone(id)      {
     const camp = this.getById(id);
@@ -4205,8 +4229,53 @@ const CampaignService = {
       joinedCamps:      [...(user.joinedCamps  || []), campId]
     });
 
+    if (camp.createdBy && camp.createdBy !== user.id) {
+      NotificationService.add(camp.createdBy, (user.name || 'متطوع') + ' انضم إلى مبادرتك 🤝', (user.name || 'A volunteer') + ' joined your initiative 🤝', 'join');
+    }
     const msg = `✓ ${t('successJoined')} +${hours} ${State.lang === 'ar' ? 'ساعة' : 'hrs'}`;
     return { success: true, message: msg, updatedUser: updated };
+  },
+  leave(campId, user) {
+    if (!user) return { success: false };
+    const camps = this.getAll();
+    const ci = camps.findIndex(c => c.id === campId);
+    if (ci === -1) return { success: false };
+    const camp = camps[ci];
+    if (!(camp.joinedUsers || []).includes(user.id)) return { success: false, message: t('notJoined') };
+    camps[ci].joinedUsers = (camp.joinedUsers || []).filter(id => id !== user.id);
+    camps[ci].volunteers = Math.max(0, (camp.volunteers || 1) - 1);
+    if (camps[ci].status === 'under_process' && camps[ci].volunteers < camps[ci].needed) camps[ci].status = 'approved';
+    camps[ci].updatedAt = new Date().toISOString();
+    this.save(camps);
+    const hours = camp.volunteerHours || 2;
+    const updated = UserService.updateById(user.id, {
+      volunteerHours:   Math.max(0, (user.volunteerHours   || 0) - hours),
+      activitiesJoined: Math.max(0, (user.activitiesJoined || 0) - 1),
+      joinedCamps:      (user.joinedCamps || []).filter(id => id !== campId)
+    });
+    return { success: true, message: t('leftCamp'), updatedUser: updated };
+  },
+  getParticipants(camp) {
+    if (!camp) return [];
+    return (camp.joinedUsers || []).map(uid => UserService.getById(uid)).filter(Boolean);
+  },
+  toggleSave(campId, user) {
+    const u = user || State.cu;
+    if (!u || !u.id) return false;
+    const fresh = UserService.getById(u.id) || u;
+    const saved = fresh.savedCampaigns || [];
+    const has = saved.includes(campId);
+    const next = has ? saved.filter(x => x !== campId) : [...saved, campId];
+    UserService.updateById(u.id, { savedCampaigns: next });
+    return !has;
+  },
+  isSaved(campId, user) {
+    const u = user || State.cu;
+    return !!(u && (u.savedCampaigns || []).includes(campId));
+  },
+  getSaved(user) {
+    const u = user || State.cu;
+    return ((u && u.savedCampaigns) || []).map(id => this.getById(id)).filter(Boolean);
   }
 };
 
