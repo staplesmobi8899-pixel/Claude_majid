@@ -2816,7 +2816,7 @@ html, body { overflow-x: hidden; }
     <div class="create-hero">
       <h1 data-i18n="createTitle"></h1>
       <p data-i18n="createSub"></p>
-      <button class="create-btn" onclick="CreateUI.open()" data-i18n="createBtn"></button>
+      <button class="create-btn" onclick="openModal('createModal')" data-i18n="createBtn"></button>
     </div>
     <div class="my-camps-section">
       <div class="my-camps-title" data-i18n="myCamps"></div>
@@ -3247,34 +3247,24 @@ html, body { overflow-x: hidden; }
       <div class="modal-handle"></div>
     </div>
     <div class="modal-title" data-i18n="newInitiative"></div>
-    <form onsubmit="doCreate(event)" novalidate>
-      <div class="auth-steps" style="margin-bottom:var(--sp-4);">
-        <span class="auth-step active" data-step="1"></span><span class="auth-step" data-step="2"></span>
-      </div>
-      <div class="create-step active" data-cstep="1">
-        <div class="field"><label data-i18n="campTitleLabel"></label>
-          <input name="title" type="text" placeholder="مثال: تشجير بساحة الأمويين"></div>
+    <form onsubmit="doCreate(event)">
+      <div class="field"><label data-i18n="campTitleLabel"></label>
+        <input name="title" type="text" placeholder="مثال: تشجير بساحة الأمويين" required></div>
+      <div class="field-row">
         <div class="field"><label data-i18n="categoryLabel"></label>
-          <select name="category" id="createCatSelect"><option value="" data-i18n-opt="chooseCat"></option></select></div>
-        <div class="field"><label data-i18n="description"></label>
-          <textarea name="desc" placeholder="اشرح الحملة بالتفصيل..."></textarea></div>
-        <button type="button" class="submit-btn" onclick="CreateUI.next()" data-i18n="nextStep"></button>
+          <select name="category" id="createCatSelect" required><option value="" data-i18n-opt="chooseCat"></option></select></div>
+        <div class="field"><label data-i18n="dateLabel"></label><input name="date" type="date" id="campDate" required></div>
       </div>
-      <div class="create-step" data-cstep="2">
-        <div class="field"><label data-i18n="locationLabel"></label>
-          <input name="location" type="text" placeholder="مثال: ساحة الأمويين - دمشق"></div>
-        <div class="field-row">
-          <div class="field"><label data-i18n="dateLabel"></label><input name="date" type="date" id="campDate"></div>
-          <div class="field"><label data-i18n="neededLabel"></label><input name="needed" type="number" min="1" placeholder="20"></div>
-        </div>
-        <div class="field"><label data-i18n="hoursLabel"></label><input name="hours" type="number" min="0.5" step="0.5" placeholder="4"></div>
-        <div class="field"><label data-i18n="campImg"></label><input name="img" type="file" accept="image/*"></div>
-        <div class="field"><label data-i18n="campGallery"></label><input name="gallery" type="file" accept="image/*" multiple></div>
-        <div style="display:flex;gap:var(--sp-3);">
-          <button type="button" class="manage-btn ghost" onclick="CreateUI.show(1)" data-i18n="prevStep"></button>
-          <button type="submit" class="submit-btn" style="flex:1;margin:0;" data-i18n="publishBtn"></button>
-        </div>
+      <div class="field"><label data-i18n="locationLabel"></label>
+        <input name="location" type="text" placeholder="مثال: ساحة الأمويين - دمشق" required></div>
+      <div class="field-row">
+        <div class="field"><label data-i18n="neededLabel"></label><input name="needed" type="number" min="1" placeholder="20" required></div>
+        <div class="field"><label data-i18n="hoursLabel"></label><input name="hours" type="number" min="0.5" step="0.5" placeholder="4" required></div>
       </div>
+      <div class="field"><label data-i18n="description"></label>
+        <textarea name="desc" placeholder="اشرح الحملة بالتفصيل..."></textarea></div>
+      <div class="field"><label data-i18n="campImg"></label><input name="img" type="file" accept="image/*"></div>
+      <button type="submit" class="submit-btn" data-i18n="publishBtn"></button>
     </form>
   </div>
 </div>
@@ -3963,7 +3953,16 @@ const Models = {
     if (m) return State.lang === 'ar' ? m.ar : m.en;
     const tx = this.getCampText(c); return tx.cat || '';
   },
-  isCommunity(c) { return !!(c && (c.community || (c.createdBy && c.createdBy !== 'admin'))); }
+  isCommunity(c) { return !!(c && (c.community || (c.createdBy && c.createdBy !== 'admin'))); },
+  campImage(c) {
+    if (c && c.img) return c.img;
+    const kw = { environment:'cleanup,nature', education:'education,school', health:'health,medical',
+      community:'community,volunteer', youth:'youth,volunteer', sustainability:'recycling,green',
+      food_aid:'food,charity', animal_care:'animal,rescue', public_spaces:'park,city', emergency:'relief,rescue' };
+    const tags = kw[this.catKey(c && c.category)] || 'volunteer,community';
+    const lock = Math.abs(String((c && c.id) || '0').split('').reduce((a, ch) => a + ch.charCodeAt(0), 0)) % 1000;
+    return 'https://loremflickr.com/800/500/' + tags + '?lock=' + lock;
+  }
 };
 
 /* ══════════════════════════════════════════
@@ -4350,11 +4349,15 @@ const CampaignService = {
   toggleSave(campId, user) {
     const u = user || State.cu;
     if (!u || !u.id) return false;
-    const fresh = UserService.getById(u.id) || u;
-    const saved = fresh.savedCampaigns || [];
+    const saved = u.savedCampaigns || [];
     const has = saved.includes(campId);
     const next = has ? saved.filter(x => x !== campId) : [...saved, campId];
+    u.savedCampaigns = next;
     UserService.updateById(u.id, { savedCampaigns: next });
+    if (State.cu && State.cu.id === u.id) {
+      State.cu.savedCampaigns = next;
+      DB.setObj(CONFIG.DB_KEYS.SESSION, State.cu);
+    }
     return !has;
   },
   isSaved(campId, user) {
@@ -4522,10 +4525,8 @@ function campCardHTML(c) {
     const vol      = c.volunteers   || 0;
     const needed   = c.needed       || 0;
 
-    const imgHtml = c.img
-      ? `<img src="${c.img}" alt="${title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" onclick="event.stopPropagation();openImageViewer('${c.img}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-        + `<div class="camp-img-fallback" style="display:none;background:${fallbackColor}">🌿</div>`
-      : `<div class="camp-img-fallback" style="background:${fallbackColor}">🌿</div>`;
+    const imgSrc = Models.campImage(c);
+    const imgHtml = `<img src="${imgSrc}" alt="${title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" onclick="event.stopPropagation();openImageViewer('${imgSrc}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="camp-img-fallback" style="display:none;background:${fallbackColor}">🌿</div>`;
 
     let joinBtnHtml = '';
     if (c.status === 'done') {
@@ -4603,9 +4604,9 @@ const HomeUI = {
     if (!f) { el.innerHTML = ''; return; }
     const tx = Models.getCampText(f);
     const pct = f.needed ? Math.min(100, Math.round((f.volunteers || 0) / f.needed * 100)) : 0;
-    const bg = f.img ? "background-image:linear-gradient(rgba(46,61,31,0.15),rgba(46,61,31,0.75)),url('" + f.img + "')" : '';
+    const bg = "background-image:linear-gradient(rgba(46,61,31,0.15),rgba(46,61,31,0.75)),url('" + Models.campImage(f) + "')";
     el.innerHTML =
-      '<div class="featured-card' + (f.img ? '' : ' featured-noimg') + '" onclick="openDetail(\'' + f.id + '\')" style="' + bg + '">' +
+      '<div class="featured-card" onclick="openDetail(\'' + f.id + '\')" style="' + bg + '">' +
         '<div class="featured-body">' +
           '<span class="featured-tag">⏳ ' + t('nearestTag') + '</span>' +
           '<div class="featured-title">' + tx.title + '</div>' +
@@ -5032,8 +5033,7 @@ function admRenderOverview(users, camps, partners) {
               '<div class="admin-info-row">' + (isAr ? 'حملة جديدة بانتظار الموافقة' : 'New campaign awaiting approval') + ' · 👤 ' + (c.creatorName || '') + '</div>' +
             '</div>' +
             '<div class="admin-actions">' +
-              '<button class="approve-btn" onclick="event.stopPropagation();handleApproveCamp(\'' + c.id + '\')">✓ ' + (isAr ? 'قبول' : 'Approve') + '</button>' +
-              '<button class="reject-btn" onclick="event.stopPropagation();handleRejectCamp(\'' + c.id + '\')">✕ ' + (isAr ? 'رفض' : 'Reject') + '</button>' +
+              '<button class="approve-btn" style="background:var(--olive);" onclick="event.stopPropagation();admViewCamp(\'' + c.id + '\')">' + (isAr ? 'مراجعة وتعديل' : 'Review & edit') + '</button>' +
             '</div>' +
           '</div>';
       });
@@ -5370,8 +5370,7 @@ function admRenderCampaigns() {
         const txt = Models.getCampText(c);
         let actions = '';
         if (c.status === 'pending') {
-          actions = '<button class="approve-btn" style="flex:1;" onclick="event.stopPropagation();handleApproveCamp(\'' + c.id + '\')">✓ ' + (isAr ? 'قبول' : 'Approve') + '</button>' +
-                    '<button class="reject-btn" style="flex:1;" onclick="event.stopPropagation();handleRejectCamp(\'' + c.id + '\')">✕ ' + (isAr ? 'رفض' : 'Reject') + '</button>';
+          actions = '<button class="approve-btn" style="flex:1;background:var(--olive);" onclick="event.stopPropagation();admViewCamp(\'' + c.id + '\')">' + (isAr ? 'مراجعة وتعديل' : 'Review & edit') + '</button>';
         } else if (c.status === 'approved') {
           actions = '<button class="approve-btn" style="flex:1;" onclick="event.stopPropagation();handleCampUnderProcess(\'' + c.id + '\')">' + (isAr ? 'قيد التنفيذ' : 'In Progress') + '</button>' +
                     '<button class="approve-btn" style="flex:1;background:#8b5cf6;" onclick="event.stopPropagation();handleCampDone(\'' + c.id + '\')">' + (isAr ? 'تم انجازها' : 'Mark Done') + '</button>';
@@ -5542,9 +5541,9 @@ function renderDetail(id) {
 
   const hero = document.getElementById('detailHero');
   if (hero) {
-    hero.style.background = c.img ? '' : 'linear-gradient(135deg, var(--forest), var(--olive))';
+    hero.style.background = 'linear-gradient(135deg, var(--forest), var(--olive))';
     hero.innerHTML =
-      (c.img ? '<img src="' + c.img + '" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.remove()">' : '') +
+      '<img src="' + Models.campImage(c) + '" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.remove()">' +
       '<div class="detail-hero-overlay"></div>' +
       '<button class="detail-back" id="detailBackBtn" onclick="goBack()">' + (isAr ? '‹' : '›') + '</button>' +
       '<button class="detail-hero-save' + (saved ? ' saved' : '') + '" id="detailSaveBtn" onclick="handleSave(\'' + id + '\')" aria-label="save">' + (saved ? '♥' : '♡') + '</button>';
@@ -5639,7 +5638,6 @@ function markAtt(campId, userId, status) {
 function handleCardSave(id, btn) {
   if (!requireAuth()) return;
   const now = CampaignService.toggleSave(id);
-  State.setUser(UserService.getById(State.cu.id) || State.cu);
   if (btn) { btn.classList.toggle('saved', now); btn.textContent = now ? '♥' : '♡'; }
   toast(now ? t('saved') : t('unsaved'), '');
 }
@@ -5658,7 +5656,6 @@ function renderSaved() {
 function handleSave(id) {
   if (!requireAuth()) return;
   const now = CampaignService.toggleSave(id);
-  State.setUser(UserService.getById(State.cu.id) || State.cu);
   const btn = document.getElementById('detailSaveBtn');
   if (btn) { btn.classList.toggle('saved', now); btn.textContent = now ? '♥' : '♡'; }
   toast(now ? t('saved') : t('unsaved'), '');
@@ -6279,27 +6276,6 @@ function enterApp() {
 }
 
 /* ── CAMPAIGNS ── */
-/* ── Create campaign multi-step (Phase 5) ── */
-const CreateUI = {
-  step: 1,
-  show(s) {
-    this.step = s;
-    document.querySelectorAll('#createModal .create-step').forEach(el => el.classList.toggle('active', Number(el.dataset.cstep) === s));
-    document.querySelectorAll('#createModal .auth-step').forEach(el => el.classList.toggle('active', Number(el.dataset.step) <= s));
-  },
-  open() { this.show(1); openModal('createModal'); },
-  next() {
-    const form = document.querySelector('#createModal form'); if (!form) return;
-    clearFieldErrors(form);
-    const title = (form.querySelector('[name="title"]').value || '').trim();
-    const cat = form.querySelector('[name="category"]').value;
-    let ok = true;
-    if (!Validators.isRequired(title)) { showFieldError(form, 'title', t('errorRequired')); ok = false; }
-    if (!Validators.isCampCategory(cat)) { showFieldError(form, 'category', t('errorRequired')); ok = false; }
-    if (ok) this.show(2);
-  }
-};
-
 async function doCreate(e) {
   e.preventDefault();
   if (!requireAuth()) return;
