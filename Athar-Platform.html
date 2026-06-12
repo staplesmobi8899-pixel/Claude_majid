@@ -1553,6 +1553,49 @@ body {
   color: var(--charcoal-50);
   line-height: 1.85;
 }
+.about-block p + p { margin-top: var(--sp-4); }
+
+/* About — mission list (Phase 7) */
+.about-list { list-style: none; margin-top: var(--sp-4); display: grid; gap: var(--sp-2); }
+.about-list li {
+  position: relative; padding-inline-start: var(--sp-6);
+  font-size: var(--fs-base); color: var(--charcoal-80); line-height: 1.7;
+}
+.about-list li::before {
+  content: ''; position: absolute; inset-inline-start: 0; top: 0.55em;
+  width: 8px; height: 8px; border-radius: 50%; background: var(--olive);
+}
+
+/* About — value chips */
+.value-chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-4); }
+.value-chip {
+  font-size: var(--fs-sm); font-weight: 700; color: var(--olive);
+  background: var(--olive-pale); border-radius: var(--r-full);
+  padding: var(--sp-2) var(--sp-4);
+}
+
+/* About — impact strip */
+.about-impact {
+  background: var(--forest); border-radius: var(--r-xl);
+  padding: var(--sp-7) var(--sp-5); margin-bottom: var(--sp-4); text-align: center;
+}
+.about-impact-title { font-size: var(--fs-xl); font-weight: 900; color: var(--white); margin-bottom: var(--sp-6); }
+.about-impact-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-3); }
+@media (max-width: 480px) { .about-impact-grid { grid-template-columns: repeat(2, 1fr); gap: var(--sp-5); } }
+.about-impact-grid .impact-item { border: none; background: transparent; padding: 0; }
+.about-impact-grid .impact-num { color: var(--olive-light); }
+.about-impact-grid .impact-lbl { color: rgba(255,255,255,0.6); }
+
+/* About — partner logo slots */
+.partners-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3); margin-top: var(--sp-5); }
+.partner-slot {
+  aspect-ratio: 3 / 2; border: 1.5px dashed var(--sand-dark); border-radius: var(--r-lg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-1);
+  color: var(--charcoal-50); background: var(--sand);
+}
+.partner-slot-mark { font-size: 1.3rem; font-weight: 700; color: var(--olive); line-height: 1; }
+.partner-slot small { font-size: var(--fs-2xs); }
+.partners-invite { text-align: center; margin-top: var(--sp-4); font-size: var(--fs-sm); color: var(--charcoal-50); font-weight: 600; }
 
 /* Partnership */
 .partner-section {
@@ -3332,21 +3375,70 @@ html, body { overflow-x: hidden; }
     </div>
     <div class="about-content">
       <div class="about-block">
-        <h2 data-i18n="missionLabel"></h2>
-        <p data-i18n="missionText"></p>
+        <h2 data-i18n="abStoryLabel"></h2>
+        <p data-i18n="abStoryP1"></p>
+        <p data-i18n="abStoryP2"></p>
+        <p data-i18n="abStoryP3"></p>
       </div>
+
       <div class="about-block">
         <h2 data-i18n="visionLabel"></h2>
         <p data-i18n="visionText"></p>
       </div>
+
       <div class="about-block">
-        <h2 data-i18n="valuesLabel"></h2>
-        <p data-i18n="valuesText"></p>
+        <h2 data-i18n="missionLabel"></h2>
+        <p data-i18n="abMissionIntro"></p>
+        <ul class="about-list">
+          <li data-i18n="abMiss1"></li>
+          <li data-i18n="abMiss2"></li>
+          <li data-i18n="abMiss3"></li>
+          <li data-i18n="abMiss4"></li>
+          <li data-i18n="abMiss5"></li>
+          <li data-i18n="abMiss6"></li>
+        </ul>
+      </div>
+
+      <div class="about-block">
+        <h2 data-i18n="abPhiloLabel"></h2>
+        <p data-i18n="abPhiloText"></p>
+        <div class="value-chips">
+          <span class="value-chip" data-i18n="abVal1"></span>
+          <span class="value-chip" data-i18n="abVal2"></span>
+          <span class="value-chip" data-i18n="abVal3"></span>
+          <span class="value-chip" data-i18n="abVal4"></span>
+          <span class="value-chip" data-i18n="abVal5"></span>
+          <span class="value-chip" data-i18n="abVal6"></span>
+        </div>
+      </div>
+
+      <div class="about-impact">
+        <h2 class="about-impact-title" data-i18n="abImpactTitle"></h2>
+        <div class="about-impact-grid">
+          <div class="impact-item"><div class="impact-num" id="aUsers">0</div><div class="impact-lbl" data-i18n="statVol"></div></div>
+          <div class="impact-item"><div class="impact-num" id="aCamps">0</div><div class="impact-lbl" data-i18n="statCamps"></div></div>
+          <div class="impact-item"><div class="impact-num" id="aHours">0</div><div class="impact-lbl" data-i18n="statHours"></div></div>
+          <div class="impact-item"><div class="impact-num" id="aCities">0</div><div class="impact-lbl" data-i18n="statCities"></div></div>
+        </div>
+      </div>
+
+      <div class="about-block">
+        <h2 data-i18n="abPartnersTitle"></h2>
+        <p data-i18n="abPartnersDesc"></p>
+        <div class="partners-grid">
+          <div class="partner-slot"><span class="partner-slot-mark">+</span><small data-i18n="abPartnerSlot"></small></div>
+          <div class="partner-slot"><span class="partner-slot-mark">+</span><small data-i18n="abPartnerSlot"></small></div>
+          <div class="partner-slot"><span class="partner-slot-mark">+</span><small data-i18n="abPartnerSlot"></small></div>
+          <div class="partner-slot"><span class="partner-slot-mark">+</span><small data-i18n="abPartnerSlot"></small></div>
+          <div class="partner-slot"><span class="partner-slot-mark">+</span><small data-i18n="abPartnerSlot"></small></div>
+          <div class="partner-slot"><span class="partner-slot-mark">+</span><small data-i18n="abPartnerSlot"></small></div>
+        </div>
+        <p class="partners-invite" data-i18n="abPartnersInvite"></p>
       </div>
 
       <div class="partner-section">
-        <h2 class="partner-title" data-i18n="partnerTitle"></h2>
-        <p class="partner-sub" data-i18n="partnerSub"></p>
+        <h2 class="partner-title" data-i18n="abCtaQuestion"></h2>
+        <p class="partner-sub" data-i18n="abCtaLine"></p>
         <div class="partner-form">
           <div class="partner-form-title" data-i18n="partnerFormTitle"></div>
           <div class="partner-form-sub" data-i18n="partnerFormSub"></div>
@@ -3934,6 +4026,20 @@ const T = {
     missionLabel: 'رسالتنا', missionText: 'أَثَرْ منصة مجتمعية شبابية تجمع الشباب لإحداث تغيير حقيقي ومستدام من خلال التطوع والمبادرات المحلية المنظمة والآمنة.',
     visionLabel: 'رؤيتنا', visionText: 'مجتمع شبابي فعّال يترك أثرًا واضحًا ويخلق بيئة أفضل بأيدي الناس أنفسهم.',
     valuesLabel: 'قيمنا', valuesText: 'الشفافية • التعاون • التأثير الحقيقي • الأمان',
+    abStoryLabel: 'قصة أَثَرْ',
+    abStoryP1: 'وُلدت «أَثَرْ» من فكرة بسيطة: الشباب يريدون المشاركة وصناعة التغيير والشعور بأنهم مؤثّرون حقًّا في مجتمعاتهم، لكن كثيرين منهم لا يعرفون من أين يبدؤون أو كيف يصلون إلى فرص ذات معنى. وُجدت «أَثَرْ» لتنظّم هذه الطاقة وتحوّلها إلى أثر مجتمعي حقيقي.',
+    abStoryP2: '«أَثَرْ» ليست مجرّد منصّة تطوّع، بل حركة شبابية تشجّع المشاركة والمسؤولية والتعاون والانتماء. من خلال الحملات والمبادرات والأنشطة المجتمعية، تنظّم «أَثَرْ» جهود الشباب بطريقة عصرية ومُلهِمة، وتخلق بيئة يساهم فيها الناس وينمون ويتواصلون ويتركون أثرًا إيجابيًا حولهم.',
+    abStoryP3: 'كل حملة داخل «أَثَرْ» تمثّل أشخاصًا حقيقيين وجهدًا حقيقيًا وتغييرًا حقيقيًا يحدث على الأرض. صُمّمت المنصّة لتجعل التطوّع سهل الوصول، عصريًا، منظّمًا، ذا معنى، ومُجزيًا عاطفيًا — وتجمع المتطوّعين والمنظّمين والمجتمعات والداعمين في منظومة واحدة متّصلة يصبح فيها الفعل الإيجابي جزءًا من الحياة اليومية.',
+    abPhiloLabel: 'فلسفة المجتمع',
+    abPhiloText: 'تؤمن «أَثَرْ» بأن أصغر فعل يمكن أن يترك أثرًا ذا معنى. كل شخص داخل «أَثَرْ» جزء من شيء أكبر من حملة واحدة — جزء من حركة متنامية مبنيّة على الأثر الجماعي.',
+    abMissionIntro: 'رسالة «أَثَرْ» هي تنظيم وتمكين المبادرات الشبابية عبر منصّة عصرية تربط الناس بفرص ذات معنى للمشاركة والتعاون وصناعة أثر اجتماعي قابل للقياس.',
+    abMiss1: 'تشجيع المشاركة المجتمعية', abMiss2: 'دعم المبادرات الشبابية', abMiss3: 'تبسيط التطوّع', abMiss4: 'تعزيز المسؤولية الاجتماعية', abMiss5: 'خلق أثر منظَّم', abMiss6: 'بناء مجتمع متّصل ومتحفّز',
+    abVal1: 'التعاون', abVal2: 'المشاركة', abVal3: 'المسؤولية', abVal4: 'التفاؤل', abVal5: 'النموّ', abVal6: 'التواصل الإنساني',
+    abImpactTitle: 'أرقام حقيقية. أثر حقيقي.',
+    abPartnersTitle: 'المنظمات والشركاء الداعمون لأَثَرْ',
+    abPartnersDesc: 'تفخر «أَثَرْ» بالتعاون مع المنظمات والشركات والداعمين الذين يؤمنون بتمكين الشباب وتقوية المجتمعات وصناعة أثر اجتماعي ذي معنى معًا.',
+    abPartnerSlot: 'شعارك هنا', abPartnersInvite: 'كن من أوائل الشركاء الذين يصنعون الأثر معنا.',
+    abCtaQuestion: 'مهتمّ بدعم «أَثَرْ» وتصبح جزءًا من الحركة؟', abCtaLine: 'لنصنع أثرًا ذا معنى معًا.',
     partnerTitle: 'لنصنع أثرًا حقيقيًا معًا', partnerSub: 'إذا كنت تؤمن بأن التغيير المجتمعي يبدأ بالشباب، كن شريك الأثر وادعم حملاتنا الهادفة.',
     partnerFormTitle: 'كن شريك الأثر', partnerFormSub: 'شارك معنا رؤيتك — سنتواصل معك لنبدأ معًا.',
     orgName: 'اسم الجهة', contactPerson: 'المسؤول عن التواصل',
@@ -4102,6 +4208,20 @@ const T = {
     missionLabel: 'Our Mission', missionText: 'ATHAR is a youth community platform bringing people together to create real, sustainable change through organized and safe local volunteering initiatives.',
     visionLabel: 'Our Vision', visionText: 'An active youth community that leaves a clear impact and creates a better environment through the hands of the people themselves.',
     valuesLabel: 'Our Values', valuesText: 'Transparency • Collaboration • Real Impact • Safety',
+    abStoryLabel: 'The ATHAR Story',
+    abStoryP1: 'ATHAR was created from a simple idea: young people want to participate, create change, and feel that they truly matter in their communities — but many of them do not know where to start or how to connect with meaningful opportunities. ATHAR exists to organize this energy and transform it into real community impact.',
+    abStoryP2: 'ATHAR is not just a volunteering platform. It is a youth-driven movement built to encourage participation, responsibility, collaboration, and belonging. Through campaigns, initiatives, and community activities, ATHAR helps organize youth efforts in a modern and inspiring way while creating an environment where people can contribute, grow, connect, and leave a positive impact around them.',
+    abStoryP3: 'Every campaign inside ATHAR represents real people, real effort, and real change happening on the ground. The platform is designed to make volunteering feel accessible, modern, organized, meaningful, and emotionally rewarding — bringing volunteers, organizers, communities, and supporters into one connected ecosystem where positive action becomes part of everyday life.',
+    abPhiloLabel: 'Community Philosophy',
+    abPhiloText: 'ATHAR believes that even the smallest action can leave a meaningful impact. Every person inside ATHAR is part of something bigger than a single campaign — part of a growing movement built on collective impact.',
+    abMissionIntro: "ATHAR's mission is to organize and empower youth initiatives through a modern platform that connects people with meaningful opportunities to participate, collaborate, and create measurable social impact.",
+    abMiss1: 'Encourage community participation', abMiss2: 'Support youth-led initiatives', abMiss3: 'Simplify volunteering', abMiss4: 'Strengthen social responsibility', abMiss5: 'Create organized impact', abMiss6: 'Build a connected, motivated community',
+    abVal1: 'Collaboration', abVal2: 'Participation', abVal3: 'Responsibility', abVal4: 'Optimism', abVal5: 'Growth', abVal6: 'Human connection',
+    abImpactTitle: 'Real Numbers. Real Impact.',
+    abPartnersTitle: 'Organizations & Partners Supporting ATHAR',
+    abPartnersDesc: 'ATHAR proudly collaborates with organizations, companies, and supporters who believe in empowering youth, strengthening communities, and creating meaningful social impact together.',
+    abPartnerSlot: 'Your logo here', abPartnersInvite: 'Be among the first partners creating impact with us.',
+    abCtaQuestion: 'Interested in supporting ATHAR and becoming part of the movement?', abCtaLine: "Let's create meaningful impact together.",
     partnerTitle: "Let's create real impact together", partnerSub: 'If you believe community change starts with youth, become an ATHAR partner and support our campaigns.',
     partnerFormTitle: 'Become an ATHAR Partner', partnerFormSub: 'Share your vision with us — we will reach out to start together.',
     orgName: 'Organization Name', contactPerson: 'Contact Person',
@@ -6315,11 +6435,12 @@ function animateCounters() {
   try {
     const users = UserService.getAll();
     const camps = CampaignService.getAll();
+    const nUsers = users.length;
+    const nCamps = camps.filter(c => c.status === 'done').length;
+    const nHours = users.reduce((s, u) => s + (u.volunteerHours || 0), 0);
     const targets = {
-      cUsers: users.length,
-      cCamps: camps.filter(c => c.status === 'done').length,
-      cHours: users.reduce((s, u) => s + (u.volunteerHours || 0), 0),
-      cCities: 20
+      cUsers: nUsers, cCamps: nCamps, cHours: nHours, cCities: 20,
+      aUsers: nUsers, aCamps: nCamps, aHours: nHours, aCities: 20
     };
     Object.entries(targets).forEach(([id, target]) => {
       const el = document.getElementById(id);
@@ -6328,7 +6449,7 @@ function animateCounters() {
       const step = Math.max(1, Math.ceil(target / 60));
       const timer = setInterval(() => {
         count = Math.min(count + step, target);
-        el.textContent = id === 'cCities' ? count + '+' : count.toLocaleString('en-US');
+        el.textContent = (id === 'cCities' || id === 'aCities') ? count + '+' : count.toLocaleString('en-US');
         if (count >= target) clearInterval(timer);
       }, 22);
     });
@@ -6352,7 +6473,7 @@ const ROUTES = {
   detail:        { title: 'detailHeaderTitle', back: true, onEnter: () => {} },
   profile:       { title: 'navProfile',     onEnter: () => renderProfile() },
   settings:      { title: 'settingsTitle', back: true, auth: true, onEnter: () => renderSettings() },
-  about:         { title: 'navAbout',       onEnter: () => {} },
+  about:         { title: 'navAbout',       onEnter: () => animateCounters() },
   admin:         { title: 'navAdmin', back: true, roles: ['admin'], onEnter: () => renderAdmin() }
 };
 
