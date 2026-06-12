@@ -1781,6 +1781,46 @@ body {
 }
 .reject-btn:hover { background: rgba(200,76,60,0.06); }
 
+/* ── PHASE 8.1 — admin status/role chips + modal detail (clean, no emoji) ── */
+.adm-st { display:inline-block; padding:2px 10px; border-radius:var(--r-full); font-size:var(--fs-2xs); font-weight:800; vertical-align:middle; }
+.adm-st.pending       { background:var(--warn-bg);    color:var(--warn-fg); }
+.adm-st.approved      { background:var(--success-bg); color:var(--success-fg); }
+.adm-st.under_process { background:rgba(29,78,216,0.14);  color:#1d4ed8; }
+.adm-st.done          { background:rgba(124,58,237,0.14); color:#7c3aed; }
+.adm-st.rejected      { background:var(--red-bg);     color:var(--red-fg); }
+.adm-st.banned        { background:var(--red-bg);     color:var(--red-fg); }
+.adm-st.archived      { background:var(--line-sand-8); color:var(--charcoal-50); }
+.adm-rolechip { display:inline-block; padding:2px 10px; border-radius:var(--r-full); font-size:var(--fs-2xs); font-weight:800; background:var(--olive-pale); color:var(--olive); vertical-align:middle; }
+
+.adm-mhead { text-align:center; margin-bottom:var(--sp-5); }
+.adm-mava { width:72px; height:72px; border-radius:50%; background:var(--olive-pale); display:flex; align-items:center; justify-content:center; margin:0 auto var(--sp-2); overflow:hidden; }
+.adm-mava img { width:100%; height:100%; object-fit:cover; }
+.adm-mava .ig-avatar-initial { font-size:1.9rem; }
+.adm-mname { font-size:var(--fs-xl); font-weight:900; color:var(--charcoal); }
+.adm-mchips { margin-top:var(--sp-2); display:flex; gap:var(--sp-2); justify-content:center; flex-wrap:wrap; }
+
+.adm-drow { display:flex; gap:var(--sp-3); padding:var(--sp-3) 0; border-bottom:1px solid var(--line); font-size:var(--fs-base); }
+.adm-drow:last-child { border-bottom:none; }
+.adm-dlabel { flex:none; min-width:96px; font-weight:700; color:var(--charcoal-50); }
+.adm-dval { font-weight:700; color:var(--charcoal); word-break:break-word; }
+
+.adm-mactions { display:flex; gap:var(--sp-3); margin-top:var(--sp-5); flex-wrap:wrap; }
+.adm-btn { flex:1 1 auto; min-width:120px; padding:var(--sp-3) var(--sp-4); border-radius:var(--r-md); font-weight:800; font-size:var(--fs-base); cursor:pointer; font-family:inherit; border:none; transition:opacity 0.15s; }
+.adm-btn:hover { opacity:0.9; }
+.adm-btn.primary { background:var(--accent-btn); color:#fff; }
+.adm-btn.ok      { background:var(--success); color:#fff; }
+.adm-btn.danger  { background:var(--red); color:#fff; }
+.adm-btn.process { background:#1d4ed8; color:#fff; }
+.adm-btn.done    { background:#7c3aed; color:#fff; }
+.adm-btn.ghost   { background:transparent; color:var(--charcoal); border:1.5px solid var(--sand-dark); }
+
+.adm-msection { margin-top:var(--sp-5); }
+.adm-msection-h { font-size:var(--fs-sm); font-weight:800; color:var(--charcoal-80); margin-bottom:var(--sp-3); }
+.adm-roles { display:flex; flex-wrap:wrap; gap:var(--sp-2); }
+.adm-role-opt { padding:var(--sp-2) var(--sp-3); border-radius:var(--r-full); border:1.5px solid var(--sand-dark); background:var(--white); color:var(--charcoal-80); font-family:inherit; font-size:var(--fs-xs); font-weight:700; cursor:pointer; }
+.adm-role-opt.on { background:var(--accent-btn); color:#fff; border-color:var(--accent-btn); }
+.adm-ban-note { margin-top:var(--sp-4); padding:var(--sp-3); background:var(--red-bg); border-radius:var(--r-md); color:var(--red-fg); font-size:var(--fs-sm); text-align:center; font-weight:800; }
+
 /* ══════════════════════════════════════════
    MODAL — BOTTOM SHEET
    ══════════════════════════════════════════ */
@@ -5637,18 +5677,24 @@ function admEl(id) { return document.getElementById(id); }
 function admStatusChip(status) {
   const isAr = State.lang === 'ar';
   const map = {
-    pending:       { bg: '#fef9ec', txt: '#c47d1a', ar: 'قيد المراجعة', en: 'Pending' },
-    approved:      { bg: '#dcfce7', txt: '#2d7a4f', ar: 'موافق عليه',  en: 'Approved' },
-    under_process: { bg: '#dbeafe', txt: '#1d4ed8', ar: 'قيد التنفيذ', en: 'In Progress' },
-    done:          { bg: '#f3e8ff', txt: '#7c3aed', ar: 'منجزة',       en: 'Done' },
-    rejected:      { bg: '#fecaca', txt: '#c84c3c', ar: 'مرفوض',       en: 'Rejected' }
+    pending:       { ar: 'قيد المراجعة', en: 'Pending' },
+    approved:      { ar: 'موافق عليه',  en: 'Approved' },
+    under_process: { ar: 'قيد التنفيذ', en: 'In Progress' },
+    done:          { ar: 'منجزة',       en: 'Done' },
+    rejected:      { ar: 'مرفوض',       en: 'Rejected' },
+    banned:        { ar: 'محظور',       en: 'Banned' },
+    archived:      { ar: 'مؤرشفة',      en: 'Archived' }
   };
-  const s = map[status] || { bg: '#f3f4f6', txt: '#555', ar: status, en: status };
-  return '<span style="display:inline-block;padding:0.25rem 0.7rem;border-radius:0.5rem;font-size:var(--fs-xs);font-weight:800;background:' + s.bg + ';color:' + s.txt + ';">' + (isAr ? s.ar : s.en) + '</span>';
+  const s = map[status] || { ar: status, en: status };
+  return '<span class="adm-st ' + status + '">' + (isAr ? s.ar : s.en) + '</span>';
+}
+/** Clean role chip for a user */
+function admRoleChip(u) {
+  return '<span class="adm-rolechip">' + Permissions.roleLabel(u) + '</span>';
 }
 
 function admEmpty(icon, label) {
-  return '<div class="empty-state"><div class="empty-icon">' + icon + '</div><div class="empty-title">' + label + '</div></div>';
+  return '<div class="empty-state"><div class="empty-title">' + label + '</div></div>';
 }
 
 function admTimeAgo(iso) {
@@ -5901,50 +5947,118 @@ function admStatDetail(kind) {
   }
 }
 
-/* ── User detail modal ── */
+/* ── User detail modal (Phase 8.1 — clean, edit + assign role + suspend) ── */
 function admViewUser(id) {
   try {
-    const u = UserService.getById ? UserService.getById(id) : UserService.getAll().find(x => x.id === id);
+    const u = UserService.getById(id) || UserService.getAll().find(x => x.id === id);
     if (!u) return;
     const isAr = State.lang === 'ar';
-    const row = (icon, label, val) => val
-      ? '<div style="display:flex;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--line);font-size:var(--fs-base);"><span style="flex:none;">' + icon + '</span><span style="flex:none;font-weight:700;color:var(--charcoal-50);">' + label + ':</span><span style="font-weight:700;color:var(--charcoal);word-break:break-word;">' + val + '</span></div>'
-      : '';
-    admOpenModal(
-      '<div style="text-align:center;margin-bottom:1rem;">' +
-        '<div style="width:70px;height:70px;border-radius:50%;background:#eef1e8;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 0.6rem;overflow:hidden;">' +
-          (u.profilePic ? '<img src="' + u.profilePic + '" style="width:100%;height:100%;object-fit:cover;">' : '👤') +
-        '</div>' +
-        '<div style="font-size:var(--fs-xl);font-weight:900;color:var(--charcoal);">' + (u.name || '') + '</div>' +
-        '<div style="margin-top:0.4rem;">' + admStatusChip(u.status) + '</div>' +
+    const isBoot = u.email === CONFIG.ADMIN_EMAIL;
+    const banned = UserService.isBanned(u);
+    const ava = u.profilePic
+      ? '<img src="' + u.profilePic + '" alt="">'
+      : '<span class="ig-avatar-initial">' + ((u.name || '?').trim().charAt(0) || '?') + '</span>';
+    const row = (label, val) => val
+      ? '<div class="adm-drow"><span class="adm-dlabel">' + label + '</span><span class="adm-dval">' + val + '</span></div>' : '';
+
+    let html =
+      '<div class="adm-mhead">' +
+        '<div class="adm-mava">' + ava + '</div>' +
+        '<div class="adm-mname">' + (u.name || '') + '</div>' +
+        '<div class="adm-mchips">' + admStatusChip(banned ? 'banned' : u.status) + admRoleChip(u) + '</div>' +
       '</div>' +
-      row('📧', isAr ? 'البريد' : 'Email', u.email) +
-      row('📞', isAr ? 'الهاتف' : 'Phone', u.phone) +
-      row('🏙️', isAr ? 'المدينة' : 'City', [u.city, u.country].filter(Boolean).join(', ')) +
-      row('🎂', isAr ? 'الميلاد' : 'DOB', u.dob) +
-      row('♿', isAr ? 'احتياجات خاصة' : 'Special needs', u.special) +
-      row('🕐', isAr ? 'ساعات التطوع' : 'Volunteer hrs', String(u.volunteerHours || 0)) +
-      row('📋', isAr ? 'حملات منضم لها' : 'Joined camps', String((u.joinedCamps || []).length)) +
-      row('📅', isAr ? 'تاريخ التسجيل' : 'Registered', u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '') +
-      (u.idPhoto ? '<div style="margin-top:0.8rem;"><img src="' + u.idPhoto + '" style="width:100%;border-radius:0.75rem;cursor:pointer;" onclick="openImageViewer(\'' + u.idPhoto + '\')"></div>' : '') +
-      (u.status === 'pending'
-        ? '<div style="display:flex;gap:0.6rem;margin-top:1.1rem;">' +
-            '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:var(--success);color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleApproveUser(\'' + u.id + '\');admCloseModal()">✓ ' + (isAr ? 'قبول' : 'Approve') + '</button>' +
-            '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:var(--red);color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleRejectUser(\'' + u.id + '\');admCloseModal()">✕ ' + (isAr ? 'رفض' : 'Reject') + '</button>' +
-          '</div>'
-        : '') +
-      (u.email !== CONFIG.ADMIN_EMAIL
-        ? (UserService.isBanned(u)
-          ? '<div style="margin-top:1rem;padding:0.8rem;background:var(--red-bg);border-radius:0.75rem;color:var(--red-fg);font-size:var(--fs-sm);text-align:center;font-weight:800;">🚫 ' + (isAr ? 'محظور حتى ' : 'Banned until ') + new Date(u.banned.until).toLocaleDateString() + '</div>' +
-            '<button style="width:100%;margin-top:0.6rem;padding:0.8rem;border:1.5px solid var(--sand-dark);border-radius:0.75rem;background:transparent;color:var(--charcoal);font-weight:800;cursor:pointer;" onclick="handleUnbanUser(\'' + u.id + '\')">' + (isAr ? 'رفع الحظر' : 'Unban') + '</button>'
-          : '<div style="margin-top:1.1rem;"><div style="font-size:var(--fs-sm);font-weight:800;color:var(--charcoal);margin-bottom:0.5rem;">🚫 ' + (isAr ? 'حظر الحساب (عدم حضور) — اختر المدة:' : 'Ban account (no-show) — choose duration:') + '</div><div style="display:flex;gap:0.5rem;">' +
-            [3, 7, 30].map(function (d) { return '<button style="flex:1;padding:0.7rem;border:1.5px solid rgba(200,76,60,0.4);border-radius:0.6rem;background:transparent;color:var(--red);font-weight:800;cursor:pointer;" onclick="handleBanUser(\'' + u.id + '\',' + d + ')">' + d + ' ' + (isAr ? 'يوم' : 'days') + '</button>'; }).join('') +
-            '</div></div>')
-        : '')
-    );
+      row(isAr ? 'البريد' : 'Email', u.email) +
+      row(isAr ? 'الهاتف' : 'Phone', u.phone) +
+      row(isAr ? 'المدينة' : 'City', [u.city, u.country].filter(Boolean).join('، ')) +
+      row(isAr ? 'الميلاد' : 'DOB', u.dob) +
+      row(isAr ? 'احتياجات خاصة' : 'Special needs', u.special) +
+      row(isAr ? 'ساعات التطوّع' : 'Volunteer hrs', String(u.volunteerHours || 0)) +
+      row(isAr ? 'حملات منضمّ لها' : 'Joined camps', String((u.joinedCamps || []).length)) +
+      row(isAr ? 'تاريخ التسجيل' : 'Registered', u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '') +
+      (u.idPhoto ? '<div style="margin-top:var(--sp-3);"><img src="' + u.idPhoto + '" style="width:100%;border-radius:var(--r-md);cursor:pointer;" onclick="openImageViewer(\'' + u.idPhoto + '\')"></div>' : '');
+
+    // Primary actions
+    let actions = '';
+    if (u.status === 'pending') {
+      actions += '<button class="adm-btn ok" onclick="handleApproveUser(\'' + u.id + '\');admCloseModal()">' + (isAr ? 'قبول' : 'Approve') + '</button>' +
+                 '<button class="adm-btn danger" onclick="handleRejectUser(\'' + u.id + '\');admCloseModal()">' + (isAr ? 'رفض' : 'Reject') + '</button>';
+    }
+    if (!isBoot) actions += '<button class="adm-btn ghost" onclick="admEditUser(\'' + u.id + '\')">' + (isAr ? 'تعديل البيانات' : 'Edit') + '</button>';
+    if (actions) html += '<div class="adm-mactions">' + actions + '</div>';
+
+    // Assign role
+    if (!isBoot && Permissions.can(State.cu, 'assign_role')) {
+      const cur = Permissions.roleOf(u);
+      html += '<div class="adm-msection"><div class="adm-msection-h">' + (isAr ? 'الدور' : 'Role') + '</div><div class="adm-roles">' +
+        Permissions.assignable().map(r =>
+          '<button class="adm-role-opt' + (r === cur ? ' on' : '') + '" onclick="admAssignRole(\'' + u.id + '\',\'' + r + '\')">' +
+            (isAr ? CONFIG.ROLES[r].ar : CONFIG.ROLES[r].en) + '</button>'
+        ).join('') + '</div></div>';
+    }
+
+    // Suspend / ban
+    if (!isBoot) {
+      if (banned) {
+        html += '<div class="adm-ban-note">' + (isAr ? 'محظور حتى ' : 'Banned until ') + new Date(u.banned.until).toLocaleDateString() + '</div>' +
+          '<div class="adm-mactions"><button class="adm-btn ghost" onclick="handleUnbanUser(\'' + u.id + '\')">' + (isAr ? 'رفع الحظر' : 'Unban') + '</button></div>';
+      } else {
+        html += '<div class="adm-msection"><div class="adm-msection-h">' + (isAr ? 'تعليق الحساب — اختر المدة' : 'Suspend account — choose duration') + '</div><div class="adm-roles">' +
+          [3, 7, 30].map(d => '<button class="adm-role-opt" onclick="handleBanUser(\'' + u.id + '\',' + d + ')">' + d + ' ' + (isAr ? 'يوم' : 'days') + '</button>').join('') +
+          '</div></div>';
+      }
+    }
+
+    admOpenModal(html);
   } catch (e) {
     console.error('[admViewUser] Error:', e);
   }
+}
+
+/* Edit user data (admin) */
+function admEditUser(id) {
+  const u = UserService.getById(id);
+  if (!u) return;
+  const isAr = State.lang === 'ar';
+  const esc = s => String(s == null ? '' : s).replace(/"/g, '&quot;');
+  const field = (fid, label, val, type) =>
+    '<div class="edit-field"><label>' + label + '</label><input id="' + fid + '" type="' + (type || 'text') + '" value="' + esc(val) + '"><div class="edit-err" id="err-' + fid + '"></div></div>';
+  admOpenModal(
+    '<div class="adm-msection-h" style="font-size:var(--fs-lg);margin-bottom:var(--sp-4);">' + (isAr ? 'تعديل: ' : 'Edit: ') + (u.name || '') + '</div>' +
+    field('eu-name',  isAr ? 'الاسم' : 'Name', u.name) +
+    field('eu-phone', isAr ? 'الهاتف' : 'Phone', u.phone, 'tel') +
+    field('eu-city',  isAr ? 'المدينة' : 'City', u.city) +
+    field('eu-dob',   isAr ? 'الميلاد' : 'DOB', u.dob, 'date') +
+    '<div class="adm-mactions">' +
+      '<button class="adm-btn primary" onclick="admSaveUser(\'' + u.id + '\')">' + (isAr ? 'حفظ' : 'Save') + '</button>' +
+      '<button class="adm-btn ghost" onclick="admViewUser(\'' + u.id + '\')">' + (isAr ? 'إلغاء' : 'Cancel') + '</button>' +
+    '</div>'
+  );
+}
+
+function admSaveUser(id) {
+  if (!Permissions.can(State.cu, 'manage_users')) return;
+  const g = fid => { const el = document.getElementById(fid); return el ? el.value.trim() : ''; };
+  const name = g('eu-name'), phone = g('eu-phone'), city = g('eu-city'), dob = g('eu-dob');
+  const setErr = (fid, msg) => { const el = document.getElementById('err-' + fid); if (el) el.textContent = msg || ''; };
+  let ok = true;
+  setErr('eu-name'); setErr('eu-phone');
+  if (!Validators.isName(name)) { setErr('eu-name', t('errorNameLength')); ok = false; }
+  if (!Validators.isRequired(phone) || !Validators.isPhone(phone)) { setErr('eu-phone', t('errorRequired')); ok = false; }
+  if (!ok) return;
+  UserService.updateById(id, { name, phone, city, dob });
+  toast(State.lang === 'ar' ? 'تم حفظ بيانات المستخدم' : 'User saved', 'success');
+  renderAdmin();
+  admViewUser(id);
+}
+
+function admAssignRole(id, role) {
+  if (!Permissions.can(State.cu, 'assign_role')) return;
+  if (!Permissions.assignable().includes(role)) return;
+  UserService.updateById(id, { role: role });
+  const label = State.lang === 'ar' ? CONFIG.ROLES[role].ar : CONFIG.ROLES[role].en;
+  toast((State.lang === 'ar' ? 'تم تعيين الدور: ' : 'Role assigned: ') + label, 'success');
+  renderAdmin();
+  admViewUser(id);
 }
 
 /* ── Campaign detail modal ── */
@@ -6074,7 +6188,8 @@ function admRenderUsers() {
         { k: 'all',      ar: 'الكل',          en: 'All',      n: all.length },
         { k: 'pending',  ar: 'قيد المراجعة',  en: 'Pending',  n: all.filter(u => u.status === 'pending').length },
         { k: 'approved', ar: 'مفعّل',          en: 'Approved', n: all.filter(u => u.status === 'approved').length },
-        { k: 'rejected', ar: 'مرفوض',          en: 'Rejected', n: all.filter(u => u.status === 'rejected').length }
+        { k: 'rejected', ar: 'مرفوض',          en: 'Rejected', n: all.filter(u => u.status === 'rejected').length },
+        { k: 'banned',   ar: 'محظور',          en: 'Banned',   n: all.filter(u => UserService.isBanned(u)).length }
       ];
       chips.innerHTML = opts.map(o =>
         '<button class="adm-chip' + (AdminUI.userFilter === o.k ? ' active' : '') + '" onclick="admSetUserFilter(\'' + o.k + '\')">' + (isAr ? o.ar : o.en) + ' (' + o.n + ')</button>'
@@ -6082,7 +6197,8 @@ function admRenderUsers() {
     }
 
     let users = UserService.getAll();
-    if (AdminUI.userFilter !== 'all') users = users.filter(u => u.status === AdminUI.userFilter);
+    if (AdminUI.userFilter === 'banned')      users = users.filter(u => UserService.isBanned(u));
+    else if (AdminUI.userFilter !== 'all')    users = users.filter(u => u.status === AdminUI.userFilter);
     if (q) {
       users = users.filter(u =>
         String(u.name  || '').toLowerCase().includes(q) ||
@@ -6093,25 +6209,29 @@ function admRenderUsers() {
     }
 
     list.innerHTML = users.length === 0
-      ? admEmpty('👤', isAr ? 'لا يوجد مستخدمين' : 'No users found')
-      : users.map(u =>
-        '<div class="admin-card" onclick="admViewUser(\'' + u.id + '\')" style="cursor:pointer;">' +
+      ? admEmpty('', isAr ? 'لا يوجد مستخدمين' : 'No users found')
+      : users.map(u => {
+        const ava = u.profilePic
+          ? '<img src="' + u.profilePic + '" alt="">'
+          : '<span class="ig-avatar-initial">' + ((u.name || '?').trim().charAt(0) || '?') + '</span>';
+        const banned = UserService.isBanned(u);
+        return '<div class="admin-card" onclick="admViewUser(\'' + u.id + '\')" style="cursor:pointer;">' +
           '<div class="admin-card-head">' +
-            '<div class="admin-ava">' + (u.profilePic ? '<img src="' + u.profilePic + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">' : '👤') + '</div>' +
+            '<div class="admin-ava">' + ava + '</div>' +
             '<div class="admin-info">' +
-              '<div class="admin-info-name">' + (u.name || '') + ' ' + admStatusChip(u.status) + '</div>' +
-              '<div class="admin-info-row">📧 ' + (u.email || '') + '</div>' +
-              '<div class="admin-info-row">🏙️ ' + [u.city, u.country].filter(Boolean).join(', ') + ' · 🕐 ' + (u.volunteerHours || 0) + (isAr ? ' س' : ' h') + '</div>' +
+              '<div class="admin-info-name">' + (u.name || '') + ' ' + admStatusChip(banned ? 'banned' : u.status) + ' ' + admRoleChip(u) + '</div>' +
+              '<div class="admin-info-row">' + (u.email || '') + '</div>' +
+              '<div class="admin-info-row">' + [u.city, u.country].filter(Boolean).join('، ') + ' · ' + (u.volunteerHours || 0) + (isAr ? ' س' : ' h') + '</div>' +
             '</div>' +
           '</div>' +
           (u.status === 'pending'
             ? '<div class="admin-actions">' +
-                '<button class="approve-btn" onclick="event.stopPropagation();handleApproveUser(\'' + u.id + '\')">✓ ' + (isAr ? 'قبول' : 'Approve') + '</button>' +
-                '<button class="reject-btn" onclick="event.stopPropagation();handleRejectUser(\'' + u.id + '\')">✕ ' + (isAr ? 'رفض' : 'Reject') + '</button>' +
+                '<button class="approve-btn" onclick="event.stopPropagation();handleApproveUser(\'' + u.id + '\')">' + (isAr ? 'قبول' : 'Approve') + '</button>' +
+                '<button class="reject-btn" onclick="event.stopPropagation();handleRejectUser(\'' + u.id + '\')">' + (isAr ? 'رفض' : 'Reject') + '</button>' +
               '</div>'
             : '') +
-        '</div>'
-      ).join('');
+        '</div>';
+      }).join('');
   } catch (e) {
     console.error('[admRenderUsers] Error:', e);
   }
@@ -7184,11 +7304,13 @@ function handleUnbanUser(id) {
   if (typeof renderAdmin === 'function') renderAdmin();
 }
 function handleApproveUser(id) {
+  if (!Permissions.can(State.cu, 'manage_users')) return;
   const result = UserService.approve(id);
   if (result) { toast(t('approved'), 'success'); renderAdmin(); }
 }
 
 function handleRejectUser(id) {
+  if (!Permissions.can(State.cu, 'manage_users')) return;
   const result = UserService.reject(id);
   if (result) { toast(t('rejected'), 'warning'); renderAdmin(); }
 }
