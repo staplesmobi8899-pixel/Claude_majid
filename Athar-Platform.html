@@ -1599,6 +1599,10 @@ body {
 .partner-slot.filled.featured { border-color: var(--olive); }
 .partner-slot-name { font-size: var(--fs-sm); font-weight: 800; color: var(--forest); text-align: center; padding: 0 var(--sp-2); }
 .partners-invite { text-align: center; margin-top: var(--sp-4); font-size: var(--fs-sm); color: var(--charcoal-50); font-weight: 600; }
+.faq-item { padding: var(--sp-3) 0; border-bottom: 1px solid var(--line-sand-6); }
+.faq-item:last-child { border-bottom: none; }
+.faq-q { font-size: var(--fs-base); font-weight: 800; color: var(--charcoal); margin-bottom: var(--sp-1); }
+.faq-a { font-size: var(--fs-sm); color: var(--charcoal-50); line-height: 1.7; }
 
 /* Partnership */
 .partner-section {
@@ -3481,6 +3485,11 @@ html, body { overflow-x: hidden; }
         </div>
       </div>
 
+      <div class="about-block" id="aboutFaqBlock" style="display:none;">
+        <h2 data-i18n="faqTitle"></h2>
+        <div id="aboutFaq"></div>
+      </div>
+
       <div class="about-impact">
         <h2 class="about-impact-title" data-i18n="abImpactTitle"></h2>
         <div class="about-impact-grid">
@@ -3980,6 +3989,7 @@ const CONFIG = {
     SESSION:  'athar_session',
     NOTIFS:   'athar_notifs',
     LAST_VIEW:'athar_lastview',
+    CONTENT:  'athar_content',
     VERSION:  'athar_version'
   },
   CAMP_CATEGORIES: {
@@ -4152,7 +4162,7 @@ const T = {
     abMissionIntro: 'رسالة «أَثَرْ» هي تنظيم وتمكين المبادرات الشبابية عبر منصّة عصرية تربط الناس بفرص ذات معنى للمشاركة والتعاون وصناعة أثر اجتماعي قابل للقياس.',
     abMiss1: 'تشجيع المشاركة المجتمعية', abMiss2: 'دعم المبادرات الشبابية', abMiss3: 'تبسيط التطوّع', abMiss4: 'تعزيز المسؤولية الاجتماعية', abMiss5: 'خلق أثر منظَّم', abMiss6: 'بناء مجتمع متّصل ومتحفّز',
     abVal1: 'التعاون', abVal2: 'المشاركة', abVal3: 'المسؤولية', abVal4: 'التفاؤل', abVal5: 'النموّ', abVal6: 'التواصل الإنساني',
-    abImpactTitle: 'أرقام حقيقية. أثر حقيقي.',
+    abImpactTitle: 'أرقام حقيقية. أثر حقيقي.', faqTitle: 'الأسئلة الشائعة',
     abPartnersTitle: 'المنظمات والشركاء الداعمون لأَثَرْ',
     abPartnersDesc: 'تفخر «أَثَرْ» بالتعاون مع المنظمات والشركات والداعمين الذين يؤمنون بتمكين الشباب وتقوية المجتمعات وصناعة أثر اجتماعي ذي معنى معًا.',
     abPartnerSlot: 'شعارك هنا', abPartnersInvite: 'كن من أوائل الشركاء الذين يصنعون الأثر معنا.',
@@ -4338,7 +4348,7 @@ const T = {
     abMissionIntro: "ATHAR's mission is to organize and empower youth initiatives through a modern platform that connects people with meaningful opportunities to participate, collaborate, and create measurable social impact.",
     abMiss1: 'Encourage community participation', abMiss2: 'Support youth-led initiatives', abMiss3: 'Simplify volunteering', abMiss4: 'Strengthen social responsibility', abMiss5: 'Create organized impact', abMiss6: 'Build a connected, motivated community',
     abVal1: 'Collaboration', abVal2: 'Participation', abVal3: 'Responsibility', abVal4: 'Optimism', abVal5: 'Growth', abVal6: 'Human connection',
-    abImpactTitle: 'Real Numbers. Real Impact.',
+    abImpactTitle: 'Real Numbers. Real Impact.', faqTitle: 'Frequently Asked Questions',
     abPartnersTitle: 'Organizations & Partners Supporting ATHAR',
     abPartnersDesc: 'ATHAR proudly collaborates with organizations, companies, and supporters who believe in empowering youth, strengthening communities, and creating meaningful social impact together.',
     abPartnerSlot: 'Your logo here', abPartnersInvite: 'Be among the first partners creating impact with us.',
@@ -5132,7 +5142,12 @@ const DiscoveryService = {
     });
     return this._sort(list, sort);
   },
-  featured(n = 5) { return this._sort(this._base(), 'popular').slice(0, n); },
+  featured(n = 5) {
+    const sorted = this._sort(this._base(), 'popular');
+    const flagged = sorted.filter(c => c.featured);
+    const rest = sorted.filter(c => !c.featured);
+    return flagged.concat(rest).slice(0, n);
+  },
   trending(n = 6) { return this._sort(this._base(), 'popular').slice(0, n); },
   nearby(city, n = 6) {
     const base = this._base();
@@ -5258,6 +5273,27 @@ const PartnerService = {
   getApproved()  { return this.getAll().filter(p => p.status === 'approved'); },
   getFeatured()  { return this.getAll().filter(p => p.status === 'approved' && p.featured); },
   pendingCount() { return this.getAll().filter(p => p.status === 'pending').length; }
+};
+
+/* ── CONTENT MANAGEMENT (Phase 8.6 — editable About / FAQ / policies, DB-backed) ── */
+const ContentService = {
+  /** Editable text keys (mirror the i18n keys they override) */
+  KEYS: ['abStoryP1', 'abStoryP2', 'abStoryP3', 'visionText', 'abMissionIntro', 'abPhiloText', 'policyPrivacyBody', 'policyTermsBody'],
+  _all() { return DB.getObj(CONFIG.DB_KEYS.CONTENT) || {}; },
+  get(key, lang) {
+    const all = this._all(); const l = all[lang || State.lang] || {};
+    return l[key];
+  },
+  set(key, val, lang) {
+    const all = this._all(); const lg = lang || State.lang;
+    if (!all[lg]) all[lg] = {};
+    all[lg][key] = val;
+    DB.setObj(CONFIG.DB_KEYS.CONTENT, all);
+  },
+  /** Override-aware text: returns admin override or falls back to i18n default */
+  text(key) { const v = this.get(key); return (v != null && v !== '') ? v : t(key); },
+  getFaq(lang) { const all = this._all(); const l = all[lang || State.lang] || {}; return Array.isArray(l.faq) ? l.faq : null; },
+  setFaq(arr, lang) { const all = this._all(); const lg = lang || State.lang; if (!all[lg]) all[lg] = {}; all[lg].faq = arr; DB.setObj(CONFIG.DB_KEYS.CONTENT, all); }
 };
 
 /* ══════════════════════════════════════════
@@ -5836,10 +5872,88 @@ function renderAdmin() {
   }
 }
 
-/* ── Content & Settings panels (scaffold — Phase 8.0; full build in 8.6) ── */
+/* ── Content management (Phase 8.6) ── */
 function admRenderContent() {
   const box = admEl('admContentMgmt');
-  if (box) box.innerHTML = '<div class="adm-card"><p style="color:var(--charcoal-50);line-height:1.8;">' + t('admContentSoon') + '</p></div>';
+  if (!box) return;
+  const isAr = State.lang === 'ar';
+  const ta = (key, label) =>
+    '<div class="edit-field"><label>' + label + '</label><textarea id="ac-' + key + '" rows="3">' + (ContentService.text(key) || '') + '</textarea></div>';
+
+  // FAQ as "Q :: A" lines
+  const faq = ContentService.getFaq() || [];
+  const faqText = faq.map(it => (it.q || '') + ' :: ' + (it.a || '')).join('\n');
+
+  // Featured campaigns (approved/visible)
+  const camps = CampaignService.getAll().filter(c => ['approved', 'under_process', 'done'].includes(c.status));
+  const featRows = camps.length
+    ? camps.map(c => {
+        const title = Models.getCampText(c).title || '';
+        return '<div class="set-row"><div class="set-texts"><div class="set-title">' + title + '</div><div class="set-sub">' + (c.location || '') + '</div></div>' +
+          '<button class="switch' + (c.featured ? ' on' : '') + '" onclick="handleToggleFeaturedCamp(\'' + c.id + '\')"><span class="switch-knob"></span></button></div>';
+      }).join('')
+    : '<p style="color:var(--charcoal-50);">' + (isAr ? 'لا حملات منشورة' : 'No published campaigns') + '</p>';
+
+  box.innerHTML =
+    '<div class="adm-card"><h2>' + (isAr ? 'نصوص «من نحن»' : 'About texts') + '</h2>' +
+      '<p style="color:var(--charcoal-50);font-size:var(--fs-sm);margin-bottom:var(--sp-3);">' + (isAr ? 'التعديل يطبّق على اللغة الحالية: ' : 'Editing current language: ') + (isAr ? 'العربية' : 'English') + '</p>' +
+      ta('abStoryP1', (isAr ? 'القصة — فقرة 1' : 'Story — paragraph 1')) +
+      ta('abStoryP2', (isAr ? 'القصة — فقرة 2' : 'Story — paragraph 2')) +
+      ta('abStoryP3', (isAr ? 'القصة — فقرة 3' : 'Story — paragraph 3')) +
+      ta('visionText', (isAr ? 'الرؤية' : 'Vision')) +
+      ta('abMissionIntro', (isAr ? 'الرسالة' : 'Mission')) +
+      ta('abPhiloText', (isAr ? 'فلسفة المجتمع' : 'Community philosophy')) +
+      '<button class="adm-btn primary" style="width:100%;" onclick="admSaveContent()">' + (isAr ? 'حفظ نصوص من نحن' : 'Save About texts') + '</button>' +
+    '</div>' +
+    '<div class="adm-card"><h2>' + (isAr ? 'السياسات' : 'Policies') + '</h2>' +
+      ta('policyPrivacyBody', (isAr ? 'سياسة الخصوصية' : 'Privacy policy')) +
+      ta('policyTermsBody', (isAr ? 'شروط الاستخدام' : 'Terms of use')) +
+      '<button class="adm-btn primary" style="width:100%;" onclick="admSavePolicies()">' + (isAr ? 'حفظ السياسات' : 'Save policies') + '</button>' +
+    '</div>' +
+    '<div class="adm-card"><h2>' + (isAr ? 'الأسئلة الشائعة' : 'FAQ') + '</h2>' +
+      '<p style="color:var(--charcoal-50);font-size:var(--fs-sm);margin-bottom:var(--sp-3);">' + (isAr ? 'كل سطر: السؤال :: الجواب' : 'One per line: Question :: Answer') + '</p>' +
+      '<div class="edit-field"><textarea id="ac-faq" rows="5">' + faqText + '</textarea></div>' +
+      '<button class="adm-btn primary" style="width:100%;" onclick="admSaveFaq()">' + (isAr ? 'حفظ الأسئلة' : 'Save FAQ') + '</button>' +
+    '</div>' +
+    '<div class="adm-card"><h2>' + (isAr ? 'الحملات المميّزة' : 'Featured campaigns') + '</h2>' +
+      '<div class="set-card" style="border:none;">' + featRows + '</div>' +
+    '</div>';
+}
+
+function admSaveContent() {
+  if (!Permissions.can(State.cu, 'manage_content')) return;
+  ['abStoryP1', 'abStoryP2', 'abStoryP3', 'visionText', 'abMissionIntro', 'abPhiloText'].forEach(key => {
+    const el = document.getElementById('ac-' + key);
+    if (el) ContentService.set(key, el.value.trim());
+  });
+  toast(State.lang === 'ar' ? 'تم حفظ المحتوى' : 'Content saved', 'success');
+}
+function admSavePolicies() {
+  if (!Permissions.can(State.cu, 'manage_content')) return;
+  ['policyPrivacyBody', 'policyTermsBody'].forEach(key => {
+    const el = document.getElementById('ac-' + key);
+    if (el) ContentService.set(key, el.value.trim());
+  });
+  toast(State.lang === 'ar' ? 'تم حفظ السياسات' : 'Policies saved', 'success');
+}
+function admSaveFaq() {
+  if (!Permissions.can(State.cu, 'manage_content')) return;
+  const el = document.getElementById('ac-faq');
+  if (!el) return;
+  const arr = el.value.split('\n').map(line => {
+    const i = line.indexOf('::');
+    if (i === -1) return null;
+    return { q: line.slice(0, i).trim(), a: line.slice(i + 2).trim() };
+  }).filter(x => x && x.q);
+  ContentService.setFaq(arr);
+  toast(State.lang === 'ar' ? 'تم حفظ الأسئلة' : 'FAQ saved', 'success');
+}
+function handleToggleFeaturedCamp(id) {
+  if (!Permissions.can(State.cu, 'manage_content') && !Permissions.can(State.cu, 'manage_campaigns')) return;
+  const c = CampaignService.getById(id);
+  if (!c) return;
+  CampaignService.updateById(id, { featured: !c.featured });
+  admRenderContent();
 }
 function admRenderSettings() {
   const box = admEl('admSettingsBody');
@@ -6936,7 +7050,7 @@ const ROUTES = {
   detail:        { title: 'detailHeaderTitle', back: true, onEnter: () => {} },
   profile:       { title: 'navProfile',     onEnter: () => renderProfile() },
   settings:      { title: 'settingsTitle', back: true, auth: true, onEnter: () => renderSettings() },
-  about:         { title: 'navAbout',       onEnter: () => { animateCounters(); renderPartnersShowcase(); } },
+  about:         { title: 'navAbout',       onEnter: () => { animateCounters(); renderPartnersShowcase(); applyAboutContent(); } },
   admin:         { title: 'navAdmin', back: true, roles: ['admin', 'super_admin'], onEnter: () => renderAdmin() }
 };
 
@@ -7465,6 +7579,27 @@ function enterApp() {
   }
 }
 
+/* Apply admin content overrides to the About page + render FAQ (Phase 8.6). */
+function applyAboutContent() {
+  ['abStoryP1', 'abStoryP2', 'abStoryP3', 'visionText', 'abMissionIntro', 'abPhiloText'].forEach(key => {
+    const el = document.querySelector('#aboutPage [data-i18n="' + key + '"]');
+    if (el) el.textContent = ContentService.text(key);
+  });
+  const faq = ContentService.getFaq();
+  const block = document.getElementById('aboutFaqBlock');
+  const box = document.getElementById('aboutFaq');
+  if (box && block) {
+    if (faq && faq.length) {
+      box.innerHTML = faq.map(item =>
+        '<div class="faq-item"><div class="faq-q">' + (item.q || '') + '</div><div class="faq-a">' + (item.a || '') + '</div></div>'
+      ).join('');
+      block.style.display = '';
+    } else {
+      block.style.display = 'none';
+    }
+  }
+}
+
 /* Fill the About partners grid: approved partners first (featured first), then empty invite slots. */
 function renderPartnersShowcase() {
   const grid = document.getElementById('partnersGrid');
@@ -7909,10 +8044,10 @@ function openPolicy(kind) {
   const body = document.getElementById('policyBody');
   if (kind === 'terms') {
     if (title) title.textContent = t('policyTermsTitle');
-    if (body) body.textContent = t('policyTermsBody');
+    if (body) body.textContent = ContentService.text('policyTermsBody');
   } else {
     if (title) title.textContent = t('policyPrivacyTitle');
-    if (body) body.textContent = t('policyPrivacyBody');
+    if (body) body.textContent = ContentService.text('policyPrivacyBody');
   }
   openModal('policyModal');
 }
