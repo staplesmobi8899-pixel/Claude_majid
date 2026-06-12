@@ -346,12 +346,16 @@ body {
 }
 .page.active {
   display: block;
-  animation: fadeIn 0.3s ease;
+  animation: pageIn 0.34s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }}
+
+@media (prefers-reduced-motion: reduce) {
+  .page.active { animation: none; }
+}
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
@@ -5207,8 +5211,41 @@ const Router = {
 };
 
 /* Thin wrappers — keep existing onclick="goPage(...)" working everywhere */
+/* ── Smart back + iOS edge swipe-back (Phase 3.3) ── */
+function smartBack() {
+  const openModal = document.querySelector('.modal-overlay.open');
+  if (openModal) { openModal.classList.remove('open'); return; }
+  const vs = document.getElementById('verifyScreen');
+  if (vs && vs.classList.contains('show')) { Verify.close(); return; }
+  Router.back();
+}
+
+(function attachSwipeBack() {
+  let startX = 0, startY = 0, tracking = false;
+  const EDGE = 28, THRESH = 70;
+  document.addEventListener('touchstart', (e) => {
+    tracking = false;
+    const app = document.getElementById('appScreen');
+    if (!app || !app.classList.contains('show')) return;
+    if (document.querySelector('.modal-overlay.open, #onboardingScreen.show, #verifyScreen.show')) return;
+    const t = e.touches[0];
+    const isRTL = document.documentElement.dir === 'rtl';
+    const fromStartEdge = isRTL ? (t.clientX > window.innerWidth - EDGE) : (t.clientX < EDGE);
+    if (fromStartEdge) { tracking = true; startX = t.clientX; startY = t.clientY; }
+  }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    if (!tracking) return; tracking = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - startX, dy = t.clientY - startY;
+    const isRTL = document.documentElement.dir === 'rtl';
+    const horizontal = Math.abs(dx) > Math.abs(dy) * 1.5;
+    const backward = isRTL ? (dx < -THRESH) : (dx > THRESH);
+    if (horizontal && backward) smartBack();
+  }, { passive: true });
+})();
+
 function goPage(name) { Router.go(name); }
-function goBack() { Router.back(); }
+function goBack() { smartBack(); }
 
 function toggleMenu(id) {
   const body = document.getElementById(id);
