@@ -1073,6 +1073,14 @@ body {
 
 [data-lang="ar"] .profile-avatar-ring { right: 20px; }
 [data-lang="en"] .profile-avatar-ring { left: 20px; }
+.profile-avatar-ring { cursor: pointer; }
+.avatar-cam {
+  position: absolute; bottom: -2px; inset-inline-end: -2px;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--forest); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; border: 2px solid var(--warm-white); z-index: 11;
+}
 
 .profile-avatar {
   width: 78px;
@@ -1238,6 +1246,54 @@ body {
 .info-item:last-child { margin-bottom: 0; }
 .info-lbl { font-size: var(--fs-sm); color: var(--charcoal-50); }
 .info-val { font-size: var(--fs-base); font-weight: 700; }
+
+/* Personal info edit mode (Phase 6.2) */
+.info-edit-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-bottom: var(--sp-3); padding: var(--sp-2) var(--sp-4);
+  background: var(--forest); color: #fff; border: none;
+  border-radius: var(--r-full); font-size: var(--fs-sm); font-weight: 700;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.info-edit-btn:hover { opacity: 0.9; }
+.edit-field { margin-bottom: var(--sp-4); }
+.edit-field label {
+  display: block; font-size: var(--fs-xs); font-weight: 700;
+  color: var(--charcoal-50); margin-bottom: var(--sp-2); letter-spacing: 0.3px;
+}
+.edit-field input, .edit-field textarea {
+  width: 100%; padding: var(--sp-3) var(--sp-4);
+  border: 1.5px solid var(--sand-dark); border-radius: var(--r-md);
+  background: var(--white); color: var(--charcoal);
+  font-family: inherit; font-size: var(--fs-base); resize: vertical;
+}
+.edit-field input:focus, .edit-field textarea:focus {
+  outline: none; border-color: var(--forest);
+}
+.edit-field input:disabled { background: var(--sand); color: var(--charcoal-50); }
+.edit-hint { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: 4px; }
+.edit-err { font-size: var(--fs-xs); color: #c0392b; margin-top: 4px; min-height: 1em; }
+.edit-actions { display: flex; gap: var(--sp-3); margin-top: var(--sp-5); }
+.edit-save, .edit-cancel {
+  flex: 1; padding: var(--sp-3); border-radius: var(--r-full);
+  font-size: var(--fs-base); font-weight: 700; cursor: pointer; border: none;
+}
+.edit-save { background: var(--forest); color: #fff; }
+.edit-cancel { background: var(--sand); color: var(--charcoal); border: 1.5px solid var(--sand-dark); }
+
+/* Profile photo bottom sheet (Phase 6.2) */
+.photo-sheet-actions { display: flex; flex-direction: column; gap: var(--sp-3); padding-bottom: var(--sp-4); }
+.photo-sheet-btn {
+  display: flex; align-items: center; gap: var(--sp-3);
+  width: 100%; padding: var(--sp-4) var(--sp-5);
+  background: var(--white); border: 1.5px solid var(--sand-dark);
+  border-radius: var(--r-lg); font-size: var(--fs-base); font-weight: 700;
+  color: var(--charcoal); cursor: pointer; transition: background 0.2s;
+}
+.photo-sheet-btn:hover { background: var(--sand); }
+.photo-sheet-btn .psb-ico { font-size: 1.2rem; }
+.photo-sheet-btn.danger { color: #c0392b; }
+.photo-sheet-btn.cancel { justify-content: center; background: var(--sand); border: none; }
 
 .status-banner-wrap {
   max-width: var(--content-max);
@@ -2861,8 +2917,9 @@ html, body { overflow-x: hidden; }
   <!-- PROFILE -->
   <div class="page" id="profilePage">
     <div class="profile-cover">
-      <div class="profile-avatar-ring" id="avatarRing">
+      <div class="profile-avatar-ring" id="avatarRing" onclick="openAvatarSheet()">
         <div class="profile-avatar" id="profileAva">👤</div>
+        <div class="avatar-cam">📷</div>
       </div>
     </div>
     <div class="profile-meta-bar">
@@ -2872,7 +2929,7 @@ html, body { overflow-x: hidden; }
         <div class="loc" id="profileLoc"></div>
       </div>
       <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
-      <button class="change-pic-label" onclick="document.getElementById('avatarInput').click()" type="button">
+      <button class="change-pic-label" onclick="openAvatarSheet()" type="button">
         <span data-i18n="changePic"></span>
       </button>
     </div>
@@ -3293,6 +3350,16 @@ html, body { overflow-x: hidden; }
     </form>
   </div>
 </div>
+<div class="modal-overlay" id="avatarSheet">
+  <div class="modal-sheet">
+    <div class="modal-bar">
+      <button type="button" class="modal-close" onclick="closeModal('avatarSheet')" aria-label="back">‹</button>
+      <div class="modal-handle"></div>
+    </div>
+    <div class="modal-title" data-i18n="photoSheetTitle"></div>
+    <div class="photo-sheet-actions" id="avatarSheetBody"></div>
+  </div>
+</div>
 <div class="modal-overlay" id="participantsModal">
   <div class="modal-sheet">
     <div class="modal-bar">
@@ -3515,6 +3582,8 @@ const T = {
     activities: 'الأنشطة', achievements: 'الإنجازات',
     noBio: 'أضف نبذة عنك', impactTitle: 'أثري', badgesTitle: 'الشارات',
     profilePublic: '🌍 ملف عام', profilePrivate: '🔒 ملف خاص', profileNowPublic: 'ملفك أصبح عامًا', profileNowPrivate: 'ملفك أصبح خاصًا', completedLabel: 'مكتملة', citiesLabel: 'مدن', scoreLabel: 'نقاط الأثر',
+    editInfo: 'تعديل', saveChanges: 'حفظ', cancelEdit: 'إلغاء', infoSaved: 'تم حفظ معلوماتك', bioField: 'نبذة عنك', bioPh: 'اكتب نبذة قصيرة تعرّف بك…', emailLocked: 'البريد الإلكتروني لا يمكن تغييره',
+    photoSheetTitle: 'صورة الملف الشخصي', photoChoose: 'اختر صورة', photoRemove: 'حذف الصورة الحالية', photoRemoved: 'تم حذف الصورة', sheetCancel: 'إلغاء',
     menuInfo: 'المعلومات الشخصية', menuInfoSub: 'الاسم، البريد، الهاتف',
     menuId: 'صورة الهوية', menuIdSub: 'عرض وتحميل',
     menuCamps: 'حملاتي', menuCampsSub: 'الحملات وحالتها',
@@ -3669,6 +3738,8 @@ const T = {
     activities: 'Activities', achievements: 'Achievements',
     noBio: 'Add a short bio', impactTitle: 'My impact', badgesTitle: 'Badges',
     profilePublic: '🌍 Public profile', profilePrivate: '🔒 Private profile', profileNowPublic: 'Your profile is now public', profileNowPrivate: 'Your profile is now private', completedLabel: 'Completed', citiesLabel: 'Cities', scoreLabel: 'Impact score',
+    editInfo: 'Edit', saveChanges: 'Save', cancelEdit: 'Cancel', infoSaved: 'Your info was saved', bioField: 'About you', bioPh: 'Write a short bio about yourself…', emailLocked: 'Email cannot be changed',
+    photoSheetTitle: 'Profile photo', photoChoose: 'Choose photo', photoRemove: 'Remove current photo', photoRemoved: 'Photo removed', sheetCancel: 'Cancel',
     menuInfo: 'Personal Info', menuInfoSub: 'Name, Email, Phone',
     menuId: 'ID Photo', menuIdSub: 'View & Download',
     menuCamps: 'My Campaigns', menuCampsSub: 'Campaigns & Status',
@@ -4923,20 +4994,7 @@ function renderProfile() {
       statusBanner.innerHTML = `<div class="status-banner ${cls}">${txt}</div>`;
     }
 
-    const infoItems = document.getElementById('infoItems');
-    if (infoItems) {
-      const info = [
-        [t('fullName'), u.name],
-        [t('email'),    u.email],
-        [t('phone'),    u.phone],
-        [t('country'),  u.country],
-        [t('city'),     u.city],
-        [t('dob'),      u.dob]
-      ];
-      infoItems.innerHTML = info.map(([label, val]) =>
-        `<div class="info-item"><span class="info-lbl">${label}</span><span class="info-val">${val || '—'}</span></div>`
-      ).join('');
-    }
+    renderInfoSection(u);
 
     const idPhotoBox = document.getElementById('idPhotoBox');
     if (idPhotoBox) {
@@ -6563,6 +6621,100 @@ async function uploadAvatar(event) {
     toast(t('uploadError'), 'error');
   }
   event.target.value = '';
+}
+
+/* ── PROFILE PHOTO BOTTOM SHEET (Phase 6.2) ── */
+function openAvatarSheet() {
+  if (!State.cu || State.isAdmin) return;
+  const u = UserService.getById(State.cu.id) || State.cu;
+  const body = document.getElementById('avatarSheetBody');
+  if (body) {
+    let html = '<button type="button" class="photo-sheet-btn" onclick="closeModal(\'avatarSheet\');document.getElementById(\'avatarInput\').click();">' +
+      '<span class="psb-ico">🖼️</span><span>' + t('photoChoose') + '</span></button>';
+    if (u.profilePic) {
+      html += '<button type="button" class="photo-sheet-btn danger" onclick="removeAvatar()">' +
+        '<span class="psb-ico">🗑️</span><span>' + t('photoRemove') + '</span></button>';
+    }
+    html += '<button type="button" class="photo-sheet-btn cancel" onclick="closeModal(\'avatarSheet\')">' + t('sheetCancel') + '</button>';
+    body.innerHTML = html;
+  }
+  openModal('avatarSheet');
+}
+
+function removeAvatar() {
+  if (!requireAuth() || !State.cu || State.isAdmin) { closeModal('avatarSheet'); return; }
+  UserService.updateById(State.cu.id, { profilePic: null });
+  if (State.cu) { State.cu.profilePic = null; DB.setObj(CONFIG.DB_KEYS.SESSION, State.cu); }
+  closeModal('avatarSheet');
+  toast(t('photoRemoved'), 'success');
+  renderProfile();
+}
+
+/* ── PERSONAL INFO: VIEW + EDIT MODE (Phase 6.2) ── */
+function renderInfoSection(u) {
+  const box = document.getElementById('infoItems');
+  if (!box) return;
+  u = u || UserService.getById(State.cu.id) || State.cu;
+  const rows = [
+    [t('fullName'), u.name],
+    [t('email'),    u.email],
+    [t('phone'),    u.phone],
+    [t('country'),  u.country],
+    [t('city'),     u.city],
+    [t('dob'),      u.dob],
+    [t('bioField'), u.bio]
+  ];
+  let html = '';
+  if (!State.isAdmin) {
+    html += '<button type="button" class="info-edit-btn" onclick="startEditInfo()"><span>✎</span><span>' + t('editInfo') + '</span></button>';
+  }
+  html += rows.map(([label, val]) =>
+    '<div class="info-item"><span class="info-lbl">' + label + '</span><span class="info-val">' + (val || '—') + '</span></div>'
+  ).join('');
+  box.innerHTML = html;
+}
+
+function startEditInfo() {
+  if (!requireAuth() || State.isAdmin) return;
+  const u = UserService.getById(State.cu.id) || State.cu;
+  const box = document.getElementById('infoItems');
+  if (!box) return;
+  const esc = s => String(s || '').replace(/"/g, '&quot;');
+  box.innerHTML =
+    '<div class="edit-field"><label>' + t('fullName') + '</label>' +
+      '<input id="ed-name" type="text" value="' + esc(u.name) + '"><div class="edit-err" id="err-name"></div></div>' +
+    '<div class="edit-field"><label>' + t('email') + '</label>' +
+      '<input type="email" value="' + esc(u.email) + '" disabled><div class="edit-hint">' + t('emailLocked') + '</div></div>' +
+    '<div class="edit-field"><label>' + t('phone') + '</label>' +
+      '<input id="ed-phone" type="tel" value="' + esc(u.phone) + '"><div class="edit-err" id="err-phone"></div></div>' +
+    '<div class="edit-field"><label>' + t('city') + '</label>' +
+      '<input id="ed-city" type="text" value="' + esc(u.city) + '"><div class="edit-err" id="err-city"></div></div>' +
+    '<div class="edit-field"><label>' + t('dob') + '</label>' +
+      '<input id="ed-dob" type="date" value="' + esc(u.dob) + '"></div>' +
+    '<div class="edit-field"><label>' + t('bioField') + '</label>' +
+      '<textarea id="ed-bio" rows="3" placeholder="' + esc(t('bioPh')) + '">' + (u.bio || '') + '</textarea></div>' +
+    '<div class="edit-actions">' +
+      '<button type="button" class="edit-save" onclick="saveInfo()">' + t('saveChanges') + '</button>' +
+      '<button type="button" class="edit-cancel" onclick="renderInfoSection()">' + t('cancelEdit') + '</button>' +
+    '</div>';
+}
+
+function saveInfo() {
+  if (!requireAuth() || State.isAdmin) return;
+  const g = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  const name = g('ed-name'), phone = g('ed-phone'), city = g('ed-city'), dob = g('ed-dob'), bio = g('ed-bio');
+  let ok = true;
+  const setErr = (id, msg) => { const el = document.getElementById(id); if (el) el.textContent = msg || ''; };
+  setErr('err-name'); setErr('err-phone'); setErr('err-city');
+  if (!Validators.isName(name))     { setErr('err-name',  t('errorNameLength')); ok = false; }
+  if (!Validators.isRequired(phone) || !Validators.isPhone(phone)) { setErr('err-phone', t('errorRequired')); ok = false; }
+  if (!Validators.isRequired(city)) { setErr('err-city',  t('errorRequired')); ok = false; }
+  if (!ok) return;
+  const patch = { name, phone, city, dob, bio };
+  UserService.updateById(State.cu.id, patch);
+  if (State.cu) { Object.assign(State.cu, patch); DB.setObj(CONFIG.DB_KEYS.SESSION, State.cu); }
+  toast(t('infoSaved'), 'success');
+  renderProfile();
 }
 
 /* ── PARTNER FORM ── */
