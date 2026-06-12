@@ -1845,6 +1845,19 @@ body {
 .adm-lead-name { flex:1; font-size:var(--fs-base); font-weight:700; color:var(--charcoal); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .adm-lead-val { flex:none; font-weight:800; color:var(--olive); font-size:var(--fs-base); }
 
+/* ── PHASE 8.5 — notifications center ── */
+.adm-select { width:100%; padding:var(--sp-3) var(--sp-4); border:1.5px solid var(--sand-dark); border-radius:var(--r-md); background:var(--white); color:var(--charcoal); font-family:inherit; font-size:var(--fs-base); }
+.adm-select:focus { outline:none; border-color:var(--forest); }
+.adm-sub-h { font-size:var(--fs-md); font-weight:800; color:var(--charcoal-80); margin:var(--sp-5) 0 var(--sp-3); }
+.adm-notif-row { display:flex; align-items:center; gap:var(--sp-3); }
+.adm-notif-dot { flex:none; width:8px; height:8px; border-radius:50%; }
+.adm-notif-dot.user { background:var(--olive); }
+.adm-notif-dot.camp { background:#1d4ed8; }
+.adm-notif-dot.partner { background:#7c3aed; }
+.adm-notif-main { flex:1; min-width:0; }
+.adm-notif-txt { font-size:var(--fs-base); font-weight:700; color:var(--charcoal); }
+.adm-notif-time { font-size:var(--fs-xs); color:var(--charcoal-50); margin-top:2px; }
+
 /* ══════════════════════════════════════════
    MODAL — BOTTOM SHEET
    ══════════════════════════════════════════ */
@@ -3715,6 +3728,22 @@ html, body { overflow-x: hidden; }
           <!-- NOTIFICATIONS -->
           <div class="adm-panel" id="admPanel-notifications">
             <div class="adm-panel-header"><h2 id="admHdNotifs">Notifications</h2></div>
+            <div class="adm-card">
+              <h2 id="admHdBroadcast">Send announcement</h2>
+              <div class="edit-field"><label id="admLblAudience">Audience</label>
+                <select id="admBroadcastAudience" class="adm-select">
+                  <option value="approved" id="admAudApproved">Approved volunteers</option>
+                  <option value="all" id="admAudAll">All users</option>
+                  <option value="pending" id="admAudPending">Pending accounts</option>
+                </select>
+              </div>
+              <div class="edit-field"><label id="admLblMsg">Message</label>
+                <textarea id="admBroadcastMsg" rows="3"></textarea>
+                <div class="edit-err" id="admBroadcastErr"></div>
+              </div>
+              <button class="adm-btn primary" style="width:100%;" id="admBroadcastBtn" onclick="admSendBroadcast()">Send</button>
+            </div>
+            <h2 id="admHdPendingReview" class="adm-sub-h">Pending review</h2>
             <div id="admNotifsList"></div>
           </div>
 
@@ -4754,6 +4783,17 @@ const NotificationService = {
     if (this.getFor(user.id).length) return;
     this.add(user.id, 'أهلاً بك في أثر 👋 رحلتك في صناعة الأثر بدأت.',
                        'Welcome to ATHAR 👋 Your impact journey begins.', 'welcome');
+  },
+  /** Send an announcement to a target audience. audience: 'approved' | 'all' | 'pending'. Returns count sent. */
+  broadcast(ar, en, audience) {
+    const txtAr = String(ar || '').trim();
+    const txtEn = String(en || txtAr).trim();
+    if (!txtAr) return 0;
+    let targets = UserService.getAll().filter(u => u.email !== CONFIG.ADMIN_EMAIL && !u.isGuest);
+    if (audience === 'approved')     targets = targets.filter(u => u.status === 'approved');
+    else if (audience === 'pending') targets = targets.filter(u => u.status === 'pending');
+    targets.forEach(u => this.add(u.id, txtAr, txtEn, 'announcement'));
+    return targets.length;
   }
 };
 
@@ -5823,6 +5863,14 @@ function admRenderHeaders() {
   set('admHdTop',       'أفضل المتطوعين',      'Top Volunteers');
   set('admHdCities',    'المتطوعون حسب المدينة','Volunteers by City');
   set('admHdNotifs',    'الإشعارات',           'Notifications');
+  set('admHdBroadcast', 'إرسال إعلان',          'Send announcement');
+  set('admLblAudience', 'الجمهور',              'Audience');
+  set('admAudApproved', 'المتطوّعون المفعّلون',  'Approved volunteers');
+  set('admAudAll',      'كل المستخدمين',         'All users');
+  set('admAudPending',  'الحسابات المعلّقة',     'Pending accounts');
+  set('admLblMsg',      'نص الإعلان',            'Message');
+  set('admBroadcastBtn','إرسال',                'Send');
+  set('admHdPendingReview', 'بانتظار المراجعة',  'Pending review');
   set('admHdContent',   'إدارة المحتوى',        'Content');
   set('admHdSettings',  'الإعدادات',            'Settings');
 }
@@ -6615,36 +6663,52 @@ function admRenderNotifications(users, camps, partners) {
 
     const notifs = [];
     users.filter(u => u.status === 'pending').forEach(u => notifs.push({
-      d: u.createdAt, icon: '👤',
+      d: u.createdAt, kind: 'user',
       txt: (isAr ? 'حساب جديد بانتظار الموافقة: ' : 'New account pending: ') + (u.name || ''),
       act: 'admViewUser(\'' + u.id + '\')'
     }));
     camps.filter(c => c.status === 'pending').forEach(c => notifs.push({
-      d: c.createdAt, icon: '📋',
+      d: c.createdAt, kind: 'camp',
       txt: (isAr ? 'حملة بانتظار الموافقة: ' : 'Campaign pending: ') + (Models.getCampText(c).title || ''),
       act: 'admViewCamp(\'' + c.id + '\')'
     }));
-    partners.forEach((p, i) => notifs.push({
-      d: p.date, icon: '🤝',
+    partners.filter(p => p.status === 'pending').forEach(p => notifs.push({
+      d: p.date, kind: 'partner',
       txt: (isAr ? 'طلب شراكة من: ' : 'Partner request from: ') + (p.org || ''),
-      act: 'admViewPartner(' + i + ')'
+      act: 'admViewPartner(\'' + p.id + '\')'
     }));
     notifs.sort((a, b) => new Date(b.d || 0) - new Date(a.d || 0));
 
     nl.innerHTML = notifs.length === 0
-      ? admEmpty('🔔', isAr ? 'لا يوجد إشعارات' : 'No notifications')
+      ? admEmpty('', isAr ? 'لا يوجد عناصر بانتظار المراجعة' : 'Nothing pending review')
       : notifs.map(n =>
-        '<div class="admin-card" onclick="' + n.act + '" style="cursor:pointer;display:flex;align-items:center;gap:0.8rem;">' +
-          '<span style="font-size:var(--fs-3xl);flex:none;">' + n.icon + '</span>' +
-          '<div style="flex:1;min-width:0;">' +
-            '<div style="font-size:var(--fs-base);font-weight:700;color:var(--charcoal);">' + n.txt + '</div>' +
-            '<div style="font-size:var(--fs-xs);color:#999;margin-top:0.2rem;">' + admTimeAgo(n.d) + '</div>' +
+        '<div class="admin-card adm-notif-row" onclick="' + n.act + '" style="cursor:pointer;">' +
+          '<span class="adm-notif-dot ' + n.kind + '"></span>' +
+          '<div class="adm-notif-main">' +
+            '<div class="adm-notif-txt">' + n.txt + '</div>' +
+            '<div class="adm-notif-time">' + admTimeAgo(n.d) + '</div>' +
           '</div>' +
         '</div>'
       ).join('');
   } catch (e) {
     console.error('[admRenderNotifications] Error:', e);
   }
+}
+
+/* Send an announcement to the selected audience */
+function admSendBroadcast() {
+  if (!Permissions.can(State.cu, 'manage_notifications')) return;
+  const msgEl = document.getElementById('admBroadcastMsg');
+  const audEl = document.getElementById('admBroadcastAudience');
+  const errEl = document.getElementById('admBroadcastErr');
+  const msg = msgEl ? msgEl.value.trim() : '';
+  if (errEl) errEl.textContent = '';
+  if (!msg) { if (errEl) errEl.textContent = t('errorRequired'); return; }
+  const audience = audEl ? audEl.value : 'approved';
+  const n = NotificationService.broadcast(msg, msg, audience);
+  if (msgEl) msgEl.value = '';
+  toast((State.lang === 'ar' ? 'تم الإرسال إلى ' : 'Sent to ') + n + (State.lang === 'ar' ? ' مستخدم' : ' user(s)'), 'success');
+  updateBell();
 }
 
 /** Open campaign detail page */
