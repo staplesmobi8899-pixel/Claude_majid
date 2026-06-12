@@ -2420,6 +2420,25 @@ html, body { overflow-x: hidden; }
 }
 @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 @media (prefers-reduced-motion: reduce) { .skel-img, .skel-line { animation: none; } }
+
+/* ── PHASE 4.1 — Explore (search + chips + filters) ── */
+.explore-top { padding: var(--sp-5) var(--sp-4) var(--sp-2); max-width: var(--content-max); margin: 0 auto; }
+.search-bar { display: flex; align-items: center; gap: var(--sp-3); padding: 0 var(--sp-4);
+  height: 48px; background: var(--white); border: 1.5px solid var(--sand-dark); border-radius: var(--r-full); }
+.search-bar svg { width: 18px; height: 18px; fill: none; stroke: var(--charcoal-50); stroke-width: 2; flex: none; }
+.search-bar input { flex: 1; border: none; background: transparent; outline: none; font-family: inherit;
+  font-size: 16px; color: var(--charcoal); min-width: 0; }
+.explore-filters { display: flex; gap: var(--sp-2); margin-top: var(--sp-3); }
+.explore-filters select { flex: 1; min-width: 0; height: 40px; padding: 0 var(--sp-3); border-radius: var(--r-md);
+  border: 1.5px solid var(--sand-dark); background: var(--white); color: var(--charcoal);
+  font-family: inherit; font-size: var(--fs-sm); -webkit-appearance: none; appearance: none; cursor: pointer; }
+.cat-chips { display: flex; gap: var(--sp-2); margin-top: var(--sp-4); overflow-x: auto;
+  padding-bottom: var(--sp-2); scrollbar-width: none; }
+.cat-chips::-webkit-scrollbar { display: none; }
+.cat-chip { flex: none; white-space: nowrap; padding: var(--sp-2) var(--sp-4); border-radius: var(--r-full);
+  border: 1.5px solid var(--sand-dark); background: var(--white); color: var(--charcoal);
+  font-family: inherit; font-size: var(--fs-sm); font-weight: 700; cursor: pointer; transition: background 0.18s, color 0.18s, border-color 0.18s; }
+.cat-chip.active { background: var(--olive); color: var(--off-white); border-color: var(--olive); }
 </style>
 </head>
 <body>
@@ -2687,12 +2706,23 @@ html, body { overflow-x: hidden; }
 
   <!-- EXPLORE -->
   <div class="page" id="explorePage">
-    <div class="explore-header">
-      <h1 data-i18n="explorTitle"></h1>
-      <p data-i18n="explorSub"></p>
+    <div class="explore-top">
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="exploreSearch" type="search" autocomplete="off" oninput="ExploreUI.search(this.value)" data-i18n-ph="searchPlaceholder">
+      </div>
+      <div class="explore-filters">
+        <select id="exploreCity" onchange="ExploreUI.setCity(this.value)"></select>
+        <select id="exploreSort" onchange="ExploreUI.setSort(this.value)">
+          <option value="recent" data-i18n-opt="sortRecent"></option>
+          <option value="popular" data-i18n-opt="sortPopular"></option>
+          <option value="urgent" data-i18n-opt="sortUrgent"></option>
+        </select>
+      </div>
+      <div class="cat-chips" id="exploreChips"></div>
     </div>
-    <div class="section" style="padding-top:1.5rem;">
-      <div class="camps-grid" id="exploreGrid"></div>
+    <div class="section" style="padding-top: var(--sp-2);">
+      <div id="exploreResults"></div>
     </div>
   </div>
 
@@ -3423,6 +3453,9 @@ const T = {
     aboutRowSub: 'تعرّف على منصة أثر ورسالتنا', adminRowSub: 'لوحة إدارة المنصة',
     detailHeaderTitle: 'تفاصيل المبادرة',
     chooseCat: 'اختر الفئة', noDataSub: 'كن أول من يطلق مبادرة ويصنع الأثر.',
+    allCats: 'الكل', allCities: 'كل المدن', searchPlaceholder: 'ابحث عن مبادرة، فئة، أو مدينة...',
+    sortRecent: 'الأحدث', sortPopular: 'الأكثر تفاعلاً', sortUrgent: 'الأقرب موعداً',
+    noResults: 'لا توجد نتائج', noResultsSub: 'جرّب كلمات أو فلاتر مختلفة.',
     communityTitle: 'المجتمع', communitySub: 'تواصل مع صُنّاع الأثر حولك.', communitySoonTitle: 'مجتمع أثر قريباً', communitySoonMsg: 'نبني مساحة تجمع المتطوعين لمشاركة قصصهم وإلهام بعضهم. ترقّبوا.',
     notifTitle: 'الإشعارات', notifSub: 'كل جديد يخصّك في مكان واحد.', notifEmptyTitle: 'لا إشعارات بعد', notifEmptyMsg: 'سنخبرك هنا عند وجود تحديثات على مبادراتك ونشاطك.',
     signupTitle: 'انضم لأَثَرْ', signupBtn: 'انضم الآن',
@@ -3558,6 +3591,9 @@ const T = {
     aboutRowSub: 'Learn about ATHAR and our mission', adminRowSub: 'Platform admin dashboard',
     detailHeaderTitle: 'Initiative Details',
     chooseCat: 'Choose a category', noDataSub: 'Be the first to launch an initiative and make an impact.',
+    allCats: 'All', allCities: 'All cities', searchPlaceholder: 'Search initiatives, categories, or cities...',
+    sortRecent: 'Recent', sortPopular: 'Most active', sortUrgent: 'Soonest',
+    noResults: 'No results', noResultsSub: 'Try different keywords or filters.',
     communityTitle: 'Community', communitySub: 'Connect with changemakers around you.', communitySoonTitle: 'ATHAR Community is coming', communitySoonMsg: 'We are building a space for volunteers to share stories and inspire each other. Stay tuned.',
     notifTitle: 'Notifications', notifSub: 'Everything that matters to you, in one place.', notifEmptyTitle: 'No notifications yet', notifEmptyMsg: 'We will let you know here when there are updates on your initiatives and activity.',
     signupTitle: 'Join ATHAR', signupBtn: 'Join Now',
@@ -4345,6 +4381,40 @@ function campCardHTML(c) {
 }
 
 /** Render campaigns to home grid and explore grid */
+/* ── Explore experience (Phase 4.1) ── */
+const ExploreUI = {
+  filters: { search: '', category: 'all', city: 'all', sort: 'recent' },
+  render() { this.renderChips(); this.renderCityOptions(); this.renderResults(); },
+  renderChips() {
+    const box = document.getElementById('exploreChips'); if (!box) return;
+    const isAr = State.lang === 'ar';
+    let html = '<button class="cat-chip' + (this.filters.category === 'all' ? ' active' : '') + '" onclick="ExploreUI.setCategory(\'all\')">' + t('allCats') + '</button>';
+    Object.keys(CONFIG.CAMP_CATEGORIES).forEach(k => {
+      const m = CONFIG.CAMP_CATEGORIES[k];
+      html += '<button class="cat-chip' + (this.filters.category === k ? ' active' : '') + '" onclick="ExploreUI.setCategory(\'' + k + '\')">' + (m.icon ? m.icon + ' ' : '') + (isAr ? m.ar : m.en) + '</button>';
+    });
+    box.innerHTML = html;
+  },
+  renderCityOptions() {
+    const sel = document.getElementById('exploreCity'); if (!sel) return;
+    const cur = this.filters.city;
+    let html = '<option value="all">' + t('allCities') + '</option>';
+    DiscoveryService.cities().forEach(c => { html += '<option value="' + c + '">' + c + '</option>'; });
+    sel.innerHTML = html; sel.value = cur;
+  },
+  renderResults() {
+    const box = document.getElementById('exploreResults'); if (!box) return;
+    const list = DiscoveryService.query(this.filters);
+    box.innerHTML = list.length
+      ? '<div class="camps-grid">' + list.map(c => campCardHTML(c)).join('') + '</div>'
+      : emptyState('🔍', t('noResults'), t('noResultsSub'));
+  },
+  setCategory(k) { this.filters.category = k; this.renderChips(); this.renderResults(); },
+  setCity(v) { this.filters.city = v; this.renderResults(); },
+  setSort(v) { this.filters.sort = v; this.renderResults(); },
+  search(v) { this.filters.search = v; this.renderResults(); }
+};
+
 /* ── Discovery UI helpers (Phase 4) ── */
 function skeletonCards(n) {
   n = n || 4;
@@ -4373,12 +4443,10 @@ function populateCategories() {
 
 function renderCampaigns() {
   try {
-    const list = DiscoveryService.query();
+    const list = DiscoveryService.query({ sort: 'recent' });
     const html = list.length ? list.map(c => campCardHTML(c)).join('') : emptyState('🌱', t('noData'), t('noDataSub'));
     const hg = document.getElementById('homeGrid');
-    const eg = document.getElementById('exploreGrid');
     if (hg) hg.innerHTML = html;
-    if (eg) eg.innerHTML = html;
   } catch (e) {
     console.error('[renderCampaigns] Error:', e);
   }
@@ -5253,7 +5321,7 @@ function animateCounters() {
    ══════════════════════════════════════════ */
 const ROUTES = {
   home:          { title: null,             onEnter: () => renderCampaigns() },
-  explore:       { title: 'navExplore',     onEnter: () => renderCampaigns() },
+  explore:       { title: 'navExplore',     onEnter: () => ExploreUI.render() },
   community:     { title: 'communityTitle', onEnter: () => {} },
   notifications: { title: 'notifTitle', back: true, onEnter: () => { renderNotifications(); if (State.cu) NotificationService.markAllRead(State.cu.id); updateBell(); } },
   create:        { title: 'createTitle', back: true, auth: true, onEnter: () => { renderCampaigns(); renderMyCamps(); } },
@@ -5410,6 +5478,10 @@ function applyI18n() {
       const key = el.getAttribute('data-i18n');
       if (T[State.lang][key] !== undefined) el.textContent = T[State.lang][key];
     });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+      const key = el.getAttribute('data-i18n-ph');
+      if (T[State.lang][key] !== undefined) el.setAttribute('placeholder', T[State.lang][key]);
+    });
     document.querySelectorAll('[data-i18n-opt]').forEach(el => {
       const key = el.getAttribute('data-i18n-opt');
       if (T[State.lang][key] !== undefined) el.textContent = T[State.lang][key];
@@ -5422,7 +5494,8 @@ function applyI18n() {
     if (backBtn) backBtn.textContent = isAr ? '‹' : '›';
     // Refresh rendered content for language change
     const page = State.currentPage;
-    if (page === 'home' || page === 'explore') renderCampaigns();
+    if (page === 'home') renderCampaigns();
+    if (page === 'explore') ExploreUI.render();
     if (page === 'profile') renderProfile();
     if (page === 'admin')   renderAdmin();
     populateCategories();
