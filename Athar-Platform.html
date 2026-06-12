@@ -2552,6 +2552,40 @@ html, body { overflow-x: hidden; }
 .create-step.active { display: block; }
 .detail-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-2); }
 .detail-gallery img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--r-md); cursor: pointer; }
+
+/* ══════════════════════════════════════════
+   PHASE 6.1 — PROFILE (premium)
+   ══════════════════════════════════════════ */
+.profile-role { display: inline-block; margin-top: var(--sp-1); padding: 2px var(--sp-3); border-radius: var(--r-full);
+  background: var(--olive-pale); color: var(--olive); font-size: var(--fs-xs); font-weight: 800; }
+.profile-bio { max-width: var(--content-max); margin: var(--sp-3) auto 0; padding: 0 var(--sp-5);
+  font-size: var(--fs-sm); color: var(--charcoal-80); line-height: 1.8; text-align: center; }
+.profile-section-h { max-width: var(--content-max); margin: var(--sp-6) auto var(--sp-3); padding: 0 var(--sp-5);
+  font-size: var(--fs-md); font-weight: 800; color: var(--charcoal); }
+.impact-grid { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--sp-5);
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3); }
+.impact-tile { background: var(--white); border: 1px solid rgba(232,217,196,0.6); border-radius: var(--r-lg);
+  padding: var(--sp-4) var(--sp-2); text-align: center; }
+.impact-tile-ico { font-size: 1.3rem; }
+.impact-tile-n { font-size: var(--fs-xl); font-weight: 900; color: var(--olive); margin-top: var(--sp-1); }
+.impact-tile-l { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: 2px; }
+.badges-grid { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--sp-5);
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-3); }
+.badge { text-align: center; opacity: 0.4; filter: grayscale(1); transition: opacity 0.2s, filter 0.2s; }
+.badge.on { opacity: 1; filter: none; }
+.badge-ico { width: 52px; height: 52px; margin: 0 auto; border-radius: var(--r-full); background: var(--sand);
+  display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+.badge.on .badge-ico { background: var(--olive-pale); }
+.badge-l { font-size: var(--fs-2xs); color: var(--charcoal-80); margin-top: var(--sp-1); line-height: 1.2; }
+
+/* ── PHASE 6.1 — profile privacy toggle ── */
+.profile-privacy { text-align: center; margin-top: var(--sp-3); }
+.privacy-toggle { display: inline-flex; align-items: center; gap: var(--sp-2); padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r-full); border: 1.5px solid var(--sand-dark); background: var(--white);
+  color: var(--charcoal-80); font-family: inherit; font-size: var(--fs-sm); font-weight: 700; cursor: pointer; transition: 0.2s; }
+.privacy-dot { width: 10px; height: 10px; border-radius: var(--r-full); background: var(--charcoal-20); }
+.privacy-toggle.on { border-color: var(--olive); color: var(--olive); }
+.privacy-toggle.on .privacy-dot { background: var(--olive); }
 </style>
 </head>
 <body>
@@ -2834,6 +2868,7 @@ html, body { overflow-x: hidden; }
     <div class="profile-meta-bar">
       <div class="profile-name-wrap">
         <div class="name" id="profileName"></div>
+        <div class="profile-role" id="profileRole"></div>
         <div class="loc" id="profileLoc"></div>
       </div>
       <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
@@ -2841,25 +2876,15 @@ html, body { overflow-x: hidden; }
         <span data-i18n="changePic"></span>
       </button>
     </div>
+    <div class="profile-bio" id="profileBio"></div>
+    <div class="profile-privacy" id="profilePrivacy"></div>
     <div class="status-banner-wrap">
       <div id="statusBanner"></div>
     </div>
-    <div class="profile-stats">
-      <div class="stats-card">
-        <div class="stat-cell">
-          <div class="stat-num" id="sH">0</div>
-          <div class="stat-lbl" data-i18n="statHours"></div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-num" id="sA">0</div>
-          <div class="stat-lbl" data-i18n="activities"></div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-num" id="sB">0</div>
-          <div class="stat-lbl" data-i18n="achievements"></div>
-        </div>
-      </div>
-    </div>
+    <div class="profile-section-h" data-i18n="impactTitle"></div>
+    <div class="impact-grid" id="profileImpact"></div>
+    <div class="profile-section-h" data-i18n="badgesTitle"></div>
+    <div class="badges-grid" id="profileBadges"></div>
     <div class="profile-menu">
       <div class="menu-card">
         <div class="menu-row" onclick="toggleMenu('m-info')">
@@ -3488,6 +3513,8 @@ const T = {
     myCamps: 'حملاتي',
     changePic: 'تغيير الصورة',
     activities: 'الأنشطة', achievements: 'الإنجازات',
+    noBio: 'أضف نبذة عنك', impactTitle: 'أثري', badgesTitle: 'الشارات',
+    profilePublic: '🌍 ملف عام', profilePrivate: '🔒 ملف خاص', profileNowPublic: 'ملفك أصبح عامًا', profileNowPrivate: 'ملفك أصبح خاصًا', completedLabel: 'مكتملة', citiesLabel: 'مدن', scoreLabel: 'نقاط الأثر',
     menuInfo: 'المعلومات الشخصية', menuInfoSub: 'الاسم، البريد، الهاتف',
     menuId: 'صورة الهوية', menuIdSub: 'عرض وتحميل',
     menuCamps: 'حملاتي', menuCampsSub: 'الحملات وحالتها',
@@ -3640,6 +3667,8 @@ const T = {
     myCamps: 'My Campaigns',
     changePic: 'Change Photo',
     activities: 'Activities', achievements: 'Achievements',
+    noBio: 'Add a short bio', impactTitle: 'My impact', badgesTitle: 'Badges',
+    profilePublic: '🌍 Public profile', profilePrivate: '🔒 Private profile', profileNowPublic: 'Your profile is now public', profileNowPrivate: 'Your profile is now private', completedLabel: 'Completed', citiesLabel: 'Cities', scoreLabel: 'Impact score',
     menuInfo: 'Personal Info', menuInfoSub: 'Name, Email, Phone',
     menuId: 'ID Photo', menuIdSub: 'View & Download',
     menuCamps: 'My Campaigns', menuCampsSub: 'Campaigns & Status',
@@ -3880,6 +3909,7 @@ const Models = {
       achievements:    [],
       certificates:    [],
       bio:             '',
+      profilePublic:   false,
       joinedCamps:     [],
       savedCampaigns:  [],
       banned:          null,
@@ -4109,6 +4139,12 @@ const Permissions = {
     if (!user || !camp) return false;
     if (this.isAdmin(user) || this.hasRole(user, 'moderator')) return true;
     return camp.createdBy === user.id;
+  },
+  canViewProfile(viewer, target) {
+    if (!target) return false;
+    if (this.isAdmin(viewer)) return true;
+    if (viewer && viewer.id === target.id) return true;
+    return !!target.profilePublic;
   }
 };
 
@@ -4455,6 +4491,7 @@ const AchievementService = {
     });
     if (newly.length) {
       const arr = [...set];
+      user.achievements = arr;
       UserService.updateById(user.id, { achievements: arr });
       if (State.cu && State.cu.id === user.id) { State.cu.achievements = arr; DB.setObj(CONFIG.DB_KEYS.SESSION, State.cu); }
       newly.forEach(k => { const m = CONFIG.ACHIEVEMENTS[k]; NotificationService.add(user.id, 'فتحت إنجازاً: ' + m.ar + ' ' + m.icon, 'Achievement unlocked: ' + m.en, 'achievement'); });
@@ -4808,18 +4845,59 @@ function renderMyCamps() {
 }
 
 /** Render profile page */
+function toggleProfileVisibility() {
+  const u = State.cu; if (!u || !u.id) return;
+  const next = !u.profilePublic;
+  u.profilePublic = next;
+  UserService.updateById(u.id, { profilePublic: next });
+  if (State.cu && State.cu.id === u.id) { State.cu.profilePublic = next; DB.setObj(CONFIG.DB_KEYS.SESSION, State.cu); }
+  toast(next ? t('profileNowPublic') : t('profileNowPrivate'), 'success');
+  renderProfile();
+}
+
 function renderProfile() {
   if (!State.cu) return;
   try {
     // Always read fresh from DB
     const u = UserService.getById(State.cu.id) || State.cu;
+    AchievementService.evaluate(u);
 
-    const sH = document.getElementById('sH');
-    const sA = document.getElementById('sA');
-    const sB = document.getElementById('sB');
-    if (sH) sH.textContent = u.volunteerHours   || 0;
-    if (sA) sA.textContent = u.activitiesJoined  || 0;
-    if (sB) sB.textContent = AchievementService.getUnlocked(u).length;
+    const isAr = State.lang === 'ar';
+    const roleEl = document.getElementById('profileRole');
+    if (roleEl) roleEl.textContent = Permissions.roleLabel(u);
+    const bioEl = document.getElementById('profileBio');
+    if (bioEl) bioEl.textContent = u.bio || t('noBio');
+    const priv = document.getElementById('profilePrivacy');
+    if (priv) {
+      if (State.isAdmin) { priv.innerHTML = ''; }
+      else {
+        const isPublic = !!u.profilePublic;
+        priv.innerHTML = '<button class="privacy-toggle' + (isPublic ? ' on' : '') + '" onclick="toggleProfileVisibility()">' +
+          '<span class="privacy-dot"></span><span>' + (isPublic ? t('profilePublic') : t('profilePrivate')) + '</span></button>';
+      }
+    }
+
+    const stats = StatsService.compute(u);
+    const impact = document.getElementById('profileImpact');
+    if (impact) {
+      const tiles = [
+        ['⏳', u.volunteerHours || 0, t('statHours')],
+        ['🎯', u.activitiesJoined || 0, t('activities')],
+        ['✅', stats.completed, t('completedLabel')],
+        ['📍', stats.citiesCount, t('citiesLabel')],
+        ['⭐', stats.score, t('scoreLabel')],
+        ['🏅', AchievementService.getUnlocked(u).length, t('achievements')]
+      ];
+      impact.innerHTML = tiles.map(tl => '<div class="impact-tile"><div class="impact-tile-ico">' + tl[0] + '</div><div class="impact-tile-n">' + tl[1] + '</div><div class="impact-tile-l">' + tl[2] + '</div></div>').join('');
+    }
+    const badges = document.getElementById('profileBadges');
+    if (badges) {
+      const unlocked = new Set(AchievementService.getUnlocked(u));
+      badges.innerHTML = AchievementService.all().map(k => {
+        const m = AchievementService.meta(k); const on = unlocked.has(k);
+        return '<div class="badge' + (on ? ' on' : '') + '"><div class="badge-ico">' + m.icon + '</div><div class="badge-l">' + (isAr ? m.ar : m.en) + '</div></div>';
+      }).join('');
+    }
 
     const profileName = document.getElementById('profileName');
     if (profileName) profileName.textContent = u.name || '';
