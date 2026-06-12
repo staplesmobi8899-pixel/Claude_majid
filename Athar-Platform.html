@@ -2527,6 +2527,19 @@ html, body { overflow-x: hidden; }
 .manage-btn { flex: 1; min-width: 130px; height: 46px; border: none; border-radius: var(--r-md); background: var(--olive);
   color: var(--off-white); font-family: inherit; font-weight: 800; font-size: var(--fs-sm); cursor: pointer; }
 .manage-btn.ghost { background: transparent; color: var(--charcoal-80); border: 1.5px solid var(--sand-dark); }
+
+/* ── PHASE 5.3 — participants & attendance ── */
+.part-row { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2);
+  padding: var(--sp-3) 0; border-bottom: 1px solid var(--line); }
+.part-row-name { font-size: var(--fs-sm); font-weight: 700; color: var(--charcoal); min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.part-row-actions { display: flex; gap: var(--sp-2); flex: none; }
+.att-btn { padding: var(--sp-1) var(--sp-3); border-radius: var(--r-full); border: 1.5px solid var(--sand-dark);
+  background: transparent; color: var(--charcoal-50); font-family: inherit; font-size: var(--fs-xs); font-weight: 800; cursor: pointer; }
+.att-btn.on { background: var(--success); color: #fff; border-color: var(--success); }
+.att-btn.absent.on { background: var(--warn); color: #fff; border-color: var(--warn); }
+.att-ban { padding: var(--sp-1) var(--sp-3); border-radius: var(--r-full); border: none; background: var(--red);
+  color: #fff; font-family: inherit; font-size: var(--fs-xs); font-weight: 800; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -3255,6 +3268,16 @@ html, body { overflow-x: hidden; }
     </form>
   </div>
 </div>
+<div class="modal-overlay" id="participantsModal">
+  <div class="modal-sheet">
+    <div class="modal-bar">
+      <button type="button" class="modal-close" onclick="closeModal('participantsModal')" aria-label="back">‹</button>
+      <div class="modal-handle"></div>
+    </div>
+    <div class="modal-title" data-i18n="manageParticipants"></div>
+    <div id="participantsBody"></div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════
      ONBOARDING (Phase 2.6)
@@ -3486,6 +3509,7 @@ const T = {
     storyTitle: 'القصة', reqTitle: 'المتطلبات', detailsTitle: 'التفاصيل', durationLabel: 'المدة', participantsTitle: 'المشاركون',
     markedDone: 'تم إنهاء المبادرة ✓', archivedToast: 'تمت الأرشفة', shareVia: 'أثر', linkCopied: 'تم نسخ الرابط',
     bannedMsg: 'حسابك محظور حتى', userBanned: 'تم حظر الحساب', userUnbanned: 'تم رفع الحظر',
+    manageParticipants: 'المشاركون والحضور', attended: 'حضر', absent: 'لم يحضر', banShort: 'حظر',
     allCats: 'الكل', allCities: 'كل المدن', searchPlaceholder: 'ابحث عن مبادرة، فئة، أو مدينة...',
     sortRecent: 'الأحدث', sortPopular: 'الأكثر تفاعلاً', sortUrgent: 'الأقرب موعداً',
     noResults: 'لا توجد نتائج', noResultsSub: 'جرّب كلمات أو فلاتر مختلفة.',
@@ -3634,6 +3658,7 @@ const T = {
     storyTitle: 'The story', reqTitle: 'Requirements', detailsTitle: 'Details', durationLabel: 'Duration', participantsTitle: 'Participants',
     markedDone: 'Initiative completed ✓', archivedToast: 'Archived', shareVia: 'ATHAR', linkCopied: 'Link copied',
     bannedMsg: 'Your account is banned until', userBanned: 'Account banned', userUnbanned: 'Account unbanned',
+    manageParticipants: 'Participants & attendance', attended: 'Present', absent: 'Absent', banShort: 'Ban',
     allCats: 'All', allCities: 'All cities', searchPlaceholder: 'Search initiatives, categories, or cities...',
     sortRecent: 'Recent', sortPopular: 'Most active', sortUrgent: 'Soonest',
     noResults: 'No results', noResultsSub: 'Try different keywords or filters.',
@@ -3875,6 +3900,7 @@ const Models = {
       img:          data.img || null,
       joinedUsers:  [],
       participants: [],
+      attendance:   {},
       gallery:      [],
       campHours:    {},
       createdAt:    new Date().toISOString(),
@@ -4212,6 +4238,17 @@ const CampaignService = {
     const diff = (new Date(camp.date + 'T00:00:00') - new Date()) / 86400000;
     return diff >= 2;
   },
+  markAttendance(campId, userId, status) {
+    const camps = this.getAll();
+    const i = camps.findIndex(c => c.id === campId);
+    if (i === -1) return false;
+    camps[i].attendance = camps[i].attendance || {};
+    camps[i].attendance[userId] = status;
+    camps[i].updatedAt = new Date().toISOString();
+    this.save(camps);
+    return true;
+  },
+  getAttendance(camp, userId) { return (camp && camp.attendance && camp.attendance[userId]) || null; },
   markUnderProcess(id) { return this.updateById(id, { status: 'under_process' }); },
   markDone(id)      {
     const camp = this.getById(id);
@@ -5466,6 +5503,7 @@ function renderDetail(id) {
     ? '<section class="detail-section"><h3 class="detail-h">' + t('manageCamp') + '</h3><div class="manage-row">' +
       (c.status !== 'done' ? '<button class="manage-btn" onclick="handleManageDone(\'' + id + '\')">' + t('markDoneBtn') + '</button>' : '') +
       (c.status !== 'archived' ? '<button class="manage-btn ghost" onclick="handleArchive(\'' + id + '\')">' + t('archiveBtn') + '</button>' : '') +
+      '<button class="manage-btn ghost" onclick="openParticipants(\'' + id + '\')">' + t('manageParticipants') + '</button>' +
       '</div></section>'
     : '';
 
@@ -5504,6 +5542,33 @@ function openDetail(id) {
     renderDetail(id);
     goPage('detail');
   } catch (e) { console.error('[openDetail] Error:', e); }
+}
+
+function openParticipants(campId) {
+  const c = CampaignService.getById(campId); if (!c) return;
+  if (!Permissions.canManageCampaign(State.cu, c)) return;
+  const parts = CampaignService.getParticipants(c);
+  const isAdmin = State.isAdmin;
+  const body = document.getElementById('participantsBody');
+  if (!body) return;
+  if (!parts.length) {
+    body.innerHTML = '<div class="empty-sub" style="text-align:center;padding:var(--sp-6);">' + t('noParticipants') + '</div>';
+  } else {
+    body.innerHTML = parts.map(u => {
+      const att = CampaignService.getAttendance(c, u.id);
+      return '<div class="part-row"><div class="part-row-name">' + (u.name || '') + '</div>' +
+        '<div class="part-row-actions">' +
+          '<button class="att-btn' + (att === 'attended' ? ' on' : '') + '" onclick="markAtt(\'' + campId + '\',\'' + u.id + '\',\'attended\')">' + t('attended') + '</button>' +
+          '<button class="att-btn absent' + (att === 'absent' ? ' on' : '') + '" onclick="markAtt(\'' + campId + '\',\'' + u.id + '\',\'absent\')">' + t('absent') + '</button>' +
+          ((isAdmin && att === 'absent') ? '<button class="att-ban" onclick="handleBanUser(\'' + u.id + '\',7)">' + t('banShort') + '</button>' : '') +
+        '</div></div>';
+    }).join('');
+  }
+  openModal('participantsModal');
+}
+function markAtt(campId, userId, status) {
+  CampaignService.markAttendance(campId, userId, status);
+  openParticipants(campId);
 }
 
 function handleSave(id) {
