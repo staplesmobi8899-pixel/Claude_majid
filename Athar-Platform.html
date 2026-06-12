@@ -3508,9 +3508,9 @@ html, body { overflow-x: hidden; }
         <button class="adm-sidebar-toggle" id="admSidebarToggle" onclick="admToggleSidebar()">
           <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
-        <h1 class="adm-header-title">Admin Panel</h1>
+        <h1 class="adm-header-title" data-i18n="admPanelTitle">Admin Panel</h1>
         <div class="adm-header-search">
-          <input type="text" id="admGlobalSearch" placeholder="🔍 Search..." oninput="admGlobalSearchFn(this.value)">
+          <input type="text" id="admGlobalSearch" data-i18n-ph="admSearchPh" placeholder="Search..." oninput="admGlobalSearchFn(this.value)">
         </div>
         <button class="adm-header-back" onclick="goPage('home')" title="Back to App">
           <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -3529,36 +3529,46 @@ html, body { overflow-x: hidden; }
         <nav class="adm-sidebar-nav">
           <button class="adm-nav-item active" data-panel="dashboard" onclick="admSwitchPanel('dashboard')">
             <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-            <span class="adm-nav-label">Dashboard</span>
+            <span class="adm-nav-label" data-i18n="admNavDashboard">Dashboard</span>
           </button>
 
           <button class="adm-nav-item" data-panel="users" onclick="admSwitchPanel('users')">
             <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-            <span class="adm-nav-label">Users</span>
+            <span class="adm-nav-label" data-i18n="admNavUsers">Users</span>
             <span class="adm-nav-badge" id="admBadgeUsers">0</span>
           </button>
 
           <button class="adm-nav-item" data-panel="campaigns" onclick="admSwitchPanel('campaigns')">
             <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span class="adm-nav-label">Campaigns</span>
+            <span class="adm-nav-label" data-i18n="admNavCampaigns">Campaigns</span>
             <span class="adm-nav-badge" id="admBadgeCamps">0</span>
           </button>
 
           <button class="adm-nav-item" data-panel="partners" onclick="admSwitchPanel('partners')">
             <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <span class="adm-nav-label">Partners</span>
+            <span class="adm-nav-label" data-i18n="admNavPartners">Partners</span>
             <span class="adm-nav-badge" id="admBadgePartners">0</span>
           </button>
 
           <button class="adm-nav-item" data-panel="analytics" onclick="admSwitchPanel('analytics')">
             <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-            <span class="adm-nav-label">Analytics</span>
+            <span class="adm-nav-label" data-i18n="admNavAnalytics">Analytics</span>
           </button>
 
           <button class="adm-nav-item" data-panel="notifications" onclick="admSwitchPanel('notifications')">
             <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            <span class="adm-nav-label">Notifications</span>
+            <span class="adm-nav-label" data-i18n="admNavNotifications">Notifications</span>
             <span class="adm-nav-badge" id="admBadgeNotifs">0</span>
+          </button>
+
+          <button class="adm-nav-item" data-panel="content" onclick="admSwitchPanel('content')">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+            <span class="adm-nav-label" data-i18n="admNavContent">Content</span>
+          </button>
+
+          <button class="adm-nav-item" data-panel="settings" onclick="admSwitchPanel('settings')">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span class="adm-nav-label" data-i18n="admNavSettings">Settings</span>
           </button>
         </nav>
       </aside>
@@ -3634,6 +3644,18 @@ html, body { overflow-x: hidden; }
           <div class="adm-panel" id="admPanel-notifications">
             <div class="adm-panel-header"><h2 id="admHdNotifs">Notifications</h2></div>
             <div id="admNotifsList"></div>
+          </div>
+
+          <!-- CONTENT (Phase 8.6) -->
+          <div class="adm-panel" id="admPanel-content">
+            <div class="adm-panel-header"><h2 id="admHdContent">Content</h2></div>
+            <div id="admContentMgmt"></div>
+          </div>
+
+          <!-- SETTINGS -->
+          <div class="adm-panel" id="admPanel-settings">
+            <div class="adm-panel-header"><h2 id="admHdSettings">Settings</h2></div>
+            <div id="admSettingsBody"></div>
           </div>
 
         </div>
@@ -3891,13 +3913,15 @@ const CONFIG = {
   // Scalable role system (Phase 2). Do NOT hardcode roles elsewhere — read here.
   DEFAULT_ROLE: 'volunteer',
   ROLES: {
-    guest:           { ar: 'ضيف', en: 'Guest', level: 0, permissions: ['view'] },
-    volunteer:       { ar: 'متطوّع',     en: 'Volunteer',       level: 1,  permissions: ['view', 'join_campaign', 'create_campaign'] },
-    campaign_leader: { ar: 'قائد حملة',  en: 'Campaign Leader', level: 2,  permissions: ['view', 'join_campaign', 'create_campaign', 'manage_own_campaign'] },
-    partner:         { ar: 'شريك',       en: 'Partner',         level: 2,  permissions: ['view', 'partner_dashboard'] },
-    moderator:       { ar: 'مشرف',       en: 'Moderator',       level: 5,  permissions: ['view', 'join_campaign', 'create_campaign', 'moderate', 'approve_campaign'] },
-    admin:           { ar: 'أدمن',       en: 'Admin',           level: 10, permissions: ['*'] }
+    guest:              { ar: 'ضيف',          en: 'Guest',             level: 0,   permissions: ['view'] },
+    volunteer:          { ar: 'متطوّع',        en: 'Volunteer',         level: 1,   permissions: ['view', 'join_campaign', 'create_campaign'] },
+    campaign_organizer: { ar: 'منظِّم حملات',  en: 'Campaign Organizer', level: 2,  permissions: ['view', 'join_campaign', 'create_campaign', 'manage_own_campaign'] },
+    partner:            { ar: 'شريك',          en: 'Partner',           level: 2,   permissions: ['view', 'partner_dashboard'] },
+    moderator:          { ar: 'مشرف',          en: 'Moderator',         level: 5,   permissions: ['view', 'join_campaign', 'create_campaign', 'moderate', 'approve_campaign', 'manage_campaigns', 'manage_reports', 'access_admin'] },
+    admin:              { ar: 'أدمن',          en: 'Admin',             level: 10,  permissions: ['view', 'access_admin', 'moderate', 'approve_campaign', 'manage_users', 'manage_campaigns', 'manage_partners', 'manage_notifications', 'manage_content', 'manage_reports', 'assign_role', 'view_analytics'] },
+    super_admin:        { ar: 'المدير العام',  en: 'Super Admin',       level: 100, permissions: ['*'] }
   },
+  ROLE_ALIASES: { campaign_leader: 'campaign_organizer' },
 
   CAUSES: {
     environment: { ar: 'البيئة',        en: 'Environment' },
@@ -4039,6 +4063,10 @@ const T = {
     orgType: 'نوع الجهة', typeGov: 'حكومية / عامة', typePriv: 'خاصة / شركة', typeNgo: 'منظمة / جمعية', typeInd: 'فرد / مبادر',
     message: 'رسالتك', sendRequest: 'أرسل طلبك',
     adminTitle: 'لوحة الإدارة', adminSub: 'إدارة الحسابات والحملات والشراكات',
+    admPanelTitle: 'لوحة الإدارة', admSearchPh: 'بحث…',
+    admNavDashboard: 'الرئيسية', admNavUsers: 'المستخدمون', admNavCampaigns: 'الحملات', admNavPartners: 'الشراكات', admNavAnalytics: 'التحليلات', admNavNotifications: 'الإشعارات', admNavContent: 'المحتوى', admNavSettings: 'الإعدادات',
+    admContentSoon: 'إدارة المحتوى (About · الأسئلة الشائعة · السياسات · الحملات المميّزة) — تُبنى في الدفعة 8.6.',
+    admSettingsSoon: 'إعدادات اللوحة — تُبنى لاحقًا.',
     tabAccounts: 'الحسابات', tabCamps: 'الحملات', tabPartners: 'الشراكات',
     navHome: 'الرئيسية', navExplore: 'استكشف', navCommunity: 'المجتمع', navNotifications: 'الإشعارات', navCreate: 'إنشاء', navProfile: 'الملف', navAbout: 'من نحن', navAdmin: 'إدارة',
     aboutRowSub: 'تعرّف على منصة أثر ورسالتنا', adminRowSub: 'لوحة إدارة المنصة',
@@ -4221,6 +4249,10 @@ const T = {
     orgType: 'Organization Type', typeGov: 'Government / Public', typePriv: 'Private / Company', typeNgo: 'NGO / Association', typeInd: 'Individual / Founder',
     message: 'Your Message', sendRequest: 'Send Request',
     adminTitle: 'Admin Panel', adminSub: 'Manage accounts, campaigns and partnerships',
+    admPanelTitle: 'Admin Panel', admSearchPh: 'Search…',
+    admNavDashboard: 'Dashboard', admNavUsers: 'Users', admNavCampaigns: 'Campaigns', admNavPartners: 'Partners', admNavAnalytics: 'Analytics', admNavNotifications: 'Notifications', admNavContent: 'Content', admNavSettings: 'Settings',
+    admContentSoon: 'Content management (About · FAQ · Policies · Featured campaigns) — built in batch 8.6.',
+    admSettingsSoon: 'Dashboard settings — coming soon.',
     tabAccounts: 'Accounts', tabCamps: 'Campaigns', tabPartners: 'Partnerships',
     navHome: 'Home', navExplore: 'Explore', navCommunity: 'Community', navNotifications: 'Alerts', navCreate: 'Create', navProfile: 'Profile', navAbout: 'About Us', navAdmin: 'Admin',
     aboutRowSub: 'Learn about ATHAR and our mission', adminRowSub: 'Platform admin dashboard',
@@ -4502,6 +4534,7 @@ const Models = {
       type:    String(data.type    || 'ngo').trim(),
       msg:     String(data.msg     || '').trim(),
       status:  'pending',
+      featured: false,
       date:    new Date().toISOString()
     };
   },
@@ -4655,14 +4688,19 @@ const NotificationService = {
 const Permissions = {
   roleOf(user) {
     if (!user) return null;
-    if (user.email === CONFIG.ADMIN_EMAIL) return 'admin';
-    return user.role || CONFIG.DEFAULT_ROLE;
+    if (user.email === CONFIG.ADMIN_EMAIL) return 'super_admin';
+    let r = user.role || CONFIG.DEFAULT_ROLE;
+    if (CONFIG.ROLE_ALIASES && CONFIG.ROLE_ALIASES[r]) r = CONFIG.ROLE_ALIASES[r];
+    return CONFIG.ROLES[r] ? r : CONFIG.DEFAULT_ROLE;
   },
   meta(role) { return CONFIG.ROLES[role] || CONFIG.ROLES[CONFIG.DEFAULT_ROLE]; },
+  level(user) { return this.meta(this.roleOf(user)).level || 0; },
   roleLabel(user) {
     const m = this.meta(this.roleOf(user) || CONFIG.DEFAULT_ROLE);
     return State.lang === 'ar' ? m.ar : m.en;
   },
+  /** Roles assignable from the admin UI (excludes guest; super_admin is bootstrap-only) */
+  assignable() { return ['volunteer', 'campaign_organizer', 'partner', 'moderator', 'admin']; },
   can(user, action) {
     const role = this.roleOf(user);
     if (!role) return false;
@@ -4670,7 +4708,9 @@ const Permissions = {
     return perms.includes('*') || perms.includes(action);
   },
   hasRole(user, role) { return this.roleOf(user) === role; },
-  isAdmin(user) { return this.roleOf(user) === 'admin'; },
+  isAdmin(user) { return this.level(user) >= 10; },               // admin + super_admin (full dashboard)
+  isSuperAdmin(user) { return this.roleOf(user) === 'super_admin'; },
+  canAccessAdmin(user) { return this.can(user, 'access_admin') || this.level(user) >= 5; },
   canManageCampaign(user, camp) {
     if (!user || !camp) return false;
     if (this.isAdmin(user) || this.hasRole(user, 'moderator')) return true;
@@ -4715,7 +4755,7 @@ const OtpService = {
 /* ── AUTH (Phase 2 — single source of truth for auth flows) ── */
 const AuthService = {
   buildAdminUser() {
-    return { id: 'admin', name: 'Admin', email: CONFIG.ADMIN_EMAIL, role: 'admin',
+    return { id: 'admin', name: 'Admin', email: CONFIG.ADMIN_EMAIL, role: 'super_admin',
              status: 'approved', volunteerHours: 0, activitiesJoined: 0, achievements: [], joinedCamps: [] };
   },
   startSession(user, persist = true) {
@@ -5079,11 +5119,32 @@ const ActivityService = {
 
 const PartnerService = {
   getAll()    { return DB.get(CONFIG.DB_KEYS.PARTNERS); },
+  getById(id) { return this.getAll().find(p => p.id === id) || null; },
+  save(list)  { return DB.set(CONFIG.DB_KEYS.PARTNERS, list); },
   add(p)      {
     const list = this.getAll();
     list.unshift(p);
-    return DB.set(CONFIG.DB_KEYS.PARTNERS, list);
-  }
+    return this.save(list);
+  },
+  updateById(id, patch) {
+    const list = this.getAll();
+    const i = list.findIndex(p => p.id === id);
+    if (i === -1) return null;
+    list[i] = Object.assign({}, list[i], patch);
+    this.save(list);
+    return list[i];
+  },
+  approve(id) { return this.updateById(id, { status: 'approved' }); },
+  reject(id)  { return this.updateById(id, { status: 'rejected', featured: false }); },
+  toggleFeatured(id) {
+    const p = this.getById(id);
+    if (!p) return null;
+    return this.updateById(id, { featured: !p.featured });
+  },
+  /** Approved partners (for public showcase / About) */
+  getApproved()  { return this.getAll().filter(p => p.status === 'approved'); },
+  getFeatured()  { return this.getAll().filter(p => p.status === 'approved' && p.featured); },
+  pendingCount() { return this.getAll().filter(p => p.status === 'pending').length; }
 };
 
 /* ══════════════════════════════════════════
@@ -5648,9 +5709,21 @@ function renderAdmin() {
     admRenderPartners();
     admRenderAnalytics(users, camps);
     admRenderNotifications(users, camps, partners);
+    admRenderContent();
+    admRenderSettings();
   } catch (e) {
     console.error('[renderAdmin] Error:', e);
   }
+}
+
+/* ── Content & Settings panels (scaffold — Phase 8.0; full build in 8.6) ── */
+function admRenderContent() {
+  const box = admEl('admContentMgmt');
+  if (box) box.innerHTML = '<div class="adm-card"><p style="color:var(--charcoal-50);line-height:1.8;">' + t('admContentSoon') + '</p></div>';
+}
+function admRenderSettings() {
+  const box = admEl('admSettingsBody');
+  if (box) box.innerHTML = '<div class="adm-card"><p style="color:var(--charcoal-50);line-height:1.8;">' + t('admSettingsSoon') + '</p></div>';
 }
 
 /* ── Bilingual headers ── */
@@ -5667,6 +5740,8 @@ function admRenderHeaders() {
   set('admHdTop',       'أفضل المتطوعين',      'Top Volunteers');
   set('admHdCities',    'المتطوعون حسب المدينة','Volunteers by City');
   set('admHdNotifs',    'الإشعارات',           'Notifications');
+  set('admHdContent',   'إدارة المحتوى',        'Content');
+  set('admHdSettings',  'الإعدادات',            'Settings');
 }
 
 /* ── Dashboard ── */
@@ -6466,7 +6541,7 @@ const ROUTES = {
   profile:       { title: 'navProfile',     onEnter: () => renderProfile() },
   settings:      { title: 'settingsTitle', back: true, auth: true, onEnter: () => renderSettings() },
   about:         { title: 'navAbout',       onEnter: () => animateCounters() },
-  admin:         { title: 'navAdmin', back: true, roles: ['admin'], onEnter: () => renderAdmin() }
+  admin:         { title: 'navAdmin', back: true, roles: ['admin', 'super_admin'], onEnter: () => renderAdmin() }
 };
 
 /* ── Header system (Phase 3.2 — context-aware) ── */
