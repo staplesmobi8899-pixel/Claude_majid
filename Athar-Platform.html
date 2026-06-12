@@ -2404,6 +2404,22 @@ html, body { overflow-x: hidden; }
   }
   .fab { inset-inline-end: calc(50% - 300px + var(--sp-5)); }
 }
+
+/* ── PHASE 4.0 — skeletons + empty states ── */
+.empty-sub { font-size: var(--fs-sm); color: var(--charcoal-50); line-height: 1.7; margin-top: var(--sp-2); max-width: 280px; }
+.skel-card { border-radius: var(--r-lg); overflow: hidden; background: var(--white);
+  border: 1px solid rgba(232,217,196,0.5); }
+.skel-img { width: 100%; aspect-ratio: 16/10; }
+.skel-line { height: 12px; border-radius: var(--r-full); margin: var(--sp-3) var(--sp-4) 0; }
+.skel-line:last-child { margin-bottom: var(--sp-4); }
+.skel-w70 { width: 70%; }
+.skel-w40 { width: 40%; }
+.skel-img, .skel-line {
+  background: linear-gradient(100deg, var(--sand) 30%, var(--off-white) 50%, var(--sand) 70%);
+  background-size: 200% 100%; animation: shimmer 1.3s ease-in-out infinite;
+}
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .skel-img, .skel-line { animation: none; } }
 </style>
 </head>
 <body>
@@ -3152,14 +3168,8 @@ html, body { overflow-x: hidden; }
       <div class="field-row">
         <div class="field">
           <label data-i18n="categoryLabel"></label>
-          <select name="category" required>
-            <option value="">اختر الفئة</option>
-            <option value="cleaning">تنظيف</option>
-            <option value="planting">تشجير</option>
-            <option value="improvement">تحسين</option>
-            <option value="support">دعم</option>
-            <option value="education">تعليم</option>
-            <option value="event">فعالية</option>
+          <select name="category" required id="createCatSelect">
+            <option value="" data-i18n-opt="chooseCat"></option>
           </select>
         </div>
         <div class="field">
@@ -3270,12 +3280,19 @@ const CONFIG = {
     VERSION:  'athar_version'
   },
   CAMP_CATEGORIES: {
-    cleaning:    { ar: 'تنظيف',   en: 'Cleaning'    },
-    planting:    { ar: 'تشجير',   en: 'Planting'    },
-    improvement: { ar: 'تحسين',   en: 'Improvement' },
-    support:     { ar: 'دعم',     en: 'Support'     },
-    education:   { ar: 'تعليم',   en: 'Education'   },
-    event:       { ar: 'فعالية',  en: 'Event'       }
+    environment:    { ar: 'البيئة',           en: 'Environment',    icon: '🌿' },
+    education:      { ar: 'التعليم',          en: 'Education',      icon: '📚' },
+    health:         { ar: 'الصحة',            en: 'Health',        icon: '❤️' },
+    community:      { ar: 'دعم المجتمع',      en: 'Community',     icon: '🤝' },
+    youth:          { ar: 'الشباب',           en: 'Youth',         icon: '✨' },
+    sustainability: { ar: 'الاستدامة',        en: 'Sustainability', icon: '♻️' },
+    food_aid:       { ar: 'الإغاثة الغذائية', en: 'Food Aid',      icon: '🍲' },
+    animal_care:    { ar: 'رعاية الحيوان',    en: 'Animal Care',   icon: '🐾' }
+  },
+  // backward-compat: legacy category keys -> new taxonomy
+  CATEGORY_ALIASES: {
+    cleaning: 'environment', planting: 'environment',
+    improvement: 'community', support: 'community', event: 'community'
   },
   CAMP_STATUS: {
     pending:       { ar: 'قيد المراجعة', en: 'Under Review',   cls: 'status-pending'  },
@@ -3405,6 +3422,7 @@ const T = {
     navHome: 'الرئيسية', navExplore: 'استكشف', navCommunity: 'المجتمع', navNotifications: 'الإشعارات', navCreate: 'إنشاء', navProfile: 'الملف', navAbout: 'من نحن', navAdmin: 'إدارة',
     aboutRowSub: 'تعرّف على منصة أثر ورسالتنا', adminRowSub: 'لوحة إدارة المنصة',
     detailHeaderTitle: 'تفاصيل المبادرة',
+    chooseCat: 'اختر الفئة', noDataSub: 'كن أول من يطلق مبادرة ويصنع الأثر.',
     communityTitle: 'المجتمع', communitySub: 'تواصل مع صُنّاع الأثر حولك.', communitySoonTitle: 'مجتمع أثر قريباً', communitySoonMsg: 'نبني مساحة تجمع المتطوعين لمشاركة قصصهم وإلهام بعضهم. ترقّبوا.',
     notifTitle: 'الإشعارات', notifSub: 'كل جديد يخصّك في مكان واحد.', notifEmptyTitle: 'لا إشعارات بعد', notifEmptyMsg: 'سنخبرك هنا عند وجود تحديثات على مبادراتك ونشاطك.',
     signupTitle: 'انضم لأَثَرْ', signupBtn: 'انضم الآن',
@@ -3539,6 +3557,7 @@ const T = {
     navHome: 'Home', navExplore: 'Explore', navCommunity: 'Community', navNotifications: 'Alerts', navCreate: 'Create', navProfile: 'Profile', navAbout: 'About Us', navAdmin: 'Admin',
     aboutRowSub: 'Learn about ATHAR and our mission', adminRowSub: 'Platform admin dashboard',
     detailHeaderTitle: 'Initiative Details',
+    chooseCat: 'Choose a category', noDataSub: 'Be the first to launch an initiative and make an impact.',
     communityTitle: 'Community', communitySub: 'Connect with changemakers around you.', communitySoonTitle: 'ATHAR Community is coming', communitySoonMsg: 'We are building a space for volunteers to share stories and inspire each other. Stay tuned.',
     notifTitle: 'Notifications', notifSub: 'Everything that matters to you, in one place.', notifEmptyTitle: 'No notifications yet', notifEmptyMsg: 'We will let you know here when there are updates on your initiatives and activity.',
     signupTitle: 'Join ATHAR', signupBtn: 'Join Now',
@@ -3808,6 +3827,13 @@ const Models = {
   /** Get status display info */
   getStatusInfo(status) {
     return CONFIG.CAMP_STATUS[status] || CONFIG.CAMP_STATUS.pending;
+  },
+  catKey(k) { return (CONFIG.CATEGORY_ALIASES && CONFIG.CATEGORY_ALIASES[k]) || k; },
+  catMeta(c) { return CONFIG.CAMP_CATEGORIES[this.catKey(c && c.category)] || null; },
+  catLabel(c) {
+    const m = this.catMeta(c);
+    if (m) return State.lang === 'ar' ? m.ar : m.en;
+    const tx = this.getCampText(c); return tx.cat || '';
   }
 };
 
@@ -4126,6 +4152,43 @@ const CampaignService = {
   }
 };
 
+/* ── DISCOVERY (Phase 4 — query/filter/sort + featured/trending/nearby) ── */
+const DiscoveryService = {
+  _base() { return CampaignService.getVisible().filter(c => c.status !== 'rejected'); },
+  cities() { return [...new Set(this._base().map(c => c.location).filter(Boolean))].sort(); },
+  _sort(list, sort) {
+    const a = list.slice();
+    if (sort === 'popular') a.sort((x, y) => (y.volunteers || 0) - (x.volunteers || 0));
+    else if (sort === 'urgent') a.sort((x, y) => String(x.date || '9999').localeCompare(String(y.date || '9999')));
+    else a.sort((x, y) => String(y.createdAt || '').localeCompare(String(x.createdAt || '')));
+    return a;
+  },
+  query({ search = '', category = 'all', city = 'all', sort = 'recent' } = {}) {
+    let list = this._base();
+    if (category && category !== 'all') list = list.filter(c => Models.catKey(c.category) === category);
+    if (city && city !== 'all') list = list.filter(c => c.location === city);
+    const q = String(search || '').trim().toLowerCase();
+    if (q) list = list.filter(c => {
+      const tx = Models.getCampText(c);
+      return [tx.title, tx.desc, Models.catLabel(c), c.location].filter(Boolean)
+        .some(s => String(s).toLowerCase().includes(q));
+    });
+    return this._sort(list, sort);
+  },
+  featured(n = 5) { return this._sort(this._base(), 'popular').slice(0, n); },
+  trending(n = 6) { return this._sort(this._base(), 'popular').slice(0, n); },
+  nearby(city, n = 6) {
+    const base = this._base();
+    return (city ? base.filter(c => c.location === city) : base).slice(0, n);
+  },
+  recommended(user, n = 6) {
+    const interests = new Set((user && user.interests) || []);
+    if (!interests.size) return this.trending(n);
+    const matched = this._base().filter(c => interests.has(Models.catKey(c.category)));
+    return (matched.length ? matched : this.trending(n)).slice(0, n);
+  }
+};
+
 const PartnerService = {
   getAll()    { return DB.get(CONFIG.DB_KEYS.PARTNERS); },
   add(p)      {
@@ -4226,7 +4289,9 @@ function campCardHTML(c) {
     const fallbackColor = ['#3a4a28','#2d3a1e','#4a5a32','#1e2a14'][parseInt(String(c.id).slice(-1)) % 4] || '#3a4a28';
     const title    = txt.title   || 'Campaign';
     const desc     = txt.desc    || '';
-    const cat      = txt.cat     || 'مبادرة';
+    const catMeta  = Models.catMeta(c);
+    const cat      = Models.catLabel(c) || 'مبادرة';
+    const catIcon  = (catMeta && catMeta.icon) ? catMeta.icon + ' ' : '';
     const location = c.location  || '';
     const date     = c.date      || '';
     const phone    = c.creatorPhone || '';
@@ -4255,7 +4320,7 @@ function campCardHTML(c) {
     <div class="camp-card" onclick="openDetail('${c.id}')">
       <div class="camp-img">${imgHtml}<div class="camp-img-overlay"></div>
         <span class="camp-badge camp-badge-status ${si.cls}">${si[State.lang]}</span>
-        <span class="camp-badge camp-badge-cat">${cat}</span>
+        <span class="camp-badge camp-badge-cat">${catIcon}${cat}</span>
       </div>
       <div class="camp-body">
         <div class="camp-title">${title}</div>
@@ -4280,11 +4345,36 @@ function campCardHTML(c) {
 }
 
 /** Render campaigns to home grid and explore grid */
+/* ── Discovery UI helpers (Phase 4) ── */
+function skeletonCards(n) {
+  n = n || 4;
+  let s = '<div class="camps-grid">';
+  for (let i = 0; i < n; i++) s += '<div class="skel-card"><div class="skel-img"></div><div class="skel-line skel-w70"></div><div class="skel-line skel-w40"></div></div>';
+  return s + '</div>';
+}
+function emptyState(icon, title, msg) {
+  return '<div class="empty-state"><div class="empty-icon">' + (icon || '🌱') + '</div>' +
+    '<div class="empty-title">' + (title || t('noData')) + '</div>' +
+    (msg ? '<div class="empty-sub">' + msg + '</div>' : '') + '</div>';
+}
+function populateCategories() {
+  const sel = document.getElementById('createCatSelect');
+  if (!sel) return;
+  const isAr = State.lang === 'ar';
+  const cur = sel.value;
+  let html = '<option value="">' + t('chooseCat') + '</option>';
+  Object.keys(CONFIG.CAMP_CATEGORIES).forEach(k => {
+    const m = CONFIG.CAMP_CATEGORIES[k];
+    html += '<option value="' + k + '">' + (m.icon ? m.icon + ' ' : '') + (isAr ? m.ar : m.en) + '</option>';
+  });
+  sel.innerHTML = html;
+  if (cur) sel.value = cur;
+}
+
 function renderCampaigns() {
   try {
-    const visible = CampaignService.getVisible();
-    const empty = `<div class="empty-state"><div class="empty-icon">🌱</div><div class="empty-title">${t('noData')}</div></div>`;
-    const html  = visible.length ? visible.map(c => campCardHTML(c)).join('') : empty;
+    const list = DiscoveryService.query();
+    const html = list.length ? list.map(c => campCardHTML(c)).join('') : emptyState('🌱', t('noData'), t('noDataSub'));
     const hg = document.getElementById('homeGrid');
     const eg = document.getElementById('exploreGrid');
     if (hg) hg.innerHTML = html;
@@ -5335,6 +5425,7 @@ function applyI18n() {
     if (page === 'home' || page === 'explore') renderCampaigns();
     if (page === 'profile') renderProfile();
     if (page === 'admin')   renderAdmin();
+    populateCategories();
   } catch (e) { console.error('[applyI18n] Error:', e); }
 }
 
@@ -5885,6 +5976,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initData();
     applyI18n();
     populateDob();
+    populateCategories();
 
     // Restore session (centralized in AuthService)
     if (AuthService.restoreSession()) {
