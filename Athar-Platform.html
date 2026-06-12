@@ -1824,6 +1824,27 @@ body {
 .adm-role-opt.on { background:var(--accent-btn); color:#fff; border-color:var(--accent-btn); }
 .adm-ban-note { margin-top:var(--sp-4); padding:var(--sp-3); background:var(--red-bg); border-radius:var(--r-md); color:var(--red-fg); font-size:var(--fs-sm); text-align:center; font-weight:800; }
 
+/* ── PHASE 8.4 — analytics widgets ── */
+.adm-kpi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--sp-3); margin-bottom:var(--sp-4); }
+@media (max-width:520px){ .adm-kpi-grid{ grid-template-columns:repeat(2,1fr); } }
+.adm-kpi { background:var(--white); border:1px solid var(--line-sand-6); border-radius:var(--r-lg); padding:var(--sp-4) var(--sp-3); text-align:center; }
+.adm-kpi-num { font-family:'DM Sans',sans-serif; font-size:var(--fs-2xl); font-weight:800; color:var(--charcoal); }
+.adm-kpi-lbl { font-size:var(--fs-2xs); color:var(--charcoal-50); margin-top:2px; }
+
+.adm-trend { display:flex; align-items:flex-end; gap:var(--sp-2); height:140px; padding-top:var(--sp-3); }
+.adm-trend-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:var(--sp-1); height:100%; }
+.adm-trend-val { font-size:var(--fs-2xs); font-weight:800; color:var(--charcoal-50); }
+.adm-trend-bar-wrap { flex:1; width:60%; display:flex; align-items:flex-end; }
+.adm-trend-bar { width:100%; background:linear-gradient(var(--olive-light),var(--olive)); border-radius:var(--r-sm) var(--r-sm) 0 0; min-height:4px; transition:height 0.4s; }
+.adm-trend-lbl { font-size:var(--fs-2xs); color:var(--charcoal-50); }
+
+.adm-lead-row { display:flex; align-items:center; gap:var(--sp-3); padding:var(--sp-3) 0; border-bottom:1px solid var(--line); cursor:pointer; }
+.adm-lead-row:last-child { border-bottom:none; }
+.adm-lead-rank { flex:none; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:var(--fs-xs); background:var(--sand); color:var(--charcoal-50); }
+.adm-lead-rank.top { background:var(--olive-pale); color:var(--olive); }
+.adm-lead-name { flex:1; font-size:var(--fs-base); font-weight:700; color:var(--charcoal); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.adm-lead-val { flex:none; font-weight:800; color:var(--olive); font-size:var(--fs-base); }
+
 /* ══════════════════════════════════════════
    MODAL — BOTTOM SHEET
    ══════════════════════════════════════════ */
@@ -3664,6 +3685,19 @@ html, body { overflow-x: hidden; }
           <!-- ANALYTICS -->
           <div class="adm-panel" id="admPanel-analytics">
             <div class="adm-panel-header"><h2 id="admHdAnalytics">Analytics</h2></div>
+            <div class="adm-kpi-grid" id="admKpis"></div>
+            <div class="adm-card">
+              <h2 id="admHdGrowth">Volunteer Growth</h2>
+              <div id="admChartGrowth"></div>
+            </div>
+            <div class="adm-card">
+              <h2 id="admHdActivityTrend">Campaign Activity</h2>
+              <div id="admChartActivity"></div>
+            </div>
+            <div class="adm-card">
+              <h2 id="admHdEngagement">Engagement</h2>
+              <div id="admEngagement"></div>
+            </div>
             <div class="adm-card">
               <h2 id="admHdCats">Campaigns by Category</h2>
               <div id="admChartCats"></div>
@@ -5782,6 +5816,9 @@ function admRenderHeaders() {
   set('admHdCamps',     'الحملات',             'Campaigns');
   set('admHdPartners',  'طلبات الشراكة',       'Partners');
   set('admHdAnalytics', 'الإحصائيات',          'Analytics');
+  set('admHdGrowth',        'نمو المتطوّعين',  'Volunteer Growth');
+  set('admHdActivityTrend', 'نشاط الحملات',    'Campaign Activity');
+  set('admHdEngagement',    'مؤشّرات التفاعل',  'Engagement');
   set('admHdCats',      'الحملات حسب الفئة',   'Campaigns by Category');
   set('admHdTop',       'أفضل المتطوعين',      'Top Volunteers');
   set('admHdCities',    'المتطوعون حسب المدينة','Volunteers by City');
@@ -6424,44 +6461,128 @@ function admRenderPartners() {
   }
 }
 
-/* ── Analytics panel ── */
+/* ── Analytics panel (Phase 8.4 — KPIs, growth, engagement) ── */
+function admMonthKey(iso) {
+  const d = iso ? new Date(iso) : null;
+  if (!d || isNaN(d)) return null;
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+}
+function admMonthLabel(key) {
+  const parts = String(key).split('-');
+  const names = State.lang === 'ar'
+    ? ['ينا', 'فبر', 'مار', 'أبر', 'ماي', 'يون', 'يول', 'أغس', 'سبت', 'أكت', 'نوف', 'ديس']
+    : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return (names[parseInt(parts[1], 10) - 1] || '') + ' ' + String(parts[0]).slice(2);
+}
+/** Vertical bar mini-chart over the last N months from a list of ISO dates */
+function admTrendChart(dates, months) {
+  months = months || 6;
+  const now = new Date();
+  const keys = [];
+  for (let i = months - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    keys.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'));
+  }
+  const counts = {}; keys.forEach(k => counts[k] = 0);
+  dates.forEach(iso => { const k = admMonthKey(iso); if (k && counts.hasOwnProperty(k)) counts[k]++; });
+  const max = Math.max.apply(null, keys.map(k => counts[k]).concat([1]));
+  return '<div class="adm-trend">' + keys.map(k => {
+    const h = Math.round((counts[k] / max) * 100);
+    return '<div class="adm-trend-col"><div class="adm-trend-val">' + counts[k] + '</div>' +
+      '<div class="adm-trend-bar-wrap"><div class="adm-trend-bar" style="height:' + Math.max(4, h) + '%;"></div></div>' +
+      '<div class="adm-trend-lbl">' + admMonthLabel(k) + '</div></div>';
+  }).join('') + '</div>';
+}
+
 function admRenderAnalytics(users, camps) {
   try {
     users = users || UserService.getAll();
     camps = camps || CampaignService.getAll();
     const isAr = State.lang === 'ar';
+    const partners = PartnerService.getAll();
+
+    // Impact KPIs
+    const kpiEl = admEl('admKpis');
+    if (kpiEl) {
+      const totalHours = Math.round(users.reduce((s, u) => s + (parseFloat(u.volunteerHours) || 0), 0));
+      const completed  = camps.filter(c => c.status === 'done').length;
+      const activeVols = users.filter(u => (u.volunteerHours || 0) > 0 || (u.joinedCamps || []).length > 0).length;
+      const cities     = new Set(users.map(u => (u.city || '').trim()).filter(Boolean)).size;
+      const joinsTotal = camps.reduce((s, c) => s + ((c.joinedUsers || []).length), 0);
+      const seatsTotal = camps.reduce((s, c) => s + (c.needed || 0), 0);
+      const engagement = seatsTotal > 0 ? Math.round((joinsTotal / seatsTotal) * 100) : 0;
+      const kpis = [
+        [activeVols,         isAr ? 'متطوّع نشيط' : 'Active volunteers'],
+        [totalHours,         isAr ? 'ساعة تطوّع'  : 'Volunteer hours'],
+        [completed,          isAr ? 'حملة منجزة'  : 'Completed'],
+        [cities,             isAr ? 'مدينة'        : 'Cities'],
+        [PartnerService.getApproved().length, isAr ? 'شريك' : 'Partners'],
+        [engagement + '%',   isAr ? 'نسبة الإشغال' : 'Fill rate']
+      ];
+      kpiEl.innerHTML = kpis.map(k =>
+        '<div class="adm-kpi"><div class="adm-kpi-num">' + k[0] + '</div><div class="adm-kpi-lbl">' + k[1] + '</div></div>'
+      ).join('');
+    }
+
+    // Volunteer growth (registrations / month)
+    const growthEl = admEl('admChartGrowth');
+    if (growthEl) {
+      const dates = users.map(u => u.createdAt || u.joinedDate).filter(Boolean);
+      growthEl.innerHTML = dates.length ? admTrendChart(dates, 6) : admEmpty('', isAr ? 'لا يوجد بيانات بعد' : 'No data yet');
+    }
+
+    // Campaign activity (campaigns created / month)
+    const actEl = admEl('admChartActivity');
+    if (actEl) {
+      const dates = camps.map(c => c.createdAt || c.date).filter(Boolean);
+      actEl.innerHTML = dates.length ? admTrendChart(dates, 6) : admEmpty('', isAr ? 'لا يوجد بيانات بعد' : 'No data yet');
+    }
+
+    // Engagement metrics (bars)
+    const engEl = admEl('admEngagement');
+    if (engEl) {
+      const considered = camps.filter(c => ['approved', 'under_process', 'done'].includes(c.status));
+      const avgFill = considered.length
+        ? Math.round(considered.reduce((s, c) => s + (c.needed ? Math.min(100, ((c.volunteers || 0) / c.needed) * 100) : 0), 0) / considered.length)
+        : 0;
+      const finished = camps.filter(c => ['approved', 'under_process', 'done'].includes(c.status));
+      const completionRate = finished.length ? Math.round((camps.filter(c => c.status === 'done').length / finished.length) * 100) : 0;
+      const approvedC = camps.filter(c => c.status !== 'pending' && c.status !== 'rejected').length;
+      const approvalRate = camps.length ? Math.round((approvedC / camps.length) * 100) : 0;
+      engEl.innerHTML =
+        admBar(isAr ? 'متوسّط الإشغال' : 'Avg fill rate', avgFill, 100, 'var(--olive)') +
+        admBar(isAr ? 'نسبة الإنجاز' : 'Completion rate', completionRate, 100, '#7c3aed') +
+        admBar(isAr ? 'نسبة القبول' : 'Approval rate', approvalRate, 100, '#1d4ed8');
+    }
 
     // Campaigns by category
     const catEl = admEl('admChartCats');
     if (catEl) {
       const counts = {};
-      camps.forEach(c => { const k = c.category || 'other'; counts[k] = (counts[k] || 0) + 1; });
-      const keys = Object.keys(counts);
+      camps.forEach(c => { const k = Models.catKey(c.category) || 'other'; counts[k] = (counts[k] || 0) + 1; });
+      const keys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
       const max = Math.max.apply(null, keys.map(k => counts[k]).concat([1]));
-      const colors = ['#5a6b3a', '#8a9a6a', '#c47d1a', '#1d4ed8', '#7c3aed', '#c84c3c'];
       catEl.innerHTML = keys.length === 0
-        ? admEmpty('📊', isAr ? 'لا يوجد حملات بعد' : 'No campaigns yet')
-        : keys.map((k, i) => {
+        ? admEmpty('', isAr ? 'لا يوجد حملات بعد' : 'No campaigns yet')
+        : keys.map(k => {
             const cfg = (CONFIG.CAMP_CATEGORIES || {})[k] || {};
-            const label = isAr ? (cfg.ar || k) : (cfg.en || k);
-            return admBar(label, counts[k], max, colors[i % colors.length]);
+            return admBar(isAr ? (cfg.ar || k) : (cfg.en || k), counts[k], max, 'var(--olive)');
           }).join('');
     }
 
-    // Top volunteers leaderboard
+    // Top volunteers leaderboard (rank numbers, no emoji)
     const lb = admEl('admLeaderboard');
     if (lb) {
       const top = users.filter(u => (u.volunteerHours || 0) > 0)
         .sort((a, b) => (b.volunteerHours || 0) - (a.volunteerHours || 0))
         .slice(0, 5);
-      const medals = ['🥇', '🥈', '🥉', '4', '5'];
       lb.innerHTML = top.length === 0
-        ? admEmpty('🏆', isAr ? 'لا يوجد ساعات تطوع بعد' : 'No volunteer hours yet')
+        ? admEmpty('', isAr ? 'لا يوجد ساعات تطوّع بعد' : 'No volunteer hours yet')
         : top.map((u, i) =>
-          '<div class="adm-lead-row" style="display:flex;align-items:center;gap:0.7rem;padding:0.6rem 0;border-bottom:1px solid var(--line);cursor:pointer;" onclick="admViewUser(\'' + u.id + '\')">' +
-            '<span style="flex:none;width:28px;text-align:center;font-weight:900;font-size:' + (i < 3 ? '1.1rem' : '0.85rem') + ';color:var(--charcoal-50);">' + medals[i] + '</span>' +
-            '<span style="flex:1;font-size:var(--fs-base);font-weight:700;color:var(--charcoal);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (u.name || '') + '</span>' +
-            '<span style="flex:none;font-weight:800;color:var(--olive);font-size:var(--fs-base);">' + (u.volunteerHours || 0) + (isAr ? ' س' : ' h') + '</span>' +
+          '<div class="adm-lead-row" onclick="admViewUser(\'' + u.id + '\')">' +
+            '<span class="adm-lead-rank' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span>' +
+            '<span class="adm-lead-name">' + (u.name || '') + '</span>' +
+            '<span class="adm-lead-val">' + (u.volunteerHours || 0) + (isAr ? ' س' : ' h') + '</span>' +
           '</div>'
         ).join('');
     }
@@ -6474,8 +6595,8 @@ function admRenderAnalytics(users, camps) {
       const keys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 6);
       const max = Math.max.apply(null, keys.map(k => counts[k]).concat([1]));
       cityEl.innerHTML = keys.length === 0
-        ? admEmpty('🏙️', isAr ? 'لا يوجد بيانات مدن' : 'No city data')
-        : keys.map(k => admBar(k, counts[k], max, '#8a9a6a')).join('');
+        ? admEmpty('', isAr ? 'لا يوجد بيانات مدن' : 'No city data')
+        : keys.map(k => admBar(k, counts[k], max, 'var(--olive-light)')).join('');
     }
   } catch (e) {
     console.error('[admRenderAnalytics] Error:', e);
