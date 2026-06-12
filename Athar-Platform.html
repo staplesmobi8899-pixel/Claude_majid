@@ -2439,6 +2439,52 @@ html, body { overflow-x: hidden; }
   border: 1.5px solid var(--sand-dark); background: var(--white); color: var(--charcoal);
   font-family: inherit; font-size: var(--fs-sm); font-weight: 700; cursor: pointer; transition: background 0.18s, color 0.18s, border-color 0.18s; }
 .cat-chip.active { background: var(--olive); color: var(--off-white); border-color: var(--olive); }
+
+/* ══════════════════════════════════════════
+   PHASE 4.2 — HOME EXPERIENCE
+   ══════════════════════════════════════════ */
+.home-greet { padding: var(--sp-6) var(--sp-5) var(--sp-2); max-width: var(--content-max); margin: 0 auto; }
+.greet-hi { font-size: var(--fs-2xl); font-weight: 800; color: var(--charcoal); }
+.greet-sub { font-size: var(--fs-sm); color: var(--charcoal-50); margin-top: var(--sp-1); }
+
+.home-quick { display: flex; gap: var(--sp-3); padding: var(--sp-3) var(--sp-5);
+  max-width: var(--content-max); margin: 0 auto; overflow-x: auto; scrollbar-width: none; }
+.home-quick::-webkit-scrollbar { display: none; }
+.quick-act { flex: 1; min-width: 76px; display: flex; flex-direction: column; align-items: center; gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-2); border-radius: var(--r-lg); border: 1px solid var(--sand-dark);
+  background: var(--white); cursor: pointer; font-family: inherit; transition: background 0.18s; }
+.quick-act:hover { background: var(--sand); }
+.quick-ico { font-size: 1.3rem; }
+.quick-lbl { font-size: var(--fs-xs); font-weight: 700; color: var(--charcoal-80); white-space: nowrap; }
+
+.home-section { max-width: var(--content-max); margin: 0 auto; padding: var(--sp-4) var(--sp-5) 0; }
+.home-section .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-3); }
+.home-section .section-title { font-size: var(--fs-lg); font-weight: 800; color: var(--charcoal); }
+.home-section .section-link { font-size: var(--fs-sm); font-weight: 700; color: var(--olive); cursor: pointer; }
+
+.featured-card { position: relative; border-radius: var(--r-xl); overflow: hidden; cursor: pointer;
+  min-height: 200px; display: flex; align-items: flex-end; background-size: cover; background-position: center;
+  box-shadow: var(--shadow-md); }
+.featured-card.featured-noimg { background: linear-gradient(135deg, var(--forest), var(--olive)); }
+.featured-body { position: relative; z-index: 1; padding: var(--sp-5); width: 100%; color: var(--off-white); }
+.featured-tag { display: inline-block; padding: var(--sp-1) var(--sp-3); border-radius: var(--r-full);
+  background: rgba(255,255,255,0.2); font-size: var(--fs-xs); font-weight: 800; margin-bottom: var(--sp-2); }
+.featured-title { font-size: var(--fs-xl); font-weight: 800; line-height: 1.3; }
+.featured-meta { font-size: var(--fs-sm); opacity: 0.9; margin-top: var(--sp-1); }
+.featured-prog { height: 6px; border-radius: var(--r-full); background: rgba(255,255,255,0.25); margin-top: var(--sp-3); overflow: hidden; }
+.featured-prog span { display: block; height: 100%; background: var(--off-white); border-radius: var(--r-full); }
+
+.hl-card { background: var(--white); border: 1px solid rgba(232,217,196,0.6); border-radius: var(--r-lg);
+  padding: var(--sp-4); margin-bottom: var(--sp-3); }
+.hl-h { font-size: var(--fs-sm); font-weight: 800; color: var(--charcoal); margin-bottom: var(--sp-3); }
+.hl-row { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-2) 0; }
+.hl-rank { font-size: 1.1rem; flex: none; }
+.hl-name { flex: 1; font-size: var(--fs-sm); font-weight: 700; color: var(--charcoal); min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hl-val { font-size: var(--fs-sm); font-weight: 800; color: var(--olive); flex: none; }
+.hl-cities { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.hl-city { font-size: var(--fs-xs); font-weight: 700; color: var(--olive); background: var(--olive-pale);
+  padding: var(--sp-2) var(--sp-3); border-radius: var(--r-full); }
 </style>
 </head>
 <body>
@@ -2649,58 +2695,31 @@ html, body { overflow-x: hidden; }
 
   <!-- HOME -->
   <div class="page active" id="homePage">
-
-    <div class="hero">
-      <div class="hero-glow"></div>
-      <div class="hero-grid"></div>
-      <div class="hero-ring hero-ring-1"></div>
-      <div class="hero-ring hero-ring-2"></div>
-      <div class="hero-content">
-        <div class="hero-eyebrow">
-          <div class="hero-eyebrow-dot"></div>
-          <div class="hero-eyebrow-text" data-i18n="eyebrow"></div>
-        </div>
-        <h1 class="hero-title">
-          <span data-i18n="heroLine1" style="display:block;margin-bottom:1.2rem;"></span>
-          <span class="hero-title-accent" data-i18n="heroLine2"></span>
-        </h1>
-        <div class="hero-rule"></div>
-        <p class="hero-subtitle" data-i18n="heroSub"></p>
-        <div class="hero-actions">
-          <button class="hero-btn" onclick="goPage('explore')" data-i18n="heroCta1"></button>
-          <span class="hero-link" onclick="goPage('explore')" data-i18n="heroCta2"></span>
-        </div>
-      </div>
-      <div class="hero-arc"></div>
+    <div class="home-greet" id="homeGreet"></div>
+    <div class="home-quick" id="homeQuick"></div>
+    <div class="home-section" id="homeFeatured"></div>
+    <div class="home-section">
+      <div class="section-header"><div class="section-title" data-i18n="catsTitle"></div></div>
+      <div class="cat-chips" id="homeCats"></div>
     </div>
-
-    <div class="impact-wrap">
-      <div class="impact-card">
-        <div class="impact-item">
-          <div class="impact-num" id="cUsers">0</div>
-          <div class="impact-lbl" data-i18n="statVol"></div>
-        </div>
-        <div class="impact-item">
-          <div class="impact-num" id="cCamps">0</div>
-          <div class="impact-lbl" data-i18n="statCamps"></div>
-        </div>
-        <div class="impact-item">
-          <div class="impact-num" id="cHours">0</div>
-          <div class="impact-lbl" data-i18n="statHours"></div>
-        </div>
-        <div class="impact-item">
-          <div class="impact-num" id="cCities">0</div>
-          <div class="impact-lbl" data-i18n="statCities"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section">
+    <div class="home-section">
       <div class="section-header">
-        <div class="section-title" data-i18n="availCamps"></div>
+        <div class="section-title" data-i18n="trendingTitle"></div>
         <span class="section-link" onclick="goPage('explore')" data-i18n="seeAll"></span>
       </div>
-      <div class="camps-grid" id="homeGrid"></div>
+      <div id="homeTrending"></div>
+    </div>
+    <div class="impact-wrap">
+      <div class="impact-card">
+        <div class="impact-item"><div class="impact-num" id="cUsers">0</div><div class="impact-lbl" data-i18n="statVol"></div></div>
+        <div class="impact-item"><div class="impact-num" id="cCamps">0</div><div class="impact-lbl" data-i18n="statCamps"></div></div>
+        <div class="impact-item"><div class="impact-num" id="cHours">0</div><div class="impact-lbl" data-i18n="statHours"></div></div>
+        <div class="impact-item"><div class="impact-num" id="cCities">0</div><div class="impact-lbl" data-i18n="statCities"></div></div>
+      </div>
+    </div>
+    <div class="home-section">
+      <div class="section-header"><div class="section-title" data-i18n="highlightsTitle"></div></div>
+      <div id="homeHighlights"></div>
     </div>
   </div>
 
@@ -3456,6 +3475,8 @@ const T = {
     allCats: 'الكل', allCities: 'كل المدن', searchPlaceholder: 'ابحث عن مبادرة، فئة، أو مدينة...',
     sortRecent: 'الأحدث', sortPopular: 'الأكثر تفاعلاً', sortUrgent: 'الأقرب موعداً',
     noResults: 'لا توجد نتائج', noResultsSub: 'جرّب كلمات أو فلاتر مختلفة.',
+    greetSub: 'جاهز تصنع أثراً اليوم؟', catsTitle: 'تصفّح حسب الفئة', trendingTitle: 'الأكثر تفاعلاً',
+    highlightsTitle: 'إضاءات المجتمع', topVolunteers: 'أبرز المتطوعين', activeCities: 'مدن نشطة', featuredTag: 'مميّزة',
     communityTitle: 'المجتمع', communitySub: 'تواصل مع صُنّاع الأثر حولك.', communitySoonTitle: 'مجتمع أثر قريباً', communitySoonMsg: 'نبني مساحة تجمع المتطوعين لمشاركة قصصهم وإلهام بعضهم. ترقّبوا.',
     notifTitle: 'الإشعارات', notifSub: 'كل جديد يخصّك في مكان واحد.', notifEmptyTitle: 'لا إشعارات بعد', notifEmptyMsg: 'سنخبرك هنا عند وجود تحديثات على مبادراتك ونشاطك.',
     signupTitle: 'انضم لأَثَرْ', signupBtn: 'انضم الآن',
@@ -3594,6 +3615,8 @@ const T = {
     allCats: 'All', allCities: 'All cities', searchPlaceholder: 'Search initiatives, categories, or cities...',
     sortRecent: 'Recent', sortPopular: 'Most active', sortUrgent: 'Soonest',
     noResults: 'No results', noResultsSub: 'Try different keywords or filters.',
+    greetSub: 'Ready to make an impact today?', catsTitle: 'Browse by category', trendingTitle: 'Trending now',
+    highlightsTitle: 'Community highlights', topVolunteers: 'Top volunteers', activeCities: 'Active cities', featuredTag: 'Featured',
     communityTitle: 'Community', communitySub: 'Connect with changemakers around you.', communitySoonTitle: 'ATHAR Community is coming', communitySoonMsg: 'We are building a space for volunteers to share stories and inspire each other. Stay tuned.',
     notifTitle: 'Notifications', notifSub: 'Everything that matters to you, in one place.', notifEmptyTitle: 'No notifications yet', notifEmptyMsg: 'We will let you know here when there are updates on your initiatives and activity.',
     signupTitle: 'Join ATHAR', signupBtn: 'Join Now',
@@ -4381,6 +4404,85 @@ function campCardHTML(c) {
 }
 
 /** Render campaigns to home grid and explore grid */
+/* ── Home experience (Phase 4.2) ── */
+const HomeUI = {
+  render() {
+    try {
+      this.greeting(); this.quickActions(); this.featured();
+      this.categories(); this.trending(); this.highlights();
+    } catch (e) { console.error('[HomeUI]', e); }
+  },
+  greeting() {
+    const el = document.getElementById('homeGreet'); if (!el) return;
+    const isAr = State.lang === 'ar', u = State.cu, hh = new Date().getHours();
+    const part = hh < 12 ? (isAr ? 'صباح الخير' : 'Good morning')
+               : hh < 18 ? (isAr ? 'طاب يومك' : 'Good afternoon')
+                         : (isAr ? 'مساء الخير' : 'Good evening');
+    const name = (u && !u.isGuest && u.name) ? String(u.name).split(' ')[0] : (isAr ? 'صديقنا' : 'friend');
+    el.innerHTML = '<div class="greet-hi">' + part + '، ' + name + ' 👋</div>' +
+                   '<div class="greet-sub">' + t('greetSub') + '</div>';
+  },
+  quickActions() {
+    const el = document.getElementById('homeQuick'); if (!el) return;
+    const acts = [
+      { i: '🔍', k: 'navExplore', go: "goPage('explore')" },
+      { i: '➕', k: 'navCreate',  go: "goPage('create')" },
+      { i: '🤝', k: 'navCommunity', go: "goPage('community')" },
+      { i: '🔔', k: 'navNotifications', go: "goPage('notifications')" }
+    ];
+    el.innerHTML = acts.map(a => '<button class="quick-act" onclick="' + a.go + '"><span class="quick-ico">' + a.i + '</span><span class="quick-lbl">' + t(a.k) + '</span></button>').join('');
+  },
+  featured() {
+    const el = document.getElementById('homeFeatured'); if (!el) return;
+    const f = DiscoveryService.featured(1)[0];
+    if (!f) { el.innerHTML = ''; return; }
+    const tx = Models.getCampText(f);
+    const pct = f.needed ? Math.min(100, Math.round((f.volunteers || 0) / f.needed * 100)) : 0;
+    const bg = f.img ? "background-image:linear-gradient(rgba(46,61,31,0.15),rgba(46,61,31,0.75)),url('" + f.img + "')" : '';
+    el.innerHTML =
+      '<div class="featured-card' + (f.img ? '' : ' featured-noimg') + '" onclick="openDetail(\'' + f.id + '\')" style="' + bg + '">' +
+        '<div class="featured-body">' +
+          '<span class="featured-tag">' + (Models.catMeta(f) && Models.catMeta(f).icon ? Models.catMeta(f).icon + ' ' : '') + t('featuredTag') + '</span>' +
+          '<div class="featured-title">' + tx.title + '</div>' +
+          '<div class="featured-meta">📍 ' + (f.location || '') + ' · 👥 ' + (f.volunteers || 0) + '/' + (f.needed || 0) + '</div>' +
+          '<div class="featured-prog"><span style="width:' + pct + '%"></span></div>' +
+        '</div>' +
+      '</div>';
+  },
+  categories() {
+    const el = document.getElementById('homeCats'); if (!el) return;
+    const isAr = State.lang === 'ar';
+    el.innerHTML = Object.keys(CONFIG.CAMP_CATEGORIES).map(k => {
+      const m = CONFIG.CAMP_CATEGORIES[k];
+      return '<button class="cat-chip" onclick="HomeUI.openCategory(\'' + k + '\')">' + (m.icon ? m.icon + ' ' : '') + (isAr ? m.ar : m.en) + '</button>';
+    }).join('');
+  },
+  openCategory(k) {
+    if (typeof ExploreUI !== 'undefined') { ExploreUI.filters = { search: '', category: k, city: 'all', sort: 'recent' }; }
+    goPage('explore');
+  },
+  trending() {
+    const el = document.getElementById('homeTrending'); if (!el) return;
+    const list = DiscoveryService.trending(4);
+    el.innerHTML = list.length
+      ? '<div class="camps-grid">' + list.map(c => campCardHTML(c)).join('') + '</div>'
+      : emptyState('🌱', t('noData'), t('noDataSub'));
+  },
+  highlights() {
+    const el = document.getElementById('homeHighlights'); if (!el) return;
+    const isAr = State.lang === 'ar';
+    const users = UserService.getAll().filter(u => u.status === 'approved' && u.email !== CONFIG.ADMIN_EMAIL)
+      .sort((a, b) => (b.volunteerHours || 0) - (a.volunteerHours || 0)).slice(0, 3);
+    const medals = ['🥇', '🥈', '🥉'];
+    const top = users.length
+      ? users.map((u, i) => '<div class="hl-row"><span class="hl-rank">' + medals[i] + '</span><span class="hl-name">' + (u.name || '') + '</span><span class="hl-val">' + (u.volunteerHours || 0) + (isAr ? ' س' : 'h') + '</span></div>').join('')
+      : '<div class="empty-sub">' + t('noData') + '</div>';
+    const cities = DiscoveryService.cities();
+    const cityHtml = cities.length ? '<div class="hl-card"><div class="hl-h">' + t('activeCities') + '</div><div class="hl-cities">' + cities.map(c => '<span class="hl-city">📍 ' + c + '</span>').join('') + '</div></div>' : '';
+    el.innerHTML = '<div class="hl-card"><div class="hl-h">' + t('topVolunteers') + '</div>' + top + '</div>' + cityHtml;
+  }
+};
+
 /* ── Explore experience (Phase 4.1) ── */
 const ExploreUI = {
   filters: { search: '', category: 'all', city: 'all', sort: 'recent' },
@@ -4441,16 +4543,7 @@ function populateCategories() {
   if (cur) sel.value = cur;
 }
 
-function renderCampaigns() {
-  try {
-    const list = DiscoveryService.query({ sort: 'recent' });
-    const html = list.length ? list.map(c => campCardHTML(c)).join('') : emptyState('🌱', t('noData'), t('noDataSub'));
-    const hg = document.getElementById('homeGrid');
-    if (hg) hg.innerHTML = html;
-  } catch (e) {
-    console.error('[renderCampaigns] Error:', e);
-  }
-}
+function renderCampaigns() { HomeUI.render(); }
 
 /** Render user's own campaigns in profile */
 function renderMyCamps() {
@@ -5914,6 +6007,7 @@ function handleJoin(id) {
     NotificationService.add(State.cu.id, 'انضممت إلى مبادرة جديدة ✓ شكراً لك!', 'You joined a new initiative ✓ Thank you!', 'join');
     updateBell();
     renderCampaigns();
+    if (typeof ExploreUI !== 'undefined') ExploreUI.render();
     _updateDetailJoinBtn(id);
     animateCounters();
   } else {
