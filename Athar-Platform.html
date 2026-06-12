@@ -1603,6 +1603,8 @@ body {
 .faq-item:last-child { border-bottom: none; }
 .faq-q { font-size: var(--fs-base); font-weight: 800; color: var(--charcoal); margin-bottom: var(--sp-1); }
 .faq-a { font-size: var(--fs-sm); color: var(--charcoal-50); line-height: 1.7; }
+.detail-report { margin-top: var(--sp-5); text-align: center; }
+.detail-report-btn { background: transparent; border: none; color: var(--charcoal-50); font-size: var(--fs-sm); font-weight: 700; cursor: pointer; text-decoration: underline; }
 
 /* Partnership */
 .partner-section {
@@ -3668,6 +3670,10 @@ html, body { overflow-x: hidden; }
               <div id="admPendingList"></div>
             </div>
             <div class="adm-card">
+              <h2 id="admHdModeration">Moderation</h2>
+              <div id="admModeration"></div>
+            </div>
+            <div class="adm-card">
               <h2 id="admHdActivity">Recent Activity</h2>
               <div id="admActivityList"></div>
             </div>
@@ -3990,6 +3996,7 @@ const CONFIG = {
     NOTIFS:   'athar_notifs',
     LAST_VIEW:'athar_lastview',
     CONTENT:  'athar_content',
+    REPORTS:  'athar_reports',
     VERSION:  'athar_version'
   },
   CAMP_CATEGORIES: {
@@ -4162,7 +4169,7 @@ const T = {
     abMissionIntro: 'رسالة «أَثَرْ» هي تنظيم وتمكين المبادرات الشبابية عبر منصّة عصرية تربط الناس بفرص ذات معنى للمشاركة والتعاون وصناعة أثر اجتماعي قابل للقياس.',
     abMiss1: 'تشجيع المشاركة المجتمعية', abMiss2: 'دعم المبادرات الشبابية', abMiss3: 'تبسيط التطوّع', abMiss4: 'تعزيز المسؤولية الاجتماعية', abMiss5: 'خلق أثر منظَّم', abMiss6: 'بناء مجتمع متّصل ومتحفّز',
     abVal1: 'التعاون', abVal2: 'المشاركة', abVal3: 'المسؤولية', abVal4: 'التفاؤل', abVal5: 'النموّ', abVal6: 'التواصل الإنساني',
-    abImpactTitle: 'أرقام حقيقية. أثر حقيقي.', faqTitle: 'الأسئلة الشائعة',
+    abImpactTitle: 'أرقام حقيقية. أثر حقيقي.', faqTitle: 'الأسئلة الشائعة', reportBtn: 'الإبلاغ عن مشكلة',
     abPartnersTitle: 'المنظمات والشركاء الداعمون لأَثَرْ',
     abPartnersDesc: 'تفخر «أَثَرْ» بالتعاون مع المنظمات والشركات والداعمين الذين يؤمنون بتمكين الشباب وتقوية المجتمعات وصناعة أثر اجتماعي ذي معنى معًا.',
     abPartnerSlot: 'شعارك هنا', abPartnersInvite: 'كن من أوائل الشركاء الذين يصنعون الأثر معنا.',
@@ -4348,7 +4355,7 @@ const T = {
     abMissionIntro: "ATHAR's mission is to organize and empower youth initiatives through a modern platform that connects people with meaningful opportunities to participate, collaborate, and create measurable social impact.",
     abMiss1: 'Encourage community participation', abMiss2: 'Support youth-led initiatives', abMiss3: 'Simplify volunteering', abMiss4: 'Strengthen social responsibility', abMiss5: 'Create organized impact', abMiss6: 'Build a connected, motivated community',
     abVal1: 'Collaboration', abVal2: 'Participation', abVal3: 'Responsibility', abVal4: 'Optimism', abVal5: 'Growth', abVal6: 'Human connection',
-    abImpactTitle: 'Real Numbers. Real Impact.', faqTitle: 'Frequently Asked Questions',
+    abImpactTitle: 'Real Numbers. Real Impact.', faqTitle: 'Frequently Asked Questions', reportBtn: 'Report an issue',
     abPartnersTitle: 'Organizations & Partners Supporting ATHAR',
     abPartnersDesc: 'ATHAR proudly collaborates with organizations, companies, and supporters who believe in empowering youth, strengthening communities, and creating meaningful social impact together.',
     abPartnerSlot: 'Your logo here', abPartnersInvite: 'Be among the first partners creating impact with us.',
@@ -5296,6 +5303,39 @@ const ContentService = {
   setFaq(arr, lang) { const all = this._all(); const lg = lang || State.lang; if (!all[lg]) all[lg] = {}; all[lg].faq = arr; DB.setObj(CONFIG.DB_KEYS.CONTENT, all); }
 };
 
+/* ── COMMUNITY MODERATION (Phase 8.7 — scalable scaffold for posts/comments/reports) ── */
+const ReportService = {
+  getAll()    { return DB.getObj(CONFIG.DB_KEYS.REPORTS) || []; },
+  save(list)  { DB.setObj(CONFIG.DB_KEYS.REPORTS, list); },
+  add(targetType, targetId, reason, reporterId, note) {
+    const list = this.getAll();
+    list.unshift({
+      id: 'r' + Date.now() + Math.random().toString(36).slice(2, 5),
+      targetType: targetType || 'campaign', targetId: targetId || '', reason: reason || 'other',
+      note: note || '', reporterId: reporterId || (State.cu && State.cu.id) || null,
+      status: 'open', date: new Date().toISOString()
+    });
+    this.save(list);
+    return list[0];
+  },
+  updateById(id, patch) {
+    const list = this.getAll(); const i = list.findIndex(r => r.id === id);
+    if (i === -1) return null;
+    list[i] = Object.assign({}, list[i], patch); this.save(list); return list[i];
+  },
+  resolve(id) { return this.updateById(id, { status: 'resolved' }); },
+  dismiss(id) { return this.updateById(id, { status: 'dismissed' }); },
+  open()      { return this.getAll().filter(r => r.status === 'open'); },
+  openCount() { return this.open().length; }
+};
+
+/** Public entry point for filing a report (usable by future community features). */
+function reportContent(targetType, targetId, reason, note) {
+  if (!State.cu || State.isGuest) { requireAuth(); return; }
+  ReportService.add(targetType, targetId, reason, State.cu.id, note);
+  toast(State.lang === 'ar' ? 'تم استلام البلاغ، شكرًا لك' : 'Report received, thank you', 'success');
+}
+
 /* ══════════════════════════════════════════
    8. UI HELPERS
    ══════════════════════════════════════════ */
@@ -5867,10 +5907,36 @@ function renderAdmin() {
     admRenderNotifications(users, camps, partners);
     admRenderContent();
     admRenderSettings();
+    admRenderModeration();
   } catch (e) {
     console.error('[renderAdmin] Error:', e);
   }
 }
+
+/* ── Moderation queue (Phase 8.7) ── */
+function admRenderModeration() {
+  const box = admEl('admModeration');
+  if (!box) return;
+  const isAr = State.lang === 'ar';
+  const open = ReportService.open();
+  if (!open.length) { box.innerHTML = admEmpty('', isAr ? 'لا بلاغات مفتوحة' : 'No open reports'); return; }
+  const reasonLbl = { spam: isAr ? 'إزعاج' : 'Spam', inappropriate: isAr ? 'محتوى غير لائق' : 'Inappropriate', fraud: isAr ? 'احتيال' : 'Fraud', other: isAr ? 'أخرى' : 'Other' };
+  box.innerHTML = open.map(r => {
+    let target = r.targetId;
+    if (r.targetType === 'campaign') { const c = CampaignService.getById(r.targetId); if (c) target = Models.getCampText(c).title; }
+    else if (r.targetType === 'user') { const u = UserService.getById(r.targetId); if (u) target = u.name; }
+    return '<div class="admin-card adm-notif-row" style="flex-wrap:wrap;">' +
+      '<span class="adm-notif-dot partner"></span>' +
+      '<div class="adm-notif-main"><div class="adm-notif-txt">' + (target || '') + ' <span class="adm-rolechip">' + (reasonLbl[r.reason] || r.reason) + '</span></div>' +
+      '<div class="adm-notif-time">' + (isAr ? 'النوع: ' : 'Type: ') + r.targetType + ' · ' + admTimeAgo(r.date) + '</div></div>' +
+      '<div class="adm-mactions" style="margin-top:var(--sp-2);width:100%;">' +
+        '<button class="adm-btn ok" onclick="handleResolveReport(\'' + r.id + '\')">' + (isAr ? 'حل' : 'Resolve') + '</button>' +
+        '<button class="adm-btn ghost" onclick="handleDismissReport(\'' + r.id + '\')">' + (isAr ? 'تجاهل' : 'Dismiss') + '</button>' +
+      '</div></div>';
+  }).join('');
+}
+function handleResolveReport(id) { if (!Permissions.can(State.cu, 'manage_reports')) return; ReportService.resolve(id); toast(t('approved'), 'success'); renderAdmin(); }
+function handleDismissReport(id) { if (!Permissions.can(State.cu, 'manage_reports')) return; ReportService.dismiss(id); toast(State.lang === 'ar' ? 'تم التجاهل' : 'Dismissed', 'success'); renderAdmin(); }
 
 /* ── Content management (Phase 8.6) ── */
 function admRenderContent() {
@@ -5965,6 +6031,7 @@ function admRenderHeaders() {
   const isAr = State.lang === 'ar';
   const set = (id, ar, en) => { const el = admEl(id); if (el) el.textContent = isAr ? ar : en; };
   set('admHdPending',   'بانتظار المراجعة',   'Pending Reviews');
+  set('admHdModeration','الإشراف والبلاغات',   'Moderation');
   set('admHdActivity',  'آخر النشاطات',       'Recent Activity');
   set('admHdUsers',     'المستخدمين',          'Users');
   set('admHdCamps',     'الحملات',             'Campaigns');
@@ -6894,6 +6961,7 @@ function renderDetail(id) {
       '<section class="detail-section"><h3 class="detail-h">' + t('participantsTitle') + ' (' + parts.length + ')</h3><div class="detail-parts">' + partHtml + '</div></section>' +
       ((c.gallery && c.gallery.length) ? '<section class="detail-section"><h3 class="detail-h">' + t('galleryTitle') + '</h3><div class="detail-gallery">' + c.gallery.map(function(g){return '<img src="' + g + '" loading="lazy" onclick="openImageViewer(\'' + g + '\')">';}).join('') + '</div></section>' : '') +
       manage +
+      ((!canManage && State.cu && !State.isGuest) ? '<div class="detail-report"><button class="detail-report-btn" onclick="reportContent(\'campaign\',\'' + id + '\',\'inappropriate\')">' + t('reportBtn') + '</button></div>' : '') +
     '</div>';
 }
 
