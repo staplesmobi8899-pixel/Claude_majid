@@ -2767,6 +2767,48 @@ html, body { overflow-x: hidden; }
 .badge.on .badge-ico { background: var(--olive-pale); }
 .badge-l { font-size: var(--fs-2xs); color: var(--charcoal-80); margin-top: var(--sp-1); line-height: 1.2; }
 
+/* ── PHASE 6.3 — certificates + activity timeline ── */
+.cert-list { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--sp-5);
+  display: flex; flex-direction: column; gap: var(--sp-3); }
+.cert-card { display: flex; align-items: center; gap: var(--sp-4);
+  background: var(--white); border: 1px solid rgba(232,217,196,0.7); border-radius: var(--r-lg);
+  padding: var(--sp-4); cursor: pointer; transition: background 0.15s, box-shadow 0.15s; }
+.cert-card:hover { background: var(--sand); box-shadow: 0 4px 14px rgba(0,0,0,0.05); }
+.cert-seal { width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--forest), var(--olive)); color: #fff;
+  display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+.cert-card-body { flex: 1; min-width: 0; }
+.cert-card-title { font-size: var(--fs-base); font-weight: 700; }
+.cert-card-sub { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: 2px; }
+.cert-card-go { font-size: var(--fs-sm); font-weight: 800; color: var(--forest); flex-shrink: 0; }
+
+.timeline { max-width: var(--content-max); margin: 0 auto; padding: var(--sp-2) var(--sp-5) var(--sp-4); }
+.tl-item { display: flex; gap: var(--sp-4); position: relative; padding-bottom: var(--sp-5); }
+.tl-marker { position: relative; flex-shrink: 0; width: 16px; display: flex; justify-content: center; }
+.tl-marker::before { content: ''; position: absolute; top: 16px; bottom: -4px; width: 2px; background: var(--sand-dark); }
+.tl-item:last-child .tl-marker::before { display: none; }
+.tl-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--olive); margin-top: 4px; border: 2px solid var(--warm-white); z-index: 1; }
+.tl-item.done .tl-dot { background: var(--forest); }
+.tl-item.badge .tl-dot { background: #c9a34e; }
+.tl-item.account .tl-dot { background: var(--charcoal-20); }
+.tl-body { flex: 1; min-width: 0; padding-bottom: var(--sp-1); }
+.tl-title { font-size: var(--fs-sm); font-weight: 700; color: var(--charcoal); line-height: 1.5; }
+.tl-date { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: 2px; }
+
+/* Certificate document (modal) */
+.cert-doc { background: var(--warm-white); border: 2px solid var(--forest);
+  border-radius: var(--r-lg); padding: var(--sp-7) var(--sp-5); text-align: center; position: relative; }
+.cert-doc-seal { width: 56px; height: 56px; margin: 0 auto var(--sp-3); border-radius: 50%;
+  background: linear-gradient(135deg, var(--forest), var(--olive)); color: #fff;
+  display: flex; align-items: center; justify-content: center; font-size: 1.6rem; }
+.cert-doc-head { font-size: var(--fs-lg); font-weight: 900; color: var(--forest); letter-spacing: 0.5px; }
+.cert-doc-brand { font-size: var(--fs-sm); color: var(--olive); font-weight: 700; margin-top: 2px; margin-bottom: var(--sp-5); }
+.cert-doc-line { font-size: var(--fs-sm); color: var(--charcoal-80); margin-top: var(--sp-3); }
+.cert-doc-name { font-size: var(--fs-2xl); font-weight: 900; color: var(--charcoal); margin: var(--sp-2) 0; }
+.cert-doc-camp { font-size: var(--fs-md); font-weight: 800; color: var(--forest); margin: var(--sp-2) 0; }
+.cert-doc-hours { font-size: var(--fs-sm); color: var(--charcoal-80); margin-top: var(--sp-4); }
+.cert-doc-date { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: var(--sp-2); }
+
 /* ── PHASE 6.1 — profile privacy toggle ── */
 .profile-privacy { text-align: center; margin-top: var(--sp-3); }
 .privacy-toggle { display: inline-flex; align-items: center; gap: var(--sp-2); padding: var(--sp-2) var(--sp-4);
@@ -3079,6 +3121,10 @@ html, body { overflow-x: hidden; }
     <div class="ig-impact" id="profileImpact"></div>
     <div class="ig-section-h" data-i18n="badgesTitle"></div>
     <div class="badges-grid" id="profileBadges"></div>
+    <div class="ig-section-h" data-i18n="certsTitle"></div>
+    <div class="cert-list" id="profileCerts"></div>
+    <div class="ig-section-h" data-i18n="timelineTitle"></div>
+    <div class="timeline" id="profileTimeline"></div>
     <div class="profile-menu">
       <div class="menu-card">
         <div class="menu-row" onclick="toggleMenu('m-id')">
@@ -3103,18 +3149,6 @@ html, body { overflow-x: hidden; }
         </div>
         <div class="menu-section-body" id="m-camps">
           <div id="profileCampsBox"></div>
-        </div>
-
-        <div class="menu-row" onclick="toggleMenu('m-hours')">
-          <div class="menu-icon">⏱️</div>
-          <div class="menu-texts">
-            <div class="menu-title" data-i18n="menuHours"></div>
-            <div class="menu-sub" data-i18n="menuHoursSub"></div>
-          </div>
-          <div class="menu-arrow" id="arr-m-hours">›</div>
-        </div>
-        <div class="menu-section-body" id="m-hours">
-          <div id="hoursBox"></div>
         </div>
 
         <div class="menu-row" onclick="toggleMenu('m-saved')">
@@ -3495,6 +3529,15 @@ html, body { overflow-x: hidden; }
     <div id="editProfileBody"></div>
   </div>
 </div>
+<div class="modal-overlay" id="certModal">
+  <div class="modal-sheet">
+    <div class="modal-bar">
+      <button type="button" class="modal-close" onclick="closeModal('certModal')" aria-label="back">‹</button>
+      <div class="modal-handle"></div>
+    </div>
+    <div id="certBody"></div>
+  </div>
+</div>
 <div class="modal-overlay" id="participantsModal">
   <div class="modal-sheet">
     <div class="modal-bar">
@@ -3720,6 +3763,9 @@ const T = {
     profilePublic: '🌍 ملف عام', profilePrivate: '🔒 ملف خاص', profileNowPublic: 'ملفك أصبح عامًا', profileNowPrivate: 'ملفك أصبح خاصًا', completedLabel: 'مكتملة', citiesLabel: 'مدن', scoreLabel: 'نقاط الأثر',
     editInfo: 'تعديل', saveChanges: 'حفظ التعديلات', cancelEdit: 'إلغاء', infoSaved: 'تم حفظ معلوماتك', bioField: 'نبذة عنك', bioPh: 'اكتب نبذة قصيرة تعرّف بك…', emailLocked: 'البريد الإلكتروني لا يمكن تغييره',
     editProfileBtn: 'تعديل الملف', shareProfileBtn: 'مشاركة الملف', shareCopied: 'تم نسخ رابط ملفك', statCompletedShort: 'حملة منجزة', statHoursShort: 'ساعة', statParticipationShort: 'مشاركة', completedCampsLabel: 'حملات مكتملة', changePhotoCta: 'تغيير صورة الملف', roleJoined: 'مشارِك', roleOrganizer: 'منظِّم',
+    certsTitle: 'الشهادات', timelineTitle: 'سجل النشاط', noCerts: 'أكمل حملة لتحصل على شهادتك الأولى', noActivity: 'ابدأ رحلتك — انضمّ لأول حملة', viewCertBtn: 'عرض',
+    tlJoin: 'انضممت إلى', tlDone: 'أكملت حملة', tlBadge: 'حصلت على شارة', tlAccount: 'بدأت رحلتك في أثر',
+    certHeading: 'شهادة تقدير', certBody1: 'تشهد منصة أثر أنّ', certBody2: 'قد أتمّ بنجاح المشاركة في', certHoursLine: 'بإجمالي ساعات تطوّع', shareCert: 'مشاركة الشهادة', certShared: 'تم نسخ نص الشهادة',
     photoSheetTitle: 'صورة الملف الشخصي', photoChoose: 'اختر صورة', photoRemove: 'حذف الصورة الحالية', photoRemoved: 'تم حذف الصورة', sheetCancel: 'إلغاء',
     menuInfo: 'المعلومات الشخصية', menuInfoSub: 'الاسم، البريد، الهاتف',
     menuId: 'صورة الهوية', menuIdSub: 'عرض وتحميل',
@@ -3877,6 +3923,9 @@ const T = {
     profilePublic: '🌍 Public profile', profilePrivate: '🔒 Private profile', profileNowPublic: 'Your profile is now public', profileNowPrivate: 'Your profile is now private', completedLabel: 'Completed', citiesLabel: 'Cities', scoreLabel: 'Impact score',
     editInfo: 'Edit', saveChanges: 'Save changes', cancelEdit: 'Cancel', infoSaved: 'Your info was saved', bioField: 'About you', bioPh: 'Write a short bio about yourself…', emailLocked: 'Email cannot be changed',
     editProfileBtn: 'Edit profile', shareProfileBtn: 'Share profile', shareCopied: 'Profile link copied', statCompletedShort: 'Completed', statHoursShort: 'Hours', statParticipationShort: 'Participations', completedCampsLabel: 'Completed campaigns', changePhotoCta: 'Change profile photo', roleJoined: 'Participant', roleOrganizer: 'Organizer',
+    certsTitle: 'Certificates', timelineTitle: 'Activity', noCerts: 'Complete a campaign to earn your first certificate', noActivity: 'Start your journey — join your first campaign', viewCertBtn: 'View',
+    tlJoin: 'Joined', tlDone: 'Completed', tlBadge: 'Earned a badge', tlAccount: 'Started your ATHAR journey',
+    certHeading: 'Certificate of Appreciation', certBody1: 'ATHAR certifies that', certBody2: 'has successfully participated in', certHoursLine: 'total volunteer hours', shareCert: 'Share certificate', certShared: 'Certificate text copied',
     photoSheetTitle: 'Profile photo', photoChoose: 'Choose photo', photoRemove: 'Remove current photo', photoRemoved: 'Photo removed', sheetCancel: 'Cancel',
     menuInfo: 'Personal Info', menuInfoSub: 'Name, Email, Phone',
     menuId: 'ID Photo', menuIdSub: 'View & Download',
@@ -4728,6 +4777,28 @@ const CertificateService = {
   }
 };
 
+/* ── ACTIVITY TIMELINE (Phase 6.3) — derived from existing data ── */
+const ActivityService = {
+  getTimeline(user) {
+    if (!user) return [];
+    const ev = [];
+    const joined = (user.joinedCamps || []).map(id => CampaignService.getById(id)).filter(Boolean);
+    joined.forEach(c => {
+      const title = Models.getCampText(c).title;
+      ev.push({ type: 'join', campId: c.id, title, date: c.date || '' });
+      if (c.status === 'done') ev.push({ type: 'done', campId: c.id, title, date: c.completedAt || c.date || '' });
+    });
+    (user.achievements || []).forEach(k => {
+      const m = AchievementService.meta(k);
+      if (m) ev.push({ type: 'badge', title: (State.lang === 'ar' ? m.ar : m.en), date: '' });
+    });
+    if (user.joinedDate || user.createdAt) ev.push({ type: 'account', title: '', date: user.joinedDate || (user.createdAt || '').split('T')[0] });
+    // newest first; undated events sink to the bottom
+    ev.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+    return ev;
+  }
+};
+
 const PartnerService = {
   getAll()    { return DB.get(CONFIG.DB_KEYS.PARTNERS); },
   add(p)      {
@@ -5137,6 +5208,9 @@ function renderProfile() {
         return '<div class="badge' + (on ? ' on' : '') + '"><div class="badge-ico">' + m.icon + '</div><div class="badge-l">' + (isAr ? m.ar : m.en) + '</div></div>';
       }).join('');
     }
+
+    renderCerts(u);
+    renderTimeline(u);
 
     const profileName = document.getElementById('profileName');
     if (profileName) profileName.textContent = u.name || '';
@@ -6903,6 +6977,76 @@ function shareProfile() {
   } else {
     toast(t('shareCopied'), 'success');
   }
+}
+
+/* ── CERTIFICATES + ACTIVITY TIMELINE (Phase 6.3) ── */
+function renderCerts(u) {
+  const box = document.getElementById('profileCerts');
+  if (!box) return;
+  const certs = CertificateService.getFor(u);
+  if (!certs.length) { box.innerHTML = '<div class="empty-state"><div class="empty-title">' + t('noCerts') + '</div></div>'; return; }
+  box.innerHTML = certs.map(c =>
+    '<div class="cert-card" onclick="openCert(\'' + c.campId + '\')">' +
+      '<div class="cert-seal">★</div>' +
+      '<div class="cert-card-body">' +
+        '<div class="cert-card-title">' + c.title + '</div>' +
+        '<div class="cert-card-sub">' + c.hours + ' ' + t('statHoursShort') + ' · ' + (c.date || '') + '</div>' +
+      '</div>' +
+      '<span class="cert-card-go">' + t('viewCertBtn') + '</span>' +
+    '</div>'
+  ).join('');
+}
+
+function renderTimeline(u) {
+  const box = document.getElementById('profileTimeline');
+  if (!box) return;
+  const ev = ActivityService.getTimeline(u);
+  if (!ev.length) { box.innerHTML = '<div class="empty-state"><div class="empty-title">' + t('noActivity') + '</div></div>'; return; }
+  const labelOf = { join: t('tlJoin'), done: t('tlDone'), badge: t('tlBadge'), account: t('tlAccount') };
+  box.innerHTML = ev.map(e => {
+    const head = labelOf[e.type] || '';
+    const main = e.title ? (head + ' ' + e.title) : head;
+    const click = e.campId ? ' onclick="openDetail(\'' + e.campId + '\')" style="cursor:pointer;"' : '';
+    return '<div class="tl-item ' + e.type + '"' + click + '>' +
+      '<div class="tl-marker"><span class="tl-dot"></span></div>' +
+      '<div class="tl-body"><div class="tl-title">' + main + '</div>' +
+      (e.date ? '<div class="tl-date">' + e.date + '</div>' : '') + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function openCert(campId) {
+  const u = State.cu; if (!u) return;
+  const cert = CertificateService.getFor(u).find(c => c.campId === campId);
+  if (!cert) return;
+  const box = document.getElementById('certBody');
+  if (box) {
+    box.innerHTML =
+      '<div class="cert-doc" id="certDoc">' +
+        '<div class="cert-doc-seal">★</div>' +
+        '<div class="cert-doc-head">' + t('certHeading') + '</div>' +
+        '<div class="cert-doc-brand">أَثَرْ · ATHAR</div>' +
+        '<div class="cert-doc-line">' + t('certBody1') + '</div>' +
+        '<div class="cert-doc-name">' + (cert.name || '') + '</div>' +
+        '<div class="cert-doc-line">' + t('certBody2') + '</div>' +
+        '<div class="cert-doc-camp">' + cert.title + '</div>' +
+        '<div class="cert-doc-hours">' + t('certHoursLine') + ': <b>' + cert.hours + ' ' + t('statHoursShort') + '</b></div>' +
+        (cert.date ? '<div class="cert-doc-date">' + cert.date + '</div>' : '') +
+      '</div>' +
+      '<button type="button" class="ig-btn primary" style="width:100%;margin-top:var(--sp-5);" onclick="shareCert(\'' + campId + '\')">' + t('shareCert') + '</button>';
+  }
+  openModal('certModal');
+}
+
+function shareCert(campId) {
+  const u = State.cu; if (!u) return;
+  const cert = CertificateService.getFor(u).find(c => c.campId === campId);
+  if (!cert) return;
+  const text = t('certHeading') + ' — ATHAR\n' + (cert.name || '') + '\n' + cert.title + '\n' + cert.hours + ' ' + t('statHoursShort') + (cert.date ? ' · ' + cert.date : '');
+  if (navigator.share) { navigator.share({ title: t('certHeading'), text }).catch(() => {}); return; }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => toast(t('certShared'), 'success')).catch(() => toast(t('certShared'), 'success'));
+  } else { toast(t('certShared'), 'success'); }
 }
 
 /* ── PARTNER FORM ── */
