@@ -1592,12 +1592,19 @@ body {
   aspect-ratio: 3 / 2; border: 1.5px dashed var(--sand-dark); border-radius: var(--r-lg);
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-1);
   color: var(--charcoal-50); background: var(--sand);
+  overflow: hidden; padding: var(--sp-2); text-align: center; min-width: 0;
 }
 .partner-slot-mark { font-size: 1.3rem; font-weight: 700; color: var(--olive); line-height: 1; }
 .partner-slot small { font-size: var(--fs-2xs); }
-.partner-slot.filled { border-style: solid; border-color: var(--line-sand-6); background: var(--white); padding: var(--sp-2); }
+.partner-slot.filled { border-style: solid; border-color: var(--line-sand-6); background: var(--white); }
 .partner-slot.filled.featured { border-color: var(--olive); }
-.partner-slot-name { font-size: var(--fs-sm); font-weight: 800; color: var(--forest); text-align: center; padding: 0 var(--sp-2); }
+.partner-slot.filled img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.partner-slot-name {
+  font-size: var(--fs-xs); font-weight: 800; color: var(--forest); line-height: 1.3;
+  width: 100%; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+.adm-logo-preview { width: 26px; height: 26px; border-radius: 4px; object-fit: contain; vertical-align: middle; background: var(--sand); }
 .partners-invite { text-align: center; margin-top: var(--sp-4); font-size: var(--fs-sm); color: var(--charcoal-50); font-weight: 600; }
 .faq-item { padding: var(--sp-3) 0; border-bottom: 1px solid var(--line-sand-6); }
 .faq-item:last-child { border-bottom: none; }
@@ -6506,23 +6513,31 @@ async function admNewPartnerLogoPicked(event) {
   try {
     AdminUI.newPartnerLogo = await b64(file);
     const nm = document.getElementById('admNewPartnerLogoName');
-    if (nm) nm.textContent = file.name;
+    if (nm) nm.innerHTML = '<img src="' + AdminUI.newPartnerLogo + '" class="adm-logo-preview" alt=""> ' + file.name;
+    toast(State.lang === 'ar' ? 'تم إرفاق الشعار' : 'Logo attached', 'success');
   } catch (e) { toast(t('uploadError'), 'error'); }
 }
-function admAddPartner() {
+async function admAddPartner() {
   if (!Permissions.can(State.cu, 'manage_partners')) return;
   const orgEl = document.getElementById('admNewPartnerOrg');
   const errEl = document.getElementById('admNewPartnerErr');
   const org = orgEl ? orgEl.value.trim() : '';
   if (errEl) errEl.textContent = '';
   if (!org) { if (errEl) errEl.textContent = t('errorRequired'); return; }
+  // Read the logo at submit time (robust against pick→submit timing)
+  let logo = AdminUI.newPartnerLogo || null;
+  const fileInput = document.getElementById('admNewPartnerLogo');
+  if (!logo && fileInput && fileInput.files && fileInput.files[0]) {
+    try { logo = await b64(fileInput.files[0]); } catch (e) {}
+  }
   const p = Models.createPartner({ org: org, type: 'ngo' });
   p.status = 'approved';
   p.featured = true;
-  p.logo = AdminUI.newPartnerLogo || null;
+  p.logo = logo;
   PartnerService.add(p);
   AdminUI.newPartnerLogo = null;
   if (orgEl) orgEl.value = '';
+  if (fileInput) fileInput.value = '';
   const nm = document.getElementById('admNewPartnerLogoName'); if (nm) nm.textContent = '';
   toast(State.lang === 'ar' ? 'تمت إضافة الشريك' : 'Partner added', 'success');
   AdminUI.partnerFilter = 'approved';
@@ -7725,7 +7740,7 @@ function renderPartnersShowcase() {
   const slotLabel = t('abPartnerSlot');
   let html = approved.map(p => {
     const inner = p.logo
-      ? '<img src="' + p.logo + '" alt="' + (p.org || '') + '" style="max-width:80%;max-height:60%;object-fit:contain;">'
+      ? '<img src="' + p.logo + '" alt="' + (p.org || '') + '">'
       : '<span class="partner-slot-name">' + (p.org || '') + '</span>';
     return '<div class="partner-slot filled' + (p.featured ? ' featured' : '') + '">' + inner + '</div>';
   }).join('');
