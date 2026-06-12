@@ -6064,41 +6064,57 @@ function admAssignRole(id, role) {
 /* ── Campaign detail modal ── */
 function admViewCamp(id) {
   try {
-    const c = CampaignService.getById ? CampaignService.getById(id) : CampaignService.getAll().find(x => x.id === id);
+    const c = CampaignService.getById(id) || CampaignService.getAll().find(x => x.id === id);
     if (!c) return;
     const isAr = State.lang === 'ar';
     const txt = Models.getCampText(c);
     const pct = c.needed ? Math.min(100, Math.round(((c.volunteers || 0) / c.needed) * 100)) : 0;
-    const row = (icon, label, val) => val
-      ? '<div style="display:flex;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--line);font-size:var(--fs-base);"><span style="flex:none;">' + icon + '</span><span style="flex:none;font-weight:700;color:var(--charcoal-50);">' + label + ':</span><span style="font-weight:700;color:var(--charcoal);word-break:break-word;">' + val + '</span></div>'
-      : '';
+    const parts = CampaignService.getParticipants(c);
+    const hoursEach = c.volunteerHours || 2;
+    const row = (label, val) => val
+      ? '<div class="adm-drow"><span class="adm-dlabel">' + label + '</span><span class="adm-dval">' + val + '</span></div>' : '';
+
     let actions = '';
     if (c.status === 'pending') {
-      actions = '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:var(--success);color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleApproveCamp(\'' + c.id + '\');admCloseModal()">✓ ' + (isAr ? 'قبول' : 'Approve') + '</button>' +
-                '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:var(--red);color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleRejectCamp(\'' + c.id + '\');admCloseModal()">✕ ' + (isAr ? 'رفض' : 'Reject') + '</button>';
+      actions += '<button class="adm-btn ok" onclick="handleApproveCamp(\'' + c.id + '\');admCloseModal()">' + (isAr ? 'قبول' : 'Approve') + '</button>' +
+                 '<button class="adm-btn danger" onclick="handleRejectCamp(\'' + c.id + '\');admCloseModal()">' + (isAr ? 'رفض' : 'Reject') + '</button>';
     } else if (c.status === 'approved') {
-      actions = '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:#1d4ed8;color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleCampUnderProcess(\'' + c.id + '\');admCloseModal()">' + (isAr ? 'قيد التنفيذ' : 'In Progress') + '</button>' +
-                '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:#7c3aed;color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleCampDone(\'' + c.id + '\');admCloseModal()">✓ ' + (isAr ? 'تم انجازها' : 'Mark Done') + '</button>';
+      actions += '<button class="adm-btn process" onclick="handleCampUnderProcess(\'' + c.id + '\');admViewCamp(\'' + c.id + '\')">' + (isAr ? 'قيد التنفيذ' : 'In Progress') + '</button>' +
+                 '<button class="adm-btn done" onclick="handleCampDone(\'' + c.id + '\');admViewCamp(\'' + c.id + '\')">' + (isAr ? 'إنهاء' : 'Mark Done') + '</button>';
     } else if (c.status === 'under_process') {
-      actions = '<button style="flex:1;padding:0.8rem;border:none;border-radius:0.75rem;background:#7c3aed;color:#fff;font-weight:800;cursor:pointer;font-family:inherit;" onclick="handleCampDone(\'' + c.id + '\');admCloseModal()">✓ ' + (isAr ? 'تم انجازها' : 'Mark Done') + '</button>';
+      actions += '<button class="adm-btn done" onclick="handleCampDone(\'' + c.id + '\');admViewCamp(\'' + c.id + '\')">' + (isAr ? 'إنهاء' : 'Mark Done') + '</button>';
     }
+
+    // Participants block
+    let partsHtml = '<div class="adm-msection"><div class="adm-msection-h">' + (isAr ? 'المشاركون' : 'Participants') + ' (' + parts.length + ')</div>';
+    partsHtml += parts.length
+      ? '<div class="adm-roles">' + parts.map(u => '<button class="adm-role-opt" onclick="admViewUser(\'' + u.id + '\')">' + (u.name || '—') + '</button>').join('') + '</div>'
+      : '<p style="color:var(--charcoal-50);font-size:var(--fs-sm);">' + (isAr ? 'لا مشاركين بعد' : 'No participants yet') + '</p>';
+    partsHtml += '</div>';
+
     admOpenModal(
-      (c.img ? '<img src="' + c.img + '" style="width:100%;height:150px;object-fit:cover;border-radius:0.85rem;margin-bottom:0.9rem;cursor:pointer;" onclick="openImageViewer(\'' + c.img + '\')">' : '') +
-      '<div style="font-size:var(--fs-xl);font-weight:900;color:var(--charcoal);margin-bottom:0.4rem;">' + (txt.title || '') + '</div>' +
-      '<div style="margin-bottom:0.8rem;">' + admStatusChip(c.status) + '</div>' +
-      (txt.desc ? '<div style="font-size:var(--fs-base);color:#555;line-height:1.6;margin-bottom:0.8rem;">' + txt.desc + '</div>' : '') +
-      '<div style="margin-bottom:0.8rem;">' +
-        '<div style="display:flex;justify-content:space-between;font-size:var(--fs-sm);font-weight:700;color:var(--charcoal-50);margin-bottom:0.3rem;"><span>' + (isAr ? 'المتطوعين' : 'Volunteers') + '</span><span>' + (c.volunteers || 0) + ' / ' + (c.needed || 0) + '</span></div>' +
-        '<div style="height:8px;background:var(--line);border-radius:9999px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background: var(--accent-btn);border-radius:9999px;"></div></div>' +
+      (c.img ? '<img src="' + c.img + '" style="width:100%;height:150px;object-fit:cover;border-radius:var(--r-md);margin-bottom:var(--sp-4);cursor:pointer;" onclick="openImageViewer(\'' + c.img + '\')">' : '') +
+      '<div class="adm-mname" style="text-align:start;">' + (txt.title || '') + '</div>' +
+      '<div class="adm-mchips" style="justify-content:flex-start;margin-bottom:var(--sp-3);">' + admStatusChip(c.status) + (c.community ? '<span class="adm-rolechip">' + (isAr ? 'بطلب من المجتمع' : 'Community') + '</span>' : '') + '</div>' +
+      (txt.desc ? '<div style="font-size:var(--fs-base);color:var(--charcoal-80);line-height:1.6;margin-bottom:var(--sp-4);">' + txt.desc + '</div>' : '') +
+      '<div style="margin-bottom:var(--sp-4);">' +
+        '<div style="display:flex;justify-content:space-between;font-size:var(--fs-sm);font-weight:700;color:var(--charcoal-50);margin-bottom:var(--sp-1);"><span>' + (isAr ? 'المتطوّعون' : 'Volunteers') + '</span><span>' + (c.volunteers || 0) + ' / ' + (c.needed || 0) + ' · ' + pct + '%</span></div>' +
+        '<div style="height:8px;background:var(--line);border-radius:9999px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:var(--accent-btn);border-radius:9999px;"></div></div>' +
       '</div>' +
-      row('🏷️', isAr ? 'الفئة' : 'Category', txt.cat) +
-      row('📍', isAr ? 'الموقع' : 'Location', c.location) +
-      row('📅', isAr ? 'التاريخ' : 'Date', c.date) +
-      row('🕐', isAr ? 'ساعات لكل متطوع' : 'Hours / volunteer', String(c.volunteerHours || 2)) +
-      row('👤', isAr ? 'المنظّم' : 'Organizer', c.creatorName) +
-      row('📞', isAr ? 'هاتف المنظّم' : 'Organizer phone', c.creatorPhone) +
-      '<button style="width:100%;padding:0.8rem;border:1.5px solid var(--sand-dark);border-radius:0.75rem;background:transparent;color:var(--charcoal);font-weight:800;cursor:pointer;margin-top:0.9rem;" onclick="admEditCamp(\'' + c.id + '\')">✏️ ' + (isAr ? 'تعديل الحملة' : 'Edit campaign') + '</button>' +
-      (actions ? '<div style="display:flex;gap:0.6rem;margin-top:0.6rem;">' + actions + '</div>' : '')
+      row(isAr ? 'الفئة' : 'Category', txt.cat) +
+      row(isAr ? 'الموقع' : 'Location', c.location) +
+      row(isAr ? 'التاريخ' : 'Date', c.date) +
+      row(isAr ? 'ساعات/متطوّع' : 'Hours / vol', String(hoursEach)) +
+      row(isAr ? 'إجمالي الساعات' : 'Total hours', String((c.volunteers || 0) * hoursEach)) +
+      row(isAr ? 'المنظّم' : 'Organizer', c.creatorName) +
+      row(isAr ? 'هاتف المنظّم' : 'Organizer phone', c.creatorPhone) +
+      row(isAr ? 'الظهور للعموم' : 'Public visibility', (['approved', 'under_process', 'done'].includes(c.status)) ? (isAr ? 'ظاهرة' : 'Visible') : (isAr ? 'مخفية' : 'Hidden')) +
+      partsHtml +
+      (actions ? '<div class="adm-mactions">' + actions + '</div>' : '') +
+      '<div class="adm-mactions">' +
+        '<button class="adm-btn ghost" onclick="admEditCamp(\'' + c.id + '\')">' + (isAr ? 'تعديل' : 'Edit') + '</button>' +
+        (c.status !== 'archived' ? '<button class="adm-btn ghost" onclick="handleArchive(\'' + c.id + '\')">' + (isAr ? 'أرشفة' : 'Archive') + '</button>' : '') +
+      '</div>'
     );
   } catch (e) {
     console.error('[admViewCamp] Error:', e);
@@ -6111,24 +6127,29 @@ function admEditCamp(id) {
   const tx = Models.getCampText(c);
   const cats = Object.keys(CONFIG.CAMP_CATEGORIES).map(k => {
     const m = CONFIG.CAMP_CATEGORIES[k];
-    return '<option value="' + k + '"' + (Models.catKey(c.category) === k ? ' selected' : '') + '>' + (m.icon || '') + ' ' + (isAr ? m.ar : m.en) + '</option>';
+    return '<option value="' + k + '"' + (Models.catKey(c.category) === k ? ' selected' : '') + '>' + (isAr ? m.ar : m.en) + '</option>';
   }).join('');
   const esc = s => String(s || '').replace(/"/g, '&quot;');
   admOpenModal(
-    '<div style="font-size:var(--fs-lg);font-weight:900;color:var(--charcoal);margin-bottom:1rem;">' + t('editCamp') + '</div>' +
-    '<div class="field"><label>' + t('campTitleLabel') + '</label><input id="ecTitle" value="' + esc(tx.title) + '"></div>' +
-    '<div class="field"><label>' + t('storyTitle') + '</label><textarea id="ecDesc">' + (tx.desc || '') + '</textarea></div>' +
-    '<div class="field"><label>' + t('locationLabel') + '</label><input id="ecLoc" value="' + esc(c.location) + '"></div>' +
-    '<div class="field-row"><div class="field"><label>' + t('neededLabel') + '</label><input id="ecNeeded" type="number" min="1" value="' + (c.needed || 1) + '"></div>' +
-      '<div class="field"><label>' + t('dateLabel') + '</label><input id="ecDate" type="date" value="' + (c.date || '') + '"></div></div>' +
-    '<div class="field"><label>' + t('categoryLabel') + '</label><select id="ecCat">' + cats + '</select></div>' +
-    '<button style="width:100%;padding:0.85rem;border:none;border-radius:0.75rem;background: var(--accent-btn);color:#fff;font-weight:800;cursor:pointer;margin-top:0.4rem;" onclick="saveCampEdit(\'' + id + '\')">' + t('saveChanges') + '</button>'
+    '<div class="adm-msection-h" style="font-size:var(--fs-lg);margin-bottom:var(--sp-4);">' + t('editCamp') + '</div>' +
+    '<div class="edit-field"><label>' + t('campTitleLabel') + '</label><input id="ecTitle" value="' + esc(tx.title) + '"><div class="edit-err" id="err-ecTitle"></div></div>' +
+    '<div class="edit-field"><label>' + t('storyTitle') + '</label><textarea id="ecDesc" rows="3">' + (tx.desc || '') + '</textarea></div>' +
+    '<div class="edit-field"><label>' + t('locationLabel') + '</label><input id="ecLoc" value="' + esc(c.location) + '"></div>' +
+    '<div class="edit-field"><label>' + t('neededLabel') + '</label><input id="ecNeeded" type="number" min="1" value="' + (c.needed || 1) + '"></div>' +
+    '<div class="edit-field"><label>' + t('dateLabel') + '</label><input id="ecDate" type="date" value="' + (c.date || '') + '"></div>' +
+    '<div class="edit-field"><label>' + t('categoryLabel') + '</label><select id="ecCat">' + cats + '</select></div>' +
+    '<div class="adm-mactions">' +
+      '<button class="adm-btn primary" onclick="saveCampEdit(\'' + id + '\')">' + t('saveChanges') + '</button>' +
+      '<button class="adm-btn ghost" onclick="admViewCamp(\'' + id + '\')">' + (isAr ? 'إلغاء' : 'Cancel') + '</button>' +
+    '</div>'
   );
 }
 function saveCampEdit(id) {
+  if (!Permissions.can(State.cu, 'manage_campaigns')) return;
   const g = i => document.getElementById(i);
   if (!g('ecTitle')) return;
   const title = g('ecTitle').value.trim();
+  if (!Validators.isRequired(title)) { const e = g('err-ecTitle'); if (e) e.textContent = t('errorRequired'); return; }
   const desc  = g('ecDesc').value.trim();
   const cat   = g('ecCat').value;
   const m = CONFIG.CAMP_CATEGORIES[cat] || {};
@@ -6141,8 +6162,8 @@ function saveCampEdit(id) {
     date: g('ecDate').value
   });
   toast(t('changesSaved'), 'success');
-  admViewCamp(id);
   if (typeof renderAdmin === 'function') renderAdmin();
+  admViewCamp(id);
 }
 
 /* ── Partner detail modal ── */
@@ -6256,7 +6277,8 @@ function admRenderCampaigns() {
         { k: 'pending',       ar: 'قيد المراجعة', en: 'Pending',     n: all.filter(c => c.status === 'pending').length },
         { k: 'approved',      ar: 'موافق عليها',  en: 'Approved',    n: all.filter(c => c.status === 'approved').length },
         { k: 'under_process', ar: 'قيد التنفيذ',  en: 'In Progress', n: all.filter(c => c.status === 'under_process').length },
-        { k: 'done',          ar: 'منجزة',        en: 'Done',        n: all.filter(c => c.status === 'done').length }
+        { k: 'done',          ar: 'منجزة',        en: 'Done',        n: all.filter(c => c.status === 'done').length },
+        { k: 'archived',      ar: 'مؤرشفة',       en: 'Archived',    n: all.filter(c => c.status === 'archived').length }
       ];
       chips.innerHTML = opts.map(o =>
         '<button class="adm-chip' + (AdminUI.campFilter === o.k ? ' active' : '') + '" onclick="admSetCampFilter(\'' + o.k + '\')">' + (isAr ? o.ar : o.en) + ' (' + o.n + ')</button>'
@@ -6275,23 +6297,23 @@ function admRenderCampaigns() {
     }
 
     list.innerHTML = camps.length === 0
-      ? admEmpty('📋', isAr ? 'لا يوجد حملات' : 'No campaigns found')
+      ? admEmpty('', isAr ? 'لا يوجد حملات' : 'No campaigns found')
       : camps.map(c => {
         const txt = Models.getCampText(c);
         let actions = '';
         if (c.status === 'pending') {
-          actions = '<button class="approve-btn" style="flex:1;background: var(--accent-btn);" onclick="event.stopPropagation();admViewCamp(\'' + c.id + '\')">' + (isAr ? 'مراجعة وتعديل' : 'Review & edit') + '</button>';
+          actions = '<button class="approve-btn" onclick="event.stopPropagation();admViewCamp(\'' + c.id + '\')">' + (isAr ? 'مراجعة وتعديل' : 'Review & edit') + '</button>';
         } else if (c.status === 'approved') {
-          actions = '<button class="approve-btn" style="flex:1;" onclick="event.stopPropagation();handleCampUnderProcess(\'' + c.id + '\')">' + (isAr ? 'قيد التنفيذ' : 'In Progress') + '</button>' +
-                    '<button class="approve-btn" style="flex:1;background:#8b5cf6;" onclick="event.stopPropagation();handleCampDone(\'' + c.id + '\')">' + (isAr ? 'تم انجازها' : 'Mark Done') + '</button>';
+          actions = '<button class="approve-btn" onclick="event.stopPropagation();handleCampUnderProcess(\'' + c.id + '\')">' + (isAr ? 'قيد التنفيذ' : 'In Progress') + '</button>' +
+                    '<button class="reject-btn" style="color:var(--charcoal);border-color:var(--sand-dark);" onclick="event.stopPropagation();handleCampDone(\'' + c.id + '\')">' + (isAr ? 'إنهاء' : 'Done') + '</button>';
         } else if (c.status === 'under_process') {
-          actions = '<button class="approve-btn" style="flex:1;" onclick="event.stopPropagation();handleCampDone(\'' + c.id + '\')">' + (isAr ? 'تم انجازها' : 'Mark Done') + '</button>';
+          actions = '<button class="approve-btn" onclick="event.stopPropagation();handleCampDone(\'' + c.id + '\')">' + (isAr ? 'إنهاء' : 'Mark Done') + '</button>';
         }
         return '<div class="admin-card" onclick="admViewCamp(\'' + c.id + '\')" style="cursor:pointer;">' +
           '<div class="admin-info">' +
             '<div class="admin-info-name">' + (txt.title || '') + ' ' + admStatusChip(c.status) + '</div>' +
-            '<div class="admin-info-row">📍 ' + (c.location || '') + ' · 📅 ' + (c.date || '') + '</div>' +
-            '<div class="admin-info-row">👥 ' + (c.volunteers || 0) + '/' + (c.needed || 0) + ' · 🕐 ' + (c.volunteerHours || 2) + 'h · 👤 ' + (c.creatorName || '') + '</div>' +
+            '<div class="admin-info-row">' + (c.location || '') + ' · ' + (c.date || '') + '</div>' +
+            '<div class="admin-info-row">' + (c.volunteers || 0) + '/' + (c.needed || 0) + ' · ' + (c.volunteerHours || 2) + (isAr ? ' س' : 'h') + ' · ' + (c.creatorName || '') + '</div>' +
           '</div>' +
           (actions ? '<div class="admin-actions">' + actions + '</div>' : '') +
         '</div>';
@@ -6604,6 +6626,7 @@ function handleArchive(id) {
   CampaignService.archive(id);
   toast(t('archivedToast'), 'success');
   if (State.currentPage === 'detail') renderDetail(id);
+  if (State.currentPage === 'admin') { renderAdmin(); admViewCamp(id); }
 }
 
 function _updateDetailJoinBtn(id) {
@@ -7316,6 +7339,7 @@ function handleRejectUser(id) {
 }
 
 function handleApproveCamp(id) {
+  if (!Permissions.can(State.cu, 'approve_campaign') && !Permissions.can(State.cu, 'manage_campaigns')) return;
   CampaignService.approve(id);
   toast(t('approved'), 'success');
   renderAdmin();
@@ -7323,6 +7347,7 @@ function handleApproveCamp(id) {
 }
 
 function handleRejectCamp(id) {
+  if (!Permissions.can(State.cu, 'approve_campaign') && !Permissions.can(State.cu, 'manage_campaigns')) return;
   CampaignService.reject(id);
   toast(t('rejected'), 'warning');
   renderAdmin();
@@ -7330,6 +7355,7 @@ function handleRejectCamp(id) {
 }
 
 function handleCampUnderProcess(id) {
+  if (!Permissions.can(State.cu, 'manage_campaigns')) return;
   CampaignService.markUnderProcess(id);
   toast(t('campStatusUpdated'), 'success');
   renderAdmin();
@@ -7337,6 +7363,7 @@ function handleCampUnderProcess(id) {
 }
 
 function handleCampDone(id) {
+  if (!Permissions.can(State.cu, 'manage_campaigns')) return;
   CampaignService.markDone(id);
   toast(t('campDoneMsg'), 'success');
   renderAdmin();
