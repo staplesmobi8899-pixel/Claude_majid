@@ -3403,6 +3403,16 @@ const CONFIG = {
     culture:     { ar: 'الثقافة',       en: 'Culture' },
     children:    { ar: 'الطفولة',       en: 'Children' },
     elderly:     { ar: 'كبار السن',     en: 'Elderly' }
+  },
+
+  ACHIEVEMENTS: {
+    first_campaign:   { ar: 'أول مبادرة',      en: 'First Campaign',       icon: '🌟', cond: (u) => (u.activitiesJoined || 0) >= 1 },
+    hours_10:         { ar: '10 ساعات تطوّع',  en: '10 Volunteer Hours',   icon: '⏳', cond: (u) => (u.volunteerHours || 0) >= 10 },
+    community_leader: { ar: 'قائد مجتمع',      en: 'Community Leader',      icon: '🤝', cond: (u, s) => s.createdApproved >= 1 },
+    top_volunteer:    { ar: 'متطوّع مميّز',     en: 'Top Volunteer',         icon: '🏆', cond: (u) => (u.volunteerHours || 0) >= 100 },
+    consistency:      { ar: 'وسام المثابرة',   en: 'Consistency Badge',     icon: '🔥', cond: (u, s) => s.completed >= 3 },
+    environmental:    { ar: 'أثر بيئي',        en: 'Environmental Impact',  icon: '🌿', cond: (u, s) => s.categories.includes('planting') || s.categories.includes('cleaning') },
+    city_contributor: { ar: 'مساهم المدينة',   en: 'City Contributor',      icon: '📍', cond: (u, s) => s.citiesCount >= 2 }
   }
 };
 
@@ -3867,7 +3877,9 @@ const Models = {
       },
       volunteerHours:  0,
       activitiesJoined:0,
-      achievements:    0,
+      achievements:    [],
+      certificates:    [],
+      bio:             '',
       joinedCamps:     [],
       savedCampaigns:  [],
       banned:          null,
@@ -4132,7 +4144,7 @@ const OtpService = {
 const AuthService = {
   buildAdminUser() {
     return { id: 'admin', name: 'Admin', email: CONFIG.ADMIN_EMAIL, role: 'admin',
-             status: 'approved', volunteerHours: 0, activitiesJoined: 0, achievements: 0, joinedCamps: [] };
+             status: 'approved', volunteerHours: 0, activitiesJoined: 0, achievements: [], joinedCamps: [] };
   },
   startSession(user, persist = true) {
     State.setUser(user);
@@ -4174,7 +4186,7 @@ const AuthService = {
   },
   continueAsGuest() {
     const guest = { id: 'guest', name: t('guest'), email: '', role: 'guest', status: 'guest', isGuest: true,
-                    volunteerHours: 0, activitiesJoined: 0, achievements: 0, joinedCamps: [] };
+                    volunteerHours: 0, activitiesJoined: 0, achievements: [], joinedCamps: [] };
     this.startSession(guest, false);
     enterApp();
     return guest;
@@ -4268,17 +4280,15 @@ const CampaignService = {
   markDone(id)      {
     const camp = this.getById(id);
     if (!camp) return false;
-    // Grant achievements to all joined users
-    const users = UserService.getAll();
+    const res = this.updateById(id, { status: 'done', completedAt: new Date().toISOString() });
     (camp.joinedUsers || []).forEach(uid => {
-      const idx = users.findIndex(u => u.id === uid);
-      if (idx !== -1) {
-        users[idx].achievements = (users[idx].achievements || 0) + 1;
-        users[idx].updatedAt = new Date().toISOString();
+      const u = UserService.getById(uid);
+      if (u) {
+        NotificationService.add(uid, 'اكتملت مبادرة شاركت بها 🎉', 'A campaign you joined was completed 🎉', 'campaign');
+        AchievementService.evaluate(u);
       }
     });
-    DB.set(CONFIG.DB_KEYS.USERS, users);
-    return this.updateById(id, { status: 'done', completedAt: new Date().toISOString() });
+    return res;
   },
 
   /** Join a campaign — returns { success, message } */
@@ -4410,6 +4420,59 @@ const DiscoveryService = {
     if (!interests.size) return this.trending(n);
     const matched = this._base().filter(c => interests.has(Models.catKey(c.category)));
     return (matched.length ? matched : this.trending(n)).slice(0, n);
+  }
+};
+
+/* ── STATS (Phase 6 — computed impact metrics) ── */
+const StatsService = {
+  compute(user) {
+    const empty = { joinedCount: 0, completed: 0, cities: [], citiesCount: 0, createdApproved: 0, categories: [], score: 0 };
+    if (!user) return empty;
+    const joined = (user.joinedCamps || []).map(id => CampaignService.getById(id)).filter(Boolean);
+    const completed = joined.filter(c => c.status === 'done').length;
+    const cities = [...new Set(joined.map(c => c.location).filter(Boolean))];
+    const categories = [...new Set(joined.map(c => Models.catKey(c.category)).filter(Boolean))];
+    const created = CampaignService.getAll().filter(c => c.createdBy === user.id);
+    const createdApproved = created.filter(c => ['approved', 'under_process', 'done'].includes(c.status)).length;
+    const score = Math.round((user.volunteerHours || 0) * 2 + (user.activitiesJoined || 0) * 5 + completed * 10 + createdApproved * 15);
+    return { joinedCount: joined.length, completed, cities, citiesCount: cities.length, createdApproved, categories, score };
+  }
+};
+
+/* ── ACHIEVEMENTS (Phase 6 — auto-unlock + badges) ── */
+const AchievementService = {
+  getUnlocked(user) { return (user && Array.isArray(user.achievements)) ? user.achievements : []; },
+  meta(key) { return CONFIG.ACHIEVEMENTS[key] || null; },
+  all() { return Object.keys(CONFIG.ACHIEVEMENTS); },
+  evaluate(user) {
+    if (!user || !user.id) return [];
+    const stats = StatsService.compute(user);
+    const set = new Set(this.getUnlocked(user));
+    const newly = [];
+    Object.keys(CONFIG.ACHIEVEMENTS).forEach(k => {
+      if (set.has(k)) return;
+      try { if (CONFIG.ACHIEVEMENTS[k].cond(user, stats)) { set.add(k); newly.push(k); } } catch (e) {}
+    });
+    if (newly.length) {
+      const arr = [...set];
+      UserService.updateById(user.id, { achievements: arr });
+      if (State.cu && State.cu.id === user.id) { State.cu.achievements = arr; DB.setObj(CONFIG.DB_KEYS.SESSION, State.cu); }
+      newly.forEach(k => { const m = CONFIG.ACHIEVEMENTS[k]; NotificationService.add(user.id, 'فتحت إنجازاً: ' + m.ar + ' ' + m.icon, 'Achievement unlocked: ' + m.en, 'achievement'); });
+    }
+    return newly;
+  }
+};
+
+/* ── CERTIFICATES (Phase 6 — architecture; one per completed campaign) ── */
+const CertificateService = {
+  getFor(user) {
+    if (!user) return [];
+    const joined = (user.joinedCamps || []).map(id => CampaignService.getById(id)).filter(Boolean);
+    return joined.filter(c => c.status === 'done').map(c => ({
+      id: 'cert-' + c.id + '-' + user.id, campId: c.id,
+      title: Models.getCampText(c).title, hours: c.volunteerHours || 0,
+      date: c.completedAt || c.date || '', name: user.name || ''
+    }));
   }
 };
 
@@ -4751,12 +4814,12 @@ function renderProfile() {
     // Always read fresh from DB
     const u = UserService.getById(State.cu.id) || State.cu;
 
-    const sH = document.getElementById('statHours');
-    const sA = document.getElementById('statActivities');
-    const sB = document.getElementById('statBadges');
+    const sH = document.getElementById('sH');
+    const sA = document.getElementById('sA');
+    const sB = document.getElementById('sB');
     if (sH) sH.textContent = u.volunteerHours   || 0;
     if (sA) sA.textContent = u.activitiesJoined  || 0;
-    if (sB) sB.textContent = u.achievements      || 0;
+    if (sB) sB.textContent = AchievementService.getUnlocked(u).length;
 
     const profileName = document.getElementById('profileName');
     if (profileName) profileName.textContent = u.name || '';
@@ -6338,6 +6401,7 @@ function handleJoin(id) {
   if (result.success) {
     toast(result.message, 'success');
     if (result.updatedUser) State.setUser(result.updatedUser);
+    AchievementService.evaluate(State.cu);
     NotificationService.add(State.cu.id, 'انضممت إلى مبادرة جديدة ✓ شكراً لك!', 'You joined a new initiative ✓ Thank you!', 'join');
     updateBell();
     renderCampaigns();
