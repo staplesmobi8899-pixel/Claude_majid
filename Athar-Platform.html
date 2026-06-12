@@ -1595,6 +1595,9 @@ body {
 }
 .partner-slot-mark { font-size: 1.3rem; font-weight: 700; color: var(--olive); line-height: 1; }
 .partner-slot small { font-size: var(--fs-2xs); }
+.partner-slot.filled { border-style: solid; border-color: var(--line-sand-6); background: var(--white); padding: var(--sp-2); }
+.partner-slot.filled.featured { border-color: var(--olive); }
+.partner-slot-name { font-size: var(--fs-sm); font-weight: 800; color: var(--forest); text-align: center; padding: 0 var(--sp-2); }
 .partners-invite { text-align: center; margin-top: var(--sp-4); font-size: var(--fs-sm); color: var(--charcoal-50); font-weight: 600; }
 
 /* Partnership */
@@ -3457,14 +3460,7 @@ html, body { overflow-x: hidden; }
       <div class="about-block">
         <h2 data-i18n="abPartnersTitle"></h2>
         <p data-i18n="abPartnersDesc"></p>
-        <div class="partners-grid">
-          <div class="partner-slot"><span class="partner-slot-mark">+</span><small data-i18n="abPartnerSlot"></small></div>
-          <div class="partner-slot"><span class="partner-slot-mark">+</span><small data-i18n="abPartnerSlot"></small></div>
-          <div class="partner-slot"><span class="partner-slot-mark">+</span><small data-i18n="abPartnerSlot"></small></div>
-          <div class="partner-slot"><span class="partner-slot-mark">+</span><small data-i18n="abPartnerSlot"></small></div>
-          <div class="partner-slot"><span class="partner-slot-mark">+</span><small data-i18n="abPartnerSlot"></small></div>
-          <div class="partner-slot"><span class="partner-slot-mark">+</span><small data-i18n="abPartnerSlot"></small></div>
-        </div>
+        <div class="partners-grid" id="partnersGrid"></div>
         <p class="partners-invite" data-i18n="abPartnersInvite"></p>
       </div>
 
@@ -3660,7 +3656,9 @@ html, body { overflow-x: hidden; }
               <h2 id="admHdPartners">Partners</h2>
               <input type="text" id="admPartnerSearch" placeholder="Search..." oninput="admRenderPartners()" class="adm-search">
             </div>
+            <div class="adm-chips" id="admPartnerChips"></div>
             <div id="admPartnersList"></div>
+            <input type="file" id="admPartnerLogoInput" accept="image/*" class="hidden-file" onchange="admUploadPartnerLogo(event)">
           </div>
 
           <!-- ANALYTICS -->
@@ -4575,6 +4573,7 @@ const Models = {
       msg:     String(data.msg     || '').trim(),
       status:  'pending',
       featured: false,
+      logo:    null,
       date:    new Date().toISOString()
     };
   },
@@ -5634,7 +5633,7 @@ function renderProfile() {
 /* ══════════════════════════════════════════
    ADMIN DASHBOARD MODULE (self-contained)
    ══════════════════════════════════════════ */
-const AdminUI = { panel: 'dashboard', q: '', userFilter: 'all', campFilter: 'all' };
+const AdminUI = { panel: 'dashboard', q: '', userFilter: 'all', campFilter: 'all', partnerFilter: 'all', partnerLogoId: null };
 
 function admToggleSidebar() {
   const sb = document.getElementById('admSidebar');
@@ -5739,13 +5738,14 @@ function renderAdmin() {
     const users    = UserService.getAll();
     const camps    = CampaignService.getAll();
     const partners = PartnerService.getAll();
+    const pendPartners = partners.filter(p => p.status === 'pending').length;
     const pendCount = users.filter(u => u.status === 'pending').length
                     + camps.filter(c => c.status === 'pending').length
-                    + partners.length;
+                    + pendPartners;
 
     const bu = admEl('admBadgeUsers');    if (bu) bu.textContent = users.length;
     const bc = admEl('admBadgeCamps');    if (bc) bc.textContent = camps.length;
-    const bp = admEl('admBadgePartners'); if (bp) bp.textContent = partners.length;
+    const bp = admEl('admBadgePartners'); if (bp) bp.textContent = pendPartners;
     const bn = admEl('admBadgeNotifs');   if (bn) bn.textContent = pendCount;
 
     admRenderHeaders();
@@ -6166,28 +6166,68 @@ function saveCampEdit(id) {
   admViewCamp(id);
 }
 
-/* ── Partner detail modal ── */
-function admViewPartner(idx) {
+/* ── Partner detail modal (Phase 8.3 — approve/reject/feature/logo) ── */
+function admViewPartner(id) {
   try {
-    const p = PartnerService.getAll()[idx];
+    const p = PartnerService.getById(id) || PartnerService.getAll()[id]; // tolerate legacy index
     if (!p) return;
     const isAr = State.lang === 'ar';
     const typeMap = { gov: isAr ? 'حكومية / عامة' : 'Government / Public', priv: isAr ? 'خاصة / شركة' : 'Private / Company', ngo: isAr ? 'منظمة / جمعية' : 'NGO / Association', ind: isAr ? 'فرد / مبادر' : 'Individual' };
-    const row = (icon, label, val) => val
-      ? '<div style="display:flex;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--line);font-size:var(--fs-base);"><span style="flex:none;">' + icon + '</span><span style="flex:none;font-weight:700;color:var(--charcoal-50);">' + label + ':</span><span style="font-weight:700;color:var(--charcoal);word-break:break-word;">' + val + '</span></div>'
-      : '';
+    const row = (label, val) => val
+      ? '<div class="adm-drow"><span class="adm-dlabel">' + label + '</span><span class="adm-dval">' + val + '</span></div>' : '';
+    const logo = p.logo
+      ? '<img src="' + p.logo + '" alt="">'
+      : '<span class="ig-avatar-initial">' + ((p.org || '?').trim().charAt(0) || '?') + '</span>';
+
+    let actions = '';
+    if (p.status === 'pending') {
+      actions += '<button class="adm-btn ok" onclick="handleApprovePartner(\'' + p.id + '\')">' + (isAr ? 'قبول' : 'Approve') + '</button>' +
+                 '<button class="adm-btn danger" onclick="handleRejectPartner(\'' + p.id + '\')">' + (isAr ? 'رفض' : 'Reject') + '</button>';
+    } else if (p.status === 'approved') {
+      actions += '<button class="adm-btn ' + (p.featured ? 'primary' : 'ghost') + '" onclick="handleFeaturePartner(\'' + p.id + '\')">' + (p.featured ? (isAr ? 'مميّز' : 'Featured') : (isAr ? 'تمييز' : 'Feature')) + '</button>' +
+                 '<button class="adm-btn ghost" onclick="admPickPartnerLogo(\'' + p.id + '\')">' + (isAr ? 'تغيير الشعار' : 'Set logo') + '</button>' +
+                 '<button class="adm-btn danger" onclick="handleRejectPartner(\'' + p.id + '\')">' + (isAr ? 'إلغاء التفعيل' : 'Revoke') + '</button>';
+    } else if (p.status === 'rejected') {
+      actions += '<button class="adm-btn ok" onclick="handleApprovePartner(\'' + p.id + '\')">' + (isAr ? 'إعادة قبول' : 'Re-approve') + '</button>';
+    }
+
     admOpenModal(
-      '<div style="font-size:var(--fs-xl);font-weight:900;color:var(--charcoal);margin-bottom:1rem;">🤝 ' + (p.org || '') + '</div>' +
-      row('👤', isAr ? 'المسؤول' : 'Contact', p.contact) +
-      row('📧', isAr ? 'البريد' : 'Email', p.email) +
-      row('📞', isAr ? 'الهاتف' : 'Phone', p.phone) +
-      row('🏷️', isAr ? 'نوع الجهة' : 'Type', typeMap[p.type] || p.type) +
-      row('📅', isAr ? 'التاريخ' : 'Date', p.date ? new Date(p.date).toLocaleDateString() : '') +
-      (p.msg ? '<div style="margin-top:0.8rem;padding:0.85rem;background:#f7f4ee;border-radius:0.75rem;font-size:var(--fs-base);color:var(--charcoal-80);line-height:1.6;">' + p.msg + '</div>' : '')
+      '<div class="adm-mhead">' +
+        '<div class="adm-mava">' + logo + '</div>' +
+        '<div class="adm-mname">' + (p.org || '') + '</div>' +
+        '<div class="adm-mchips">' + admStatusChip(p.status) + (p.featured ? '<span class="adm-rolechip">' + (isAr ? 'مميّز' : 'Featured') + '</span>' : '') + '</div>' +
+      '</div>' +
+      row(isAr ? 'المسؤول' : 'Contact', p.contact) +
+      row(isAr ? 'البريد' : 'Email', p.email) +
+      row(isAr ? 'الهاتف' : 'Phone', p.phone) +
+      row(isAr ? 'نوع الجهة' : 'Type', typeMap[p.type] || p.type) +
+      row(isAr ? 'التاريخ' : 'Date', p.date ? new Date(p.date).toLocaleDateString() : '') +
+      (p.msg ? '<div style="margin-top:var(--sp-4);padding:var(--sp-4);background:var(--sand);border-radius:var(--r-md);font-size:var(--fs-base);color:var(--charcoal-80);line-height:1.6;">' + p.msg + '</div>' : '') +
+      (actions ? '<div class="adm-mactions">' + actions + '</div>' : '')
     );
   } catch (e) {
     console.error('[admViewPartner] Error:', e);
   }
+}
+
+function admPickPartnerLogo(id) {
+  AdminUI.partnerLogoId = id;
+  const inp = document.getElementById('admPartnerLogoInput');
+  if (inp) inp.click();
+}
+async function admUploadPartnerLogo(event) {
+  const file = event.target.files[0];
+  const id = AdminUI.partnerLogoId;
+  if (!file || !id) { event.target.value = ''; return; }
+  try {
+    const data = await b64(file);
+    PartnerService.updateById(id, { logo: data });
+    toast(State.lang === 'ar' ? 'تم تحديث الشعار' : 'Logo updated', 'success');
+    renderAdmin();
+    admViewPartner(id);
+  } catch (e) { toast(t('uploadError'), 'error'); }
+  event.target.value = '';
+  AdminUI.partnerLogoId = null;
 }
 
 /* ── Users panel (with filter chips) ── */
@@ -6324,6 +6364,8 @@ function admRenderCampaigns() {
 }
 
 /* ── Partners panel ── */
+function admSetPartnerFilter(f) { AdminUI.partnerFilter = f; admRenderPartners(); }
+
 function admRenderPartners() {
   try {
     const list = admEl('admPartnersList');
@@ -6331,26 +6373,52 @@ function admRenderPartners() {
     const isAr = State.lang === 'ar';
     const local = String((admEl('admPartnerSearch') || {}).value || '').toLowerCase().trim();
     const q = local || AdminUI.q;
-
     const all = PartnerService.getAll();
-    const items = all.map((p, i) => ({ p: p, i: i })).filter(x => {
-      if (!q) return true;
-      return String(x.p.org || '').toLowerCase().includes(q) ||
-             String(x.p.contact || '').toLowerCase().includes(q) ||
-             String(x.p.email || '').toLowerCase().includes(q);
-    });
+
+    // Chips
+    const chips = admEl('admPartnerChips');
+    if (chips) {
+      const opts = [
+        { k: 'all',      ar: 'الكل',         en: 'All',      n: all.length },
+        { k: 'pending',  ar: 'قيد المراجعة', en: 'Pending',  n: all.filter(p => p.status === 'pending').length },
+        { k: 'approved', ar: 'مقبولة',        en: 'Approved', n: all.filter(p => p.status === 'approved').length },
+        { k: 'rejected', ar: 'مرفوضة',        en: 'Rejected', n: all.filter(p => p.status === 'rejected').length }
+      ];
+      chips.innerHTML = opts.map(o =>
+        '<button class="adm-chip' + (AdminUI.partnerFilter === o.k ? ' active' : '') + '" onclick="admSetPartnerFilter(\'' + o.k + '\')">' + (isAr ? o.ar : o.en) + ' (' + o.n + ')</button>'
+      ).join('');
+    }
+
+    let items = all;
+    if (AdminUI.partnerFilter !== 'all') items = items.filter(p => p.status === AdminUI.partnerFilter);
+    if (q) items = items.filter(p =>
+      String(p.org || '').toLowerCase().includes(q) ||
+      String(p.contact || '').toLowerCase().includes(q) ||
+      String(p.email || '').toLowerCase().includes(q));
 
     list.innerHTML = items.length === 0
-      ? admEmpty('🤝', isAr ? 'لا يوجد طلبات شراكة' : 'No partnership requests')
-      : items.map(x =>
-        '<div class="admin-card" onclick="admViewPartner(' + x.i + ')" style="cursor:pointer;">' +
-          '<div class="admin-info">' +
-            '<div class="admin-info-name">🤝 ' + (x.p.org || '') + '</div>' +
-            '<div class="admin-info-row">👤 ' + (x.p.contact || '') + ' · 📧 ' + (x.p.email || '') + '</div>' +
-            '<div class="admin-info-row" style="opacity:0.5;">📅 ' + (x.p.date ? new Date(x.p.date).toLocaleDateString() : '') + '</div>' +
-          '</div>' +
-        '</div>'
-      ).join('');
+      ? admEmpty('', isAr ? 'لا يوجد طلبات شراكة' : 'No partnership requests')
+      : items.map(p => {
+        const logo = p.logo
+          ? '<img src="' + p.logo + '" alt="">'
+          : '<span class="ig-avatar-initial">' + ((p.org || '?').trim().charAt(0) || '?') + '</span>';
+        const quick = p.status === 'pending'
+          ? '<div class="admin-actions">' +
+              '<button class="approve-btn" onclick="event.stopPropagation();handleApprovePartner(\'' + p.id + '\')">' + (isAr ? 'قبول' : 'Approve') + '</button>' +
+              '<button class="reject-btn" onclick="event.stopPropagation();handleRejectPartner(\'' + p.id + '\')">' + (isAr ? 'رفض' : 'Reject') + '</button>' +
+            '</div>'
+          : '';
+        return '<div class="admin-card" onclick="admViewPartner(\'' + p.id + '\')" style="cursor:pointer;">' +
+          '<div class="admin-card-head">' +
+            '<div class="admin-ava">' + logo + '</div>' +
+            '<div class="admin-info">' +
+              '<div class="admin-info-name">' + (p.org || '') + ' ' + admStatusChip(p.status) + (p.featured ? ' <span class="adm-rolechip">' + (isAr ? 'مميّز' : 'Featured') + '</span>' : '') + '</div>' +
+              '<div class="admin-info-row">' + (p.contact || '') + ' · ' + (p.email || '') + '</div>' +
+              '<div class="admin-info-row">' + (p.date ? new Date(p.date).toLocaleDateString() : '') + '</div>' +
+            '</div>' +
+          '</div>' + quick +
+        '</div>';
+      }).join('');
   } catch (e) {
     console.error('[admRenderPartners] Error:', e);
   }
@@ -6683,7 +6751,7 @@ const ROUTES = {
   detail:        { title: 'detailHeaderTitle', back: true, onEnter: () => {} },
   profile:       { title: 'navProfile',     onEnter: () => renderProfile() },
   settings:      { title: 'settingsTitle', back: true, auth: true, onEnter: () => renderSettings() },
-  about:         { title: 'navAbout',       onEnter: () => animateCounters() },
+  about:         { title: 'navAbout',       onEnter: () => { animateCounters(); renderPartnersShowcase(); } },
   admin:         { title: 'navAdmin', back: true, roles: ['admin', 'super_admin'], onEnter: () => renderAdmin() }
 };
 
@@ -7212,6 +7280,28 @@ function enterApp() {
   }
 }
 
+/* Fill the About partners grid: approved partners first (featured first), then empty invite slots. */
+function renderPartnersShowcase() {
+  const grid = document.getElementById('partnersGrid');
+  if (!grid) return;
+  const approved = PartnerService.getApproved()
+    .slice()
+    .sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+  const slotLabel = t('abPartnerSlot');
+  let html = approved.map(p => {
+    const inner = p.logo
+      ? '<img src="' + p.logo + '" alt="' + (p.org || '') + '" style="max-width:80%;max-height:60%;object-fit:contain;">'
+      : '<span class="partner-slot-name">' + (p.org || '') + '</span>';
+    return '<div class="partner-slot filled' + (p.featured ? ' featured' : '') + '">' + inner + '</div>';
+  }).join('');
+  // keep at least 6 cells; pad with empty invite slots
+  const pad = Math.max(0, 6 - approved.length);
+  for (let i = 0; i < pad; i++) {
+    html += '<div class="partner-slot"><span class="partner-slot-mark">+</span><small>' + slotLabel + '</small></div>';
+  }
+  grid.innerHTML = html;
+}
+
 /* Restore the last viewed page after a refresh (falls back to home). */
 function restoreLastView() {
   try {
@@ -7369,6 +7459,29 @@ function handleCampDone(id) {
   renderAdmin();
   renderCampaigns();
   animateCounters();
+}
+
+/* ── Partner actions (Phase 8.3) ── */
+function handleApprovePartner(id) {
+  if (!Permissions.can(State.cu, 'manage_partners')) return;
+  PartnerService.approve(id);
+  toast(t('approved'), 'success');
+  renderAdmin();
+  admViewPartner(id);
+}
+function handleRejectPartner(id) {
+  if (!Permissions.can(State.cu, 'manage_partners')) return;
+  PartnerService.reject(id);
+  toast(t('rejected'), 'warning');
+  renderAdmin();
+  admViewPartner(id);
+}
+function handleFeaturePartner(id) {
+  if (!Permissions.can(State.cu, 'manage_partners')) return;
+  const p = PartnerService.toggleFeatured(id);
+  toast(p && p.featured ? (State.lang === 'ar' ? 'تم التمييز' : 'Featured') : (State.lang === 'ar' ? 'أُلغي التمييز' : 'Unfeatured'), 'success');
+  renderAdmin();
+  admViewPartner(id);
 }
 
 /* ── PROFILE ── */
