@@ -13,6 +13,7 @@
    ══════════════════════════════════════════ */
 :root {
   --olive:       #5C6A3A;
+  --accent-btn:  #5C6A3A;
   --olive-mid:   #6b7a4f;
   --olive-light: #8A9B6E;
   --olive-pale:  #eef1e8;
@@ -89,6 +90,8 @@
   /* ── ALPHA / LINE HELPERS (replace repeated rgba literals) ── */
   --line-sand:        rgba(232,217,196,0.5);
   --line:             #f0ece2;
+  --line-sand-6:      rgba(232,217,196,0.6);
+  --line-sand-8:      rgba(232,217,196,0.8);
 
   --content-max:      1280px;
   --line-sand-soft:   rgba(232,217,196,0.4);
@@ -96,6 +99,49 @@
   --olive-a40:        rgba(90,107,58,0.4);
   --scrim:            rgba(0,0,0,0.5);
 }
+
+/* ══════════════════════════════════════════
+   DARK THEME (Phase 6.4) — token overrides
+   Most components reference these tokens, so they flip automatically.
+   Brand button green (--accent-btn) and --forest stay dark for white text.
+   ══════════════════════════════════════════ */
+[data-theme="dark"] {
+  --warm-white:  #12150d;   /* page base */
+  --off-white:   #12150d;
+  --white:       #1b2012;   /* card surface */
+  --sand:        #232a17;   /* raised / hover */
+  --warm-beige:  #232a17;
+  --stone:       #3a4527;
+  --sand-dark:   #3a4527;   /* borders */
+  --olive-pale:  rgba(138,155,110,0.18);
+
+  --charcoal:    #eef0e8;   /* primary text */
+  --charcoal-80: #cbcfbe;
+  --charcoal-50: #9aa08c;
+  --charcoal-20: #4a5235;
+
+  --olive:       #aebf86;   /* accent text — light sage for contrast */
+  --olive-mid:   #97a86f;
+  --olive-light: #b9c894;
+
+  --line:             rgba(255,255,255,0.07);
+  --line-sand:        rgba(255,255,255,0.08);
+  --line-sand-6:      rgba(255,255,255,0.09);
+  --line-sand-8:      rgba(255,255,255,0.11);
+  --line-sand-soft:   rgba(255,255,255,0.06);
+  --line-sand-strong: rgba(255,255,255,0.12);
+
+  --success-bg: rgba(45,122,79,0.18);
+  --red-bg:     rgba(200,76,60,0.18);
+  --warn-bg:    rgba(196,125,26,0.18);
+
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.45);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+  --shadow-xl: 0 24px 60px rgba(0,0,0,0.55);
+}
+[data-theme="dark"] body { background: var(--warm-white); }
+[data-theme="dark"] img { filter: brightness(0.92); }
 
 /* ── RESET ── */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing:border-box; }
@@ -160,7 +206,7 @@ body {
   background: rgba(253,250,246,0.95);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border-bottom: 1px solid rgba(232,217,196,0.4);
+  border-bottom: 1px solid var(--line-sand-soft);
 }
 
 .navbar-inner {
@@ -296,7 +342,7 @@ body {
 
 .login-btn-primary {
   width: 100%; height: 52px;
-  background: var(--olive);
+  background: var(--accent-btn);
   color: var(--white);
   border: none;
   border-radius: var(--r-full);
@@ -483,7 +529,7 @@ body {
 .hero-btn {
   height: 44px;
   padding: 0 var(--sp-6);
-  background: var(--olive);
+  background: var(--accent-btn);
   color: var(--white);
   border: none;
   border-radius: var(--r-full);
@@ -523,7 +569,7 @@ body {
   margin: -24px auto 0;
   background: var(--white);
   border-radius: var(--r-xl);
-  border: 1px solid rgba(232,217,196,0.7);
+  border: 1px solid var(--line-sand-strong);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   overflow: hidden;
@@ -535,7 +581,7 @@ body {
 .impact-item {
   text-align: center;
   padding: var(--sp-5) var(--sp-2);
-  border-inline-end: 1px solid rgba(232,217,196,0.6);
+  border-inline-end: 1px solid var(--line-sand-6);
   transition: background 0.2s;
 }
 .impact-item:last-child { border-inline-end: none; }
@@ -572,7 +618,7 @@ body {
   align-items: center;
   margin-bottom: var(--sp-5);
   padding-bottom: var(--sp-4);
-  border-bottom: 1px solid rgba(232,217,196,0.5);
+  border-bottom: 1px solid var(--line-sand);
 }
 
 .section-title {
@@ -603,7 +649,7 @@ body {
   background: var(--white);
   border-radius: var(--r-xl);
   overflow: hidden;
-  border: 1px solid rgba(232,217,196,0.5);
+  border: 1px solid var(--line-sand);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
 }
@@ -743,7 +789,7 @@ body {
 .join-btn {
   height: 36px;
   padding: 0 var(--sp-4);
-  background: var(--olive);
+  background: var(--accent-btn);
   color: var(--white);
   border: none;
   border-radius: var(--r-full);
@@ -851,7 +897,7 @@ body {
 
 .detail-info-card {
   background: var(--white);
-  border: 1px solid rgba(232,217,196,0.6);
+  border: 1px solid var(--line-sand-6);
   border-radius: var(--r-lg);
   padding: var(--sp-4) var(--sp-4);
 }
@@ -873,7 +919,7 @@ body {
 
 .detail-progress-card {
   background: var(--white);
-  border: 1px solid rgba(232,217,196,0.6);
+  border: 1px solid var(--line-sand-6);
   border-radius: var(--r-lg);
   padding: var(--sp-5);
   margin-bottom: var(--sp-6);
@@ -901,7 +947,7 @@ body {
 .detail-join-btn {
   width: 100%;
   height: 52px;
-  background: var(--olive);
+  background: var(--accent-btn);
   color: var(--white);
   border: none;
   border-radius: var(--r-full);
@@ -988,7 +1034,7 @@ body {
 .create-btn {
   height: 48px;
   padding: 0 var(--sp-7);
-  background: var(--olive);
+  background: var(--accent-btn);
   color: var(--white);
   border: none;
   border-radius: var(--r-full);
@@ -1018,7 +1064,7 @@ body {
 
 .my-camp-row {
   background: var(--white);
-  border: 1px solid rgba(232,217,196,0.6);
+  border: 1px solid var(--line-sand-6);
   border-radius: var(--r-lg);
   padding: var(--sp-4) var(--sp-4);
   margin-bottom: var(--sp-3);
@@ -1285,7 +1331,7 @@ body {
 
 .stats-card {
   background: var(--white);
-  border: 1px solid rgba(232,217,196,0.6);
+  border: 1px solid var(--line-sand-6);
   border-radius: var(--r-xl);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1296,7 +1342,7 @@ body {
 .stat-cell {
   text-align: center;
   padding: var(--sp-5) var(--sp-2);
-  border-inline-end: 1px solid rgba(232,217,196,0.6);
+  border-inline-end: 1px solid var(--line-sand-6);
 }
 .stat-cell:last-child { border-inline-end: none; }
 
@@ -1323,7 +1369,7 @@ body {
 
 .menu-card {
   background: var(--white);
-  border: 1px solid rgba(232,217,196,0.6);
+  border: 1px solid var(--line-sand-6);
   border-radius: var(--r-xl);
   overflow: hidden;
 }
@@ -1335,7 +1381,7 @@ body {
   padding: var(--sp-4) var(--sp-5);
   cursor: pointer;
   transition: background 0.18s;
-  border-bottom: 1px solid rgba(232,217,196,0.4);
+  border-bottom: 1px solid var(--line-sand-soft);
 }
 .menu-row:last-child { border-bottom: none; }
 .menu-row:hover { background: var(--sand); }
@@ -1365,7 +1411,7 @@ body {
   display: none;
   background: var(--sand);
   padding: var(--sp-4) var(--sp-5);
-  border-bottom: 1px solid rgba(232,217,196,0.4);
+  border-bottom: 1px solid var(--line-sand-soft);
 }
 
 .info-item {
@@ -1491,7 +1537,7 @@ body {
 
 .about-block {
   background: var(--white);
-  border: 1px solid rgba(232,217,196,0.6);
+  border: 1px solid var(--line-sand-6);
   border-radius: var(--r-xl);
   padding: var(--sp-7);
   margin-bottom: var(--sp-4);
@@ -1608,7 +1654,7 @@ body {
 .dark-submit {
   width: 100%;
   height: 48px;
-  background: var(--olive);
+  background: var(--accent-btn);
   color: var(--white);
   border: none;
   border-radius: var(--r-full);
@@ -1626,7 +1672,7 @@ body {
 
 .admin-card {
   background: var(--white);
-  border: 1px solid rgba(232,217,196,0.6);
+  border: 1px solid var(--line-sand-6);
   border-radius: var(--r-xl);
   padding: var(--sp-6);
   margin-bottom: var(--sp-4);
@@ -1667,7 +1713,7 @@ body {
 .approve-btn {
   flex: 1;
   height: 40px;
-  background: var(--olive);
+  background: var(--accent-btn);
   color: var(--white);
   border: none;
   border-radius: var(--r-full);
@@ -1788,7 +1834,7 @@ body {
 }
 
 input[type="file"]::file-selector-button {
-  background: var(--olive);
+  background: var(--accent-btn);
   color: white;
   padding: var(--sp-1) var(--sp-3);
   border: none;
@@ -1804,7 +1850,7 @@ input[type="file"]::file-selector-button {
 .submit-btn {
   width: 100%;
   height: 52px;
-  background: var(--olive);
+  background: var(--accent-btn);
   color: var(--white);
   border: none;
   border-radius: var(--r-full);
@@ -1832,7 +1878,7 @@ input[type="file"]::file-selector-button {
   background: rgba(253,250,246,0.97);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(232,217,196,0.5);
+  border-top: 1px solid var(--line-sand);
   display: none;
 }
 .bottom-nav.show { display: block; }
@@ -1885,7 +1931,7 @@ input[type="file"]::file-selector-button {
   padding: 3.5rem var(--sp-6);
   background: var(--white);
   border-radius: var(--r-xl);
-  border: 1px solid rgba(232,217,196,0.5);
+  border: 1px solid var(--line-sand);
 }
 .empty-icon { font-size: 2.5rem; margin-bottom: var(--sp-3); }
 .empty-title { font-size: var(--fs-lg); font-weight: 800; margin-bottom: var(--sp-1); }
@@ -1911,7 +1957,7 @@ input[type="file"]::file-selector-button {
   max-width: 90vw;
   text-align: center;
 }
-.toast.success { background: var(--olive); }
+.toast.success { background: var(--accent-btn); }
 .toast.error   { background: var(--red); }
 .toast.warning { background: var(--warn); }
 
@@ -1962,7 +2008,7 @@ input[type="file"]::file-selector-button {
   gap: var(--sp-2);
   padding: var(--sp-3) var(--sp-4);
   background: rgba(253,250,246,0.97);
-  border-bottom: 1px solid rgba(232,217,196,0.5);
+  border-bottom: 1px solid var(--line-sand);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -2006,7 +2052,7 @@ input[type="file"]::file-selector-button {
   width: 100%;
   box-sizing: border-box;
   padding: var(--sp-2) var(--sp-3);
-  border: 1.5px solid rgba(232,217,196,0.7);
+  border: 1.5px solid var(--line-sand-strong);
   border-radius: 0.65rem;
   background: var(--white);
   font-size: var(--fs-base);
@@ -2051,7 +2097,7 @@ input[type="file"]::file-selector-button {
 
 .adm-sidebar-header {
   padding: var(--sp-5) var(--sp-4) var(--sp-4);
-  border-bottom: 1px solid rgba(232,217,196,0.5);
+  border-bottom: 1px solid var(--line-sand);
 }
 .adm-sidebar-logo { display: flex; align-items: baseline; gap: var(--sp-2); }
 .adm-logo-text {
@@ -2141,7 +2187,7 @@ input[type="file"]::file-selector-button {
 }
 .adm-search {
   padding: var(--sp-2) var(--sp-3);
-  border: 1.5px solid rgba(232,217,196,0.7);
+  border: 1.5px solid var(--line-sand-strong);
   border-radius: 0.65rem;
   font-size: var(--fs-base);
   background: var(--white);
@@ -2163,7 +2209,7 @@ input[type="file"]::file-selector-button {
 }
 .adm-stat-card {
   background: var(--white);
-  border: 1px solid rgba(232,217,196,0.5);
+  border: 1px solid var(--line-sand);
   border-radius: 1rem;
   padding: var(--sp-4);
   cursor: pointer;
@@ -2189,7 +2235,7 @@ input[type="file"]::file-selector-button {
 /* ── Generic Card ── */
 .adm-card {
   background: var(--white);
-  border: 1px solid rgba(232,217,196,0.5);
+  border: 1px solid var(--line-sand);
   border-radius: 1rem;
   padding: var(--sp-4);
   margin-bottom: var(--sp-3);
@@ -2219,7 +2265,7 @@ input[type="file"]::file-selector-button {
     width: auto;
     max-width: none;
     box-shadow: none;
-    border-inline-end: 1px solid rgba(232,217,196,0.5);
+    border-inline-end: 1px solid var(--line-sand);
     z-index: 1;
     padding-top: 0;
   }
@@ -2244,7 +2290,7 @@ input[type="file"]::file-selector-button {
   align-items: center;
   gap: var(--sp-2);
   padding: var(--sp-3) var(--sp-4);
-  border: 1px solid rgba(232,217,196,0.6);
+  border: 1px solid var(--line-sand-6);
   background: var(--white);
   border-radius: 0.85rem;
   cursor: pointer;
@@ -2272,7 +2318,7 @@ input[type="file"]::file-selector-button {
   flex: none;
   padding: var(--sp-2) var(--sp-4);
   border-radius: 9999px;
-  border: 1.5px solid rgba(232,217,196,0.8);
+  border: 1.5px solid var(--line-sand-8);
   background: var(--white);
   font-family: inherit;
   font-size: var(--fs-sm);
@@ -2283,7 +2329,7 @@ input[type="file"]::file-selector-button {
   white-space: nowrap;
 }
 .adm-chip.active {
-  background: var(--olive);
+  background: var(--accent-btn);
   border-color: var(--olive);
   color: var(--white);
 }
@@ -2347,7 +2393,7 @@ input[type="file"]::file-selector-button {
   align-items: center;
   gap: var(--sp-3);
   padding: var(--sp-2) 0;
-  border-bottom: 1px solid rgba(232,217,196,0.4);
+  border-bottom: 1px solid var(--line-sand-soft);
 }
 .adm-lead-row:last-child { border-bottom: none; }
 /* ══════════════════════════════════════════
@@ -2418,7 +2464,7 @@ input[type="file"]::file-selector-button {
   border: 1.5px solid rgba(46,61,31,0.14); border-radius: var(--r-md);
   transition: border-color 0.2s, background 0.2s; outline: none; }
 .auth-input::placeholder { color: rgba(46,61,31,0.32); }
-.auth-input:focus { border-color: var(--olive); background: #fff; }
+.auth-input:focus { border-color: var(--olive); background: var(--white); }
 .auth-row { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); }
 .auth-check { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-sm);
   color: rgba(46,61,31,0.7); cursor: pointer; }
@@ -2444,7 +2490,7 @@ input[type="file"]::file-selector-button {
 /* register multi-step + pending */
 .auth-steps { display: flex; gap: var(--sp-2); justify-content: center; margin-bottom: var(--sp-6); }
 .auth-step { width: 28px; height: 4px; border-radius: 2px; background: rgba(46,61,31,0.15); transition: background 0.3s; }
-.auth-step.active { background: var(--olive); }
+.auth-step.active { background: var(--accent-btn); }
 .reg-step { display: none; flex-direction: column; gap: var(--sp-4); }
 .reg-step.active { display: flex; }
 select.auth-input { -webkit-appearance: none; appearance: none; }
@@ -2517,7 +2563,7 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
 .fab { position: fixed; z-index: 410; display: none; align-items: center; justify-content: center;
   bottom: calc(64px + env(safe-area-inset-bottom) + var(--sp-3)); inset-inline-end: var(--sp-5);
   width: 56px; height: 56px; border-radius: var(--r-full); border: none;
-  background: var(--olive); color: var(--off-white); font-size: 1.8rem; line-height: 1; cursor: pointer;
+  background: var(--accent-btn); color: var(--off-white); font-size: 1.8rem; line-height: 1; cursor: pointer;
   box-shadow: 0 8px 24px var(--olive-glow); transition: transform 0.15s, background 0.2s; }
 .fab.show { display: flex; }
 .fab:hover { background: var(--olive-mid); }
@@ -2549,10 +2595,10 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
 
 .notif-list { max-width: var(--content-max); margin: 0 auto; padding: var(--sp-2) var(--sp-4) var(--sp-7); }
 .notif-item { display: flex; gap: var(--sp-3); align-items: flex-start; padding: var(--sp-4);
-  border-radius: var(--r-lg); background: var(--white); border: 1px solid rgba(232,217,196,0.5); margin-bottom: var(--sp-3); }
+  border-radius: var(--r-lg); background: var(--white); border: 1px solid var(--line-sand); margin-bottom: var(--sp-3); }
 .notif-item.unread { background: var(--olive-pale); border-color: rgba(90,107,58,0.22); }
 .notif-dot { width: 8px; height: 8px; border-radius: var(--r-full); background: var(--charcoal-20); margin-top: 6px; flex: none; }
-.notif-item.unread .notif-dot { background: var(--olive); }
+.notif-item.unread .notif-dot { background: var(--accent-btn); }
 .notif-body { flex: 1; min-width: 0; }
 .notif-text { font-size: var(--fs-sm); color: var(--charcoal); line-height: 1.6; }
 .notif-time { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: var(--sp-1); }
@@ -2586,7 +2632,7 @@ html, body { overflow-x: hidden; }
   .navbar, .bottom-nav {
     left: 50%; right: auto; transform: translateX(-50%);
     width: 100%; max-width: 600px;
-    border-inline: 1px solid rgba(232,217,196,0.5);
+    border-inline: 1px solid var(--line-sand);
   }
   #appScreen, #loginScreen {
     max-width: 600px; margin-inline: auto;
@@ -2598,7 +2644,7 @@ html, body { overflow-x: hidden; }
 /* ── PHASE 4.0 — skeletons + empty states ── */
 .empty-sub { font-size: var(--fs-sm); color: var(--charcoal-50); line-height: 1.7; margin-top: var(--sp-2); max-width: 280px; }
 .skel-card { border-radius: var(--r-lg); overflow: hidden; background: var(--white);
-  border: 1px solid rgba(232,217,196,0.5); }
+  border: 1px solid var(--line-sand); }
 .skel-img { width: 100%; aspect-ratio: 16/10; }
 .skel-line { height: 12px; border-radius: var(--r-full); margin: var(--sp-3) var(--sp-4) 0; }
 .skel-line:last-child { margin-bottom: var(--sp-4); }
@@ -2628,7 +2674,7 @@ html, body { overflow-x: hidden; }
 .cat-chip { flex: none; white-space: nowrap; padding: var(--sp-2) var(--sp-4); border-radius: var(--r-full);
   border: 1.5px solid var(--sand-dark); background: var(--white); color: var(--charcoal);
   font-family: inherit; font-size: var(--fs-sm); font-weight: 700; cursor: pointer; transition: background 0.18s, color 0.18s, border-color 0.18s; }
-.cat-chip.active { background: var(--olive); color: var(--off-white); border-color: var(--olive); }
+.cat-chip.active { background: var(--accent-btn); color: var(--off-white); border-color: var(--olive); }
 
 /* ══════════════════════════════════════════
    PHASE 4.2 — HOME EXPERIENCE
@@ -2664,7 +2710,7 @@ html, body { overflow-x: hidden; }
 .featured-prog { height: 6px; border-radius: var(--r-full); background: rgba(255,255,255,0.25); margin-top: var(--sp-3); overflow: hidden; }
 .featured-prog span { display: block; height: 100%; background: var(--off-white); border-radius: var(--r-full); }
 
-.hl-card { background: var(--white); border: 1px solid rgba(232,217,196,0.6); border-radius: var(--r-lg);
+.hl-card { background: var(--white); border: 1px solid var(--line-sand-6); border-radius: var(--r-lg);
   padding: var(--sp-4); margin-bottom: var(--sp-3); }
 .hl-h { font-size: var(--fs-sm); font-weight: 800; color: var(--charcoal); margin-bottom: var(--sp-3); }
 .hl-row { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-2) 0; }
@@ -2690,7 +2736,7 @@ html, body { overflow-x: hidden; }
 .detail-title { font-size: var(--fs-2xl); font-weight: 900; color: var(--charcoal); line-height: 1.25; }
 .detail-org { font-size: var(--fs-sm); color: var(--charcoal-50); margin-top: var(--sp-2); }
 .detail-actions { display: flex; gap: var(--sp-3); margin: var(--sp-5) 0; }
-.detail-join-btn { flex: 1; height: 52px; border: none; border-radius: var(--r-full); background: var(--olive);
+.detail-join-btn { flex: 1; height: 52px; border: none; border-radius: var(--r-full); background: var(--accent-btn);
   color: var(--off-white); font-family: inherit; font-size: var(--fs-md); font-weight: 800; cursor: pointer; transition: all 0.2s; }
 .detail-join-btn:hover:not(:disabled) { background: var(--olive-mid); }
 .detail-join-btn:disabled { opacity: 0.5; cursor: default; }
@@ -2698,7 +2744,7 @@ html, body { overflow-x: hidden; }
 .detail-icon-btn { width: 52px; flex: none; border-radius: var(--r-full); border: 1.5px solid var(--sand-dark);
   background: var(--white); color: var(--charcoal); font-size: 1.2rem; cursor: pointer; }
 .detail-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3); margin-bottom: var(--sp-4); }
-.dstat { background: var(--white); border: 1px solid rgba(232,217,196,0.6); border-radius: var(--r-lg);
+.dstat { background: var(--white); border: 1px solid var(--line-sand-6); border-radius: var(--r-lg);
   padding: var(--sp-3); text-align: center; }
 .dstat-n { font-size: var(--fs-lg); font-weight: 900; color: var(--olive); }
 .dstat-l { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: var(--sp-1); }
@@ -2714,7 +2760,7 @@ html, body { overflow-x: hidden; }
   display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: var(--fs-sm); }
 .part-chip.more { background: var(--sand-dark); color: var(--charcoal-80); }
 .manage-row { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
-.manage-btn { flex: 1; min-width: 130px; height: 46px; border: none; border-radius: var(--r-md); background: var(--olive);
+.manage-btn { flex: 1; min-width: 130px; height: 46px; border: none; border-radius: var(--r-md); background: var(--accent-btn);
   color: var(--off-white); font-family: inherit; font-weight: 800; font-size: var(--fs-sm); cursor: pointer; }
 .manage-btn.ghost { background: transparent; color: var(--charcoal-80); border: 1.5px solid var(--sand-dark); }
 
@@ -2754,7 +2800,7 @@ html, body { overflow-x: hidden; }
   font-size: var(--fs-md); font-weight: 800; color: var(--charcoal); }
 .impact-grid { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--sp-5);
   display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3); }
-.impact-tile { background: var(--white); border: 1px solid rgba(232,217,196,0.6); border-radius: var(--r-lg);
+.impact-tile { background: var(--white); border: 1px solid var(--line-sand-6); border-radius: var(--r-lg);
   padding: var(--sp-4) var(--sp-2); text-align: center; }
 .impact-tile-n { font-family: 'DM Sans', sans-serif; font-size: var(--fs-xl); font-weight: 800; color: var(--charcoal); }
 .impact-tile-l { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: 2px; }
@@ -2771,7 +2817,7 @@ html, body { overflow-x: hidden; }
 .cert-list { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--sp-5);
   display: flex; flex-direction: column; gap: var(--sp-3); }
 .cert-card { display: flex; align-items: center; gap: var(--sp-4);
-  background: var(--white); border: 1px solid rgba(232,217,196,0.7); border-radius: var(--r-lg);
+  background: var(--white); border: 1px solid var(--line-sand-strong); border-radius: var(--r-lg);
   padding: var(--sp-4); cursor: pointer; transition: background 0.15s, box-shadow 0.15s; }
 .cert-card:hover { background: var(--sand); box-shadow: 0 4px 14px rgba(0,0,0,0.05); }
 .cert-seal { width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
@@ -2787,7 +2833,7 @@ html, body { overflow-x: hidden; }
 .tl-marker { position: relative; flex-shrink: 0; width: 16px; display: flex; justify-content: center; }
 .tl-marker::before { content: ''; position: absolute; top: 16px; bottom: -4px; width: 2px; background: var(--sand-dark); }
 .tl-item:last-child .tl-marker::before { display: none; }
-.tl-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--olive); margin-top: 4px; border: 2px solid var(--warm-white); z-index: 1; }
+.tl-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent-btn); margin-top: 4px; border: 2px solid var(--warm-white); z-index: 1; }
 .tl-item.done .tl-dot { background: var(--forest); }
 .tl-item.badge .tl-dot { background: #c9a34e; }
 .tl-item.account .tl-dot { background: var(--charcoal-20); }
@@ -2809,6 +2855,40 @@ html, body { overflow-x: hidden; }
 .cert-doc-hours { font-size: var(--fs-sm); color: var(--charcoal-80); margin-top: var(--sp-4); }
 .cert-doc-date { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: var(--sp-2); }
 
+/* ── PHASE 6.4 — settings + switches ── */
+.policy-body { font-size: var(--fs-base); color: var(--charcoal-80); line-height: 1.9; padding-bottom: var(--sp-4); }
+.settings-wrap { max-width: var(--content-max); margin: 0 auto; padding: var(--sp-5) var(--sp-5) var(--sp-9); }
+.set-group-h { font-size: var(--fs-sm); font-weight: 800; color: var(--charcoal-50); letter-spacing: 0.3px;
+  margin: var(--sp-5) var(--sp-1) var(--sp-3); }
+.set-card { background: var(--white); border: 1px solid var(--line-sand-6); border-radius: var(--r-lg); overflow: hidden; }
+.set-row { display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-4) var(--sp-5);
+  border-bottom: 1px solid var(--line-sand-soft); }
+.set-row:last-child { border-bottom: none; }
+.set-row.tappable { cursor: pointer; transition: background 0.15s; }
+.set-row.tappable:hover { background: var(--sand); }
+.set-texts { flex: 1; min-width: 0; }
+.set-title { font-size: var(--fs-base); font-weight: 700; color: var(--charcoal); }
+.set-sub { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: 2px; }
+.set-arrow { font-size: var(--fs-lg); color: var(--charcoal-20); }
+[dir="rtl"] .set-arrow { transform: scaleX(-1); }
+
+.switch { width: 48px; height: 28px; border-radius: var(--r-full); background: var(--charcoal-20);
+  border: none; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; padding: 0; }
+.switch .switch-knob { position: absolute; top: 3px; inset-inline-start: 3px; width: 22px; height: 22px;
+  border-radius: 50%; background: #fff; transition: inset-inline-start 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+.switch.on { background: var(--accent-btn); }
+.switch.on .switch-knob { inset-inline-start: 23px; }
+
+.seg { display: flex; background: var(--sand); border-radius: var(--r-full); padding: 3px; gap: 2px; }
+.seg-btn { border: none; background: transparent; color: var(--charcoal-50); font-family: inherit;
+  font-size: var(--fs-xs); font-weight: 700; padding: var(--sp-2) var(--sp-3); border-radius: var(--r-full); cursor: pointer; }
+.seg-btn.on { background: var(--white); color: var(--charcoal); box-shadow: var(--shadow-sm); }
+
+.set-logout { width: 100%; margin-top: var(--sp-7); padding: var(--sp-4); border-radius: var(--r-lg);
+  border: 1px solid var(--red); background: transparent; color: var(--red); font-weight: 800; font-size: var(--fs-base); cursor: pointer; }
+.set-logout:hover { background: var(--red-bg); }
+.set-version { text-align: center; font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: var(--sp-5); }
+
 /* ── PHASE 6.1 — profile privacy toggle ── */
 .profile-privacy { text-align: center; margin-top: var(--sp-3); }
 .privacy-toggle { display: inline-flex; align-items: center; gap: var(--sp-2); padding: var(--sp-2) var(--sp-4);
@@ -2816,7 +2896,7 @@ html, body { overflow-x: hidden; }
   color: var(--charcoal-80); font-family: inherit; font-size: var(--fs-sm); font-weight: 700; cursor: pointer; transition: 0.2s; }
 .privacy-dot { width: 10px; height: 10px; border-radius: var(--r-full); background: var(--charcoal-20); }
 .privacy-toggle.on { border-color: var(--olive); color: var(--olive); }
-.privacy-toggle.on .privacy-dot { background: var(--olive); }
+.privacy-toggle.on .privacy-dot { background: var(--accent-btn); }
 </style>
 </head>
 <body>
@@ -3127,6 +3207,15 @@ html, body { overflow-x: hidden; }
     <div class="timeline" id="profileTimeline"></div>
     <div class="profile-menu">
       <div class="menu-card">
+        <div class="menu-row" onclick="goPage('settings')">
+          <div class="menu-icon">⚙️</div>
+          <div class="menu-texts">
+            <div class="menu-title" data-i18n="settingsTitle"></div>
+            <div class="menu-sub" data-i18n="settingsSub"></div>
+          </div>
+          <div class="menu-arrow">›</div>
+        </div>
+
         <div class="menu-row" onclick="toggleMenu('m-id')">
           <div class="menu-icon">🪪</div>
           <div class="menu-texts">
@@ -3178,6 +3267,57 @@ html, body { overflow-x: hidden; }
           <div class="menu-arrow">›</div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS (Phase 6.4) -->
+  <div class="page" id="settingsPage">
+    <div class="settings-wrap">
+      <div class="set-group-h" data-i18n="setAppearance"></div>
+      <div class="set-card">
+        <div class="set-row">
+          <div class="set-texts"><div class="set-title" data-i18n="setDark"></div><div class="set-sub" data-i18n="setDarkSub"></div></div>
+          <button class="switch" id="swTheme" onclick="toggleTheme()" role="switch" aria-label="dark mode"><span class="switch-knob"></span></button>
+        </div>
+        <div class="set-row">
+          <div class="set-texts"><div class="set-title" data-i18n="setLang"></div><div class="set-sub" data-i18n="setLangSub"></div></div>
+          <div class="seg" id="segLang">
+            <button class="seg-btn" data-lang="ar" onclick="setLangFromSettings('ar')">العربية</button>
+            <button class="seg-btn" data-lang="en" onclick="setLangFromSettings('en')">English</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="set-group-h" data-i18n="setPrivacyGroup"></div>
+      <div class="set-card">
+        <div class="set-row" id="setPrivacyRow">
+          <div class="set-texts"><div class="set-title" data-i18n="setPublic"></div><div class="set-sub" data-i18n="setPublicSub"></div></div>
+          <button class="switch" id="swPrivacy" onclick="toggleProfileVisibilityFromSettings()" role="switch" aria-label="public profile"><span class="switch-knob"></span></button>
+        </div>
+        <div class="set-row">
+          <div class="set-texts"><div class="set-title" data-i18n="setNotif"></div><div class="set-sub" data-i18n="setNotifSub"></div></div>
+          <button class="switch" id="swNotif" onclick="toggleNotifPref()" role="switch" aria-label="notifications"><span class="switch-knob"></span></button>
+        </div>
+      </div>
+
+      <div class="set-group-h" data-i18n="setSupportGroup"></div>
+      <div class="set-card">
+        <div class="set-row tappable" onclick="openSupport()">
+          <div class="set-texts"><div class="set-title" data-i18n="setContact"></div><div class="set-sub" data-i18n="setContactSub"></div></div>
+          <span class="set-arrow">›</span>
+        </div>
+        <div class="set-row tappable" onclick="openPolicy('privacy')">
+          <div class="set-texts"><div class="set-title" data-i18n="setPrivacyPolicy"></div></div>
+          <span class="set-arrow">›</span>
+        </div>
+        <div class="set-row tappable" onclick="openPolicy('terms')">
+          <div class="set-texts"><div class="set-title" data-i18n="setTerms"></div></div>
+          <span class="set-arrow">›</span>
+        </div>
+      </div>
+
+      <button class="set-logout" onclick="doLogout()" data-i18n="logout"></button>
+      <div class="set-version" id="setVersion"></div>
     </div>
   </div>
 
@@ -3538,6 +3678,16 @@ html, body { overflow-x: hidden; }
     <div id="certBody"></div>
   </div>
 </div>
+<div class="modal-overlay" id="policyModal">
+  <div class="modal-sheet">
+    <div class="modal-bar">
+      <button type="button" class="modal-close" onclick="closeModal('policyModal')" aria-label="back">‹</button>
+      <div class="modal-handle"></div>
+    </div>
+    <div class="modal-title" id="policyTitle"></div>
+    <div class="policy-body" id="policyBody"></div>
+  </div>
+</div>
 <div class="modal-overlay" id="participantsModal">
   <div class="modal-sheet">
     <div class="modal-bar">
@@ -3766,6 +3916,14 @@ const T = {
     certsTitle: 'الشهادات', timelineTitle: 'سجل النشاط', noCerts: 'أكمل حملة لتحصل على شهادتك الأولى', noActivity: 'ابدأ رحلتك — انضمّ لأول حملة', viewCertBtn: 'عرض',
     tlJoin: 'انضممت إلى', tlDone: 'أكملت حملة', tlBadge: 'حصلت على شارة', tlAccount: 'بدأت رحلتك في أثر',
     certHeading: 'شهادة تقدير', certBody1: 'تشهد منصة أثر أنّ', certBody2: 'قد أتمّ بنجاح المشاركة في', certHoursLine: 'بإجمالي ساعات تطوّع', shareCert: 'مشاركة الشهادة', certShared: 'تم نسخ نص الشهادة',
+    settingsTitle: 'الإعدادات', settingsSub: 'المظهر · اللغة · الخصوصية · الدعم',
+    setAppearance: 'المظهر', setDark: 'الوضع الداكن', setDarkSub: 'مظهر مريح للعين ليلًا', setLang: 'اللغة', setLangSub: 'لغة الواجهة',
+    setPrivacyGroup: 'الخصوصية', setPublic: 'ملف عام', setPublicSub: 'السماح للآخرين بزيارة ملفك', setNotif: 'الإشعارات', setNotifSub: 'تنبيهات الحملات والتحديثات',
+    setSupportGroup: 'الدعم والسياسات', setContact: 'تواصل معنا', setContactSub: 'مساعدة أو اقتراح', setPrivacyPolicy: 'سياسة الخصوصية', setTerms: 'شروط الاستخدام',
+    notifOn: 'تم تفعيل الإشعارات', notifOff: 'تم إيقاف الإشعارات',
+    policyPrivacyTitle: 'سياسة الخصوصية', policyPrivacyBody: 'نحن في «أثر» نحترم خصوصيتك. تُحفظ بياناتك (الاسم، البريد، الهاتف، نشاطك التطوّعي) على جهازك محليًا فقط لتشغيل التطبيق، ولا تُشارك مع أي طرف ثالث. يمكنك تعديل معلوماتك أو حذف حسابك في أي وقت. صورتك الشخصية وصورة الهوية تُستخدمان فقط للتحقّق وعرض ملفك.',
+    policyTermsTitle: 'شروط الاستخدام', policyTermsBody: 'باستخدامك «أثر» فإنك توافق على المشاركة في الحملات التطوّعية باحترام ومسؤولية، وعلى تقديم معلومات صحيحة، وعلى الالتزام بمواعيد الحملات التي تنضمّ إليها. يحقّ للإدارة مراجعة الحملات المنشورة وتعليق الحسابات المخالفة. الهدف من المنصة خدمة المجتمع وصناعة أثر إيجابي.',
+    supportMsg: 'للتواصل أو الاقتراحات: support@athar.sy', appVersion: 'أثر · الإصدار 1.0',
     photoSheetTitle: 'صورة الملف الشخصي', photoChoose: 'اختر صورة', photoRemove: 'حذف الصورة الحالية', photoRemoved: 'تم حذف الصورة', sheetCancel: 'إلغاء',
     menuInfo: 'المعلومات الشخصية', menuInfoSub: 'الاسم، البريد، الهاتف',
     menuId: 'صورة الهوية', menuIdSub: 'عرض وتحميل',
@@ -3926,6 +4084,14 @@ const T = {
     certsTitle: 'Certificates', timelineTitle: 'Activity', noCerts: 'Complete a campaign to earn your first certificate', noActivity: 'Start your journey — join your first campaign', viewCertBtn: 'View',
     tlJoin: 'Joined', tlDone: 'Completed', tlBadge: 'Earned a badge', tlAccount: 'Started your ATHAR journey',
     certHeading: 'Certificate of Appreciation', certBody1: 'ATHAR certifies that', certBody2: 'has successfully participated in', certHoursLine: 'total volunteer hours', shareCert: 'Share certificate', certShared: 'Certificate text copied',
+    settingsTitle: 'Settings', settingsSub: 'Appearance · Language · Privacy · Support',
+    setAppearance: 'Appearance', setDark: 'Dark mode', setDarkSub: 'Easier on the eyes at night', setLang: 'Language', setLangSub: 'Interface language',
+    setPrivacyGroup: 'Privacy', setPublic: 'Public profile', setPublicSub: 'Let others visit your profile', setNotif: 'Notifications', setNotifSub: 'Campaign alerts and updates',
+    setSupportGroup: 'Support & Policies', setContact: 'Contact us', setContactSub: 'Help or feedback', setPrivacyPolicy: 'Privacy policy', setTerms: 'Terms of use',
+    notifOn: 'Notifications enabled', notifOff: 'Notifications disabled',
+    policyPrivacyTitle: 'Privacy Policy', policyPrivacyBody: 'At ATHAR we respect your privacy. Your data (name, email, phone, volunteering activity) is stored locally on your device only to run the app, and is never shared with third parties. You can edit your information or delete your account at any time. Your profile and ID photos are used only for verification and displaying your profile.',
+    policyTermsTitle: 'Terms of Use', policyTermsBody: 'By using ATHAR you agree to take part in volunteering campaigns respectfully and responsibly, to provide accurate information, and to honor the schedule of campaigns you join. The admin may review published campaigns and suspend violating accounts. The platform exists to serve the community and create positive impact.',
+    supportMsg: 'Contact or feedback: support@athar.sy', appVersion: 'ATHAR · Version 1.0',
     photoSheetTitle: 'Profile photo', photoChoose: 'Choose photo', photoRemove: 'Remove current photo', photoRemoved: 'Photo removed', sheetCancel: 'Cancel',
     menuInfo: 'Personal Info', menuInfoSub: 'Name, Email, Phone',
     menuId: 'ID Photo', menuIdSub: 'View & Download',
@@ -5470,7 +5636,7 @@ function admRenderOverview(users, camps, partners) {
               '<div class="admin-info-row">' + (isAr ? 'حملة جديدة بانتظار الموافقة' : 'New campaign awaiting approval') + ' · 👤 ' + (c.creatorName || '') + '</div>' +
             '</div>' +
             '<div class="admin-actions">' +
-              '<button class="approve-btn" style="background:var(--olive);" onclick="event.stopPropagation();admViewCamp(\'' + c.id + '\')">' + (isAr ? 'مراجعة وتعديل' : 'Review & edit') + '</button>' +
+              '<button class="approve-btn" style="background: var(--accent-btn);" onclick="event.stopPropagation();admViewCamp(\'' + c.id + '\')">' + (isAr ? 'مراجعة وتعديل' : 'Review & edit') + '</button>' +
             '</div>' +
           '</div>';
       });
@@ -5541,7 +5707,7 @@ function admStatDetail(kind) {
     admOpenModal(
       '<h3 style="margin:0 0 1rem;font-size:var(--fs-xl);font-weight:900;color:var(--charcoal);">' + title + ' <span style="font-size:var(--fs-sm);font-weight:800;color:var(--charcoal-50);">(' + rows.length + ')</span></h3>' +
       (rows.length ? rows.join('') : admEmpty('📭', isAr ? 'لا يوجد بيانات' : 'No data')) +
-      '<button style="margin-top:1.1rem;width:100%;padding:0.8rem;border:none;border-radius:0.75rem;background:var(--olive);color:#fff;font-weight:800;font-size:var(--fs-md);cursor:pointer;font-family:inherit;" onclick="admSwitchPanel(\'' + panel + '\')">' + (isAr ? 'عرض القسم كاملاً' : 'Open full section') + '</button>'
+      '<button style="margin-top:1.1rem;width:100%;padding:0.8rem;border:none;border-radius:0.75rem;background: var(--accent-btn);color:#fff;font-weight:800;font-size:var(--fs-md);cursor:pointer;font-family:inherit;" onclick="admSwitchPanel(\'' + panel + '\')">' + (isAr ? 'عرض القسم كاملاً' : 'Open full section') + '</button>'
     );
   } catch (e) {
     console.error('[admStatDetail] Error:', e);
@@ -5622,7 +5788,7 @@ function admViewCamp(id) {
       (txt.desc ? '<div style="font-size:var(--fs-base);color:#555;line-height:1.6;margin-bottom:0.8rem;">' + txt.desc + '</div>' : '') +
       '<div style="margin-bottom:0.8rem;">' +
         '<div style="display:flex;justify-content:space-between;font-size:var(--fs-sm);font-weight:700;color:var(--charcoal-50);margin-bottom:0.3rem;"><span>' + (isAr ? 'المتطوعين' : 'Volunteers') + '</span><span>' + (c.volunteers || 0) + ' / ' + (c.needed || 0) + '</span></div>' +
-        '<div style="height:8px;background:var(--line);border-radius:9999px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:var(--olive);border-radius:9999px;"></div></div>' +
+        '<div style="height:8px;background:var(--line);border-radius:9999px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background: var(--accent-btn);border-radius:9999px;"></div></div>' +
       '</div>' +
       row('🏷️', isAr ? 'الفئة' : 'Category', txt.cat) +
       row('📍', isAr ? 'الموقع' : 'Location', c.location) +
@@ -5655,7 +5821,7 @@ function admEditCamp(id) {
     '<div class="field-row"><div class="field"><label>' + t('neededLabel') + '</label><input id="ecNeeded" type="number" min="1" value="' + (c.needed || 1) + '"></div>' +
       '<div class="field"><label>' + t('dateLabel') + '</label><input id="ecDate" type="date" value="' + (c.date || '') + '"></div></div>' +
     '<div class="field"><label>' + t('categoryLabel') + '</label><select id="ecCat">' + cats + '</select></div>' +
-    '<button style="width:100%;padding:0.85rem;border:none;border-radius:0.75rem;background:var(--olive);color:#fff;font-weight:800;cursor:pointer;margin-top:0.4rem;" onclick="saveCampEdit(\'' + id + '\')">' + t('saveChanges') + '</button>'
+    '<button style="width:100%;padding:0.85rem;border:none;border-radius:0.75rem;background: var(--accent-btn);color:#fff;font-weight:800;cursor:pointer;margin-top:0.4rem;" onclick="saveCampEdit(\'' + id + '\')">' + t('saveChanges') + '</button>'
   );
 }
 function saveCampEdit(id) {
@@ -5807,7 +5973,7 @@ function admRenderCampaigns() {
         const txt = Models.getCampText(c);
         let actions = '';
         if (c.status === 'pending') {
-          actions = '<button class="approve-btn" style="flex:1;background:var(--olive);" onclick="event.stopPropagation();admViewCamp(\'' + c.id + '\')">' + (isAr ? 'مراجعة وتعديل' : 'Review & edit') + '</button>';
+          actions = '<button class="approve-btn" style="flex:1;background: var(--accent-btn);" onclick="event.stopPropagation();admViewCamp(\'' + c.id + '\')">' + (isAr ? 'مراجعة وتعديل' : 'Review & edit') + '</button>';
         } else if (c.status === 'approved') {
           actions = '<button class="approve-btn" style="flex:1;" onclick="event.stopPropagation();handleCampUnderProcess(\'' + c.id + '\')">' + (isAr ? 'قيد التنفيذ' : 'In Progress') + '</button>' +
                     '<button class="approve-btn" style="flex:1;background:#8b5cf6;" onclick="event.stopPropagation();handleCampDone(\'' + c.id + '\')">' + (isAr ? 'تم انجازها' : 'Mark Done') + '</button>';
@@ -6185,6 +6351,7 @@ const ROUTES = {
   create:        { title: 'createTitle', back: true, auth: true, onEnter: () => { renderCampaigns(); renderMyCamps(); } },
   detail:        { title: 'detailHeaderTitle', back: true, onEnter: () => {} },
   profile:       { title: 'navProfile',     onEnter: () => renderProfile() },
+  settings:      { title: 'settingsTitle', back: true, auth: true, onEnter: () => renderSettings() },
   about:         { title: 'navAbout',       onEnter: () => {} },
   admin:         { title: 'navAdmin', back: true, roles: ['admin'], onEnter: () => renderAdmin() }
 };
@@ -6363,6 +6530,7 @@ function applyI18n() {
 
 function toggleLang() {
   State.setLang(State.lang === 'ar' ? 'en' : 'ar');
+  try { localStorage.setItem('athar_lang', State.lang); } catch (e) {}
   applyI18n();
 }
 
@@ -7049,6 +7217,75 @@ function shareCert(campId) {
   } else { toast(t('certShared'), 'success'); }
 }
 
+/* ══════════════════════════════════════════
+   SETTINGS + THEME (Phase 6.4)
+   ══════════════════════════════════════════ */
+const ThemeService = {
+  KEY: 'athar_theme',
+  get() { try { return localStorage.getItem(this.KEY) === 'dark' ? 'dark' : 'light'; } catch (e) { return 'light'; } },
+  apply(theme) { document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light'); },
+  set(theme) { try { localStorage.setItem(this.KEY, theme); } catch (e) {} this.apply(theme); },
+  toggle() { const next = this.get() === 'dark' ? 'light' : 'dark'; this.set(next); return next; },
+  init() { this.apply(this.get()); }
+};
+
+function renderSettings() {
+  const sw = (id, on) => { const el = document.getElementById(id); if (el) el.classList.toggle('on', !!on); };
+  sw('swTheme', ThemeService.get() === 'dark');
+  sw('swPrivacy', !!(State.cu && State.cu.profilePublic));
+  sw('swNotif', !(State.cu && State.cu.notifPref === false));
+  // language segmented
+  document.querySelectorAll('#segLang .seg-btn').forEach(b => b.classList.toggle('on', b.getAttribute('data-lang') === State.lang));
+  // privacy row hidden for admin
+  const pr = document.getElementById('setPrivacyRow');
+  if (pr) pr.style.display = State.isAdmin ? 'none' : 'flex';
+  const ver = document.getElementById('setVersion');
+  if (ver) ver.textContent = t('appVersion');
+}
+
+function toggleTheme() {
+  ThemeService.toggle();
+  renderSettings();
+}
+
+function setLangFromSettings(lang) {
+  if (State.lang === lang) return;
+  State.setLang(lang);
+  try { localStorage.setItem('athar_lang', State.lang); } catch (e) {}
+  applyI18n();
+  renderSettings();
+}
+
+function toggleProfileVisibilityFromSettings() {
+  toggleProfileVisibility();
+  renderSettings();
+}
+
+function toggleNotifPref() {
+  if (!State.cu) return;
+  const next = !(State.cu.notifPref === false); // currently on? then turn off
+  persistCurrentUser({ notifPref: !next });
+  toast((!next) ? t('notifOn') : t('notifOff'), 'success');
+  renderSettings();
+}
+
+function openPolicy(kind) {
+  const title = document.getElementById('policyTitle');
+  const body = document.getElementById('policyBody');
+  if (kind === 'terms') {
+    if (title) title.textContent = t('policyTermsTitle');
+    if (body) body.textContent = t('policyTermsBody');
+  } else {
+    if (title) title.textContent = t('policyPrivacyTitle');
+    if (body) body.textContent = t('policyPrivacyBody');
+  }
+  openModal('policyModal');
+}
+
+function openSupport() {
+  toast(t('supportMsg'), 'success');
+}
+
 /* ── PARTNER FORM ── */
 function submitPartner(e) {
   e.preventDefault();
@@ -7116,6 +7353,8 @@ function initData() {
 document.addEventListener('DOMContentLoaded', () => {
   try {
     initData();
+    ThemeService.init();
+    try { const lg = localStorage.getItem('athar_lang'); if (lg) State.setLang(lg); } catch (e) {}
     applyI18n();
     populateDob();
     populateCategories();
