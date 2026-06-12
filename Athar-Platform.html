@@ -1855,6 +1855,8 @@ body {
 .adm-select { width:100%; padding:var(--sp-3) var(--sp-4); border:1.5px solid var(--sand-dark); border-radius:var(--r-md); background:var(--white); color:var(--charcoal); font-family:inherit; font-size:var(--fs-base); }
 .adm-select:focus { outline:none; border-color:var(--forest); }
 .adm-sub-h { font-size:var(--fs-md); font-weight:800; color:var(--charcoal-80); margin:var(--sp-5) 0 var(--sp-3); }
+.adm-newpartner-row { display:flex; align-items:center; gap:var(--sp-3); }
+.adm-newpartner-logoname { font-size:var(--fs-xs); color:var(--charcoal-50); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .adm-notif-row { display:flex; align-items:center; gap:var(--sp-3); }
 .adm-notif-dot { flex:none; width:8px; height:8px; border-radius:50%; }
 .adm-notif-dot.user { background:var(--olive); }
@@ -3704,6 +3706,18 @@ html, body { overflow-x: hidden; }
             <div class="adm-panel-header">
               <h2 id="admHdPartners">Partners</h2>
               <input type="text" id="admPartnerSearch" placeholder="Search..." oninput="admRenderPartners()" class="adm-search">
+            </div>
+            <div class="adm-card">
+              <h2 id="admHdAddPartner">Add partner</h2>
+              <div class="edit-field"><label id="admLblPartnerOrg">Organization name</label>
+                <input type="text" id="admNewPartnerOrg"><div class="edit-err" id="admNewPartnerErr"></div>
+              </div>
+              <div class="adm-newpartner-row">
+                <button type="button" class="adm-btn ghost" id="admNewPartnerLogoBtn" onclick="document.getElementById('admNewPartnerLogo').click()">Logo</button>
+                <span id="admNewPartnerLogoName" class="adm-newpartner-logoname"></span>
+              </div>
+              <input type="file" id="admNewPartnerLogo" accept="image/*" class="hidden-file" onchange="admNewPartnerLogoPicked(event)">
+              <button class="adm-btn primary" style="width:100%;margin-top:var(--sp-3);" id="admAddPartnerBtn" onclick="admAddPartner()">Add</button>
             </div>
             <div class="adm-chips" id="admPartnerChips"></div>
             <div id="admPartnersList"></div>
@@ -6036,6 +6050,10 @@ function admRenderHeaders() {
   set('admHdUsers',     'المستخدمين',          'Users');
   set('admHdCamps',     'الحملات',             'Campaigns');
   set('admHdPartners',  'طلبات الشراكة',       'Partners');
+  set('admHdAddPartner','إضافة شريك',           'Add partner');
+  set('admLblPartnerOrg','اسم المنظمة / الشركة', 'Organization name');
+  set('admNewPartnerLogoBtn','اختيار شعار',      'Choose logo');
+  set('admAddPartnerBtn','إضافة',                'Add');
   set('admHdAnalytics', 'الإحصائيات',          'Analytics');
   set('admHdGrowth',        'نمو المتطوّعين',  'Volunteer Growth');
   set('admHdActivityTrend', 'نشاط الحملات',    'Campaign Activity');
@@ -6479,6 +6497,36 @@ function admPickPartnerLogo(id) {
   AdminUI.partnerLogoId = id;
   const inp = document.getElementById('admPartnerLogoInput');
   if (inp) inp.click();
+}
+
+/* Add a partner directly (name + optional logo) — created as approved */
+async function admNewPartnerLogoPicked(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    AdminUI.newPartnerLogo = await b64(file);
+    const nm = document.getElementById('admNewPartnerLogoName');
+    if (nm) nm.textContent = file.name;
+  } catch (e) { toast(t('uploadError'), 'error'); }
+}
+function admAddPartner() {
+  if (!Permissions.can(State.cu, 'manage_partners')) return;
+  const orgEl = document.getElementById('admNewPartnerOrg');
+  const errEl = document.getElementById('admNewPartnerErr');
+  const org = orgEl ? orgEl.value.trim() : '';
+  if (errEl) errEl.textContent = '';
+  if (!org) { if (errEl) errEl.textContent = t('errorRequired'); return; }
+  const p = Models.createPartner({ org: org, type: 'ngo' });
+  p.status = 'approved';
+  p.featured = true;
+  p.logo = AdminUI.newPartnerLogo || null;
+  PartnerService.add(p);
+  AdminUI.newPartnerLogo = null;
+  if (orgEl) orgEl.value = '';
+  const nm = document.getElementById('admNewPartnerLogoName'); if (nm) nm.textContent = '';
+  toast(State.lang === 'ar' ? 'تمت إضافة الشريك' : 'Partner added', 'success');
+  AdminUI.partnerFilter = 'approved';
+  renderAdmin();
 }
 async function admUploadPartnerLogo(event) {
   const file = event.target.files[0];
@@ -7681,10 +7729,11 @@ function renderPartnersShowcase() {
       : '<span class="partner-slot-name">' + (p.org || '') + '</span>';
     return '<div class="partner-slot filled' + (p.featured ? ' featured' : '') + '">' + inner + '</div>';
   }).join('');
-  // keep at least 6 cells; pad with empty invite slots
+  // keep at least 6 cells; pad with empty invite slots (admin can tap to add)
   const pad = Math.max(0, 6 - approved.length);
+  const adminAdd = State.isAdmin ? ' onclick="goPage(\'admin\');admSwitchPanel(\'partners\')" style="cursor:pointer;"' : '';
   for (let i = 0; i < pad; i++) {
-    html += '<div class="partner-slot"><span class="partner-slot-mark">+</span><small>' + slotLabel + '</small></div>';
+    html += '<div class="partner-slot"' + adminAdd + '><span class="partner-slot-mark">+</span><small>' + slotLabel + '</small></div>';
   }
   grid.innerHTML = html;
 }
