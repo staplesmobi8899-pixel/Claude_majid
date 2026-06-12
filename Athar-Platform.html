@@ -2360,12 +2360,6 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
     </div>
     <div class="nav-end">
       <span class="user-tag" id="userTag"></span>
-      <button class="nav-icon-btn" id="navAboutBtn" onclick="goPage('about')" aria-label="about">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-      </button>
-      <button class="nav-icon-btn" id="navAdminBtn" onclick="goPage('admin')" style="display:none;" aria-label="admin">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-      </button>
       <button class="pill-btn" id="langBtn" onclick="toggleLang()">EN</button>
       <button class="pill-btn pill-btn-red" id="logoutBtn" onclick="doLogout()" style="display:none;" data-i18n="logout"></button>
     </div>
@@ -2716,6 +2710,24 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
         </div>
         <div class="menu-section-body" id="m-hours">
           <div id="hoursBox"></div>
+        </div>
+
+        <div class="menu-row" onclick="goPage('about')">
+          <div class="menu-icon">ℹ️</div>
+          <div class="menu-texts">
+            <div class="menu-title" data-i18n="navAbout"></div>
+            <div class="menu-sub" data-i18n="aboutRowSub"></div>
+          </div>
+          <div class="menu-arrow">›</div>
+        </div>
+
+        <div class="menu-row" id="menuAdminRow" style="display:none;" onclick="goPage('admin')">
+          <div class="menu-icon">🛠️</div>
+          <div class="menu-texts">
+            <div class="menu-title" data-i18n="navAdmin"></div>
+            <div class="menu-sub" data-i18n="adminRowSub"></div>
+          </div>
+          <div class="menu-arrow">›</div>
         </div>
 
         <div class="menu-row" onclick="doLogout()" style="color:var(--red);">
@@ -3335,7 +3347,8 @@ const T = {
     message: 'رسالتك', sendRequest: 'أرسل طلبك',
     adminTitle: 'لوحة الإدارة', adminSub: 'إدارة الحسابات والحملات والشراكات',
     tabAccounts: 'الحسابات', tabCamps: 'الحملات', tabPartners: 'الشراكات',
-    navHome: 'الرئيسية', navExplore: 'استكشف', navCommunity: 'المجتمع', navNotifications: 'الإشعارات', navCreate: 'إنشاء', navProfile: 'الملف', navAbout: 'عنا', navAdmin: 'إدارة',
+    navHome: 'الرئيسية', navExplore: 'استكشف', navCommunity: 'المجتمع', navNotifications: 'الإشعارات', navCreate: 'إنشاء', navProfile: 'الملف', navAbout: 'من نحن', navAdmin: 'إدارة',
+    aboutRowSub: 'تعرّف على منصة أثر ورسالتنا', adminRowSub: 'لوحة إدارة المنصة',
     communityTitle: 'المجتمع', communitySub: 'تواصل مع صُنّاع الأثر حولك.', communitySoonTitle: 'مجتمع أثر قريباً', communitySoonMsg: 'نبني مساحة تجمع المتطوعين لمشاركة قصصهم وإلهام بعضهم. ترقّبوا.',
     notifTitle: 'الإشعارات', notifSub: 'كل جديد يخصّك في مكان واحد.', notifEmptyTitle: 'لا إشعارات بعد', notifEmptyMsg: 'سنخبرك هنا عند وجود تحديثات على مبادراتك ونشاطك.',
     signupTitle: 'انضم لأَثَرْ', signupBtn: 'انضم الآن',
@@ -3467,7 +3480,8 @@ const T = {
     message: 'Your Message', sendRequest: 'Send Request',
     adminTitle: 'Admin Panel', adminSub: 'Manage accounts, campaigns and partnerships',
     tabAccounts: 'Accounts', tabCamps: 'Campaigns', tabPartners: 'Partnerships',
-    navHome: 'Home', navExplore: 'Explore', navCommunity: 'Community', navNotifications: 'Alerts', navCreate: 'Create', navProfile: 'Profile', navAbout: 'About', navAdmin: 'Admin',
+    navHome: 'Home', navExplore: 'Explore', navCommunity: 'Community', navNotifications: 'Alerts', navCreate: 'Create', navProfile: 'Profile', navAbout: 'About Us', navAdmin: 'Admin',
+    aboutRowSub: 'Learn about ATHAR and our mission', adminRowSub: 'Platform admin dashboard',
     communityTitle: 'Community', communitySub: 'Connect with changemakers around you.', communitySoonTitle: 'ATHAR Community is coming', communitySoonMsg: 'We are building a space for volunteers to share stories and inspire each other. Stay tuned.',
     notifTitle: 'Notifications', notifSub: 'Everything that matters to you, in one place.', notifEmptyTitle: 'No notifications yet', notifEmptyMsg: 'We will let you know here when there are updates on your initiatives and activity.',
     signupTitle: 'Join ATHAR', signupBtn: 'Join Now',
@@ -5491,8 +5505,8 @@ function enterApp() {
   const lb = document.getElementById('logoutBtn');
   if (lb) { lb.style.display = 'block'; lb.textContent = State.isGuest ? t('loginCta') : t('logout'); }
 
-  const adminBtn = document.getElementById('navAdminBtn');
-  if (adminBtn) adminBtn.style.display = State.isAdmin ? 'inline-flex' : 'none';
+  const adminRow = document.getElementById('menuAdminRow');
+  if (adminRow) adminRow.style.display = State.isAdmin ? 'flex' : 'none';
 
   Verify._dismissed = false;
   Verify.bannerCheck();
