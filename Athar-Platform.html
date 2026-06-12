@@ -2120,7 +2120,7 @@ input[type="file"]::file-selector-button {
   min-height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
-  background: #f7f4ee;
+  background: var(--off-white);
   padding-bottom: calc(72px + env(safe-area-inset-bottom));
 }
 
@@ -2133,7 +2133,7 @@ input[type="file"]::file-selector-button {
   align-items: center;
   gap: var(--sp-2);
   padding: var(--sp-3) var(--sp-4);
-  background: rgba(253,250,246,0.97);
+  background: var(--warm-white);
   border-bottom: 1px solid var(--line-sand);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -3780,7 +3780,7 @@ html, body { overflow-x: hidden; }
       <!-- ADMIN MODAL -->
       <div class="adm-modal-backdrop" id="admModal" onclick="if(event.target===this)admCloseModal()">
         <div class="adm-modal">
-          <button class="adm-modal-close" onclick="admCloseModal()">✕</button>
+          <button class="adm-modal-close" onclick="admCloseModal()">×</button>
           <div class="adm-modal-body" id="admModalContent"></div>
         </div>
       </div>
@@ -6093,14 +6093,13 @@ function admRenderOverview(users, camps, partners) {
     const qa = admEl('admQuickActions');
     if (qa) {
       const acts = [
-        { icon: '👥', ar: 'المستخدمين',  en: 'Users',     panel: 'users' },
-        { icon: '📋', ar: 'الحملات',     en: 'Campaigns', panel: 'campaigns' },
-        { icon: '🤝', ar: 'الشراكات',    en: 'Partners',  panel: 'partners' },
-        { icon: '📊', ar: 'الإحصائيات',  en: 'Analytics', panel: 'analytics' }
+        { ar: 'المستخدمين',  en: 'Users',     panel: 'users' },
+        { ar: 'الحملات',     en: 'Campaigns', panel: 'campaigns' },
+        { ar: 'الشراكات',    en: 'Partners',  panel: 'partners' },
+        { ar: 'الإحصائيات',  en: 'Analytics', panel: 'analytics' }
       ];
       qa.innerHTML = acts.map(a =>
         '<button class="adm-quick-btn" onclick="admSwitchPanel(\'' + a.panel + '\')">' +
-          '<span style="font-size:var(--fs-2xl);">' + a.icon + '</span>' +
           '<span>' + (isAr ? a.ar : a.en) + '</span>' +
         '</button>'
       ).join('');
@@ -6114,15 +6113,15 @@ function admRenderOverview(users, camps, partners) {
         html +=
           '<div class="admin-card" onclick="admViewUser(\'' + u.id + '\')" style="cursor:pointer;">' +
             '<div class="admin-card-head">' +
-              '<div class="admin-ava">' + (u.profilePic ? '<img src="' + u.profilePic + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">' : '👤') + '</div>' +
+              '<div class="admin-ava">' + (u.profilePic ? '<img src="' + u.profilePic + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">' : '<span class="ig-avatar-initial">' + ((u.name || '?').trim().charAt(0) || '?') + '</span>') + '</div>' +
               '<div class="admin-info">' +
                 '<div class="admin-info-name">' + (u.name || '') + '</div>' +
                 '<div class="admin-info-row">' + (isAr ? 'حساب جديد بانتظار الموافقة' : 'New account awaiting approval') + ' · ' + admTimeAgo(u.createdAt) + '</div>' +
               '</div>' +
             '</div>' +
             '<div class="admin-actions">' +
-              '<button class="approve-btn" onclick="event.stopPropagation();handleApproveUser(\'' + u.id + '\')">✓ ' + (isAr ? 'قبول' : 'Approve') + '</button>' +
-              '<button class="reject-btn" onclick="event.stopPropagation();handleRejectUser(\'' + u.id + '\')">✕ ' + (isAr ? 'رفض' : 'Reject') + '</button>' +
+              '<button class="approve-btn" onclick="event.stopPropagation();handleApproveUser(\'' + u.id + '\')">' + (isAr ? 'قبول' : 'Approve') + '</button>' +
+              '<button class="reject-btn" onclick="event.stopPropagation();handleRejectUser(\'' + u.id + '\')">' + (isAr ? 'رفض' : 'Reject') + '</button>' +
             '</div>' +
           '</div>';
       });
@@ -6131,32 +6130,32 @@ function admRenderOverview(users, camps, partners) {
         html +=
           '<div class="admin-card" onclick="admViewCamp(\'' + c.id + '\')" style="cursor:pointer;">' +
             '<div class="admin-info">' +
-              '<div class="admin-info-name">📍 ' + (txt.title || '') + '</div>' +
-              '<div class="admin-info-row">' + (isAr ? 'حملة جديدة بانتظار الموافقة' : 'New campaign awaiting approval') + ' · 👤 ' + (c.creatorName || '') + '</div>' +
+              '<div class="admin-info-name">' + (txt.title || '') + '</div>' +
+              '<div class="admin-info-row">' + (isAr ? 'حملة جديدة بانتظار الموافقة' : 'New campaign awaiting approval') + ' · ' + (c.creatorName || '') + '</div>' +
             '</div>' +
             '<div class="admin-actions">' +
-              '<button class="approve-btn" style="background: var(--accent-btn);" onclick="event.stopPropagation();admViewCamp(\'' + c.id + '\')">' + (isAr ? 'مراجعة وتعديل' : 'Review & edit') + '</button>' +
+              '<button class="approve-btn" onclick="event.stopPropagation();admViewCamp(\'' + c.id + '\')">' + (isAr ? 'مراجعة وتعديل' : 'Review & edit') + '</button>' +
             '</div>' +
           '</div>';
       });
-      pl.innerHTML = html || admEmpty('✅', isAr ? 'لا يوجد طلبات معلّقة' : 'No pending reviews');
+      pl.innerHTML = html || admEmpty('', isAr ? 'لا يوجد طلبات معلّقة' : 'No pending reviews');
     }
 
     // Recent activity
     const al = admEl('admActivityList');
     if (al) {
       const events = [];
-      users.forEach(u => { if (u.createdAt) events.push({ d: u.createdAt, icon: '👤', txt: (isAr ? 'انضم: ' : 'Joined: ') + (u.name || '') }); });
-      camps.forEach(c => { if (c.createdAt) events.push({ d: c.createdAt, icon: '📋', txt: (isAr ? 'حملة: ' : 'Campaign: ') + (Models.getCampText(c).title || '') }); });
-      partners.forEach(p => { if (p.date) events.push({ d: p.date, icon: '🤝', txt: (isAr ? 'طلب شراكة: ' : 'Partner request: ') + (p.org || '') }); });
+      users.forEach(u => { if (u.createdAt) events.push({ d: u.createdAt, kind: 'user', txt: (isAr ? 'انضم: ' : 'Joined: ') + (u.name || '') }); });
+      camps.forEach(c => { if (c.createdAt) events.push({ d: c.createdAt, kind: 'camp', txt: (isAr ? 'حملة: ' : 'Campaign: ') + (Models.getCampText(c).title || '') }); });
+      partners.forEach(p => { if (p.date) events.push({ d: p.date, kind: 'partner', txt: (isAr ? 'طلب شراكة: ' : 'Partner request: ') + (p.org || '') }); });
       events.sort((a, b) => new Date(b.d) - new Date(a.d));
       al.innerHTML = events.length === 0
-        ? admEmpty('🕐', isAr ? 'لا يوجد نشاطات بعد' : 'No activity yet')
+        ? admEmpty('', isAr ? 'لا يوجد نشاطات بعد' : 'No activity yet')
         : events.slice(0, 7).map(ev =>
           '<div class="adm-activity-row" style="display:flex;align-items:center;gap:0.7rem;padding:0.6rem 0;border-bottom:1px solid var(--line);">' +
-            '<span style="font-size:var(--fs-xl);flex:none;">' + ev.icon + '</span>' +
+            '<span class="adm-notif-dot ' + ev.kind + '"></span>' +
             '<span style="flex:1;font-size:var(--fs-base);font-weight:600;color:var(--charcoal-80);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + ev.txt + '</span>' +
-            '<span style="flex:none;font-size:var(--fs-xs);color:#999;">' + admTimeAgo(ev.d) + '</span>' +
+            '<span style="flex:none;font-size:var(--fs-xs);color:var(--charcoal-50);">' + admTimeAgo(ev.d) + '</span>' +
           '</div>'
         ).join('');
     }
