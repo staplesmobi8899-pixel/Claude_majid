@@ -2267,6 +2267,12 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
 .field-err { width: 100%; }
 .phone-group { flex-wrap: wrap; }
 .auth-guest-link { margin-top: var(--sp-2); align-self: center; }
+.auth-lang { position: absolute; top: calc(env(safe-area-inset-top) + var(--sp-4));
+  inset-inline-end: var(--sp-5); z-index: 4; height: 34px; padding: 0 var(--sp-3);
+  border-radius: var(--r-full); border: 1px solid rgba(46,61,31,0.18);
+  background: rgba(255,255,255,0.55); color: var(--forest); font-family: inherit;
+  font-weight: 700; font-size: var(--fs-sm); cursor: pointer; transition: background 0.2s; }
+.auth-lang:hover { background: rgba(255,255,255,0.85); }
 </style>
 </head>
 <body>
@@ -2297,6 +2303,8 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
     <div class="auth-glow auth-glow-2"></div>
     <div class="auth-grid"></div>
   </div>
+
+  <button class="auth-lang" id="authLangBtn" onclick="toggleLang()">EN</button>
 
   <!-- WELCOME -->
   <section class="auth-view active" data-view="welcome" id="authWelcome">
@@ -4860,6 +4868,8 @@ function applyI18n() {
     });
     const langBtn = document.getElementById('langBtn');
     if (langBtn) langBtn.textContent = isAr ? 'EN' : 'ع';
+    const authLangBtn = document.getElementById('authLangBtn');
+    if (authLangBtn) authLangBtn.textContent = isAr ? 'EN' : 'ع';
     const backBtn = document.getElementById('detailBackBtn');
     if (backBtn) backBtn.textContent = isAr ? '‹' : '›';
     // Refresh rendered content for language change
