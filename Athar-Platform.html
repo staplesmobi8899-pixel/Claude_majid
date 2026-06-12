@@ -2696,7 +2696,6 @@ html, body { overflow-x: hidden; }
   <!-- HOME -->
   <div class="page active" id="homePage">
     <div class="home-greet" id="homeGreet"></div>
-    <div class="home-quick" id="homeQuick"></div>
     <div class="home-section" id="homeFeatured"></div>
     <div class="home-section">
       <div class="section-header"><div class="section-title" data-i18n="catsTitle"></div></div>
@@ -3475,8 +3474,8 @@ const T = {
     allCats: 'الكل', allCities: 'كل المدن', searchPlaceholder: 'ابحث عن مبادرة، فئة، أو مدينة...',
     sortRecent: 'الأحدث', sortPopular: 'الأكثر تفاعلاً', sortUrgent: 'الأقرب موعداً',
     noResults: 'لا توجد نتائج', noResultsSub: 'جرّب كلمات أو فلاتر مختلفة.',
-    greetSub: 'جاهز تصنع أثراً اليوم؟', catsTitle: 'تصفّح حسب الفئة', trendingTitle: 'الأكثر تفاعلاً',
-    highlightsTitle: 'إضاءات المجتمع', topVolunteers: 'أبرز المتطوعين', activeCities: 'مدن نشطة', featuredTag: 'مميّزة',
+    greetSub: 'مبادرات مُلهمة تنتظر مشاركتك.', catsTitle: 'تصفّح حسب الفئة', trendingTitle: 'الأكثر تفاعلاً',
+    highlightsTitle: 'إضاءات المجتمع', topVolunteers: 'أبرز المتطوعين', activeCities: 'مدن نشطة', featuredTag: 'مميّزة', nearestTag: 'أقرب حملة',
     communityTitle: 'المجتمع', communitySub: 'تواصل مع صُنّاع الأثر حولك.', communitySoonTitle: 'مجتمع أثر قريباً', communitySoonMsg: 'نبني مساحة تجمع المتطوعين لمشاركة قصصهم وإلهام بعضهم. ترقّبوا.',
     notifTitle: 'الإشعارات', notifSub: 'كل جديد يخصّك في مكان واحد.', notifEmptyTitle: 'لا إشعارات بعد', notifEmptyMsg: 'سنخبرك هنا عند وجود تحديثات على مبادراتك ونشاطك.',
     signupTitle: 'انضم لأَثَرْ', signupBtn: 'انضم الآن',
@@ -3615,8 +3614,8 @@ const T = {
     allCats: 'All', allCities: 'All cities', searchPlaceholder: 'Search initiatives, categories, or cities...',
     sortRecent: 'Recent', sortPopular: 'Most active', sortUrgent: 'Soonest',
     noResults: 'No results', noResultsSub: 'Try different keywords or filters.',
-    greetSub: 'Ready to make an impact today?', catsTitle: 'Browse by category', trendingTitle: 'Trending now',
-    highlightsTitle: 'Community highlights', topVolunteers: 'Top volunteers', activeCities: 'Active cities', featuredTag: 'Featured',
+    greetSub: 'Inspiring initiatives await your hands.', catsTitle: 'Browse by category', trendingTitle: 'Trending now',
+    highlightsTitle: 'Community highlights', topVolunteers: 'Top volunteers', activeCities: 'Active cities', featuredTag: 'Featured', nearestTag: 'Nearest',
     communityTitle: 'Community', communitySub: 'Connect with changemakers around you.', communitySoonTitle: 'ATHAR Community is coming', communitySoonMsg: 'We are building a space for volunteers to share stories and inspire each other. Stay tuned.',
     notifTitle: 'Notifications', notifSub: 'Everything that matters to you, in one place.', notifEmptyTitle: 'No notifications yet', notifEmptyMsg: 'We will let you know here when there are updates on your initiatives and activity.',
     signupTitle: 'Join ATHAR', signupBtn: 'Join Now',
@@ -4240,6 +4239,14 @@ const DiscoveryService = {
     const base = this._base();
     return (city ? base.filter(c => c.location === city) : base).slice(0, n);
   },
+  nearest() {
+    const today = new Date().toISOString().slice(0, 10);
+    const dated = this._base().filter(c => c.date);
+    const upcoming = dated.filter(c => c.date >= today).sort((a, b) => a.date.localeCompare(b.date));
+    if (upcoming.length) return upcoming[0];
+    const past = dated.sort((a, b) => b.date.localeCompare(a.date));
+    return past[0] || this._base()[0] || null;
+  },
   recommended(user, n = 6) {
     const interests = new Set((user && user.interests) || []);
     if (!interests.size) return this.trending(n);
@@ -4408,13 +4415,13 @@ function campCardHTML(c) {
 const HomeUI = {
   render() {
     try {
-      this.greeting(); this.quickActions(); this.featured();
+      this.greeting(); this.featured();
       this.categories(); this.trending(); this.highlights();
     } catch (e) { console.error('[HomeUI]', e); }
   },
   enter() {
     try {
-      this.greeting(); this.quickActions(); this.featured();
+      this.greeting(); this.featured();
       this.categories(); this.highlights();
       const el = document.getElementById('homeTrending');
       if (el) el.innerHTML = skeletonCards(2);
@@ -4423,27 +4430,16 @@ const HomeUI = {
   },
   greeting() {
     const el = document.getElementById('homeGreet'); if (!el) return;
-    const isAr = State.lang === 'ar', u = State.cu, hh = new Date().getHours();
-    const part = hh < 12 ? (isAr ? 'صباح الخير' : 'Good morning')
-               : hh < 18 ? (isAr ? 'طاب يومك' : 'Good afternoon')
-                         : (isAr ? 'مساء الخير' : 'Good evening');
+    const isAr = State.lang === 'ar', u = State.cu;
     const name = (u && !u.isGuest && u.name) ? String(u.name).split(' ')[0] : (isAr ? 'صديقنا' : 'friend');
-    el.innerHTML = '<div class="greet-hi">' + part + '، ' + name + ' 👋</div>' +
+    const hi = isAr ? ('جاهز لتصنع أثراً يا ' + name + '؟ 👋')
+                    : ('Ready to make an impact, ' + name + '? 👋');
+    el.innerHTML = '<div class="greet-hi">' + hi + '</div>' +
                    '<div class="greet-sub">' + t('greetSub') + '</div>';
-  },
-  quickActions() {
-    const el = document.getElementById('homeQuick'); if (!el) return;
-    const acts = [
-      { i: '🔍', k: 'navExplore', go: "goPage('explore')" },
-      { i: '➕', k: 'navCreate',  go: "goPage('create')" },
-      { i: '🤝', k: 'navCommunity', go: "goPage('community')" },
-      { i: '🔔', k: 'navNotifications', go: "goPage('notifications')" }
-    ];
-    el.innerHTML = acts.map(a => '<button class="quick-act" onclick="' + a.go + '"><span class="quick-ico">' + a.i + '</span><span class="quick-lbl">' + t(a.k) + '</span></button>').join('');
   },
   featured() {
     const el = document.getElementById('homeFeatured'); if (!el) return;
-    const f = DiscoveryService.featured(1)[0];
+    const f = DiscoveryService.nearest();
     if (!f) { el.innerHTML = ''; return; }
     const tx = Models.getCampText(f);
     const pct = f.needed ? Math.min(100, Math.round((f.volunteers || 0) / f.needed * 100)) : 0;
@@ -4451,9 +4447,9 @@ const HomeUI = {
     el.innerHTML =
       '<div class="featured-card' + (f.img ? '' : ' featured-noimg') + '" onclick="openDetail(\'' + f.id + '\')" style="' + bg + '">' +
         '<div class="featured-body">' +
-          '<span class="featured-tag">' + (Models.catMeta(f) && Models.catMeta(f).icon ? Models.catMeta(f).icon + ' ' : '') + t('featuredTag') + '</span>' +
+          '<span class="featured-tag">⏳ ' + t('nearestTag') + '</span>' +
           '<div class="featured-title">' + tx.title + '</div>' +
-          '<div class="featured-meta">📍 ' + (f.location || '') + ' · 👥 ' + (f.volunteers || 0) + '/' + (f.needed || 0) + '</div>' +
+          '<div class="featured-meta">📅 ' + (f.date || '') + ' · 📍 ' + (f.location || '') + ' · 👥 ' + (f.volunteers || 0) + '/' + (f.needed || 0) + '</div>' +
           '<div class="featured-prog"><span style="width:' + pct + '%"></span></div>' +
         '</div>' +
       '</div>';
