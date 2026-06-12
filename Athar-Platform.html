@@ -1147,10 +1147,9 @@ body {
   margin: 0 auto;
   padding: 0 var(--sp-5);
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--sp-3);
 }
-@media (max-width: 380px) { .ig-impact { grid-template-columns: repeat(2, 1fr); } }
 
 /* Edit profile photo CTA inside edit modal */
 .edit-photo-cta {
@@ -3580,6 +3579,7 @@ const CONFIG = {
     PARTNERS: 'athar_partners',
     SESSION:  'athar_session',
     NOTIFS:   'athar_notifs',
+    LAST_VIEW:'athar_lastview',
     VERSION:  'athar_version'
   },
   CAMP_CATEGORIES: {
@@ -3719,7 +3719,7 @@ const T = {
     noBio: 'أضف نبذة عنك', impactTitle: 'أثري', badgesTitle: 'الشارات',
     profilePublic: '🌍 ملف عام', profilePrivate: '🔒 ملف خاص', profileNowPublic: 'ملفك أصبح عامًا', profileNowPrivate: 'ملفك أصبح خاصًا', completedLabel: 'مكتملة', citiesLabel: 'مدن', scoreLabel: 'نقاط الأثر',
     editInfo: 'تعديل', saveChanges: 'حفظ التعديلات', cancelEdit: 'إلغاء', infoSaved: 'تم حفظ معلوماتك', bioField: 'نبذة عنك', bioPh: 'اكتب نبذة قصيرة تعرّف بك…', emailLocked: 'البريد الإلكتروني لا يمكن تغييره',
-    editProfileBtn: 'تعديل الملف', shareProfileBtn: 'مشاركة الملف', shareCopied: 'تم نسخ رابط ملفك', statCampsShort: 'حملة', statHoursShort: 'ساعة', statBadgesShort: 'شارة', changePhotoCta: 'تغيير صورة الملف', roleJoined: 'مشارِك', roleOrganizer: 'منظِّم',
+    editProfileBtn: 'تعديل الملف', shareProfileBtn: 'مشاركة الملف', shareCopied: 'تم نسخ رابط ملفك', statCompletedShort: 'حملة منجزة', statHoursShort: 'ساعة', statParticipationShort: 'مشاركة', completedCampsLabel: 'حملات مكتملة', changePhotoCta: 'تغيير صورة الملف', roleJoined: 'مشارِك', roleOrganizer: 'منظِّم',
     photoSheetTitle: 'صورة الملف الشخصي', photoChoose: 'اختر صورة', photoRemove: 'حذف الصورة الحالية', photoRemoved: 'تم حذف الصورة', sheetCancel: 'إلغاء',
     menuInfo: 'المعلومات الشخصية', menuInfoSub: 'الاسم، البريد، الهاتف',
     menuId: 'صورة الهوية', menuIdSub: 'عرض وتحميل',
@@ -3876,7 +3876,7 @@ const T = {
     noBio: 'Add a short bio', impactTitle: 'My impact', badgesTitle: 'Badges',
     profilePublic: '🌍 Public profile', profilePrivate: '🔒 Private profile', profileNowPublic: 'Your profile is now public', profileNowPrivate: 'Your profile is now private', completedLabel: 'Completed', citiesLabel: 'Cities', scoreLabel: 'Impact score',
     editInfo: 'Edit', saveChanges: 'Save changes', cancelEdit: 'Cancel', infoSaved: 'Your info was saved', bioField: 'About you', bioPh: 'Write a short bio about yourself…', emailLocked: 'Email cannot be changed',
-    editProfileBtn: 'Edit profile', shareProfileBtn: 'Share profile', shareCopied: 'Profile link copied', statCampsShort: 'Campaigns', statHoursShort: 'Hours', statBadgesShort: 'Badges', changePhotoCta: 'Change profile photo', roleJoined: 'Participant', roleOrganizer: 'Organizer',
+    editProfileBtn: 'Edit profile', shareProfileBtn: 'Share profile', shareCopied: 'Profile link copied', statCompletedShort: 'Completed', statHoursShort: 'Hours', statParticipationShort: 'Participations', completedCampsLabel: 'Completed campaigns', changePhotoCta: 'Change profile photo', roleJoined: 'Participant', roleOrganizer: 'Organizer',
     photoSheetTitle: 'Profile photo', photoChoose: 'Choose photo', photoRemove: 'Remove current photo', photoRemoved: 'Photo removed', sheetCancel: 'Cancel',
     menuInfo: 'Personal Info', menuInfoSub: 'Name, Email, Phone',
     menuId: 'ID Photo', menuIdSub: 'View & Download',
@@ -4561,13 +4561,16 @@ const CampaignService = {
     camps[ci].updatedAt = new Date().toISOString();
     this.save(camps);
 
-    // Update user
+    // Update user (works for DB users; for the virtual admin, persist to session)
     const hours = camp.volunteerHours || 2;
-    const updated = UserService.updateById(user.id, {
+    const patch = {
       volunteerHours:   (user.volunteerHours   || 0) + hours,
       activitiesJoined: (user.activitiesJoined || 0) + 1,
       joinedCamps:      [...(user.joinedCamps  || []), campId]
-    });
+    };
+    let updated = UserService.updateById(user.id, patch);
+    if (!updated) updated = Object.assign({}, user, patch);
+    if (State.cu && State.cu.id === user.id) { Object.assign(State.cu, patch); DB.setObj(CONFIG.DB_KEYS.SESSION, State.cu); }
 
     if (camp.createdBy && camp.createdBy !== user.id) {
       NotificationService.add(camp.createdBy, (user.name || 'متطوع') + ' انضم إلى مبادرتك 🤝', (user.name || 'A volunteer') + ' joined your initiative 🤝', 'join');
@@ -4588,11 +4591,14 @@ const CampaignService = {
     camps[ci].updatedAt = new Date().toISOString();
     this.save(camps);
     const hours = camp.volunteerHours || 2;
-    const updated = UserService.updateById(user.id, {
+    const patch = {
       volunteerHours:   Math.max(0, (user.volunteerHours   || 0) - hours),
       activitiesJoined: Math.max(0, (user.activitiesJoined || 0) - 1),
       joinedCamps:      (user.joinedCamps || []).filter(id => id !== campId)
-    });
+    };
+    let updated = UserService.updateById(user.id, patch);
+    if (!updated) updated = Object.assign({}, user, patch);
+    if (State.cu && State.cu.id === user.id) { Object.assign(State.cu, patch); DB.setObj(CONFIG.DB_KEYS.SESSION, State.cu); }
     return { success: true, message: t('leftCamp'), updatedUser: updated };
   },
   getParticipants(camp) {
@@ -5097,29 +5103,27 @@ function renderProfile() {
     }
 
     const stats = StatsService.compute(u);
-    const badgeCount = AchievementService.getUnlocked(u).length;
 
     // IG-style header stats (3 columns)
     const statsEl = document.getElementById('profileStats');
     if (statsEl) {
       const head = [
-        [(u.joinedCamps || []).length, t('statCampsShort')],
-        [u.volunteerHours || 0,        t('statHoursShort')],
-        [badgeCount,                   t('statBadgesShort')]
+        [stats.completed,          t('statCompletedShort')],
+        [u.volunteerHours || 0,    t('statHoursShort')],
+        [u.activitiesJoined || 0,  t('statParticipationShort')]
       ];
       statsEl.innerHTML = head.map(s =>
         '<div class="ig-stat"><span class="ig-stat-n">' + s[0] + '</span><span class="ig-stat-l">' + s[1] + '</span></div>'
       ).join('');
     }
 
-    // Clean impact grid (no decorative emojis)
+    // Clean impact grid (no decorative emojis, no score)
     const impact = document.getElementById('profileImpact');
     if (impact) {
       const tiles = [
-        [stats.completed,     t('completedLabel')],
+        [stats.completed,         t('completedCampsLabel')],
         [u.activitiesJoined || 0, t('activities')],
-        [stats.citiesCount,   t('citiesLabel')],
-        [stats.score,         t('scoreLabel')]
+        [stats.citiesCount,       t('citiesLabel')]
       ];
       impact.innerHTML = tiles.map(tl =>
         '<div class="impact-tile"><div class="impact-tile-n">' + tl[0] + '</div><div class="impact-tile-l">' + tl[1] + '</div></div>'
@@ -6157,6 +6161,7 @@ const Router = {
       if (pg) pg.classList.add('active');
       if (nb) nb.classList.add('active');
       State.setPage(name);
+      try { DB.setObj(CONFIG.DB_KEYS.LAST_VIEW, { page: name, campId: (name === 'detail' ? State.detailCampId : null) }); } catch (e) {}
       Header.update(name);
       if (route.onEnter) route.onEnter();
       window.scrollTo(0, 0);
@@ -6629,9 +6634,30 @@ function enterApp() {
   if (Onb.needs(State.cu)) {
     Onb.show();
   } else {
-    goPage('home');
+    restoreLastView();
     animateCounters();
   }
+}
+
+/* Restore the last viewed page after a refresh (falls back to home). */
+function restoreLastView() {
+  try {
+    const last = DB.getObj(CONFIG.DB_KEYS.LAST_VIEW);
+    if (last && last.page && ROUTES[last.page]) {
+      const r = ROUTES[last.page];
+      const roleOk = !r.roles || r.roles.includes(Permissions.roleOf(State.cu));
+      const authOk = !r.auth || (State.cu && !State.isGuest);
+      if (roleOk && authOk) {
+        if (last.page === 'detail') {
+          if (last.campId && CampaignService.getById(last.campId)) { openDetail(last.campId); return; }
+        } else {
+          goPage(last.page);
+          return;
+        }
+      }
+    }
+  } catch (e) { /* fall back to home */ }
+  goPage('home');
 }
 
 /* ── CAMPAIGNS ── */
@@ -6767,17 +6793,23 @@ function handleCampDone(id) {
 }
 
 /* ── PROFILE ── */
+/* Persist a patch to the current user — works for both DB users and the virtual admin (session-only). */
+function persistCurrentUser(patch) {
+  if (!State.cu) return;
+  Object.assign(State.cu, patch);
+  if (State.cu.email !== CONFIG.ADMIN_EMAIL) UserService.updateById(State.cu.id, patch);
+  DB.setObj(CONFIG.DB_KEYS.SESSION, State.cu);
+}
+
 async function uploadAvatar(event) {
   if (!requireAuth()) return;
   const file = event.target.files[0];
-  if (!file || !State.cu || State.isAdmin) return;
+  if (!file || !State.cu) return;
   try {
-    const data  = await b64(file);
-    const result = UserService.updateById(State.cu.id, { profilePic: data });
-    if (result) {
-      toast(t('photoUpdated'), 'success');
-      renderProfile();
-    }
+    const data = await b64(file);
+    persistCurrentUser({ profilePic: data });
+    toast(t('photoUpdated'), 'success');
+    renderProfile();
   } catch (e) {
     console.error('[uploadAvatar] Error:', e);
     toast(t('uploadError'), 'error');
@@ -6787,7 +6819,7 @@ async function uploadAvatar(event) {
 
 /* ── PROFILE PHOTO BOTTOM SHEET (Phase 6.2) ── */
 function openAvatarSheet() {
-  if (!State.cu || State.isAdmin) return;
+  if (!State.cu) return;
   const u = UserService.getById(State.cu.id) || State.cu;
   const body = document.getElementById('avatarSheetBody');
   if (body) {
@@ -6804,9 +6836,8 @@ function openAvatarSheet() {
 }
 
 function removeAvatar() {
-  if (!requireAuth() || !State.cu || State.isAdmin) { closeModal('avatarSheet'); return; }
-  UserService.updateById(State.cu.id, { profilePic: null });
-  if (State.cu) { State.cu.profilePic = null; DB.setObj(CONFIG.DB_KEYS.SESSION, State.cu); }
+  if (!requireAuth() || !State.cu) { closeModal('avatarSheet'); return; }
+  persistCurrentUser({ profilePic: null });
   closeModal('avatarSheet');
   toast(t('photoRemoved'), 'success');
   renderProfile();
@@ -6814,7 +6845,7 @@ function removeAvatar() {
 
 /* ── EDIT PROFILE (modal) + SHARE (Phase 6.2 redesign) ── */
 function openEditProfile() {
-  if (!requireAuth() || State.isAdmin) return;
+  if (!requireAuth()) return;
   const u = UserService.getById(State.cu.id) || State.cu;
   const box = document.getElementById('editProfileBody');
   if (!box) return;
@@ -6846,7 +6877,7 @@ function openEditProfile() {
 }
 
 function saveInfo() {
-  if (!requireAuth() || State.isAdmin) return;
+  if (!requireAuth()) return;
   const g = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
   const name = g('ed-name'), phone = g('ed-phone'), city = g('ed-city'), dob = g('ed-dob'), bio = g('ed-bio');
   let ok = true;
@@ -6856,9 +6887,7 @@ function saveInfo() {
   if (!Validators.isRequired(phone) || !Validators.isPhone(phone)) { setErr('err-phone', t('errorRequired')); ok = false; }
   if (!Validators.isRequired(city)) { setErr('err-city',  t('errorRequired')); ok = false; }
   if (!ok) return;
-  const patch = { name, phone, city, dob, bio };
-  UserService.updateById(State.cu.id, patch);
-  if (State.cu) { Object.assign(State.cu, patch); DB.setObj(CONFIG.DB_KEYS.SESSION, State.cu); }
+  persistCurrentUser({ name, phone, city, dob, bio });
   closeModal('editProfileModal');
   toast(t('infoSaved'), 'success');
   renderProfile();
