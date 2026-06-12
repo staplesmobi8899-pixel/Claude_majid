@@ -2542,6 +2542,10 @@ html, body { overflow-x: hidden; }
   color: #fff; font-family: inherit; font-size: var(--fs-xs); font-weight: 800; cursor: pointer; }
 .camp-badge-community { background: var(--olive-pale) !important; color: var(--olive) !important; }
 .detail-cat-pill.community { background: var(--olive) !important; color: var(--off-white) !important; }
+.card-save { position: absolute; top: var(--sp-3); inset-inline-start: var(--sp-3); width: 32px; height: 32px;
+  border-radius: var(--r-full); border: none; background: rgba(255,255,255,0.9); color: var(--red);
+  font-size: 1rem; line-height: 1; cursor: pointer; z-index: 2; box-shadow: var(--shadow-sm); }
+.card-save.saved { background: var(--red); color: #fff; }
 </style>
 </head>
 <body>
@@ -2899,6 +2903,16 @@ html, body { overflow-x: hidden; }
         <div class="menu-section-body" id="m-hours">
           <div id="hoursBox"></div>
         </div>
+
+        <div class="menu-row" onclick="toggleMenu('m-saved')">
+          <div class="menu-icon">♥</div>
+          <div class="menu-texts">
+            <div class="menu-title" data-i18n="savedTitle"></div>
+            <div class="menu-sub" data-i18n="savedSub"></div>
+          </div>
+          <div class="menu-arrow" id="arr-m-saved">›</div>
+        </div>
+        <div class="menu-section-body" id="m-saved"><div id="savedBox"></div></div>
 
         <div class="menu-row" id="menuAdminRow" style="display:none;" onclick="goPage('admin')">
           <div class="menu-icon">🛠️</div>
@@ -3512,7 +3526,8 @@ const T = {
     markedDone: 'تم إنهاء المبادرة ✓', archivedToast: 'تمت الأرشفة', shareVia: 'أثر', linkCopied: 'تم نسخ الرابط',
     bannedMsg: 'حسابك محظور حتى', userBanned: 'تم حظر الحساب', userUnbanned: 'تم رفع الحظر',
     manageParticipants: 'المشاركون والحضور', attended: 'حضر', absent: 'لم يحضر', banShort: 'حظر',
-    communityReq: 'بطلب من المجتمع', editCamp: 'تعديل الحملة', campTitleLabel: 'عنوان الحملة', neededLabel: 'عدد المتطوعين', categoryLabel: 'الفئة', saveChanges: 'حفظ التعديلات', changesSaved: 'تم حفظ التعديلات ✓',
+    communityReq: 'بطلب من المجتمع', editCamp: 'تعديل الحملة',
+    savedTitle: 'المحفوظات', savedSub: 'المبادرات التي حفظتها', noSaved: 'لا توجد مبادرات محفوظة بعد', campTitleLabel: 'عنوان الحملة', neededLabel: 'عدد المتطوعين', categoryLabel: 'الفئة', saveChanges: 'حفظ التعديلات', changesSaved: 'تم حفظ التعديلات ✓',
     allCats: 'الكل', allCities: 'كل المدن', searchPlaceholder: 'ابحث عن مبادرة، فئة، أو مدينة...',
     sortRecent: 'الأحدث', sortPopular: 'الأكثر تفاعلاً', sortUrgent: 'الأقرب موعداً',
     noResults: 'لا توجد نتائج', noResultsSub: 'جرّب كلمات أو فلاتر مختلفة.',
@@ -3662,7 +3677,8 @@ const T = {
     markedDone: 'Initiative completed ✓', archivedToast: 'Archived', shareVia: 'ATHAR', linkCopied: 'Link copied',
     bannedMsg: 'Your account is banned until', userBanned: 'Account banned', userUnbanned: 'Account unbanned',
     manageParticipants: 'Participants & attendance', attended: 'Present', absent: 'Absent', banShort: 'Ban',
-    communityReq: 'Community request', editCamp: 'Edit campaign', campTitleLabel: 'Campaign title', neededLabel: 'Volunteers needed', categoryLabel: 'Category', saveChanges: 'Save changes', changesSaved: 'Changes saved ✓',
+    communityReq: 'Community request', editCamp: 'Edit campaign',
+    savedTitle: 'Saved', savedSub: 'Initiatives you bookmarked', noSaved: 'No saved initiatives yet', campTitleLabel: 'Campaign title', neededLabel: 'Volunteers needed', categoryLabel: 'Category', saveChanges: 'Save changes', changesSaved: 'Changes saved ✓',
     allCats: 'All', allCities: 'All cities', searchPlaceholder: 'Search initiatives, categories, or cities...',
     sortRecent: 'Recent', sortPopular: 'Most active', sortUrgent: 'Soonest',
     noResults: 'No results', noResultsSub: 'Try different keywords or filters.',
@@ -4494,6 +4510,7 @@ function openImageViewer(src) {
 function campCardHTML(c) {
   try {
     const joined = (State.cu?.joinedCamps || []).includes(c.id);
+    const saved  = State.cu ? CampaignService.isSaved(c.id) : false;
     const txt    = Models.getCampText(c);
     const pct    = c.needed ? Math.min(100, Math.round(((c.volunteers || 0) / c.needed) * 100)) : 0;
     const si     = Models.getStatusInfo(c.status);
@@ -4533,6 +4550,7 @@ function campCardHTML(c) {
         <span class="camp-badge camp-badge-status ${si.cls}">${si[State.lang]}</span>
         <span class="camp-badge camp-badge-cat">${catIcon}${cat}</span>
         ${Models.isCommunity(c) ? `<span class="camp-badge camp-badge-community">🌱 ${t('communityReq')}</span>` : ''}
+        <button class="card-save${saved ? ' saved' : ''}" onclick="event.stopPropagation();handleCardSave('${c.id}',this)" aria-label="save">${saved ? '♥' : '♡'}</button>
       </div>
       <div class="camp-body">
         <div class="camp-title">${title}</div>
@@ -4793,6 +4811,7 @@ function renderProfile() {
     }
 
     renderMyCamps();
+    renderSaved();
   } catch (e) {
     console.error('[renderProfile] Error:', e);
   }
@@ -5620,6 +5639,25 @@ function markAtt(campId, userId, status) {
   openParticipants(campId);
 }
 
+function handleCardSave(id, btn) {
+  if (!requireAuth()) return;
+  const now = CampaignService.toggleSave(id);
+  State.setUser(UserService.getById(State.cu.id) || State.cu);
+  if (btn) { btn.classList.toggle('saved', now); btn.textContent = now ? '♥' : '♡'; }
+  toast(now ? t('saved') : t('unsaved'), '');
+}
+function renderSaved() {
+  const box = document.getElementById('savedBox'); if (!box) return;
+  const list = CampaignService.getSaved();
+  if (!list.length) { box.innerHTML = '<div class="empty-sub" style="padding:var(--sp-3);">' + t('noSaved') + '</div>'; return; }
+  box.innerHTML = list.map(c => {
+    const txt = Models.getCampText(c); const si = Models.getStatusInfo(c.status);
+    return '<div class="my-camp-row" style="cursor:pointer;" onclick="openDetail(\'' + c.id + '\')">' +
+      '<div><div class="my-camp-info-title">' + (txt.title || '') + '</div>' +
+      '<div class="my-camp-info-sub">📍 ' + (c.location || '') + ' · 📅 ' + (c.date || '') + '</div></div>' +
+      '<span class="status-chip ' + si.cls + '">' + si[State.lang] + '</span></div>';
+  }).join('');
+}
 function handleSave(id) {
   if (!requireAuth()) return;
   const now = CampaignService.toggleSave(id);
