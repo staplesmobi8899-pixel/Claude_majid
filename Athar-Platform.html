@@ -4994,27 +4994,59 @@ function animateCounters() {
 /* ══════════════════════════════════════════
    10. NAVIGATION
    ══════════════════════════════════════════ */
-function goPage(name) {
-  try {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
+/* ══════════════════════════════════════════
+   ROUTER (Phase 3.0 — centralized navigation)
+   Single source of truth. Guards (auth/role) + history stack.
+   Pages must NOT hardcode navigation; go through Router/goPage.
+   ══════════════════════════════════════════ */
+const ROUTES = {
+  home:    { onEnter: () => renderCampaigns() },
+  explore: { onEnter: () => renderCampaigns() },
+  create:  { onEnter: () => { renderCampaigns(); renderMyCamps(); } },
+  detail:  { onEnter: () => {} },
+  profile: { onEnter: () => renderProfile() },
+  about:   { onEnter: () => {} },
+  admin:   { roles: ['admin'], onEnter: () => renderAdmin() }
+};
 
-    const pg = document.getElementById(name + 'Page');
-    const nb = document.getElementById('nav-' + name);
-    if (pg) pg.classList.add('active');
-    if (nb) nb.classList.add('active');
+const Router = {
+  stack: [],
+  go(name, opts = {}) {
+    const route = ROUTES[name];
+    if (!route) { console.warn('[Router] unknown route:', name); return; }
+    // Guards: authentication-aware + role-based (protected screens)
+    if (route.auth && (!State.cu || State.isGuest)) { requireAuth(); return; }
+    if (route.roles && !route.roles.includes(Permissions.roleOf(State.cu))) {
+      this.go('home', { replace: true });
+      return;
+    }
+    // History stack (real multi-level back)
+    if (!opts.replace && State.currentPage && State.currentPage !== name) {
+      this.stack.push(State.currentPage);
+      if (this.stack.length > 50) this.stack.shift();
+    }
+    try {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
+      const pg = document.getElementById(name + 'Page');
+      const nb = document.getElementById('nav-' + name);
+      if (pg) pg.classList.add('active');
+      if (nb) nb.classList.add('active');
+      State.setPage(name);
+      if (route.onEnter) route.onEnter();
+      window.scrollTo(0, 0);
+    } catch (e) { console.error('[Router.go] Error:', e); }
+  },
+  back() {
+    if (this.stack.length) this.go(this.stack.pop(), { replace: true });
+    else this.go('home', { replace: true });
+  },
+  current() { return State.currentPage; }
+};
 
-    State.setPage(name);
-
-    if (name === 'home' || name === 'explore') renderCampaigns();
-    if (name === 'create') { renderCampaigns(); renderMyCamps(); }
-    if (name === 'profile') renderProfile();
-    if (name === 'admin')   renderAdmin();
-    window.scrollTo(0, 0);
-  } catch (e) { console.error('[goPage] Error:', e); }
-}
-
-function goBack() { goPage(State.prevPage || 'home'); }
+/* Thin wrappers — keep existing onclick="goPage(...)" working everywhere */
+function goPage(name) { Router.go(name); }
+function goBack() { Router.back(); }
 
 function toggleMenu(id) {
   const body = document.getElementById(id);
