@@ -3566,6 +3566,24 @@ html, body { overflow-x: hidden; }
         </div>
       </div>
 
+      <div class="set-group-h" data-i18n="setNotifPrefs"></div>
+      <div class="set-card">
+        <div class="set-row"><div class="set-texts"><div class="set-title" data-i18n="setNtCampaign"></div></div>
+          <button class="switch" id="swNtcampaign" onclick="toggleNotifType('campaign')" role="switch"><span class="switch-knob"></span></button></div>
+        <div class="set-row"><div class="set-texts"><div class="set-title" data-i18n="setNtCommunity"></div></div>
+          <button class="switch" id="swNtcommunity" onclick="toggleNotifType('community')" role="switch"><span class="switch-knob"></span></button></div>
+        <div class="set-row"><div class="set-texts"><div class="set-title" data-i18n="setNtAchievement"></div></div>
+          <button class="switch" id="swNtachievement" onclick="toggleNotifType('achievement')" role="switch"><span class="switch-knob"></span></button></div>
+        <div class="set-row"><div class="set-texts"><div class="set-title" data-i18n="setNtAnnounce"></div></div>
+          <button class="switch" id="swNtannouncement" onclick="toggleNotifType('announcement')" role="switch"><span class="switch-knob"></span></button></div>
+        <div class="set-row"><div class="set-texts"><div class="set-title" data-i18n="setQuiet"></div><div class="set-sub" data-i18n="setQuietSub"></div></div>
+          <button class="switch" id="swQuiet" onclick="toggleQuiet()" role="switch"><span class="switch-knob"></span></button></div>
+        <div class="set-row tappable" id="setPushRow" onclick="enablePush()">
+          <div class="set-texts"><div class="set-title" data-i18n="setPush"></div><div class="set-sub" id="setPushState"></div></div>
+          <span class="set-arrow">›</span>
+        </div>
+      </div>
+
       <div class="set-group-h" data-i18n="setSupportGroup"></div>
       <div class="set-card">
         <div class="set-row tappable" onclick="openSupport()">
@@ -4357,7 +4375,7 @@ const T = {
     certHeading: 'شهادة تقدير', certBody1: 'تشهد منصة أثر أنّ', certBody2: 'قد أتمّ بنجاح المشاركة في', certHoursLine: 'بإجمالي ساعات تطوّع', shareCert: 'مشاركة الشهادة', certShared: 'تم نسخ نص الشهادة',
     settingsTitle: 'الإعدادات', settingsSub: 'المظهر · اللغة · الخصوصية · الدعم',
     setAppearance: 'المظهر', setDark: 'الوضع الداكن', setDarkSub: 'مظهر مريح للعين ليلًا', setLang: 'اللغة', setLangSub: 'لغة الواجهة',
-    setPrivacyGroup: 'الخصوصية', setPublic: 'ملف عام', setPublicSub: 'السماح للآخرين بزيارة ملفك', setNotif: 'الإشعارات', setNotifSub: 'تنبيهات الحملات والتحديثات',
+    setPrivacyGroup: 'الخصوصية', setNotifPrefs: 'تفضيلات الإشعارات', setNtCampaign: 'الحملات والمشاركة', setNtCommunity: 'تفاعلات المجتمع', setNtAchievement: 'الإنجازات', setNtAnnounce: 'إعلانات الإدارة', setQuiet: 'الوضع الصامت', setQuietSub: 'إيقاف التنبيهات المنبثقة', setPush: 'تنبيهات المتصفح', setPushOn: 'مفعّلة', setPushOff: 'اضغط للتفعيل', setPushNo: 'غير مدعومة', setPublic: 'ملف عام', setPublicSub: 'السماح للآخرين بزيارة ملفك', setNotif: 'الإشعارات', setNotifSub: 'تنبيهات الحملات والتحديثات',
     setSupportGroup: 'الدعم والسياسات', setContact: 'تواصل معنا', setContactSub: 'مساعدة أو اقتراح', setPrivacyPolicy: 'سياسة الخصوصية', setTerms: 'شروط الاستخدام',
     notifOn: 'تم تفعيل الإشعارات', notifOff: 'تم إيقاف الإشعارات',
     policyPrivacyTitle: 'سياسة الخصوصية', policyPrivacyBody: 'نحن في «أثر» نحترم خصوصيتك. تُحفظ بياناتك (الاسم، البريد، الهاتف، نشاطك التطوّعي) على جهازك محليًا فقط لتشغيل التطبيق، ولا تُشارك مع أي طرف ثالث. يمكنك تعديل معلوماتك أو حذف حسابك في أي وقت. صورتك الشخصية وصورة الهوية تُستخدمان فقط للتحقّق وعرض ملفك.',
@@ -4547,7 +4565,7 @@ const T = {
     certHeading: 'Certificate of Appreciation', certBody1: 'ATHAR certifies that', certBody2: 'has successfully participated in', certHoursLine: 'total volunteer hours', shareCert: 'Share certificate', certShared: 'Certificate text copied',
     settingsTitle: 'Settings', settingsSub: 'Appearance · Language · Privacy · Support',
     setAppearance: 'Appearance', setDark: 'Dark mode', setDarkSub: 'Easier on the eyes at night', setLang: 'Language', setLangSub: 'Interface language',
-    setPrivacyGroup: 'Privacy', setPublic: 'Public profile', setPublicSub: 'Let others visit your profile', setNotif: 'Notifications', setNotifSub: 'Campaign alerts and updates',
+    setPrivacyGroup: 'Privacy', setNotifPrefs: 'Notification preferences', setNtCampaign: 'Campaigns & participation', setNtCommunity: 'Community interactions', setNtAchievement: 'Achievements', setNtAnnounce: 'Admin announcements', setQuiet: 'Quiet mode', setQuietSub: 'Mute pop-up alerts', setPush: 'Browser notifications', setPushOn: 'Enabled', setPushOff: 'Tap to enable', setPushNo: 'Not supported', setPublic: 'Public profile', setPublicSub: 'Let others visit your profile', setNotif: 'Notifications', setNotifSub: 'Campaign alerts and updates',
     setSupportGroup: 'Support & Policies', setContact: 'Contact us', setContactSub: 'Help or feedback', setPrivacyPolicy: 'Privacy policy', setTerms: 'Terms of use',
     notifOn: 'Notifications enabled', notifOff: 'Notifications disabled',
     policyPrivacyTitle: 'Privacy Policy', policyPrivacyBody: 'At ATHAR we respect your privacy. Your data (name, email, phone, volunteering activity) is stored locally on your device only to run the app, and is never shared with third parties. You can edit your information or delete your account at any time. Your profile and ID photos are used only for verification and displaying your profile.',
@@ -9005,6 +9023,17 @@ function renderSettings() {
   sw('swTheme', ThemeService.get() === 'dark');
   sw('swPrivacy', !!(State.cu && State.cu.profilePublic));
   sw('swNotif', !(State.cu && State.cu.notifPref === false));
+  // per-type notification preferences (default on)
+  const prefs = (State.cu && State.cu.notifPrefs) || {};
+  const types = prefs.types || {};
+  ['campaign', 'community', 'achievement', 'announcement'].forEach(ty => sw('swNt' + ty, types[ty] !== false));
+  sw('swQuiet', !!prefs.quiet);
+  // push state label
+  const ps = document.getElementById('setPushState');
+  if (ps) {
+    if (!PushService.supported()) ps.textContent = t('setPushNo');
+    else ps.textContent = PushService.permission() === 'granted' ? t('setPushOn') : t('setPushOff');
+  }
   // language segmented
   document.querySelectorAll('#segLang .seg-btn').forEach(b => b.classList.toggle('on', b.getAttribute('data-lang') === State.lang));
   // privacy row hidden for admin
@@ -9012,6 +9041,34 @@ function renderSettings() {
   if (pr) pr.style.display = State.isAdmin ? 'none' : 'flex';
   const ver = document.getElementById('setVersion');
   if (ver) ver.textContent = t('appVersion');
+}
+
+function _ensurePrefs() {
+  if (!State.cu.notifPrefs) State.cu.notifPrefs = { types: {}, quiet: false };
+  if (!State.cu.notifPrefs.types) State.cu.notifPrefs.types = {};
+  return State.cu.notifPrefs;
+}
+function toggleNotifType(type) {
+  if (!State.cu) return;
+  const p = _ensurePrefs();
+  p.types[type] = p.types[type] === false ? true : false;
+  persistCurrentUser({ notifPrefs: p });
+  renderSettings();
+}
+function toggleQuiet() {
+  if (!State.cu) return;
+  const p = _ensurePrefs();
+  p.quiet = !p.quiet;
+  persistCurrentUser({ notifPrefs: p });
+  toast(p.quiet ? (State.lang === 'ar' ? 'الوضع الصامت مفعّل' : 'Quiet mode on') : (State.lang === 'ar' ? 'الوضع الصامت متوقّف' : 'Quiet mode off'), 'success');
+  renderSettings();
+}
+async function enablePush() {
+  if (!PushService.supported()) { toast(t('setPushNo'), 'warning'); return; }
+  if (PushService.permission() === 'granted') { PushService.show('ATHAR', State.lang === 'ar' ? 'التنبيهات مفعّلة ✓' : 'Notifications enabled ✓'); renderSettings(); return; }
+  const res = await PushService.requestPermission();
+  if (res === 'granted') { toast(State.lang === 'ar' ? 'تم تفعيل تنبيهات المتصفح' : 'Browser notifications enabled', 'success'); PushService.show('ATHAR', State.lang === 'ar' ? 'مرحبًا بك في أثر' : 'Welcome to ATHAR'); }
+  renderSettings();
 }
 
 function toggleTheme() {
