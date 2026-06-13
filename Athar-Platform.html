@@ -2864,6 +2864,18 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
 .notif-body { flex: 1; min-width: 0; }
 .notif-text { font-size: var(--fs-sm); color: var(--charcoal); line-height: 1.6; }
 .notif-time { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: var(--sp-1); }
+.notif-item { cursor: pointer; transition: background 0.15s; }
+.notif-dot.community { background: var(--olive); } .notif-dot.campaign { background: #1d4ed8; }
+.notif-dot.approval { background: var(--success); } .notif-dot.achievement { background: #c9a34e; }
+.notif-dot.announce { background: #7c3aed; } .notif-dot.welcome { background: var(--olive-light); }
+.notif-dot.danger { background: var(--red); }
+.notif-item.unread .notif-dot { box-shadow: 0 0 0 4px var(--olive-pale); }
+.notif-head { max-width: var(--content-max); margin: 0 auto; padding: var(--sp-3) var(--sp-5) 0; display: flex; align-items: center; justify-content: space-between; }
+.notif-presence { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-xs); font-weight: 800; color: var(--charcoal-50); }
+.notif-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 0 0 rgba(45,122,79,0.5); animation: pulseLive 2s infinite; }
+@keyframes pulseLive { 0% { box-shadow: 0 0 0 0 rgba(45,122,79,0.45); } 70% { box-shadow: 0 0 0 7px rgba(45,122,79,0); } 100% { box-shadow: 0 0 0 0 rgba(45,122,79,0); } }
+.notif-readall { background: none; border: none; color: var(--olive); font-family: inherit; font-weight: 800; font-size: var(--fs-xs); cursor: pointer; }
+.notif-group-h { font-size: var(--fs-xs); font-weight: 800; color: var(--charcoal-50); margin: var(--sp-3) 0 var(--sp-2); letter-spacing: 0.3px; }
 #detailBackBtn { display: none !important; }
 
 /* ── PHASE 3.2 — context-aware header ── */
@@ -4991,24 +5003,47 @@ const NotificationService = {
   _all() { return DB.getObj(CONFIG.DB_KEYS.NOTIFS) || {}; },
   _save(m) { DB.setObj(CONFIG.DB_KEYS.NOTIFS, m); },
   getFor(uid) { return (uid && this._all()[uid]) || []; },
-  add(uid, ar, en, type) {
+  /** Per-user notification preferences (mute by type + quiet mode). */
+  prefs(uid) {
+    const u = (State.cu && State.cu.id === uid) ? State.cu : UserService.getById(uid);
+    return (u && u.notifPrefs) || {};
+  },
+  isMuted(uid, type) {
+    const p = this.prefs(uid);
+    return !!(p.types && p.types[type] === false);
+  },
+  add(uid, ar, en, type, meta) {
     if (!uid) return;
+    type = type || 'info';
+    if (this.isMuted(uid, type)) return;
     const m = this._all();
     if (!m[uid]) m[uid] = [];
     m[uid].push({ id: 'n' + Date.now() + Math.random().toString(36).slice(2, 5),
-      ar, en, type: type || 'info', read: false, createdAt: new Date().toISOString() });
+      ar, en, type: type, read: false, createdAt: new Date().toISOString(),
+      link: (meta && meta.link) || null });
     this._save(m);
+    // Live + optional web push for the current user
+    if (typeof RealtimeService !== 'undefined') RealtimeService.emit({ type: 'notification', uid: uid });
+    if (State.cu && State.cu.id === uid && typeof PushService !== 'undefined') {
+      const p = this.prefs(uid);
+      if (!p.quiet) PushService.show('ATHAR', State.lang === 'ar' ? ar : en);
+    }
   },
   unreadCount(uid) { return this.getFor(uid).filter(n => !n.read).length; },
   markAllRead(uid) {
     const m = this._all(); if (!uid || !m[uid]) return;
     m[uid].forEach(n => { n.read = true; }); this._save(m);
   },
+  markRead(uid, id) {
+    const m = this._all(); if (!uid || !m[uid]) return;
+    const n = m[uid].find(x => x.id === id); if (n) { n.read = true; this._save(m); }
+  },
   ensureWelcome(user) {
     if (!user || !user.id || user.isGuest || user.email === CONFIG.ADMIN_EMAIL) return;
     if (this.getFor(user.id).length) return;
     this.add(user.id, 'أهلاً بك في أثر 👋 رحلتك في صناعة الأثر بدأت.',
                        'Welcome to ATHAR 👋 Your impact journey begins.', 'welcome');
+    if (typeof EmailService !== 'undefined' && user.email) EmailService.queue(user.email, 'welcome', { name: user.name });
   },
   /** Send an announcement to a target audience. audience: 'approved' | 'all' | 'pending'. Returns count sent. */
   broadcast(ar, en, audience) {
@@ -5020,6 +5055,110 @@ const NotificationService = {
     else if (audience === 'pending') targets = targets.filter(u => u.status === 'pending');
     targets.forEach(u => this.add(u.id, txtAr, txtEn, 'announcement'));
     return targets.length;
+  }
+};
+
+/* ══════════════════════════════════════════
+   LIVE / REAL-TIME LAYER (Phase 10)
+   Offline-first: real cross-tab sync via storage events + in-session polling.
+   Backend adapters (Supabase/Push/Email) are scaffolded for future wiring.
+   ══════════════════════════════════════════ */
+
+/** Realtime abstraction — local adapter now (cross-tab), Supabase adapter slot for later. */
+const RealtimeService = {
+  adapter: 'local',
+  _subs: [],
+  _inited: false,
+  init() {
+    if (this._inited) return; this._inited = true;
+    try {
+      window.addEventListener('storage', (e) => {
+        if (!e || !e.key) return;
+        if (String(e.key).indexOf('athar_') !== 0) return;
+        this.emit({ type: 'storage', key: e.key });
+      });
+    } catch (err) {}
+    // Future: if (this.adapter === 'supabase') supabase.channel(...).on(...).subscribe();
+  },
+  subscribe(fn) { this._subs.push(fn); return () => { this._subs = this._subs.filter(s => s !== fn); }; },
+  emit(evt) { this._subs.forEach(s => { try { s(evt); } catch (e) {} }); }
+};
+
+/** Web Push (real, browser) + architecture for FCM/APNs. */
+const PushService = {
+  supported() { return typeof Notification !== 'undefined'; },
+  permission() { return this.supported() ? Notification.permission : 'denied'; },
+  async requestPermission() {
+    if (!this.supported()) return 'denied';
+    try { return await Notification.requestPermission(); } catch (e) { return 'denied'; }
+  },
+  show(title, body) {
+    if (this.supported() && Notification.permission === 'granted') {
+      try { new Notification(title, { body: body || '' }); } catch (e) {}
+    }
+  }
+};
+
+/** Email scaffold — queues messages with ATHAR templates (no real send without backend). */
+const EmailService = {
+  KEY: 'athar_emails',
+  queue(to, template, data) {
+    if (!to) return null;
+    const list = DB.getObj(this.KEY) || [];
+    const msg = { id: 'em' + Date.now() + Math.random().toString(36).slice(2, 4), to: to, template: template || 'generic', data: data || {}, status: 'queued', date: new Date().toISOString() };
+    list.unshift(msg); DB.setObj(this.KEY, list);
+    return msg;
+  },
+  getQueue() { return DB.getObj(this.KEY) || []; }
+};
+
+/** Lightweight presence — heartbeat per user; counts recently-active users (cross-tab via localStorage). */
+const Presence = {
+  KEY: 'athar_presence',
+  beat() {
+    if (!State.cu || State.isGuest) return;
+    try { const m = DB.getObj(this.KEY) || {}; m[State.cu.id] = Date.now(); DB.setObj(this.KEY, m); } catch (e) {}
+  },
+  activeCount(mins) {
+    const cut = Date.now() - (mins || 5) * 60000;
+    const m = DB.getObj(this.KEY) || {};
+    return Object.keys(m).filter(k => m[k] > cut).length;
+  }
+};
+
+/** Orchestrates the live experience: cross-tab refresh + in-session polling, without thrash. */
+const LiveService = {
+  POLL_MS: 12000,
+  _timer: null,
+  _sig: '',
+  start() {
+    RealtimeService.init();
+    RealtimeService.subscribe((evt) => this.onChange(evt));
+    if (this._timer) clearInterval(this._timer);
+    this._timer = setInterval(() => this.tick(), this.POLL_MS);
+    Presence.beat();
+  },
+  onChange() { try { updateBell(); this.refreshActive(); } catch (e) {} },
+  tick() { try { Presence.beat(); updateBell(); this.refreshActive(); } catch (e) {} },
+  /** Signature of feed-affecting data to avoid needless re-renders. */
+  _feedSig() {
+    const posts = CommunityService.getAll();
+    let r = 0, c = 0;
+    posts.forEach(p => { c += (p.comments || []).length; if (p.reactions) REACTIONS.forEach(k => r += (p.reactions[k] || []).length); });
+    return posts.length + ':' + r + ':' + c;
+  },
+  refreshActive() {
+    const page = State.currentPage;
+    // Don't disrupt while typing a comment
+    const typing = document.activeElement && /INPUT|TEXTAREA/.test(document.activeElement.tagName);
+    if (page === 'community') {
+      const sig = this._feedSig();
+      if (sig !== this._sig && !typing) { this._sig = sig; if (typeof cmRenderFeed === 'function') { cmRenderFeed(); cmRenderHighlights(); } }
+    } else if (page === 'notifications') {
+      if (!typing) renderNotifications();
+    } else if (page === 'detail' && State.detailCampId) {
+      if (typeof renderDetail === 'function') renderDetail(State.detailCampId);
+    }
   }
 };
 
@@ -7507,7 +7646,7 @@ const ROUTES = {
   home:          { title: null,             onEnter: () => HomeUI.enter() },
   explore:       { title: 'navExplore',     onEnter: () => ExploreUI.enter() },
   community:     { title: 'communityTitle', onEnter: () => renderCommunity() },
-  notifications: { title: 'notifTitle', back: true, onEnter: () => { renderNotifications(); if (State.cu) NotificationService.markAllRead(State.cu.id); updateBell(); } },
+  notifications: { title: 'notifTitle', back: true, onEnter: () => { renderNotifications(); } },
   create:        { title: 'createTitle', back: true, auth: true, onEnter: () => { renderCampaigns(); renderMyCamps(); } },
   detail:        { title: 'detailHeaderTitle', back: true, onEnter: () => {} },
   profile:       { title: 'navProfile',     onEnter: () => renderProfile() },
@@ -7947,19 +8086,66 @@ function updateBell() {
   else { badge.classList.remove('show'); }
 }
 
+/* Map notification type → a calm accent class + default navigation target */
+const NOTIF_TYPE = {
+  community:    { cls: 'community',   page: 'community' },
+  join:         { cls: 'campaign',    page: 'community' },
+  campaign:     { cls: 'campaign',    page: 'create' },
+  approval:     { cls: 'approval',    page: 'profile' },
+  achievement:  { cls: 'achievement', page: 'profile' },
+  announcement: { cls: 'announce',    page: null },
+  ban:          { cls: 'danger',      page: 'profile' },
+  welcome:      { cls: 'welcome',     page: 'profile' }
+};
+
+function notifOpen(id, type, link) {
+  if (State.cu) { NotificationService.markRead(State.cu.id, id); updateBell(); }
+  let l = null;
+  try { l = link ? JSON.parse(decodeURIComponent(link)) : null; } catch (e) {}
+  if (l && l.page) { if (l.page === 'detail' && l.campId) { openDetail(l.campId); return; } goPage(l.page); return; }
+  const target = (NOTIF_TYPE[type] || {}).page;
+  if (target) goPage(target);
+}
+
+function handleMarkAllRead() {
+  if (!State.cu) return;
+  NotificationService.markAllRead(State.cu.id);
+  updateBell();
+  renderNotifications();
+}
+
 function renderNotifications() {
   const box = document.getElementById('notifList'); if (!box) return;
-  const list = State.cu ? NotificationService.getFor(State.cu.id) : [];
+  const isAr = State.lang === 'ar';
+  const list = State.cu ? NotificationService.getFor(State.cu.id).slice().reverse() : [];
+  const active = Presence.activeCount(5);
+  const head = '<div class="notif-head">' +
+    '<span class="notif-presence"><span class="notif-live-dot"></span>' + (isAr ? (active + ' نشِط الآن') : (active + ' active now')) + '</span>' +
+    (list.some(n => !n.read) ? '<button class="notif-readall" onclick="handleMarkAllRead()">' + (isAr ? 'تعليم الكل مقروء' : 'Mark all read') + '</button>' : '') +
+  '</div>';
+
   if (!list.length) {
-    box.innerHTML = '<div class="stub-empty"><div class="stub-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div><h3>' + t('notifEmptyTitle') + '</h3><p>' + t('notifEmptyMsg') + '</p></div>';
+    box.innerHTML = head + '<div class="stub-empty"><div class="stub-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div><h3>' + t('notifEmptyTitle') + '</h3><p>' + t('notifEmptyMsg') + '</p></div>';
     return;
   }
-  const isAr = State.lang === 'ar';
-  box.innerHTML = '<div class="notif-list">' + list.slice().reverse().map(n =>
-    '<div class="notif-item' + (n.read ? '' : ' unread') + '"><div class="notif-dot"></div><div class="notif-body">' +
-    '<div class="notif-text">' + (isAr ? n.ar : n.en) + '</div>' +
-    '<div class="notif-time">' + admTimeAgo(n.createdAt) + '</div></div></div>'
-  ).join('') + '</div>';
+
+  const now = new Date();
+  const isToday = iso => { const d = new Date(iso); return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); };
+  const today = list.filter(n => isToday(n.createdAt));
+  const earlier = list.filter(n => !isToday(n.createdAt));
+  const item = n => {
+    const meta = NOTIF_TYPE[n.type] || { cls: 'info' };
+    const link = n.link ? encodeURIComponent(JSON.stringify(n.link)) : '';
+    return '<div class="notif-item' + (n.read ? '' : ' unread') + '" onclick="notifOpen(\'' + n.id + '\',\'' + (n.type || 'info') + '\',\'' + link + '\')">' +
+      '<span class="notif-dot ' + meta.cls + '"></span><div class="notif-body">' +
+      '<div class="notif-text">' + (isAr ? n.ar : n.en) + '</div>' +
+      '<div class="notif-time">' + admTimeAgo(n.createdAt) + '</div></div></div>';
+  };
+  const group = (label, arr) => arr.length ? '<div class="notif-group-h">' + label + '</div>' + arr.map(item).join('') : '';
+  box.innerHTML = head + '<div class="notif-list">' +
+    group(isAr ? 'اليوم' : 'Today', today) +
+    group(isAr ? 'أقدم' : 'Earlier', earlier) +
+  '</div>';
 }
 
 function doLogin(e) {
@@ -8033,6 +8219,7 @@ function enterApp() {
   Verify.bannerCheck();
   NotificationService.ensureWelcome(State.cu);
   updateBell();
+  try { LiveService.start(); } catch (e) {}
 
   if (Onb.needs(State.cu)) {
     Onb.show();
