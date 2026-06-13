@@ -2748,9 +2748,12 @@ input[type="file"]::file-selector-button {
   transition: transform 0.15s, background 0.2s, box-shadow 0.2s; }
 .auth-btn:active { transform: scale(0.985); }
 .auth-btn-primary { background: var(--forest); color: var(--off-white); }
-.auth-btn-primary:hover { background: #26331a; box-shadow: 0 10px 30px rgba(46,61,31,0.22); }
+.auth-btn-primary:hover { background: var(--surface-dark-2); box-shadow: 0 10px 30px rgba(46,61,31,0.22); }
+.auth-btn-secondary { background: var(--olive-pale); color: var(--olive); }
+.auth-btn-secondary:hover { background: var(--sand-dark); }
 .auth-btn-ghost { background: transparent; color: var(--forest); border: 1.5px solid rgba(46,61,31,0.2); }
 .auth-btn-ghost:hover { background: rgba(46,61,31,0.05); }
+.auth-btn[disabled], .auth-btn:disabled { opacity: 0.5; cursor: default; box-shadow: none; }
 
 .auth-title { font-size: var(--fs-2xl); font-weight: 800; text-align: center; color: var(--forest); margin-bottom: var(--sp-1); }
 .auth-sub { font-size: var(--fs-sm); color: rgba(46,61,31,0.5); text-align: center; margin-bottom: var(--sp-6); }
@@ -3329,7 +3332,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <p class="auth-tagline" data-i18n="tagline">لمسة تترك أثراً</p>
       <div class="auth-actions">
         <button class="auth-btn auth-btn-primary" onclick="Auth.go('login')" data-i18n="getStarted"></button>
-        <button class="auth-btn auth-btn-ghost" onclick="Auth.go('register')" data-i18n="joinCta"></button>
+        <button class="auth-btn auth-btn-secondary" onclick="Auth.go('register')" data-i18n="joinCta"></button>
         <button class="auth-link auth-guest-link" onclick="AuthService.continueAsGuest()" data-i18n="continueGuest"></button>
       </div>
     </div>
