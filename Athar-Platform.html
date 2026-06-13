@@ -2772,7 +2772,8 @@ input[type="file"]::file-selector-button {
 }
 .auth-bg { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 #loginScreen::before { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: var(--app-bg-img) center top / cover no-repeat; opacity: 0.5; }
-#loginScreen > * { position: relative; z-index: 1; }
+#loginScreen .auth-view { position: relative; z-index: 1; }
+#loginScreen .auth-lang { z-index: 3; }
 #loginScreen .auth-bg { z-index: 0; opacity: 0.5; }
 .auth-glow { position: absolute; border-radius: 50%; }
 .auth-glow-1 { width: 520px; height: 520px; top: -160px; inset-inline-start: -160px;
