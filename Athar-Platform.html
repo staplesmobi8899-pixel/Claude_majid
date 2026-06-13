@@ -1417,12 +1417,13 @@ body {
   width: 38px; height: 38px;
   border-radius: var(--r-sm);
   background: var(--olive-pale);
+  color: var(--olive);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--fs-lg);
   flex-shrink: 0;
 }
+.menu-icon .ic { width: 20px; height: 20px; }
 
 .menu-texts { flex: 1; min-width: 0; }
 .menu-title { font-size: var(--fs-base); font-weight: 700; }
@@ -3047,6 +3048,7 @@ html, body { overflow-x: hidden; }
 .cat-chips { display: flex; gap: var(--sp-2); margin-top: var(--sp-4); overflow-x: auto;
   padding-bottom: var(--sp-2); scrollbar-width: none; }
 .cat-chips::-webkit-scrollbar { display: none; }
+.cat-chip .ic { width: 16px; height: 16px; }
 .cat-chip { flex: none; white-space: nowrap; padding: var(--sp-2) var(--sp-4); border-radius: var(--r-full);
   border: 1.5px solid var(--sand-dark); background: var(--white); color: var(--charcoal);
   font-family: inherit; font-size: var(--fs-sm); font-weight: 700; cursor: pointer; transition: background 0.18s, color 0.18s, border-color 0.18s; }
@@ -3132,7 +3134,7 @@ html, body { overflow-x: hidden; }
 .detail-story { font-size: var(--fs-sm); color: var(--charcoal-80); line-height: 1.9; }
 .detail-reqs { list-style: none; display: flex; flex-direction: column; gap: var(--sp-2); }
 .detail-reqs li { display: flex; gap: var(--sp-2); font-size: var(--fs-sm); color: var(--charcoal-80); }
-.detail-reqs li::before { content: '✓'; color: var(--olive); font-weight: 800; flex: none; }
+.detail-reqs li::before { content: ''; color: var(--olive); font-weight: 800; flex: none; }
 .detail-parts { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
 .part-chip { width: 38px; height: 38px; border-radius: var(--r-full); background: var(--olive-pale); color: var(--olive);
   display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: var(--fs-sm); }
@@ -3187,8 +3189,9 @@ html, body { overflow-x: hidden; }
 .badge { text-align: center; opacity: 0.4; filter: grayscale(1); transition: opacity 0.2s, filter 0.2s; }
 .badge.on { opacity: 1; filter: none; }
 .badge-ico { width: 52px; height: 52px; margin: 0 auto; border-radius: var(--r-full); background: var(--sand);
-  display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-.badge.on .badge-ico { background: var(--olive-pale); }
+  display: flex; align-items: center; justify-content: center; color: var(--charcoal-50); }
+.badge-ico .ic { width: 24px; height: 24px; }
+.badge.on .badge-ico { background: var(--olive-pale); color: var(--olive); }
 .badge-l { font-size: var(--fs-2xs); color: var(--charcoal-80); margin-top: var(--sp-1); line-height: 1.2; }
 
 /* ── PHASE 6.3 — certificates + activity timeline ── */
@@ -3307,6 +3310,13 @@ html, body { overflow-x: hidden; }
    PHASE 11 — MOTION, INTERACTION & ACCESSIBILITY POLISH
    (additive only — preserves the approved aesthetic)
    ══════════════════════════════════════════ */
+
+/* Unified icon system (Phase 11) — thin-line, monochrome, inherits color */
+.ic { width: 1.25em; height: 1.25em; display: inline-block; vertical-align: middle;
+  fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.ic-lg { width: 26px; height: 26px; }
+.ic-md { width: 22px; height: 22px; }
+.ic-sm { width: 18px; height: 18px; }
 
 /* Accessible focus — calm olive ring, only for keyboard users */
 :focus { outline: none; }
@@ -3667,7 +3677,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
     <div class="profile-menu">
       <div class="menu-card">
         <div class="menu-row" onclick="goPage('settings')">
-          <div class="menu-icon">⚙️</div>
+          <div class="menu-icon"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.2a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 4 13H3.8a2 2 0 0 1 0-4H4a1.6 1.6 0 0 0 1.1-2.7l-.1-.1A2 2 0 1 1 7.8 3.4l.1.1A1.6 1.6 0 0 0 10 4V3.8a2 2 0 0 1 4 0V4a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.6 1.6 0 0 0 20 10h.2a2 2 0 0 1 0 4z"/></svg></div>
           <div class="menu-texts">
             <div class="menu-title" data-i18n="settingsTitle"></div>
             <div class="menu-sub" data-i18n="settingsSub"></div>
@@ -3676,7 +3686,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
         </div>
 
         <div class="menu-row" onclick="toggleMenu('m-id')">
-          <div class="menu-icon">🪪</div>
+          <div class="menu-icon"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
           <div class="menu-texts">
             <div class="menu-title" data-i18n="menuId"></div>
             <div class="menu-sub" data-i18n="menuIdSub"></div>
@@ -3688,7 +3698,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
         </div>
 
         <div class="menu-row" onclick="toggleMenu('m-camps')">
-          <div class="menu-icon">📋</div>
+          <div class="menu-icon"><svg class="ic" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><line x1="8.5" y1="9" x2="15.5" y2="9"/><line x1="8.5" y1="13" x2="15.5" y2="13"/><line x1="8.5" y1="17" x2="12.5" y2="17"/></svg></div>
           <div class="menu-texts">
             <div class="menu-title" data-i18n="menuCamps"></div>
             <div class="menu-sub" data-i18n="menuCampsSub"></div>
@@ -3700,7 +3710,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
         </div>
 
         <div class="menu-row" onclick="toggleMenu('m-saved')">
-          <div class="menu-icon">♥</div>
+          <div class="menu-icon"><svg class="ic" viewBox="0 0 24 24"><path d="M18 21l-6-4.5L6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/></svg></div>
           <div class="menu-texts">
             <div class="menu-title" data-i18n="savedTitle"></div>
             <div class="menu-sub" data-i18n="savedSub"></div>
@@ -3710,7 +3720,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
         <div class="menu-section-body" id="m-saved"><div id="savedBox"></div></div>
 
         <div class="menu-row" id="menuAdminRow" style="display:none;" onclick="goPage('admin')">
-          <div class="menu-icon">🛠️</div>
+          <div class="menu-icon"><svg class="ic" viewBox="0 0 24 24"><path d="M12 21s7.5-3.5 7.5-9.5V5.5L12 2.8 4.5 5.5v6C4.5 17.5 12 21 12 21z"/></svg></div>
           <div class="menu-texts">
             <div class="menu-title" data-i18n="navAdmin"></div>
             <div class="menu-sub" data-i18n="adminRowSub"></div>
@@ -3719,7 +3729,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
         </div>
 
         <div class="menu-row" onclick="doLogout()" style="color:var(--red);">
-          <div class="menu-icon" style="background:rgba(200,76,60,0.08);">🚪</div>
+          <div class="menu-icon" style="background:rgba(200,76,60,0.08);"><svg class="ic" viewBox="0 0 24 24"><path d="M9 21H5.5A1.5 1.5 0 0 1 4 19.5v-15A1.5 1.5 0 0 1 5.5 3H9"/><polyline points="16 16.5 20.5 12 16 7.5"/><line x1="20.5" y1="12" x2="9.5" y2="12"/></svg></div>
           <div class="menu-texts">
             <div class="menu-title" style="color:var(--red);" data-i18n="logout"></div>
           </div>
@@ -4439,13 +4449,13 @@ const CONFIG = {
     VERSION:  'athar_version'
   },
   CAMP_CATEGORIES: {
-    planting:   { ar: 'تشجير',          en: 'Tree Planting', icon: '🌱' },
-    cleaning:   { ar: 'تنظيف',          en: 'Cleaning',      icon: '🧹' },
-    education:  { ar: 'التعليم',         en: 'Education',     icon: '📚' },
-    health:     { ar: 'الصحة',           en: 'Health',        icon: '❤️' },
-    community:  { ar: 'دعم المجتمع',     en: 'Community',     icon: '🤝' },
-    improvement:{ ar: 'تحسين',          en: 'Improvement',   icon: '🛠️' },
-    emergency:  { ar: 'الاستجابة الطارئة', en: 'Emergency',   icon: '🚨' }
+    planting:   { ar: 'تشجير',          en: 'Tree Planting', icon: 'sprout' },
+    cleaning:   { ar: 'تنظيف',          en: 'Cleaning',      icon: 'broom' },
+    education:  { ar: 'التعليم',         en: 'Education',     icon: 'book' },
+    health:     { ar: 'الصحة',           en: 'Health',        icon: 'heart' },
+    community:  { ar: 'دعم المجتمع',     en: 'Community',     icon: 'people' },
+    improvement:{ ar: 'تحسين',          en: 'Improvement',   icon: 'tools' },
+    emergency:  { ar: 'الاستجابة الطارئة', en: 'Emergency',   icon: 'alert' }
   },
   // backward-compat: legacy category keys -> new taxonomy
   CATEGORY_ALIASES: {
@@ -4492,15 +4502,61 @@ const CONFIG = {
   },
 
   ACHIEVEMENTS: {
-    first_campaign:   { ar: 'أول مبادرة',      en: 'First Campaign',       icon: '🌟', cond: (u) => (u.activitiesJoined || 0) >= 1 },
-    hours_10:         { ar: '10 ساعات تطوّع',  en: '10 Volunteer Hours',   icon: '⏳', cond: (u) => (u.volunteerHours || 0) >= 10 },
-    community_leader: { ar: 'قائد مجتمع',      en: 'Community Leader',      icon: '🤝', cond: (u, s) => s.createdApproved >= 1 },
-    top_volunteer:    { ar: 'متطوّع مميّز',     en: 'Top Volunteer',         icon: '🏆', cond: (u) => (u.volunteerHours || 0) >= 100 },
-    consistency:      { ar: 'وسام المثابرة',   en: 'Consistency Badge',     icon: '🔥', cond: (u, s) => s.completed >= 3 },
-    environmental:    { ar: 'أثر بيئي',        en: 'Environmental Impact',  icon: '🌿', cond: (u, s) => s.categories.includes('planting') || s.categories.includes('cleaning') },
-    city_contributor: { ar: 'مساهم المدينة',   en: 'City Contributor',      icon: '📍', cond: (u, s) => s.citiesCount >= 2 }
+    first_campaign:   { ar: 'أول مبادرة',      en: 'First Campaign',       icon: 'flag', cond: (u) => (u.activitiesJoined || 0) >= 1 },
+    hours_10:         { ar: '10 ساعات تطوّع',  en: '10 Volunteer Hours',   icon: 'clock', cond: (u) => (u.volunteerHours || 0) >= 10 },
+    community_leader: { ar: 'قائد مجتمع',      en: 'Community Leader',      icon: 'people', cond: (u, s) => s.createdApproved >= 1 },
+    top_volunteer:    { ar: 'متطوّع مميّز',     en: 'Top Volunteer',         icon: 'trophy', cond: (u) => (u.volunteerHours || 0) >= 100 },
+    consistency:      { ar: 'وسام المثابرة',   en: 'Consistency Badge',     icon: 'repeat', cond: (u, s) => s.completed >= 3 },
+    environmental:    { ar: 'أثر بيئي',        en: 'Environmental Impact',  icon: 'leaf', cond: (u, s) => s.categories.includes('planting') || s.categories.includes('cleaning') },
+    city_contributor: { ar: 'مساهم المدينة',   en: 'City Contributor',      icon: 'pin', cond: (u, s) => s.citiesCount >= 2 }
   }
 };
+
+/* ══════════════════════════════════════════
+   ICON SYSTEM (Phase 11) — unified thin-line monochrome SVGs
+   ══════════════════════════════════════════ */
+const ICONS = {
+  leaf:        '<path d="M11 20A7 7 0 0 1 4 13c0-4 3-8 9-9 1 6-1 12-2 16z"/><path d="M4 20c3-6 7-9 11-10"/>',
+  broom:       '<path d="M19 4 9 14"/><path d="M4 21c0-3 1-5 4-6l4 4c-1 3-3 4-6 4z"/><path d="M13 9l2 2"/>',
+  book:        '<path d="M4 5a2 2 0 0 1 2-2h6v17H6a2 2 0 0 0-2 2z"/><path d="M20 5a2 2 0 0 0-2-2h-6v17h6a2 2 0 0 1 2 2z"/>',
+  heart:       '<path d="M20.8 6.6a5 5 0 0 0-7.1 0l-.7.7-.7-.7a5 5 0 1 0-7.1 7.1L12 21l6.8-7.3a5 5 0 0 0 2-7.1z"/>',
+  people:      '<path d="M16 20v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1"/><circle cx="9" cy="7" r="3.5"/><path d="M22 20v-1a4 4 0 0 0-3-3.8"/><path d="M16 3.5a4 4 0 0 1 0 7"/>',
+  tools:       '<path d="M14.5 6.5a3.5 3.5 0 0 0-4.6 4.6L3 18l3 3 6.9-6.9a3.5 3.5 0 0 0 4.6-4.6l-2 2-2-.5-.5-2z"/>',
+  alert:       '<path d="M10.3 4 2 18a2 2 0 0 0 1.7 3h16.6a2 2 0 0 0 1.7-3L13.7 4a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9.5" x2="12" y2="14"/><line x1="12" y1="17.5" x2="12" y2="17.5"/>',
+  star:        '<polygon points="12 3 14.6 8.6 21 9.3 16.5 13.6 17.8 20 12 16.8 6.2 20 7.5 13.6 3 9.3 9.4 8.6"/>',
+  clock:       '<circle cx="12" cy="12" r="8.5"/><polyline points="12 7 12 12 16 14"/>',
+  trophy:      '<path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M5 5H3v1.5a3 3 0 0 0 3 3"/><path d="M19 5h2v1.5a3 3 0 0 1-3 3"/>',
+  repeat:      '<path d="M17 3l3.5 3.5L17 10"/><path d="M3.5 11V9.5a3 3 0 0 1 3-3h14"/><path d="M7 21l-3.5-3.5L7 14"/><path d="M20.5 13v1.5a3 3 0 0 1-3 3h-14"/>',
+  pin:         '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="2.6"/>',
+  gear:        '<circle cx="12" cy="12" r="3"/><path d="M19.4 13a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.2a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 4 13H3.8a2 2 0 0 1 0-4H4a1.6 1.6 0 0 0 1.1-2.7l-.1-.1A2 2 0 1 1 7.8 3.4l.1.1A1.6 1.6 0 0 0 10 4V3.8a2 2 0 0 1 4 0V4a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.6 1.6 0 0 0 20 10h.2a2 2 0 0 1 0 4z"/>',
+  card:        '<rect x="3" y="5" width="18" height="14" rx="2.5"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  clipboard:   '<rect x="5" y="4" width="14" height="17" rx="2.5"/><line x1="8.5" y1="9" x2="15.5" y2="9"/><line x1="8.5" y1="13" x2="15.5" y2="13"/><line x1="8.5" y1="17" x2="12.5" y2="17"/>',
+  bookmark:    '<path d="M18 21l-6-4.5L6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/>',
+  shield:      '<path d="M12 21s7.5-3.5 7.5-9.5V5.5L12 2.8 4.5 5.5v6C4.5 17.5 12 21 12 21z"/>',
+  logout:      '<path d="M9 21H5.5A1.5 1.5 0 0 1 4 19.5v-15A1.5 1.5 0 0 1 5.5 3H9"/><polyline points="16 16.5 20.5 12 16 7.5"/><line x1="20.5" y1="12" x2="9.5" y2="12"/>',
+  calendar:    '<rect x="3.5" y="5" width="17" height="16" rx="2.5"/><line x1="3.5" y1="10" x2="20.5" y2="10"/><line x1="8" y1="3" x2="8" y2="6.5"/><line x1="16" y1="3" x2="16" y2="6.5"/>',
+  phone:       '<path d="M21 16.5v2.5a2 2 0 0 1-2.2 2 18 18 0 0 1-7.8-2.8 17.6 17.6 0 0 1-5.4-5.4A18 18 0 0 1 2.8 5 2 2 0 0 1 4.8 3H7a2 2 0 0 1 2 1.7c.1.8.3 1.6.6 2.4a2 2 0 0 1-.5 2L8 12a14.5 14.5 0 0 0 5 5l1-1.1a2 2 0 0 1 2-.5c.8.3 1.6.5 2.4.6A2 2 0 0 1 21 18z"/>',
+  person:      '<circle cx="12" cy="8" r="3.5"/><path d="M4.5 20.5v-1a6 6 0 0 1 15 0v1"/>',
+  image:       '<rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9" r="1.5"/><path d="M21 16l-5-5-9 9"/>',
+  trash:       '<path d="M3.5 6.5h17"/><path d="M8 6.5V4.5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M18.5 6.5 17.6 20a2 2 0 0 1-2 1.8H8.4a2 2 0 0 1-2-1.8L5.5 6.5"/>',
+  globe:       '<circle cx="12" cy="12" r="8.5"/><line x1="3.5" y1="12" x2="20.5" y2="12"/><path d="M12 3.5a14 14 0 0 1 0 17 14 14 0 0 1 0-17z"/>',
+  lock:        '<rect x="5" y="11" width="14" height="9.5" rx="2.5"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/>',
+  search:      '<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  palette:     '<path d="M12 3a9 9 0 1 0 0 18 2.2 2.2 0 0 0 1.6-3.7 2.2 2.2 0 0 1 1.6-3.7H17a4 4 0 0 0 4-4 8 8 0 0 0-9-6.6z"/><circle cx="7.5" cy="11" r="1"/><circle cx="11" cy="7.5" r="1"/><circle cx="15.5" cy="9" r="1"/>',
+  run:         '<circle cx="14" cy="5" r="2"/><path d="M8 21l2.5-5 2 2 1-4"/><path d="M6 11l3-2 3 1 1.5 3 3 1"/>',
+  youth:       '<circle cx="9.5" cy="8" r="3"/><path d="M4 20.5v-1a5.5 5.5 0 0 1 11 0v1"/><path d="M18 3.2l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2L15 5.4l2-.3z"/>',
+  megaphone:   '<path d="M3 11v2a1 1 0 0 0 1 1h2l6 4.5V6.5L6 11H4a1 1 0 0 0-1 1z"/><path d="M16 8.5a5 5 0 0 1 0 7"/>',
+  flag:        '<path d="M5 21V4"/><path d="M5 4.5h11l-2 3 2 3H5z"/>',
+  sprout:      '<path d="M12 21v-9"/><path d="M12 12C12 8.5 9.5 6 5.5 6c0 4 2.5 6.5 6.5 6.5z"/><path d="M12 12c0-3 2.2-5 5.5-5 0 3.5-2.2 5-5.5 5z"/>',
+  share:       '<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><line x1="8.2" y1="13.2" x2="15.8" y2="17.8"/><line x1="15.8" y1="6.2" x2="8.2" y2="10.8"/>',
+  check:       '<polyline points="20 6 9 17 4 12"/>',
+  inbox:       '<path d="M3 13h5l1.5 3h5L21 13"/><path d="M3 13l3-8h12l3 8v6a1.5 1.5 0 0 1-1.5 1.5H4.5A1.5 1.5 0 0 1 3 19z"/>'
+};
+function icon(name, cls) {
+  const p = ICONS[name];
+  if (!p) return '';
+  return '<svg class="ic' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true">' + p + '</svg>';
+}
 
 /* ══════════════════════════════════════════
    2. TRANSLATIONS
@@ -4551,7 +4607,7 @@ const T = {
     verifyTitle: 'تأكيد البريد الإلكتروني',
     verifySub: 'أدخل رمز التحقق المُرسَل إلى بريدك.',
     verifyBtn: 'تأكيد',
-    verifySuccess: 'تم تأكيد بريدك بنجاح ✓',
+    verifySuccess: 'تم تأكيد بريدك بنجاح ',
     continueGuest: 'المتابعة كضيف',
     guest: 'ضيف',
     guestPrompt: 'سجّل دخولك أو أنشئ حساباً للمتابعة',
@@ -4575,7 +4631,7 @@ const T = {
     changePic: 'تغيير الصورة',
     activities: 'الأنشطة', achievements: 'الإنجازات',
     noBio: 'أضف نبذة عنك', impactTitle: 'أثري', badgesTitle: 'الشارات',
-    profilePublic: '🌍 ملف عام', profilePrivate: '🔒 ملف خاص', profileNowPublic: 'ملفك أصبح عامًا', profileNowPrivate: 'ملفك أصبح خاصًا', completedLabel: 'مكتملة', citiesLabel: 'مدن', scoreLabel: 'نقاط الأثر',
+    profilePublic: 'ملف عام', profilePrivate: 'ملف خاص', profileNowPublic: 'ملفك أصبح عامًا', profileNowPrivate: 'ملفك أصبح خاصًا', completedLabel: 'مكتملة', citiesLabel: 'مدن', scoreLabel: 'نقاط الأثر',
     editInfo: 'تعديل', saveChanges: 'حفظ التعديلات', cancelEdit: 'إلغاء', infoSaved: 'تم حفظ معلوماتك', bioField: 'نبذة عنك', bioPh: 'اكتب نبذة قصيرة تعرّف بك…', emailLocked: 'البريد الإلكتروني لا يمكن تغييره',
     editProfileBtn: 'تعديل الملف', shareProfileBtn: 'مشاركة الملف', shareCopied: 'تم نسخ رابط ملفك', statCompletedShort: 'حملة منجزة', statHoursShort: 'ساعة', statParticipationShort: 'مشاركة', completedCampsLabel: 'حملات مكتملة', changePhotoCta: 'تغيير صورة الملف', roleJoined: 'مشارِك', roleOrganizer: 'منظِّم',
     certsTitle: 'الشهادات', timelineTitle: 'سجل النشاط', noCerts: 'أكمل حملة لتحصل على شهادتك الأولى', noActivity: 'ابدأ رحلتك — انضمّ لأول حملة', viewCertBtn: 'عرض',
@@ -4631,16 +4687,16 @@ const T = {
     chooseCat: 'اختر الفئة', noDataSub: 'كن أول من يطلق مبادرة ويصنع الأثر.',
     notJoined: 'أنت غير منضم لهذه المبادرة', leftCamp: 'غادرت المبادرة',
     leaveBtn: 'مغادرة المبادرة', cantLeave: 'لا يمكنك مغادرة الحملة الآن (أقل من يومين على موعدها)',
-    saved: 'تم الحفظ ♥', unsaved: 'أُزيل من المحفوظات',
+    saved: 'تم الحفظ ', unsaved: 'أُزيل من المحفوظات',
     req1: 'الالتزام بموعد المبادرة', req2: 'روح التعاون والعمل الجماعي', req3: 'الالتزام بتعليمات المنظّم',
     noParticipants: 'كن أول المشاركين!', manageCamp: 'إدارة المبادرة', markDoneBtn: 'إنهاء المبادرة', archiveBtn: 'أرشفة',
     storyTitle: 'القصة', reqTitle: 'المتطلبات', detailsTitle: 'التفاصيل', durationLabel: 'المدة', participantsTitle: 'المشاركون',
-    markedDone: 'تم إنهاء المبادرة ✓', archivedToast: 'تمت الأرشفة', shareVia: 'أثر', linkCopied: 'تم نسخ الرابط',
+    markedDone: 'تم إنهاء المبادرة ', archivedToast: 'تمت الأرشفة', shareVia: 'أثر', linkCopied: 'تم نسخ الرابط',
     bannedMsg: 'حسابك محظور حتى', userBanned: 'تم حظر الحساب', userUnbanned: 'تم رفع الحظر',
     manageParticipants: 'المشاركون والحضور', attended: 'حضر', absent: 'لم يحضر', banShort: 'حظر',
     communityReq: 'بطلب من المجتمع', editCamp: 'تعديل الحملة',
     savedTitle: 'المحفوظات', savedSub: 'المبادرات التي حفظتها', noSaved: 'لا توجد مبادرات محفوظة بعد',
-    hoursLabel: 'الساعات المطلوبة', campGallery: 'معرض الصور (اختياري)', galleryTitle: 'معرض الصور', campTitleLabel: 'عنوان الحملة', neededLabel: 'عدد المتطوعين المقدّر', categoryLabel: 'الفئة', saveChanges: 'حفظ التعديلات', changesSaved: 'تم حفظ التعديلات ✓',
+    hoursLabel: 'الساعات المطلوبة', campGallery: 'معرض الصور (اختياري)', galleryTitle: 'معرض الصور', campTitleLabel: 'عنوان الحملة', neededLabel: 'عدد المتطوعين المقدّر', categoryLabel: 'الفئة', saveChanges: 'حفظ التعديلات', changesSaved: 'تم حفظ التعديلات ',
     allCats: 'الكل', allCities: 'كل المدن', searchPlaceholder: 'ابحث عن مبادرة، فئة، أو مدينة...',
     sortRecent: 'الأحدث', sortPopular: 'الأكثر تفاعلاً', sortUrgent: 'الأقرب موعداً',
     noResults: 'لا توجد نتائج', noResultsSub: 'جرّب كلمات أو فلاتر مختلفة.',
@@ -4649,7 +4705,7 @@ const T = {
     communityTitle: 'المجتمع', communitySub: 'مساحة صُنّاع الأثر — شارك، الهم، وانتمِ.', communitySoonTitle: 'مجتمع أثر قريباً', communitySoonMsg: 'نبني مساحة تجمع المتطوعين لمشاركة قصصهم وإلهام بعضهم. ترقّبوا.',
     cmTabFeed: 'الموجز', cmTabStories: 'قصص الأثر', cmTabHighlights: 'الأبرز',
     cmShareTitle: 'شارك المجتمع', cmComposerPrompt: 'ما الذي تودّ مشاركته مع المجتمع؟', cmFabPost: 'منشور', cmFabCampaign: 'حملة', cmTypePost: 'منشور', cmTypeStory: 'قصة أثر', cmTextPh: 'شو بدك تشارك مع المجتمع؟', cmAddPhoto: 'إضافة صورة', cmPublish: 'نشر',
-    cmBefore: 'صورة قبل', cmAfter: 'صورة بعد', cmEmptyFeed: 'كن أول من يشارك لحظة أثر', cmEmptyStories: 'لا قصص بعد — شارك قصتك الأولى', cmComment: 'تعليق', cmComments: 'التعليقات', cmCommentPh: 'أضف تعليقًا لطيفًا…', cmSend: 'إرسال', cmReport: 'إبلاغ', cmDelete: 'حذف', cmPosted: 'تم النشر ✓',
+    cmBefore: 'صورة قبل', cmAfter: 'صورة بعد', cmEmptyFeed: 'كن أول من يشارك لحظة أثر', cmEmptyStories: 'لا قصص بعد — شارك قصتك الأولى', cmComment: 'تعليق', cmComments: 'التعليقات', cmCommentPh: 'أضف تعليقًا لطيفًا…', cmSend: 'إرسال', cmReport: 'إبلاغ', cmDelete: 'حذف', cmPosted: 'تم النشر ',
     cmAutoDone: 'اكتملت مبادرة', cmAutoNew: 'مبادرة جديدة انطلقت', cmAutoHours: 'أنجز ساعات تطوّع', cmAutoCity: 'وصلت لساعات تطوّع', cmHighMonth: 'حملة أنجزناها هذا الشهر', cmHighTopVols: 'أبرز المتطوّعين', cmHighCities: 'المدن الأنشط', cmHighHeroes: 'أبطال الحملات',
     notifTitle: 'الإشعارات', notifSub: 'كل جديد يخصّك في مكان واحد.', notifEmptyTitle: 'لا إشعارات بعد', notifEmptyMsg: 'سنخبرك هنا عند وجود تحديثات على مبادراتك ونشاطك.',
     signupTitle: 'انضم لأَثَرْ', signupBtn: 'انضم الآن',
@@ -4665,17 +4721,17 @@ const T = {
     catClean: 'تنظيف', catPlant: 'تشجير', catImprove: 'تحسين', catSupport: 'دعم', catEdu: 'تعليم',
     volLabel: 'المتطوعون', organizerLabel: 'المنظم', progress: 'التقدم', contactLabel: 'للتواصل',
     sApproved: 'متاحة', sPending: 'قيد المراجعة', sRejected: 'مرفوضة', sDone: 'منتهية',
-    joinBtn: 'انضمام', joinedBtn: '✓ منضم', unavailBtn: 'غير متاح',
-    pendingBanner: '⏳ حسابك قيد المراجعة — بانتظار موافقة المسؤول',
-    approvedBanner: '✓ حسابك مفعّل — مرحبًا بك في أَثَرْ',
-    rejectedBanner: '✕ تم رفض حسابك — تواصل مع المسؤول',
+    joinBtn: 'انضمام', joinedBtn: ' منضم', unavailBtn: 'غير متاح',
+    pendingBanner: ' حسابك قيد المراجعة — بانتظار موافقة المسؤول',
+    approvedBanner: ' حسابك مفعّل — مرحبًا بك في أَثَرْ',
+    rejectedBanner: ' تم رفض حسابك — تواصل مع المسؤول',
     noData: 'لا توجد بيانات بعد',
-    downloadId: '⬇️ تحميل الصورة',
-    approveBtn: '✓ قبول', rejectBtn: 'رفض',
+    downloadId: ' تحميل الصورة',
+    approveBtn: ' قبول', rejectBtn: 'رفض',
     pendingAccounts: 'طلبات الحسابات', pendingCamps: 'طلبات الحملات', partnerRequests: 'طلبات الشراكة',
     complete: 'مكتمل', of: 'من',
-    successSent: '✓ تم الإرسال بنجاح!', successJoined: '✓ انضممت!',
-    successAccount: '✓ تم إنشاء حسابك!',
+    successSent: ' تم الإرسال بنجاح!', successJoined: ' انضممت!',
+    successAccount: ' تم إنشاء حسابك!',
     errorEmail: 'البريد الإلكتروني مستخدم مسبقاً',
     errorPhone: 'رقم الهاتف مستخدم مسبقاً',
     errorLogin: 'بيانات الدخول غير صحيحة',
@@ -4690,11 +4746,11 @@ const T = {
     campDone: 'هذه الحملة منتهية',
     campUnavailable: 'هذه الحملة غير متاحة للانضمام',
     uploadError: 'خطأ في تحميل الصورة',
-    photoUpdated: '✓ تم تحديث الصورة',
-    campStatusUpdated: '✓ تم تحديث حالة الحملة',
-    campDoneMsg: '✓ تم إنهاء الحملة بنجاح',
+    photoUpdated: ' تم تحديث الصورة',
+    campStatusUpdated: ' تم تحديث حالة الحملة',
+    campDoneMsg: ' تم إنهاء الحملة بنجاح',
     campCreated: 'تم إنشاء الحملة',
-    campPending: '⏳ تم إرسال حملتك — قيد المراجعة',
+    campPending: ' تم إرسال حملتك — قيد المراجعة',
   },
   en: {
     tagline: 'Every touch leaves a legacy.',
@@ -4741,7 +4797,7 @@ const T = {
     verifyTitle: 'Verify your email',
     verifySub: 'Enter the verification code sent to your email.',
     verifyBtn: 'Verify',
-    verifySuccess: 'Your email is verified ✓',
+    verifySuccess: 'Your email is verified ',
     continueGuest: 'Continue as guest',
     guest: 'Guest',
     guestPrompt: 'Sign in or create an account to continue',
@@ -4765,7 +4821,7 @@ const T = {
     changePic: 'Change Photo',
     activities: 'Activities', achievements: 'Achievements',
     noBio: 'Add a short bio', impactTitle: 'My impact', badgesTitle: 'Badges',
-    profilePublic: '🌍 Public profile', profilePrivate: '🔒 Private profile', profileNowPublic: 'Your profile is now public', profileNowPrivate: 'Your profile is now private', completedLabel: 'Completed', citiesLabel: 'Cities', scoreLabel: 'Impact score',
+    profilePublic: 'Public profile', profilePrivate: 'Private profile', profileNowPublic: 'Your profile is now public', profileNowPrivate: 'Your profile is now private', completedLabel: 'Completed', citiesLabel: 'Cities', scoreLabel: 'Impact score',
     editInfo: 'Edit', saveChanges: 'Save changes', cancelEdit: 'Cancel', infoSaved: 'Your info was saved', bioField: 'About you', bioPh: 'Write a short bio about yourself…', emailLocked: 'Email cannot be changed',
     editProfileBtn: 'Edit profile', shareProfileBtn: 'Share profile', shareCopied: 'Profile link copied', statCompletedShort: 'Completed', statHoursShort: 'Hours', statParticipationShort: 'Participations', completedCampsLabel: 'Completed campaigns', changePhotoCta: 'Change profile photo', roleJoined: 'Participant', roleOrganizer: 'Organizer',
     certsTitle: 'Certificates', timelineTitle: 'Activity', noCerts: 'Complete a campaign to earn your first certificate', noActivity: 'Start your journey — join your first campaign', viewCertBtn: 'View',
@@ -4821,16 +4877,16 @@ const T = {
     chooseCat: 'Choose a category', noDataSub: 'Be the first to launch an initiative and make an impact.',
     notJoined: 'You have not joined this initiative', leftCamp: 'You left the initiative',
     leaveBtn: 'Leave initiative', cantLeave: 'You can\'t leave now (less than 2 days to the date)',
-    saved: 'Saved ♥', unsaved: 'Removed from saved',
+    saved: 'Saved ', unsaved: 'Removed from saved',
     req1: 'Commit to the initiative date', req2: 'Teamwork and collaboration', req3: 'Follow the organizer\'s instructions',
     noParticipants: 'Be the first to join!', manageCamp: 'Manage initiative', markDoneBtn: 'Complete', archiveBtn: 'Archive',
     storyTitle: 'The story', reqTitle: 'Requirements', detailsTitle: 'Details', durationLabel: 'Duration', participantsTitle: 'Participants',
-    markedDone: 'Initiative completed ✓', archivedToast: 'Archived', shareVia: 'ATHAR', linkCopied: 'Link copied',
+    markedDone: 'Initiative completed ', archivedToast: 'Archived', shareVia: 'ATHAR', linkCopied: 'Link copied',
     bannedMsg: 'Your account is banned until', userBanned: 'Account banned', userUnbanned: 'Account unbanned',
     manageParticipants: 'Participants & attendance', attended: 'Present', absent: 'Absent', banShort: 'Ban',
     communityReq: 'Community request', editCamp: 'Edit campaign',
     savedTitle: 'Saved', savedSub: 'Initiatives you bookmarked', noSaved: 'No saved initiatives yet',
-    hoursLabel: 'Hours needed', campGallery: 'Gallery (optional)', galleryTitle: 'Gallery', campTitleLabel: 'Campaign title', neededLabel: 'Estimated volunteers', categoryLabel: 'Category', saveChanges: 'Save changes', changesSaved: 'Changes saved ✓',
+    hoursLabel: 'Hours needed', campGallery: 'Gallery (optional)', galleryTitle: 'Gallery', campTitleLabel: 'Campaign title', neededLabel: 'Estimated volunteers', categoryLabel: 'Category', saveChanges: 'Save changes', changesSaved: 'Changes saved ',
     allCats: 'All', allCities: 'All cities', searchPlaceholder: 'Search initiatives, categories, or cities...',
     sortRecent: 'Recent', sortPopular: 'Most active', sortUrgent: 'Soonest',
     noResults: 'No results', noResultsSub: 'Try different keywords or filters.',
@@ -4839,7 +4895,7 @@ const T = {
     communityTitle: 'Community', communitySub: 'A space for changemakers — share, inspire, belong.', communitySoonTitle: 'ATHAR Community is coming', communitySoonMsg: 'We are building a space for volunteers to share stories and inspire each other. Stay tuned.',
     cmTabFeed: 'Feed', cmTabStories: 'Impact Stories', cmTabHighlights: 'Highlights',
     cmShareTitle: 'Share with community', cmComposerPrompt: 'What would you like to share?', cmFabPost: 'Post', cmFabCampaign: 'Campaign', cmTypePost: 'Post', cmTypeStory: 'Impact story', cmTextPh: 'What do you want to share?', cmAddPhoto: 'Add photo', cmPublish: 'Publish',
-    cmBefore: 'Before photo', cmAfter: 'After photo', cmEmptyFeed: 'Be the first to share an impact moment', cmEmptyStories: 'No stories yet — share your first one', cmComment: 'Comment', cmComments: 'Comments', cmCommentPh: 'Add a kind comment…', cmSend: 'Send', cmReport: 'Report', cmDelete: 'Delete', cmPosted: 'Posted ✓',
+    cmBefore: 'Before photo', cmAfter: 'After photo', cmEmptyFeed: 'Be the first to share an impact moment', cmEmptyStories: 'No stories yet — share your first one', cmComment: 'Comment', cmComments: 'Comments', cmCommentPh: 'Add a kind comment…', cmSend: 'Send', cmReport: 'Report', cmDelete: 'Delete', cmPosted: 'Posted ',
     cmAutoDone: 'completed an initiative', cmAutoNew: 'A new initiative launched', cmAutoHours: 'reached volunteer hours', cmAutoCity: 'reached volunteer hours', cmHighMonth: 'completed this month', cmHighTopVols: 'Top volunteers', cmHighCities: 'Most active cities', cmHighHeroes: 'Campaign heroes',
     notifTitle: 'Notifications', notifSub: 'Everything that matters to you, in one place.', notifEmptyTitle: 'No notifications yet', notifEmptyMsg: 'We will let you know here when there are updates on your initiatives and activity.',
     signupTitle: 'Join ATHAR', signupBtn: 'Join Now',
@@ -4855,17 +4911,17 @@ const T = {
     catClean: 'Cleaning', catPlant: 'Planting', catImprove: 'Improvement', catSupport: 'Support', catEdu: 'Education',
     volLabel: 'Volunteers', organizerLabel: 'Organizer', progress: 'Progress', contactLabel: 'Contact',
     sApproved: 'Available', sPending: 'Under Review', sRejected: 'Rejected', sDone: 'Completed',
-    joinBtn: 'Join', joinedBtn: '✓ Joined', unavailBtn: 'Unavailable',
-    pendingBanner: '⏳ Your account is under review — awaiting admin approval',
-    approvedBanner: '✓ Your account is active — welcome to ATHAR',
-    rejectedBanner: '✕ Your account was rejected — contact the admin',
+    joinBtn: 'Join', joinedBtn: ' Joined', unavailBtn: 'Unavailable',
+    pendingBanner: ' Your account is under review — awaiting admin approval',
+    approvedBanner: ' Your account is active — welcome to ATHAR',
+    rejectedBanner: ' Your account was rejected — contact the admin',
     noData: 'No data yet',
-    downloadId: '⬇️ Download Photo',
-    approveBtn: '✓ Approve', rejectBtn: 'Reject',
+    downloadId: ' Download Photo',
+    approveBtn: ' Approve', rejectBtn: 'Reject',
     pendingAccounts: 'Pending Accounts', pendingCamps: 'Pending Campaigns', partnerRequests: 'Partnership Requests',
     complete: 'complete', of: 'of',
-    successSent: '✓ Sent successfully!', successJoined: '✓ Joined!',
-    successAccount: '✓ Account created!',
+    successSent: ' Sent successfully!', successJoined: ' Joined!',
+    successAccount: ' Account created!',
     errorEmail: 'Email already in use',
     errorPhone: 'Phone number already in use',
     errorLogin: 'Invalid credentials',
@@ -4880,11 +4936,11 @@ const T = {
     campDone: 'This campaign has ended',
     campUnavailable: 'This campaign is unavailable',
     uploadError: 'Upload error',
-    photoUpdated: '✓ Photo updated',
-    campStatusUpdated: '✓ Campaign status updated',
-    campDoneMsg: '✓ Campaign marked as done',
+    photoUpdated: ' Photo updated',
+    campStatusUpdated: ' Campaign status updated',
+    campDoneMsg: ' Campaign marked as done',
     campCreated: 'Campaign created',
-    campPending: '⏳ Campaign submitted — pending review',
+    campPending: ' Campaign submitted — pending review',
   }
 };
 
@@ -5267,8 +5323,8 @@ const NotificationService = {
   ensureWelcome(user) {
     if (!user || !user.id || user.isGuest || user.email === CONFIG.ADMIN_EMAIL) return;
     if (this.getFor(user.id).length) return;
-    this.add(user.id, 'أهلاً بك في أثر 👋 رحلتك في صناعة الأثر بدأت.',
-                       'Welcome to ATHAR 👋 Your impact journey begins.', 'welcome');
+    this.add(user.id, 'أهلاً بك في أثر، رحلتك في صناعة الأثر بدأت.',
+                       'Welcome to ATHAR — your impact journey begins.', 'welcome');
     if (typeof EmailService !== 'undefined' && user.email) EmailService.queue(user.email, 'welcome', { name: user.name });
   },
   /** Send an announcement to a target audience. audience: 'approved' | 'all' | 'pending'. Returns count sent. */
@@ -5566,7 +5622,7 @@ const CampaignService = {
   approve(id) {
     const c = this.getById(id);
     const r = this.updateById(id, { status: 'approved' });
-    if (c && c.createdBy) NotificationService.add(c.createdBy, 'تمت الموافقة على مبادرتك ✓', 'Your initiative was approved ✓', 'campaign');
+    if (c && c.createdBy) NotificationService.add(c.createdBy, 'تمت الموافقة على مبادرتك ', 'Your initiative was approved ', 'campaign');
     return r;
   },
   reject(id) {
@@ -5600,7 +5656,7 @@ const CampaignService = {
     (camp.joinedUsers || []).forEach(uid => {
       const u = UserService.getById(uid);
       if (u) {
-        NotificationService.add(uid, 'اكتملت مبادرة شاركت بها 🎉', 'A campaign you joined was completed 🎉', 'campaign');
+        NotificationService.add(uid, 'اكتملت مبادرة شاركت بها', 'A campaign you joined was completed', 'campaign');
         AchievementService.evaluate(u);
       }
     });
@@ -5644,9 +5700,9 @@ const CampaignService = {
     if (State.cu && State.cu.id === user.id) { Object.assign(State.cu, patch); DB.setObj(CONFIG.DB_KEYS.SESSION, State.cu); }
 
     if (camp.createdBy && camp.createdBy !== user.id) {
-      NotificationService.add(camp.createdBy, (user.name || 'متطوع') + ' انضم إلى مبادرتك 🤝', (user.name || 'A volunteer') + ' joined your initiative 🤝', 'join');
+      NotificationService.add(camp.createdBy, (user.name || 'متطوع') + ' انضم إلى مبادرتك ', (user.name || 'A volunteer') + ' joined your initiative ', 'join');
     }
-    const msg = `✓ ${t('successJoined')} +${hours} ${State.lang === 'ar' ? 'ساعة' : 'hrs'}`;
+    const msg = ` ${t('successJoined')} +${hours} ${State.lang === 'ar' ? 'ساعة' : 'hrs'}`;
     return { success: true, message: msg, updatedUser: updated };
   },
   leave(campId, user) {
@@ -6036,7 +6092,7 @@ const CommunityService = {
     const list = [];
     if (users[0]) list.push({
       id: 'seedpost1', type: 'post', author: { id: users[0].id, name: users[0].name, pic: users[0].profilePic || null },
-      text: 'يوم رائع مع فريق التطوّع! كل يد امتدّت صنعت فرقًا حقيقيًا 🌿', media: camps[0] ? [Models.campImage(camps[0])] : [],
+      text: 'يوم رائع مع فريق التطوّع! كل يد امتدّت صنعت فرقًا حقيقيًا ', media: camps[0] ? [Models.campImage(camps[0])] : [],
       beforeImg: null, afterImg: null, campId: camps[0] ? camps[0].id : null,
       reactions: { like: [users[1] ? users[1].id : 'x'], support: [] }, comments: [],
       createdAt: new Date(Date.now() - 3600 * 1000 * 5).toISOString()
@@ -6073,7 +6129,7 @@ function setLoading(btn, loading) {
   btn.disabled = loading;
   if (loading) {
     btn._origText = btn.textContent;
-    btn.textContent = State.lang === 'ar' ? '⏳ جاري...' : '⏳ Loading...';
+    btn.textContent = State.lang === 'ar' ? ' جاري...' : ' Loading...';
   } else {
     btn.textContent = btn._origText || btn.textContent;
   }
@@ -6123,7 +6179,7 @@ function openImageViewer(src) {
   modal.innerHTML = `
     <div style="position:relative;max-width:92vw;max-height:92vh;" onclick="event.stopPropagation()">
       <img src="${src}" style="max-width:100%;max-height:88vh;object-fit:contain;border-radius:0.5rem;">
-      <button onclick="this.closest('[style*=fixed]').remove()" style="position:absolute;top:-1rem;right:-1rem;background:rgba(255,255,255,0.15);color:white;border:none;width:36px;height:36px;border-radius:50%;font-size:var(--fs-xl);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);">✕</button>
+      <button onclick="this.closest('[style*=fixed]').remove()" style="position:absolute;top:-1rem;right:-1rem;background:rgba(255,255,255,0.15);color:white;border:none;width:36px;height:36px;border-radius:50%;font-size:var(--fs-xl);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);"></button>
     </div>`;
   modal.onclick = () => modal.remove();
   document.body.appendChild(modal);
@@ -6146,7 +6202,7 @@ function campCardHTML(c) {
     const desc     = txt.desc    || '';
     const catMeta  = Models.catMeta(c);
     const cat      = Models.catLabel(c) || 'مبادرة';
-    const catIcon  = (catMeta && catMeta.icon) ? catMeta.icon + ' ' : '';
+    const catIcon  = (catMeta && catMeta.icon) ? icon(catMeta.icon) + ' ' : '';
     const location = c.location  || '';
     const date     = c.date      || '';
     const phone    = c.creatorPhone || '';
@@ -6154,15 +6210,15 @@ function campCardHTML(c) {
     const needed   = c.needed       || 0;
 
     const imgSrc = Models.campImage(c);
-    const imgHtml = `<img src="${imgSrc}" alt="${title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" onclick="event.stopPropagation();openImageViewer('${imgSrc}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="camp-img-fallback" style="display:none;background:${fallbackColor}">🌿</div>`;
+    const imgHtml = `<img src="${imgSrc}" alt="${title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" onclick="event.stopPropagation();openImageViewer('${imgSrc}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="camp-img-fallback" style="display:none;background:${fallbackColor}"></div>`;
 
     let joinBtnHtml = '';
     if (c.status === 'done') {
-      joinBtnHtml = `<button class="join-btn" disabled style="opacity:0.5;">✓ ${State.lang === 'ar' ? 'منتهية' : 'Ended'}</button>`;
+      joinBtnHtml = `<button class="join-btn" disabled style="opacity:0.5;"> ${State.lang === 'ar' ? 'منتهية' : 'Ended'}</button>`;
     } else if (c.status === 'rejected') {
-      joinBtnHtml = `<button class="join-btn" disabled style="opacity:0.5;background:#ef4444;">✕ ${State.lang === 'ar' ? 'مرفوضة' : 'Rejected'}</button>`;
+      joinBtnHtml = `<button class="join-btn" disabled style="opacity:0.5;background:#ef4444;">${State.lang === 'ar' ? 'مرفوضة' : 'Rejected'}</button>`;
     } else if (vol >= needed && needed > 0) {
-      joinBtnHtml = `<button class="join-btn" disabled style="opacity:0.5;background:#f59e0b;">📋 ${State.lang === 'ar' ? 'امتلأت' : 'Full'}</button>`;
+      joinBtnHtml = `<button class="join-btn" disabled style="opacity:0.5;background:#f59e0b;">${State.lang === 'ar' ? 'امتلأت' : 'Full'}</button>`;
     } else if (c.status === 'approved' || c.status === 'under_process') {
       joinBtnHtml = `<button class="join-btn" onclick="event.stopPropagation();handleJoin('${c.id}')" ${joined ? 'disabled' : ''}>${joined ? t('joinedBtn') : t('joinBtn')}</button>`;
     } else {
@@ -6174,8 +6230,8 @@ function campCardHTML(c) {
       <div class="camp-img">${imgHtml}<div class="camp-img-overlay"></div>
         <span class="camp-badge camp-badge-status ${si.cls}">${si[State.lang]}</span>
         <span class="camp-badge camp-badge-cat">${catIcon}${cat}</span>
-        ${Models.isCommunity(c) ? `<span class="camp-badge camp-badge-community">🌱 ${t('communityReq')}</span>` : ''}
-        <button class="card-save${saved ? ' saved' : ''}" onclick="event.stopPropagation();handleCardSave('${c.id}',this)" aria-label="save">${saved ? '♥' : '♡'}</button>
+        ${Models.isCommunity(c) ? `<span class="camp-badge camp-badge-community"> ${t('communityReq')}</span>` : ''}
+        <button class="card-save${saved ? ' saved' : ''}" onclick="event.stopPropagation();handleCardSave('${c.id}',this)" aria-label="save">${saved ? '' : ''}</button>
       </div>
       <div class="camp-body">
         <div class="camp-title">${title}</div>
@@ -6183,7 +6239,7 @@ function campCardHTML(c) {
         <div class="camp-meta">
           ${location ? `<div class="camp-meta-row"><div class="camp-meta-dot"></div>${location}</div>` : ''}
           ${date     ? `<div class="camp-meta-row"><div class="camp-meta-dot"></div>${date}</div>`     : ''}
-          ${phone    ? `<div class="camp-meta-row"><div class="camp-meta-dot"></div>📞 ${phone}</div>` : ''}
+          ${phone    ? `<div class="camp-meta-row"><div class="camp-meta-dot"></div>${icon('phone')} ${phone}</div>` : ''}
         </div>
         <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
         <div class="prog-label">${vol} ${t('of')} ${needed}</div>
@@ -6221,8 +6277,8 @@ const HomeUI = {
     const el = document.getElementById('homeGreet'); if (!el) return;
     const isAr = State.lang === 'ar', u = State.cu;
     const name = (u && !u.isGuest && u.name) ? String(u.name).split(' ')[0] : (isAr ? 'صديقنا' : 'friend');
-    const hi = isAr ? ('جاهز لتصنع أثراً يا ' + name + '؟ 👋')
-                    : ('Ready to make an impact, ' + name + '? 👋');
+    const hi = isAr ? ('جاهز لتصنع أثراً يا ' + name + '؟ ')
+                    : ('Ready to make an impact, ' + name + '? ');
     el.innerHTML = '<div class="greet-hi">' + hi + '</div>' +
                    '<div class="greet-sub">' + t('greetSub') + '</div>';
   },
@@ -6236,9 +6292,9 @@ const HomeUI = {
     el.innerHTML =
       '<div class="featured-card" onclick="openDetail(\'' + f.id + '\')" style="' + bg + '">' +
         '<div class="featured-body">' +
-          '<span class="featured-tag">⏳ ' + t('nearestTag') + '</span>' +
+          '<span class="featured-tag"> ' + t('nearestTag') + '</span>' +
           '<div class="featured-title">' + tx.title + '</div>' +
-          '<div class="featured-meta">📅 ' + (f.date || '') + ' · 📍 ' + (f.location || '') + ' · 👥 ' + (f.volunteers || 0) + '/' + (f.needed || 0) + '</div>' +
+          '<div class="featured-meta">' + icon('calendar') + ' ' + (f.date || '') + ' · ' + icon('pin') + ' ' + (f.location || '') + ' · ' + icon('people') + ' ' + (f.volunteers || 0) + '/' + (f.needed || 0) + '</div>' +
           '<div class="featured-prog"><span style="width:' + pct + '%"></span></div>' +
         '</div>' +
       '</div>';
@@ -6248,7 +6304,7 @@ const HomeUI = {
     const isAr = State.lang === 'ar';
     el.innerHTML = Object.keys(CONFIG.CAMP_CATEGORIES).map(k => {
       const m = CONFIG.CAMP_CATEGORIES[k];
-      return '<button class="cat-chip" onclick="HomeUI.openCategory(\'' + k + '\')">' + (m.icon ? m.icon + ' ' : '') + (isAr ? m.ar : m.en) + '</button>';
+      return '<button class="cat-chip" onclick="HomeUI.openCategory(\'' + k + '\')">' + (m.icon ? icon(m.icon) + ' ' : '') + (isAr ? m.ar : m.en) + '</button>';
     }).join('');
   },
   openCategory(k) {
@@ -6260,7 +6316,7 @@ const HomeUI = {
     const list = DiscoveryService.trending(4);
     el.innerHTML = list.length
       ? '<div class="camps-grid">' + list.map(c => campCardHTML(c)).join('') + '</div>'
-      : emptyState('🌱', t('noData'), t('noDataSub'));
+      : emptyState('', t('noData'), t('noDataSub'));
   },
   highlights() {
     const el = document.getElementById('homeHighlights'); if (!el) return;
@@ -6292,7 +6348,7 @@ const ExploreUI = {
     let html = '<button class="cat-chip' + (this.filters.category === 'all' ? ' active' : '') + '" onclick="ExploreUI.setCategory(\'all\')">' + t('allCats') + '</button>';
     Object.keys(CONFIG.CAMP_CATEGORIES).forEach(k => {
       const m = CONFIG.CAMP_CATEGORIES[k];
-      html += '<button class="cat-chip' + (this.filters.category === k ? ' active' : '') + '" onclick="ExploreUI.setCategory(\'' + k + '\')">' + (m.icon ? m.icon + ' ' : '') + (isAr ? m.ar : m.en) + '</button>';
+      html += '<button class="cat-chip' + (this.filters.category === k ? ' active' : '') + '" onclick="ExploreUI.setCategory(\'' + k + '\')">' + (m.icon ? icon(m.icon) + ' ' : '') + (isAr ? m.ar : m.en) + '</button>';
     });
     box.innerHTML = html;
   },
@@ -6308,7 +6364,7 @@ const ExploreUI = {
     const list = DiscoveryService.query(this.filters);
     box.innerHTML = list.length
       ? '<div class="camps-grid">' + list.map(c => campCardHTML(c)).join('') + '</div>'
-      : emptyState('🔍', t('noResults'), t('noResultsSub'));
+      : emptyState('', t('noResults'), t('noResultsSub'));
   },
   setCategory(k) { this.filters.category = k; this.renderChips(); this.renderResults(); },
   setCity(v) { this.filters.city = v; this.renderResults(); },
@@ -6324,7 +6380,7 @@ function skeletonCards(n) {
   return s + '</div>';
 }
 function emptyState(icon, title, msg) {
-  return '<div class="empty-state"><div class="empty-icon">' + (icon || '🌱') + '</div>' +
+  return '<div class="empty-state"><div class="empty-icon">' + (icon || '') + '</div>' +
     '<div class="empty-title">' + (title || t('noData')) + '</div>' +
     (msg ? '<div class="empty-sub">' + msg + '</div>' : '') + '</div>';
 }
@@ -6336,7 +6392,7 @@ function populateCategories() {
   let html = '<option value="">' + t('chooseCat') + '</option>';
   Object.keys(CONFIG.CAMP_CATEGORIES).forEach(k => {
     const m = CONFIG.CAMP_CATEGORIES[k];
-    html += '<option value="' + k + '">' + (m.icon ? m.icon + ' ' : '') + (isAr ? m.ar : m.en) + '</option>';
+    html += '<option value="' + k + '">' + (isAr ? m.ar : m.en) + '</option>';
   });
   sel.innerHTML = html;
   if (cur) sel.value = cur;
@@ -6448,7 +6504,7 @@ function renderProfile() {
       const unlocked = new Set(AchievementService.getUnlocked(u));
       badges.innerHTML = AchievementService.all().map(k => {
         const m = AchievementService.meta(k); const on = unlocked.has(k);
-        return '<div class="badge' + (on ? ' on' : '') + '"><div class="badge-ico">' + m.icon + '</div><div class="badge-l">' + (isAr ? m.ar : m.en) + '</div></div>';
+        return '<div class="badge' + (on ? ' on' : '') + '"><div class="badge-ico">' + icon(m.icon) + '</div><div class="badge-l">' + (isAr ? m.ar : m.en) + '</div></div>';
       }).join('');
     }
 
@@ -6925,7 +6981,7 @@ function admStatDetail(kind) {
 
     admOpenModal(
       '<h3 style="margin:0 0 1rem;font-size:var(--fs-xl);font-weight:900;color:var(--charcoal);">' + title + ' <span style="font-size:var(--fs-sm);font-weight:800;color:var(--charcoal-50);">(' + rows.length + ')</span></h3>' +
-      (rows.length ? rows.join('') : admEmpty('📭', isAr ? 'لا يوجد بيانات' : 'No data')) +
+      (rows.length ? rows.join('') : admEmpty('', isAr ? 'لا يوجد بيانات' : 'No data')) +
       '<button style="margin-top:1.1rem;width:100%;padding:0.8rem;border:none;border-radius:0.75rem;background: var(--accent-btn);color:#fff;font-weight:800;font-size:var(--fs-md);cursor:pointer;font-family:inherit;" onclick="admSwitchPanel(\'' + panel + '\')">' + (isAr ? 'عرض القسم كاملاً' : 'Open full section') + '</button>'
     );
   } catch (e) {
@@ -7681,7 +7737,7 @@ function renderDetail(id) {
       '<img src="' + Models.campImage(c) + '" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.remove()">' +
       '<div class="detail-hero-overlay"></div>' +
       '<button class="detail-back" id="detailBackBtn" onclick="goBack()">' + (isAr ? '‹' : '›') + '</button>' +
-      '<button class="detail-hero-save' + (saved ? ' saved' : '') + '" id="detailSaveBtn" onclick="handleSave(\'' + id + '\')" aria-label="save">' + (saved ? '♥' : '♡') + '</button>';
+      '<button class="detail-hero-save' + (saved ? ' saved' : '') + '" id="detailSaveBtn" onclick="handleSave(\'' + id + '\')" aria-label="save">' + icon('heart') + '</button>';
   }
 
   let actionBtn;
@@ -7707,12 +7763,12 @@ function renderDetail(id) {
   document.getElementById('detailBody').innerHTML =
     '<div class="detail-body-inner">' +
       '<div class="detail-badges"><span class="camp-badge ' + si.cls + '">' + si[State.lang] + '</span>' +
-        (cm ? '<span class="detail-cat-pill">' + (cm.icon || '') + ' ' + (isAr ? cm.ar : cm.en) + '</span>' : '') +
-        (Models.isCommunity(c) ? '<span class="detail-cat-pill community">🌱 ' + t('communityReq') + '</span>' : '') + '</div>' +
+        (cm ? '<span class="detail-cat-pill">' + (cm.icon ? icon(cm.icon) + ' ' : '') + (isAr ? cm.ar : cm.en) + '</span>' : '') +
+        (Models.isCommunity(c) ? '<span class="detail-cat-pill community">' + icon('sprout') + ' ' + t('communityReq') + '</span>' : '') + '</div>' +
       '<h1 class="detail-title">' + (txt.title || '') + '</h1>' +
-      '<div class="detail-org">👤 ' + (c.creatorName || '') + ' · 📍 ' + (c.location || '') + '</div>' +
+      '<div class="detail-org">' + icon('person') + ' ' + (c.creatorName || '') + ' · ' + icon('pin') + ' ' + (c.location || '') + '</div>' +
       '<div class="detail-actions">' + actionBtn +
-        '<button class="detail-icon-btn" onclick="handleShare(\'' + id + '\')" aria-label="share">↗</button></div>' +
+        '<button class="detail-icon-btn" onclick="handleShare(\'' + id + '\')" aria-label="share">' + icon('share') + '</button></div>' +
       '<div class="detail-stats">' +
         '<div class="dstat"><div class="dstat-n">' + (c.volunteers || 0) + '/' + (c.needed || 0) + '</div><div class="dstat-l">' + t('volLabel') + '</div></div>' +
         '<div class="dstat"><div class="dstat-n">' + (c.volunteerHours || 0) + '</div><div class="dstat-l">' + t('statHours') + '</div></div>' +
@@ -7722,10 +7778,10 @@ function renderDetail(id) {
       '<section class="detail-section"><h3 class="detail-h">' + t('storyTitle') + '</h3><p class="detail-story">' + (txt.desc || '') + '</p></section>' +
       '<section class="detail-section"><h3 class="detail-h">' + t('reqTitle') + '</h3><ul class="detail-reqs">' + reqs.map(r => '<li>' + r + '</li>').join('') + '</ul></section>' +
       '<section class="detail-section"><h3 class="detail-h">' + t('detailsTitle') + '</h3><div class="detail-info-grid">' +
-        '<div class="detail-info-card"><div class="detail-info-label">' + t('dateLabel') + '</div><div class="detail-info-value">📅 ' + (c.date || '') + '</div></div>' +
-        '<div class="detail-info-card"><div class="detail-info-label">' + t('durationLabel') + '</div><div class="detail-info-value">⏳ ' + (c.volunteerHours || 0) + ' ' + (isAr ? 'ساعات' : 'hrs') + '</div></div>' +
-        '<div class="detail-info-card"><div class="detail-info-label">' + t('locationLabel') + '</div><div class="detail-info-value">📍 ' + (c.location || '') + '</div></div>' +
-        '<div class="detail-info-card"><div class="detail-info-label">' + t('contactLabel') + '</div><div class="detail-info-value" style="color:var(--olive)">' + (c.creatorPhone ? '📞 ' + c.creatorPhone : '—') + '</div></div>' +
+        '<div class="detail-info-card"><div class="detail-info-label">' + t('dateLabel') + '</div><div class="detail-info-value">' + icon('calendar') + ' ' + (c.date || '') + '</div></div>' +
+        '<div class="detail-info-card"><div class="detail-info-label">' + t('durationLabel') + '</div><div class="detail-info-value">' + icon('clock') + ' ' + (c.volunteerHours || 0) + ' ' + (isAr ? 'ساعات' : 'hrs') + '</div></div>' +
+        '<div class="detail-info-card"><div class="detail-info-label">' + t('locationLabel') + '</div><div class="detail-info-value">' + icon('pin') + ' ' + (c.location || '') + '</div></div>' +
+        '<div class="detail-info-card"><div class="detail-info-label">' + t('contactLabel') + '</div><div class="detail-info-value" style="color:var(--olive)">' + (c.creatorPhone ? icon('phone') + ' ' + c.creatorPhone : '—') + '</div></div>' +
       '</div></section>' +
       '<section class="detail-section"><h3 class="detail-h">' + t('participantsTitle') + ' (' + parts.length + ')</h3><div class="detail-parts">' + partHtml + '</div></section>' +
       ((c.gallery && c.gallery.length) ? '<section class="detail-section"><h3 class="detail-h">' + t('galleryTitle') + '</h3><div class="detail-gallery">' + c.gallery.map(function(g){return '<img src="' + g + '" loading="lazy" onclick="openImageViewer(\'' + g + '\')">';}).join('') + '</div></section>' : '') +
@@ -7774,7 +7830,7 @@ function markAtt(campId, userId, status) {
 function handleCardSave(id, btn) {
   if (!requireAuth()) return;
   const now = CampaignService.toggleSave(id);
-  if (btn) { btn.classList.toggle('saved', now); btn.textContent = now ? '♥' : '♡'; }
+  if (btn) { btn.classList.toggle('saved', now); btn.textContent = now ? '' : ''; }
   toast(now ? t('saved') : t('unsaved'), '');
 }
 function renderSaved() {
@@ -7785,7 +7841,7 @@ function renderSaved() {
     const txt = Models.getCampText(c); const si = Models.getStatusInfo(c.status);
     return '<div class="my-camp-row" style="cursor:pointer;" onclick="openDetail(\'' + c.id + '\')">' +
       '<div><div class="my-camp-info-title">' + (txt.title || '') + '</div>' +
-      '<div class="my-camp-info-sub">📍 ' + (c.location || '') + ' · 📅 ' + (c.date || '') + '</div></div>' +
+      '<div class="my-camp-info-sub"> ' + (c.location || '') + ' ·  ' + (c.date || '') + '</div></div>' +
       '<span class="status-chip ' + si.cls + '">' + si[State.lang] + '</span></div>';
   }).join('');
 }
@@ -7793,7 +7849,7 @@ function handleSave(id) {
   if (!requireAuth()) return;
   const now = CampaignService.toggleSave(id);
   const btn = document.getElementById('detailSaveBtn');
-  if (btn) { btn.classList.toggle('saved', now); btn.textContent = now ? '♥' : '♡'; }
+  if (btn) { btn.classList.toggle('saved', now); btn.textContent = now ? '' : ''; }
   toast(now ? t('saved') : t('unsaved'), '');
 }
 
@@ -8997,7 +9053,7 @@ function handleJoin(id) {
     toast(result.message, 'success');
     if (result.updatedUser) State.setUser(result.updatedUser);
     AchievementService.evaluate(State.cu);
-    NotificationService.add(State.cu.id, 'انضممت إلى مبادرة جديدة ✓ شكراً لك!', 'You joined a new initiative ✓ Thank you!', 'join');
+    NotificationService.add(State.cu.id, 'انضممت إلى مبادرة جديدة  شكراً لك!', 'You joined a new initiative  Thank you!', 'join');
     updateBell();
     renderCampaigns();
     if (typeof ExploreUI !== 'undefined') ExploreUI.render();
@@ -9124,10 +9180,10 @@ function openAvatarSheet() {
   const body = document.getElementById('avatarSheetBody');
   if (body) {
     let html = '<button type="button" class="photo-sheet-btn" onclick="closeModal(\'avatarSheet\');document.getElementById(\'avatarInput\').click();">' +
-      '<span class="psb-ico">🖼️</span><span>' + t('photoChoose') + '</span></button>';
+      '<span class="psb-ico">' + icon('image') + '</span><span>' + t('photoChoose') + '</span></button>';
     if (u.profilePic) {
       html += '<button type="button" class="photo-sheet-btn danger" onclick="removeAvatar()">' +
-        '<span class="psb-ico">🗑️</span><span>' + t('photoRemove') + '</span></button>';
+        '<span class="psb-ico">' + icon('trash') + '</span><span>' + t('photoRemove') + '</span></button>';
     }
     html += '<button type="button" class="photo-sheet-btn cancel" onclick="closeModal(\'avatarSheet\')">' + t('sheetCancel') + '</button>';
     body.innerHTML = html;
@@ -9213,7 +9269,7 @@ function renderCerts(u) {
   if (!certs.length) { box.innerHTML = '<div class="empty-state"><div class="empty-title">' + t('noCerts') + '</div></div>'; return; }
   box.innerHTML = certs.map(c =>
     '<div class="cert-card" onclick="openCert(\'' + c.campId + '\')">' +
-      '<div class="cert-seal">★</div>' +
+      '<div class="cert-seal">' + icon('star') + '</div>' +
       '<div class="cert-card-body">' +
         '<div class="cert-card-title">' + c.title + '</div>' +
         '<div class="cert-card-sub">' + c.hours + ' ' + t('statHoursShort') + ' · ' + (c.date || '') + '</div>' +
@@ -9249,7 +9305,7 @@ function openCert(campId) {
   if (box) {
     box.innerHTML =
       '<div class="cert-doc" id="certDoc">' +
-        '<div class="cert-doc-seal">★</div>' +
+        '<div class="cert-doc-seal">' + icon('star') + '</div>' +
         '<div class="cert-doc-head">' + t('certHeading') + '</div>' +
         '<div class="cert-doc-brand">أَثَرْ · ATHAR</div>' +
         '<div class="cert-doc-line">' + t('certBody1') + '</div>' +
@@ -9334,7 +9390,7 @@ function toggleQuiet() {
 }
 async function enablePush() {
   if (!PushService.supported()) { toast(t('setPushNo'), 'warning'); return; }
-  if (PushService.permission() === 'granted') { PushService.show('ATHAR', State.lang === 'ar' ? 'التنبيهات مفعّلة ✓' : 'Notifications enabled ✓'); renderSettings(); return; }
+  if (PushService.permission() === 'granted') { PushService.show('ATHAR', State.lang === 'ar' ? 'التنبيهات مفعّلة ' : 'Notifications enabled '); renderSettings(); return; }
   const res = await PushService.requestPermission();
   if (res === 'granted') { toast(State.lang === 'ar' ? 'تم تفعيل تنبيهات المتصفح' : 'Browser notifications enabled', 'success'); PushService.show('ATHAR', State.lang === 'ar' ? 'مرحبًا بك في أثر' : 'Welcome to ATHAR'); }
   renderSettings();
