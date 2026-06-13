@@ -1538,12 +1538,13 @@ body {
 }
 .about-hero-photo::before { display: none; }
 .about-hero-overlay { position: absolute; inset: 0; z-index: 1;
-  background: linear-gradient(180deg, rgba(255,250,244,0.55) 0%, rgba(255,250,244,0.1) 30%, transparent 52%); }
+  background: linear-gradient(180deg, rgba(255,250,244,0.40) 0%, rgba(255,250,244,0.25) 26%, rgba(255,250,244,0.25) 100%); }
 .about-hero-inner { position: relative; z-index: 2; width: 100%; max-width: var(--content-max); margin: 0 auto;
   padding: clamp(var(--sp-4), 4vw, var(--sp-8)) var(--sp-6) 0; }
 .about-hero-photo .about-hero-title { color: var(--forest); font-size: clamp(1.6rem, 5.5vw, 2.6rem); margin-bottom: var(--sp-2); }
 .about-hero-photo .about-hero-title em { color: var(--olive); }
 .about-hero-photo .about-hero-sub { margin-inline: auto; color: var(--charcoal-80); font-size: var(--fs-sm); }
+.about-hero-caption { max-width: 520px; margin: var(--sp-5) auto 0; padding: 0 var(--sp-6); text-align: center; font-size: var(--fs-md); line-height: 1.9; color: var(--charcoal-80); }
 
 .about-hero-title {
   font-size: clamp(2rem, 6vw, 3rem);
@@ -3797,9 +3798,9 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
           <span data-i18n="aboutTitle1"></span>
           <em data-i18n="aboutTitle2"></em>
         </h1>
-        <p class="about-hero-sub" data-i18n="aboutHeroSub"></p>
       </div>
     </div>
+    <p class="about-hero-caption" data-i18n="aboutHeroSub"></p>
     <div class="about-content">
       <div class="about-block">
         <h2 data-i18n="abStoryLabel"></h2>
