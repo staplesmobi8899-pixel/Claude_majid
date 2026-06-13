@@ -1899,10 +1899,11 @@ body {
 .cm-menu-btn { flex: none; border: none; background: transparent; color: var(--charcoal-50); font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 0 var(--sp-2); }
 .cm-text { font-size: var(--fs-base); color: var(--charcoal-80); line-height: 1.7; white-space: pre-wrap; margin-bottom: var(--sp-3); }
 
-.cm-media { display: grid; gap: 4px; border-radius: var(--r-lg); overflow: hidden; margin-bottom: var(--sp-3); }
+/* Instagram-like media sizing: single = 4:5 portrait, grids = 1:1 square */
+.cm-media { display: grid; gap: 3px; border-radius: var(--r-lg); overflow: hidden; margin-bottom: var(--sp-3); background: var(--sand); }
 .cm-media img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; display: block; }
-.cm-media-one { grid-template-columns: 1fr; max-height: 420px; }
-.cm-media-one img { max-height: 420px; }
+.cm-media-one { grid-template-columns: 1fr; }
+.cm-media-one img { aspect-ratio: 4 / 5; }
 .cm-media-two { grid-template-columns: 1fr 1fr; }
 .cm-media-two img { aspect-ratio: 1; }
 .cm-media-multi { grid-template-columns: 1fr 1fr 1fr; }
@@ -1951,8 +1952,16 @@ body {
 .cm-high-name { flex: 1; min-width: 0; font-size: var(--fs-base); font-weight: 700; color: var(--charcoal); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cm-high-val { flex: none; font-weight: 800; color: var(--olive); font-size: var(--fs-sm); }
 
-.cm-fab { position: fixed; bottom: calc(80px + env(safe-area-inset-bottom)); inset-inline-end: var(--sp-5); width: 54px; height: 54px; border-radius: 50%;
-  background: var(--accent-btn); color: #fff; border: none; font-size: 1.8rem; line-height: 1; cursor: pointer; z-index: 90; box-shadow: var(--shadow-lg); display: flex; align-items: center; justify-content: center; }
+.cm-fab-wrap { position: fixed; bottom: calc(80px + env(safe-area-inset-bottom)); inset-inline-end: var(--sp-5); z-index: 90; display: flex; flex-direction: column; align-items: flex-end; gap: var(--sp-3); }
+.cm-fab { width: 56px; height: 56px; border-radius: 50%; background: var(--accent-btn); color: #fff; border: none; font-size: 1.9rem; line-height: 1;
+  cursor: pointer; box-shadow: var(--shadow-lg); display: flex; align-items: center; justify-content: center; transition: transform 0.25s cubic-bezier(0.4,0,0.2,1); }
+.cm-fab-wrap.open .cm-fab { transform: rotate(45deg); }
+.cm-fab-options { display: flex; flex-direction: column; gap: var(--sp-3); align-items: flex-end;
+  opacity: 0; transform: translateY(12px) scale(0.95); pointer-events: none; transition: opacity 0.2s, transform 0.2s; }
+.cm-fab-wrap.open .cm-fab-options { opacity: 1; transform: none; pointer-events: auto; }
+.cm-fab-opt { display: inline-flex; align-items: center; gap: var(--sp-3); border: none; background: transparent; cursor: pointer; font-family: inherit; }
+.cm-fab-opt-label { background: var(--white); color: var(--charcoal); font-weight: 800; font-size: var(--fs-sm); padding: var(--sp-2) var(--sp-4); border-radius: var(--r-full); box-shadow: var(--shadow-md); }
+.cm-fab-opt-ico { width: 44px; height: 44px; border-radius: 50%; background: var(--forest); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: var(--shadow-md); }
 .cm-type-toggle { display: flex; gap: var(--sp-2); margin-bottom: var(--sp-4); }
 .cm-type-btn { flex: 1; padding: var(--sp-3); border: 1.5px solid var(--sand-dark); background: var(--white); color: var(--charcoal-50); border-radius: var(--r-md); font-family: inherit; font-weight: 800; cursor: pointer; }
 .cm-type-btn.active { background: var(--olive-pale); border-color: var(--olive); color: var(--olive); }
@@ -3692,7 +3701,13 @@ html, body { overflow-x: hidden; }
     <div class="cm-panel active" id="cmPanel-feed"><div id="cmFeed"></div></div>
     <div class="cm-panel" id="cmPanel-stories"><div id="cmStories"></div></div>
     <div class="cm-panel" id="cmPanel-highlights"><div id="cmHighlights"></div></div>
-    <button class="cm-fab" id="cmFab" onclick="openCmCompose()" aria-label="share">+</button>
+    <div class="cm-fab-wrap" id="cmFab">
+      <div class="cm-fab-options" id="cmFabOptions">
+        <button class="cm-fab-opt" onclick="cmFabAction('post')"><span class="cm-fab-opt-label" data-i18n="cmFabPost"></span><span class="cm-fab-opt-ico">+</span></button>
+        <button class="cm-fab-opt" onclick="cmFabAction('campaign')"><span class="cm-fab-opt-label" data-i18n="cmFabCampaign"></span><span class="cm-fab-opt-ico">+</span></button>
+      </div>
+      <button class="cm-fab" id="cmFabMain" onclick="cmToggleFab()" aria-label="create">+</button>
+    </div>
   </div>
 
   <!-- COMMUNITY COMPOSE -->
@@ -4389,7 +4404,7 @@ const T = {
     highlightsTitle: 'إضاءات المجتمع', topVolunteers: 'أبرز المتطوعين', activeCities: 'مدن نشطة', featuredTag: 'مميّزة', nearestTag: 'أقرب حملة',
     communityTitle: 'المجتمع', communitySub: 'مساحة صُنّاع الأثر — شارك، الهم، وانتمِ.', communitySoonTitle: 'مجتمع أثر قريباً', communitySoonMsg: 'نبني مساحة تجمع المتطوعين لمشاركة قصصهم وإلهام بعضهم. ترقّبوا.',
     cmTabFeed: 'الموجز', cmTabStories: 'قصص الأثر', cmTabHighlights: 'الأبرز',
-    cmShareTitle: 'شارك المجتمع', cmComposerPrompt: 'ما الذي تودّ مشاركته مع المجتمع؟', cmTypePost: 'منشور', cmTypeStory: 'قصة أثر', cmTextPh: 'شو بدك تشارك مع المجتمع؟', cmAddPhoto: 'إضافة صورة', cmPublish: 'نشر',
+    cmShareTitle: 'شارك المجتمع', cmComposerPrompt: 'ما الذي تودّ مشاركته مع المجتمع؟', cmFabPost: 'منشور', cmFabCampaign: 'حملة', cmTypePost: 'منشور', cmTypeStory: 'قصة أثر', cmTextPh: 'شو بدك تشارك مع المجتمع؟', cmAddPhoto: 'إضافة صورة', cmPublish: 'نشر',
     cmBefore: 'صورة قبل', cmAfter: 'صورة بعد', cmEmptyFeed: 'كن أول من يشارك لحظة أثر', cmEmptyStories: 'لا قصص بعد — شارك قصتك الأولى', cmComment: 'تعليق', cmComments: 'التعليقات', cmCommentPh: 'أضف تعليقًا لطيفًا…', cmSend: 'إرسال', cmReport: 'إبلاغ', cmDelete: 'حذف', cmPosted: 'تم النشر ✓',
     cmAutoDone: 'اكتملت مبادرة', cmAutoNew: 'مبادرة جديدة انطلقت', cmAutoHours: 'أنجز ساعات تطوّع', cmAutoCity: 'وصلت لساعات تطوّع', cmHighTopVols: 'أبرز المتطوّعين', cmHighCities: 'المدن الأنشط', cmHighHeroes: 'أبطال الحملات',
     notifTitle: 'الإشعارات', notifSub: 'كل جديد يخصّك في مكان واحد.', notifEmptyTitle: 'لا إشعارات بعد', notifEmptyMsg: 'سنخبرك هنا عند وجود تحديثات على مبادراتك ونشاطك.',
@@ -4579,7 +4594,7 @@ const T = {
     highlightsTitle: 'Community highlights', topVolunteers: 'Top volunteers', activeCities: 'Active cities', featuredTag: 'Featured', nearestTag: 'Nearest',
     communityTitle: 'Community', communitySub: 'A space for changemakers — share, inspire, belong.', communitySoonTitle: 'ATHAR Community is coming', communitySoonMsg: 'We are building a space for volunteers to share stories and inspire each other. Stay tuned.',
     cmTabFeed: 'Feed', cmTabStories: 'Impact Stories', cmTabHighlights: 'Highlights',
-    cmShareTitle: 'Share with community', cmComposerPrompt: 'What would you like to share?', cmTypePost: 'Post', cmTypeStory: 'Impact story', cmTextPh: 'What do you want to share?', cmAddPhoto: 'Add photo', cmPublish: 'Publish',
+    cmShareTitle: 'Share with community', cmComposerPrompt: 'What would you like to share?', cmFabPost: 'Post', cmFabCampaign: 'Campaign', cmTypePost: 'Post', cmTypeStory: 'Impact story', cmTextPh: 'What do you want to share?', cmAddPhoto: 'Add photo', cmPublish: 'Publish',
     cmBefore: 'Before photo', cmAfter: 'After photo', cmEmptyFeed: 'Be the first to share an impact moment', cmEmptyStories: 'No stories yet — share your first one', cmComment: 'Comment', cmComments: 'Comments', cmCommentPh: 'Add a kind comment…', cmSend: 'Send', cmReport: 'Report', cmDelete: 'Delete', cmPosted: 'Posted ✓',
     cmAutoDone: 'completed an initiative', cmAutoNew: 'A new initiative launched', cmAutoHours: 'reached volunteer hours', cmAutoCity: 'reached volunteer hours', cmHighTopVols: 'Top volunteers', cmHighCities: 'Most active cities', cmHighHeroes: 'Campaign heroes',
     notifTitle: 'Notifications', notifSub: 'Everything that matters to you, in one place.', notifEmptyTitle: 'No notifications yet', notifEmptyMsg: 'We will let you know here when there are updates on your initiatives and activity.',
@@ -5622,12 +5637,48 @@ const CommunityService = {
     });
     return out;
   },
-  getFeed() {
-    const stored = this.getAll();
-    const auto = this.generateAutoUpdates();
-    return stored.concat(auto).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+  /** Persist any new derived auto-updates so they become interactive posts (dedupe by id). */
+  _syncAuto() {
+    const list = this.getAll();
+    const have = new Set(list.map(p => p.id));
+    const autos = this.generateAutoUpdates().filter(a => !have.has(a.id));
+    if (autos.length) {
+      autos.forEach(a => {
+        a.author = { id: 'athar', name: 'أَثَرْ · ATHAR', pic: null };
+        a.reactions = { like: [], support: [] };
+        a.comments = [];
+        a.media = [];
+      });
+      this.save(list.concat(autos));
+    }
   },
-  getStories() { return this.getAll().filter(p => p.type === 'story'); }
+  getFeed() {
+    this._syncAuto();
+    return this.getAll().sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+  },
+  getStories() { return this.getAll().filter(p => p.type === 'story'); },
+  /** Seed a couple of demo community posts on first load so the feed feels alive. */
+  seedDemo() {
+    if (this.getAll().length) return;
+    const users = UserService.getAll().filter(u => u.status === 'approved' && u.email !== CONFIG.ADMIN_EMAIL);
+    const camps = CampaignService.getAll();
+    const list = [];
+    if (users[0]) list.push({
+      id: 'seedpost1', type: 'post', author: { id: users[0].id, name: users[0].name, pic: users[0].profilePic || null },
+      text: 'يوم رائع مع فريق التطوّع! كل يد امتدّت صنعت فرقًا حقيقيًا 🌿', media: camps[0] ? [Models.campImage(camps[0])] : [],
+      beforeImg: null, afterImg: null, campId: camps[0] ? camps[0].id : null,
+      reactions: { like: [users[1] ? users[1].id : 'x'], support: [] }, comments: [],
+      createdAt: new Date(Date.now() - 3600 * 1000 * 5).toISOString()
+    });
+    if (users[1]) list.push({
+      id: 'seedpost2', type: 'story', author: { id: users[1].id, name: users[1].name, pic: users[1].profilePic || null },
+      text: 'قبل وبعد — حديقة الحي صارت مساحة خضراء يلعب فيها الأطفال.', media: [],
+      beforeImg: camps[1] ? Models.campImage(camps[1]) : null, afterImg: camps[2] ? Models.campImage(camps[2]) : null, campId: null,
+      reactions: { like: [], support: [users[0] ? users[0].id : 'y'] }, comments: [],
+      createdAt: new Date(Date.now() - 3600 * 1000 * 26).toISOString()
+    });
+    if (list.length) this.save(list);
+  }
 };
 
 /* ══════════════════════════════════════════
@@ -7506,6 +7557,7 @@ const Router = {
       if (nb) nb.classList.add('active');
       State.setPage(name);
       try { DB.setObj(CONFIG.DB_KEYS.LAST_VIEW, { page: name, campId: (name === 'detail' ? State.detailCampId : null) }); } catch (e) {}
+      const gf = document.getElementById('createFab'); if (gf) gf.style.display = (name === 'community') ? 'none' : '';
       Header.update(name);
       if (route.onEnter) route.onEnter();
       window.scrollTo(0, 0);
@@ -7991,10 +8043,17 @@ const CommunityUI = { tab: 'feed', type: 'post', media: [], before: null, after:
 
 function renderCommunity() {
   const fab = document.getElementById('cmFab');
-  if (fab) fab.style.display = (State.cu && !State.isGuest) ? 'flex' : 'none';
+  if (fab) { fab.style.display = (State.cu && !State.isGuest) ? 'flex' : 'none'; fab.classList.remove('open'); }
+  const gfab = document.getElementById('createFab'); if (gfab) gfab.style.display = 'none';
   cmRenderFeed();
   cmRenderStories();
   cmRenderHighlights();
+}
+function cmToggleFab() { const w = document.getElementById('cmFab'); if (w) w.classList.toggle('open'); }
+function cmFabAction(kind) {
+  const w = document.getElementById('cmFab'); if (w) w.classList.remove('open');
+  if (kind === 'campaign') { if (!requireAuth()) return; openModal('createModal'); }
+  else { openCmCompose(); }
 }
 
 function cmSwitchTab(tab) {
@@ -8092,15 +8151,16 @@ function cmPostHeader(author, sub, chip, menu) {
 function cmPostCard(p) {
   const isAr = State.lang === 'ar';
 
-  // Auto updates rendered as blended ATHAR posts (not notification alerts)
+  // Auto updates rendered as blended, INTERACTIVE ATHAR posts (not notification alerts)
   if (p.type === 'auto') {
     const camp = p.campId ? CampaignService.getById(p.campId) : null;
     const img = camp ? Models.campImage(camp) : null;
     const chip = ' <span class="cm-impact-chip">' + (isAr ? 'لحظة أثر' : 'Impact moment') + '</span>';
     return '<div class="cm-card">' +
-      cmPostHeader({ name: 'أَثَرْ · ATHAR', pic: null }, cmTimeAgo(p.createdAt), chip, '') +
+      cmPostHeader(p.author || { name: 'أَثَرْ · ATHAR', pic: null }, cmTimeAgo(p.createdAt), chip, '') +
       '<div class="cm-text">' + cmAutoText(p) + '</div>' +
       (img ? '<div class="cm-media cm-media-one"' + (p.campId ? ' onclick="openDetail(\'' + p.campId + '\')" style="cursor:pointer;"' : '') + '><img src="' + img + '" loading="lazy"></div>' : '') +
+      cmActionBar(p) + cmCommentsBlock(p) +
       '</div>';
   }
 
@@ -8831,6 +8891,8 @@ function initData() {
     { id:'p002', org:'شركة المستقبل للتكنولوجيا', contact:'رنا العلي', email:'rana@mustaqbal.com', phone:'0922334455', type:'private', msg:'يسعدنا الشراكة معكم في مبادرات التعليم والتقنية.', status:'pending', date:'2026-06-03T10:00:00.000Z' },
     { id:'p003', org:'بلدية دمشق', contact:'المهندس طارق نور', email:'tarek@damascus.gov.sy', phone:'0933445566', type:'gov', msg:'نقدم دعماً لوجستياً لجميع المبادرات البيئية.', status:'pending', date:'2026-06-05T10:00:00.000Z' }
   ]);
+
+  try { CommunityService.seedDemo(); } catch (e) {}
 
   DB.setObj(CONFIG.DB_KEYS.VERSION, CONFIG.SCHEMA_VERSION);
   console.log('[ATHAR] Data initialized — schema v' + CONFIG.SCHEMA_VERSION);
