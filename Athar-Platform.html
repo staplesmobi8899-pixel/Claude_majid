@@ -1530,6 +1530,21 @@ body {
 }
 .about-hero > * { position: relative; z-index: 1; }
 
+/* Cinematic photo hero (Phase 11 — About template) */
+.about-hero-photo {
+  min-height: 420px; display: flex; align-items: flex-end; text-align: start;
+  padding: 0; background: var(--charcoal) center/cover no-repeat;
+  background-image: url('https://loremflickr.com/1100/750/volunteer,community,nature,green?lock=42');
+}
+.about-hero-photo::before { display: none; }
+.about-hero-overlay { position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(180deg, rgba(20,24,15,0.15) 0%, rgba(20,24,15,0.35) 45%, rgba(20,24,15,0.88) 100%); }
+.about-hero-inner { position: relative; z-index: 2; width: 100%; max-width: var(--content-max); margin: 0 auto;
+  padding: var(--sp-8) var(--sp-6) var(--sp-7); }
+.about-hero-eyebrow { display: inline-block; font-size: var(--fs-xs); font-weight: 800; letter-spacing: 1px;
+  color: var(--olive-light); background: rgba(255,255,255,0.12); padding: var(--sp-1) var(--sp-4);
+  border-radius: var(--r-full); margin-bottom: var(--sp-3); backdrop-filter: blur(6px); }
+
 .about-hero-title {
   font-size: clamp(2rem, 6vw, 3rem);
   font-weight: 900;
@@ -1541,11 +1556,23 @@ body {
 
 .about-hero-sub {
   font-size: var(--fs-md);
-  color: rgba(255,255,255,0.38);
+  color: rgba(255,255,255,0.72);
   line-height: 1.85;
-  max-width: 420px;
-  margin: 0 auto;
+  max-width: 460px;
 }
+.about-hero-photo .about-hero-sub { margin: 0; }
+
+/* "What we offer" grid (Phase 11 — About template) */
+.about-offer { margin-bottom: var(--sp-4); }
+.about-offer-h { font-size: var(--fs-xl); font-weight: 900; color: var(--olive); margin-bottom: var(--sp-4); }
+.about-offer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); }
+.offer-card { background: var(--white); border: 1px solid var(--line-sand-6); border-radius: var(--r-lg);
+  padding: var(--sp-5) var(--sp-4); }
+.offer-ico { display: inline-flex; width: 44px; height: 44px; border-radius: var(--r-md);
+  background: var(--olive-pale); color: var(--olive); align-items: center; justify-content: center; margin-bottom: var(--sp-3); }
+.offer-ico svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.offer-t { font-size: var(--fs-base); font-weight: 800; color: var(--charcoal); margin-bottom: 2px; }
+.offer-d { font-size: var(--fs-xs); color: var(--charcoal-50); line-height: 1.5; }
 
 .about-content {
   max-width: var(--content-max);
@@ -3763,12 +3790,16 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 
   <!-- ABOUT -->
   <div class="page" id="aboutPage">
-    <div class="about-hero">
-      <h1 class="about-hero-title">
-        <span data-i18n="aboutTitle1"></span>
-        <em data-i18n="aboutTitle2"></em>
-      </h1>
-      <p class="about-hero-sub" data-i18n="aboutHeroSub"></p>
+    <div class="about-hero about-hero-photo">
+      <div class="about-hero-overlay"></div>
+      <div class="about-hero-inner">
+        <span class="about-hero-eyebrow" data-i18n="navAbout"></span>
+        <h1 class="about-hero-title">
+          <span data-i18n="aboutTitle1"></span>
+          <em data-i18n="aboutTitle2"></em>
+        </h1>
+        <p class="about-hero-sub" data-i18n="aboutHeroSub"></p>
+      </div>
     </div>
     <div class="about-content">
       <div class="about-block">
@@ -3776,6 +3807,18 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
         <p data-i18n="abStoryP1"></p>
         <p data-i18n="abStoryP2"></p>
         <p data-i18n="abStoryP3"></p>
+      </div>
+
+      <div class="about-offer">
+        <h2 class="about-offer-h" data-i18n="abOfferTitle"></h2>
+        <div class="about-offer-grid">
+          <div class="offer-card"><span class="offer-ico"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg></span><div class="offer-t" data-i18n="abOffer1"></div><div class="offer-d" data-i18n="abOffer1d"></div></div>
+          <div class="offer-card"><span class="offer-ico"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span><div class="offer-t" data-i18n="abOffer2"></div><div class="offer-d" data-i18n="abOffer2d"></div></div>
+          <div class="offer-card"><span class="offer-ico"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></span><div class="offer-t" data-i18n="abOffer3"></div><div class="offer-d" data-i18n="abOffer3d"></div></div>
+          <div class="offer-card"><span class="offer-ico"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><div class="offer-t" data-i18n="abOffer4"></div><div class="offer-d" data-i18n="abOffer4d"></div></div>
+          <div class="offer-card"><span class="offer-ico"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span><div class="offer-t" data-i18n="abOffer5"></div><div class="offer-d" data-i18n="abOffer5d"></div></div>
+          <div class="offer-card"><span class="offer-ico"><svg viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></span><div class="offer-t" data-i18n="abOffer6"></div><div class="offer-d" data-i18n="abOffer6d"></div></div>
+        </div>
       </div>
 
       <div class="about-block">
@@ -4547,7 +4590,7 @@ const T = {
     missionLabel: 'رسالتنا', missionText: 'أَثَرْ منصة مجتمعية شبابية تجمع الشباب لإحداث تغيير حقيقي ومستدام من خلال التطوع والمبادرات المحلية المنظمة والآمنة.',
     visionLabel: 'رؤيتنا', visionText: 'مجتمع شبابي فعّال يترك أثرًا واضحًا ويخلق بيئة أفضل بأيدي الناس أنفسهم.',
     valuesLabel: 'قيمنا', valuesText: 'الشفافية • التعاون • التأثير الحقيقي • الأمان',
-    abStoryLabel: 'قصة أَثَرْ',
+    abStoryLabel: 'قصة أَثَرْ', abOfferTitle: 'ماذا نقدّم', abOffer1: 'فرص تطوّعية', abOffer1d: 'مبادرات حقيقية قريبة منك', abOffer2: 'حملات منظّمة', abOffer2d: 'تخطيط وتنفيذ آمن', abOffer3: 'مجتمع داعم', abOffer3d: 'تواصل وانتماء', abOffer4: 'أثر حقيقي', abOffer4d: 'تغيير ملموس على الأرض', abOffer5: 'شفافية', abOffer5d: 'متابعة وتقدير موثّق', abOffer6: 'نموّ شخصي', abOffer6d: 'مهارات وخبرات وشهادات',
     abStoryP1: 'وُلدت «أَثَرْ» من فكرة بسيطة: الشباب يريدون المشاركة وصناعة التغيير والشعور بأنهم مؤثّرون حقًّا في مجتمعاتهم، لكن كثيرين منهم لا يعرفون من أين يبدؤون أو كيف يصلون إلى فرص ذات معنى. وُجدت «أَثَرْ» لتنظّم هذه الطاقة وتحوّلها إلى أثر مجتمعي حقيقي.',
     abStoryP2: '«أَثَرْ» ليست مجرّد منصّة تطوّع، بل حركة شبابية تشجّع المشاركة والمسؤولية والتعاون والانتماء. من خلال الحملات والمبادرات والأنشطة المجتمعية، تنظّم «أَثَرْ» جهود الشباب بطريقة عصرية ومُلهِمة، وتخلق بيئة يساهم فيها الناس وينمون ويتواصلون ويتركون أثرًا إيجابيًا حولهم.',
     abStoryP3: 'كل حملة داخل «أَثَرْ» تمثّل أشخاصًا حقيقيين وجهدًا حقيقيًا وتغييرًا حقيقيًا يحدث على الأرض. صُمّمت المنصّة لتجعل التطوّع سهل الوصول، عصريًا، منظّمًا، ذا معنى، ومُجزيًا عاطفيًا — وتجمع المتطوّعين والمنظّمين والمجتمعات والداعمين في منظومة واحدة متّصلة يصبح فيها الفعل الإيجابي جزءًا من الحياة اليومية.',
@@ -4737,7 +4780,7 @@ const T = {
     missionLabel: 'Our Mission', missionText: 'ATHAR is a youth community platform bringing people together to create real, sustainable change through organized and safe local volunteering initiatives.',
     visionLabel: 'Our Vision', visionText: 'An active youth community that leaves a clear impact and creates a better environment through the hands of the people themselves.',
     valuesLabel: 'Our Values', valuesText: 'Transparency • Collaboration • Real Impact • Safety',
-    abStoryLabel: 'The ATHAR Story',
+    abStoryLabel: 'The ATHAR Story', abOfferTitle: 'What we offer', abOffer1: 'Volunteering', abOffer1d: 'Real initiatives near you', abOffer2: 'Organized campaigns', abOffer2d: 'Safe planning & delivery', abOffer3: 'Supportive community', abOffer3d: 'Connection & belonging', abOffer4: 'Real impact', abOffer4d: 'Tangible change on the ground', abOffer5: 'Transparency', abOffer5d: 'Tracked, verified recognition', abOffer6: 'Personal growth', abOffer6d: 'Skills, experience, certificates',
     abStoryP1: 'ATHAR was created from a simple idea: young people want to participate, create change, and feel that they truly matter in their communities — but many of them do not know where to start or how to connect with meaningful opportunities. ATHAR exists to organize this energy and transform it into real community impact.',
     abStoryP2: 'ATHAR is not just a volunteering platform. It is a youth-driven movement built to encourage participation, responsibility, collaboration, and belonging. Through campaigns, initiatives, and community activities, ATHAR helps organize youth efforts in a modern and inspiring way while creating an environment where people can contribute, grow, connect, and leave a positive impact around them.',
     abStoryP3: 'Every campaign inside ATHAR represents real people, real effort, and real change happening on the ground. The platform is designed to make volunteering feel accessible, modern, organized, meaningful, and emotionally rewarding — bringing volunteers, organizers, communities, and supporters into one connected ecosystem where positive action becomes part of everyday life.',
