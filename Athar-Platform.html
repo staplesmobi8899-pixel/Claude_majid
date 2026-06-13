@@ -6188,14 +6188,16 @@ function admRenderModeration() {
   if (!open.length) { box.innerHTML = admEmpty('', isAr ? 'لا بلاغات مفتوحة' : 'No open reports'); return; }
   const reasonLbl = { spam: isAr ? 'إزعاج' : 'Spam', inappropriate: isAr ? 'محتوى غير لائق' : 'Inappropriate', fraud: isAr ? 'احتيال' : 'Fraud', other: isAr ? 'أخرى' : 'Other' };
   box.innerHTML = open.map(r => {
-    let target = r.targetId;
-    if (r.targetType === 'campaign') { const c = CampaignService.getById(r.targetId); if (c) target = Models.getCampText(c).title; }
-    else if (r.targetType === 'user') { const u = UserService.getById(r.targetId); if (u) target = u.name; }
+    let target = r.targetId, extra = '';
+    if (r.targetType === 'campaign') { const c = CampaignService.getById(r.targetId); if (c) { target = Models.getCampText(c).title; extra = '<button class="adm-btn ghost" onclick="admViewCamp(\'' + c.id + '\')">' + (isAr ? 'عرض' : 'View') + '</button>'; } }
+    else if (r.targetType === 'user') { const u = UserService.getById(r.targetId); if (u) { target = u.name; extra = '<button class="adm-btn ghost" onclick="admViewUser(\'' + u.id + '\')">' + (isAr ? 'عرض' : 'View') + '</button>'; } }
+    else if (r.targetType === 'post') { const p = CommunityService.getById(r.targetId); target = p ? ((p.text || '').slice(0, 40) || (isAr ? 'منشور' : 'Post')) : (isAr ? 'منشور محذوف' : 'Deleted post'); if (p) extra = '<button class="adm-btn danger" onclick="handleDeletePost(\'' + p.id + '\');handleResolveReport(\'' + r.id + '\')">' + (isAr ? 'حذف المنشور' : 'Delete post') + '</button>'; }
     return '<div class="admin-card adm-notif-row" style="flex-wrap:wrap;">' +
       '<span class="adm-notif-dot partner"></span>' +
       '<div class="adm-notif-main"><div class="adm-notif-txt">' + (target || '') + ' <span class="adm-rolechip">' + (reasonLbl[r.reason] || r.reason) + '</span></div>' +
       '<div class="adm-notif-time">' + (isAr ? 'النوع: ' : 'Type: ') + r.targetType + ' · ' + admTimeAgo(r.date) + '</div></div>' +
       '<div class="adm-mactions" style="margin-top:var(--sp-2);width:100%;">' +
+        extra +
         '<button class="adm-btn ok" onclick="handleResolveReport(\'' + r.id + '\')">' + (isAr ? 'حل' : 'Resolve') + '</button>' +
         '<button class="adm-btn ghost" onclick="handleDismissReport(\'' + r.id + '\')">' + (isAr ? 'تجاهل' : 'Dismiss') + '</button>' +
       '</div></div>';
