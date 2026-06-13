@@ -3038,7 +3038,9 @@ html, body { overflow-x: hidden; }
   padding: var(--sp-4); margin-bottom: var(--sp-3); }
 .hl-h { font-size: var(--fs-sm); font-weight: 800; color: var(--charcoal); margin-bottom: var(--sp-3); }
 .hl-row { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-2) 0; }
-.hl-rank { font-size: 1.1rem; flex: none; }
+.hl-rank { flex: none; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: var(--fs-xs); font-weight: 800; background: var(--sand); color: var(--charcoal-50); }
+.hl-rank.top { background: var(--olive-pale); color: var(--olive); }
 .hl-name { flex: 1; font-size: var(--fs-sm); font-weight: 700; color: var(--charcoal); min-width: 0;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .hl-val { font-size: var(--fs-sm); font-weight: 800; color: var(--olive); flex: none; }
@@ -6171,12 +6173,11 @@ const HomeUI = {
     const isAr = State.lang === 'ar';
     const users = UserService.getAll().filter(u => u.status === 'approved' && u.email !== CONFIG.ADMIN_EMAIL)
       .sort((a, b) => (b.volunteerHours || 0) - (a.volunteerHours || 0)).slice(0, 3);
-    const medals = ['🥇', '🥈', '🥉'];
     const top = users.length
-      ? users.map((u, i) => '<div class="hl-row"><span class="hl-rank">' + medals[i] + '</span><span class="hl-name">' + publicName(u) + '</span><span class="hl-val">' + (u.volunteerHours || 0) + (isAr ? ' س' : 'h') + '</span></div>').join('')
+      ? users.map((u, i) => '<div class="hl-row"><span class="hl-rank' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span><span class="hl-name">' + publicName(u) + '</span><span class="hl-val">' + (u.volunteerHours || 0) + (isAr ? ' س' : 'h') + '</span></div>').join('')
       : '<div class="empty-sub">' + t('noData') + '</div>';
     const cities = DiscoveryService.cities();
-    const cityHtml = cities.length ? '<div class="hl-card"><div class="hl-h">' + t('activeCities') + '</div><div class="hl-cities">' + cities.map(c => '<span class="hl-city">📍 ' + c + '</span>').join('') + '</div></div>' : '';
+    const cityHtml = cities.length ? '<div class="hl-card"><div class="hl-h">' + t('activeCities') + '</div><div class="hl-cities">' + cities.map(c => '<span class="hl-city">' + c + '</span>').join('') + '</div></div>' : '';
     el.innerHTML = '<div class="hl-card"><div class="hl-h">' + t('topVolunteers') + '</div>' + top + '</div>' + cityHtml;
   }
 };
