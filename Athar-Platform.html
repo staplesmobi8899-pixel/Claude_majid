@@ -1874,6 +1874,96 @@ body {
 .adm-notif-time { font-size:var(--fs-xs); color:var(--charcoal-50); margin-top:2px; }
 
 /* ══════════════════════════════════════════
+   PHASE 9 — COMMUNITY
+   ══════════════════════════════════════════ */
+.cm-head { max-width: var(--content-max); margin: 0 auto; padding: var(--sp-6) var(--sp-5) var(--sp-3); }
+.cm-title { font-size: var(--fs-2xl); font-weight: 900; color: var(--charcoal); }
+.cm-sub { font-size: var(--fs-sm); color: var(--charcoal-50); margin-top: var(--sp-1); }
+.cm-tabs { position: sticky; top: 60px; z-index: 20; display: flex; gap: var(--sp-2); max-width: var(--content-max); margin: 0 auto;
+  padding: var(--sp-2) var(--sp-5); background: var(--warm-white); border-bottom: 1px solid var(--line-sand-6); overflow-x: auto; }
+.cm-tab { flex: none; border: none; background: transparent; color: var(--charcoal-50); font-family: inherit; font-size: var(--fs-sm); font-weight: 800;
+  padding: var(--sp-2) var(--sp-3); border-radius: var(--r-full); cursor: pointer; white-space: nowrap; }
+.cm-tab.active { background: var(--olive-pale); color: var(--olive); }
+.cm-panel { display: none; max-width: 640px; margin: 0 auto; padding: var(--sp-4) var(--sp-5) var(--sp-9); }
+.cm-panel.active { display: block; animation: fadeIn 0.25s; }
+
+.cm-card { background: var(--white); border: 1px solid var(--line-sand-6); border-radius: var(--r-xl); padding: var(--sp-5); margin-bottom: var(--sp-4); }
+.cm-card-head { display: flex; align-items: center; gap: var(--sp-3); margin-bottom: var(--sp-3); }
+.cm-ava { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; flex: none; background: var(--olive-pale); display: flex; align-items: center; justify-content: center; }
+.cm-ava img { width: 100%; height: 100%; object-fit: cover; }
+.cm-ava .ig-avatar-initial { font-size: 1.1rem; }
+.cm-head-meta { flex: 1; min-width: 0; }
+.cm-author { font-size: var(--fs-base); font-weight: 800; color: var(--charcoal); }
+.cm-story-chip { font-size: var(--fs-2xs); font-weight: 800; background: var(--olive-pale); color: var(--olive); padding: 1px 8px; border-radius: var(--r-full); }
+.cm-time { font-size: var(--fs-xs); color: var(--charcoal-50); }
+.cm-menu-btn { flex: none; border: none; background: transparent; color: var(--charcoal-50); font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 0 var(--sp-2); }
+.cm-text { font-size: var(--fs-base); color: var(--charcoal-80); line-height: 1.7; white-space: pre-wrap; margin-bottom: var(--sp-3); }
+
+.cm-media { display: grid; gap: 4px; border-radius: var(--r-lg); overflow: hidden; margin-bottom: var(--sp-3); }
+.cm-media img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; display: block; }
+.cm-media-one { grid-template-columns: 1fr; max-height: 420px; }
+.cm-media-one img { max-height: 420px; }
+.cm-media-two { grid-template-columns: 1fr 1fr; }
+.cm-media-two img { aspect-ratio: 1; }
+.cm-media-multi { grid-template-columns: 1fr 1fr 1fr; }
+.cm-media-multi img { aspect-ratio: 1; }
+
+.cm-ba { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2); margin-bottom: var(--sp-3); }
+.cm-ba-cell { position: relative; border-radius: var(--r-md); overflow: hidden; }
+.cm-ba-cell img { width: 100%; aspect-ratio: 1; object-fit: cover; cursor: pointer; display: block; }
+.cm-ba-tag { position: absolute; top: var(--sp-2); inset-inline-start: var(--sp-2); background: rgba(0,0,0,0.6); color: #fff; font-size: var(--fs-2xs); font-weight: 800; padding: 2px 8px; border-radius: var(--r-full); }
+
+.cm-reactions { display: flex; gap: var(--sp-2); padding-top: var(--sp-2); border-top: 1px solid var(--line-sand-soft); }
+.cm-react { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--sand-dark); background: var(--white); border-radius: var(--r-full);
+  padding: 5px 12px; cursor: pointer; font-family: inherit; font-weight: 800; color: var(--charcoal-50); transition: 0.15s; }
+.cm-react.on { background: var(--olive-pale); border-color: var(--olive); color: var(--olive); }
+.cm-react-emoji { font-size: 1rem; }
+.cm-react-n { font-size: var(--fs-xs); min-width: 6px; }
+
+.cm-comment-toggle { margin-top: var(--sp-2); background: none; border: none; color: var(--charcoal-50); font-weight: 700; font-size: var(--fs-sm); cursor: pointer; font-family: inherit; padding: var(--sp-2) 0 0; }
+.cm-comment-list { margin-top: var(--sp-2); }
+.cm-comment { display: flex; gap: var(--sp-2); margin-bottom: var(--sp-3); }
+.cm-comment-ava { width: 30px; height: 30px; border-radius: 50%; overflow: hidden; flex: none; background: var(--olive-pale); display: flex; align-items: center; justify-content: center; }
+.cm-comment-ava img { width: 100%; height: 100%; object-fit: cover; }
+.cm-comment-ava .ig-avatar-initial { font-size: 0.8rem; }
+.cm-comment-body { flex: 1; min-width: 0; background: var(--sand); border-radius: var(--r-md); padding: var(--sp-2) var(--sp-3); }
+.cm-comment-name { font-size: var(--fs-xs); font-weight: 800; color: var(--charcoal); }
+.cm-comment-text { font-size: var(--fs-sm); color: var(--charcoal-80); line-height: 1.5; }
+.cm-comment-meta { font-size: var(--fs-2xs); color: var(--charcoal-50); margin-top: 3px; }
+.cm-link { background: none; border: none; color: var(--olive); font-weight: 700; cursor: pointer; font-family: inherit; font-size: var(--fs-2xs); padding: 0; }
+.cm-replies { margin-top: var(--sp-2); padding-inline-start: var(--sp-4); }
+.cm-comment-input { display: flex; gap: var(--sp-2); margin-top: var(--sp-2); }
+.cm-comment-input input { flex: 1; min-width: 0; padding: var(--sp-2) var(--sp-3); border: 1.5px solid var(--sand-dark); border-radius: var(--r-full); background: var(--white); color: var(--charcoal); font-family: inherit; font-size: var(--fs-sm); }
+.cm-comment-input button { flex: none; border: none; background: var(--accent-btn); color: #fff; border-radius: var(--r-full); padding: 0 var(--sp-4); font-weight: 800; cursor: pointer; font-family: inherit; font-size: var(--fs-sm); }
+.cm-muted { color: var(--charcoal-50); font-size: var(--fs-sm); }
+
+.cm-auto { background: linear-gradient(135deg, var(--forest), var(--olive)); color: #fff; border: none; }
+.cm-auto-badge { font-size: var(--fs-2xs); font-weight: 800; opacity: 0.85; letter-spacing: 0.5px; text-transform: uppercase; }
+.cm-auto-text { font-size: var(--fs-md); font-weight: 800; line-height: 1.5; margin: var(--sp-2) 0; }
+.cm-auto-time { font-size: var(--fs-xs); opacity: 0.7; }
+
+.cm-high-card { background: var(--white); border: 1px solid var(--line-sand-6); border-radius: var(--r-xl); padding: var(--sp-5); margin-bottom: var(--sp-4); }
+.cm-high-h { font-size: var(--fs-md); font-weight: 900; color: var(--charcoal); margin-bottom: var(--sp-3); }
+.cm-high-row { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-2) 0; border-bottom: 1px solid var(--line); cursor: pointer; }
+.cm-high-row:last-child { border-bottom: none; }
+.cm-high-rank { flex: none; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: var(--fs-xs); background: var(--sand); color: var(--charcoal-50); }
+.cm-high-rank.top { background: var(--olive-pale); color: var(--olive); }
+.cm-high-name { flex: 1; min-width: 0; font-size: var(--fs-base); font-weight: 700; color: var(--charcoal); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cm-high-val { flex: none; font-weight: 800; color: var(--olive); font-size: var(--fs-sm); }
+
+.cm-fab { position: fixed; bottom: calc(80px + env(safe-area-inset-bottom)); inset-inline-end: var(--sp-5); width: 54px; height: 54px; border-radius: 50%;
+  background: var(--accent-btn); color: #fff; border: none; font-size: 1.8rem; line-height: 1; cursor: pointer; z-index: 90; box-shadow: var(--shadow-lg); display: flex; align-items: center; justify-content: center; }
+.cm-type-toggle { display: flex; gap: var(--sp-2); margin-bottom: var(--sp-4); }
+.cm-type-btn { flex: 1; padding: var(--sp-3); border: 1.5px solid var(--sand-dark); background: var(--white); color: var(--charcoal-50); border-radius: var(--r-md); font-family: inherit; font-weight: 800; cursor: pointer; }
+.cm-type-btn.active { background: var(--olive-pale); border-color: var(--olive); color: var(--olive); }
+.cm-ba-row { display: flex; gap: var(--sp-2); margin-bottom: var(--sp-3); }
+.cm-ba-preview, .cm-media-preview { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-bottom: var(--sp-3); }
+.cm-ba-preview .cm-ba-cell { width: 90px; }
+.cm-media-preview img { width: 70px; height: 70px; object-fit: cover; border-radius: var(--r-sm); }
+.cm-compose-actions { display: flex; gap: var(--sp-3); }
+.cm-compose-actions .adm-btn { flex: 1; }
+
+/* ══════════════════════════════════════════
    MODAL — BOTTOM SHEET
    ══════════════════════════════════════════ */
 .modal-overlay {
@@ -3566,16 +3656,62 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
-  <!-- COMMUNITY (Phase 3 — structure; content in Phase 9) -->
+  <!-- COMMUNITY (Phase 9) -->
   <div class="page" id="communityPage">
-    <div class="stub-hero">
-      <h1 data-i18n="communityTitle"></h1>
-      <p data-i18n="communitySub"></p>
+    <div class="cm-head">
+      <h1 class="cm-title" data-i18n="communityTitle"></h1>
+      <p class="cm-sub" data-i18n="communitySub"></p>
     </div>
-    <div class="stub-empty">
-      <div class="stub-ico"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-      <h3 data-i18n="communitySoonTitle"></h3>
-      <p data-i18n="communitySoonMsg"></p>
+    <div class="cm-tabs">
+      <button class="cm-tab active" data-cmtab="feed" onclick="cmSwitchTab('feed')" data-i18n="cmTabFeed"></button>
+      <button class="cm-tab" data-cmtab="stories" onclick="cmSwitchTab('stories')" data-i18n="cmTabStories"></button>
+      <button class="cm-tab" data-cmtab="highlights" onclick="cmSwitchTab('highlights')" data-i18n="cmTabHighlights"></button>
+    </div>
+    <div class="cm-panel active" id="cmPanel-feed"><div id="cmFeed"></div></div>
+    <div class="cm-panel" id="cmPanel-stories"><div id="cmStories"></div></div>
+    <div class="cm-panel" id="cmPanel-highlights"><div id="cmHighlights"></div></div>
+    <button class="cm-fab" id="cmFab" onclick="openCmCompose()" aria-label="share">+</button>
+  </div>
+
+  <!-- COMMUNITY COMPOSE -->
+  <div class="modal-overlay" id="cmComposeModal">
+    <div class="modal-sheet">
+      <div class="modal-bar">
+        <button type="button" class="modal-close" onclick="closeModal('cmComposeModal')" aria-label="back">‹</button>
+        <div class="modal-handle"></div>
+      </div>
+      <div class="modal-title" data-i18n="cmShareTitle"></div>
+      <div class="cm-type-toggle">
+        <button class="cm-type-btn active" data-cmtype="post" onclick="cmSetType('post')" data-i18n="cmTypePost"></button>
+        <button class="cm-type-btn" data-cmtype="story" onclick="cmSetType('story')" data-i18n="cmTypeStory"></button>
+      </div>
+      <div class="edit-field"><textarea id="cmText" rows="4" data-i18n-ph="cmTextPh"></textarea><div class="edit-err" id="cmErr"></div></div>
+      <div id="cmStoryFields" style="display:none;">
+        <div class="cm-ba-row">
+          <button type="button" class="adm-btn ghost" onclick="document.getElementById('cmBefore').click()" data-i18n="cmBefore"></button>
+          <button type="button" class="adm-btn ghost" onclick="document.getElementById('cmAfter').click()" data-i18n="cmAfter"></button>
+        </div>
+        <div class="cm-ba-preview" id="cmBaPreview"></div>
+      </div>
+      <div id="cmMediaPreview" class="cm-media-preview"></div>
+      <input type="file" id="cmMedia" accept="image/*" class="hidden-file" onchange="cmPickMedia(event)">
+      <input type="file" id="cmBefore" accept="image/*" class="hidden-file" onchange="cmPickBA(event,'before')">
+      <input type="file" id="cmAfter" accept="image/*" class="hidden-file" onchange="cmPickBA(event,'after')">
+      <div class="cm-compose-actions">
+        <button type="button" class="adm-btn ghost" id="cmAddPhotoBtn" onclick="document.getElementById('cmMedia').click()" data-i18n="cmAddPhoto"></button>
+        <button type="button" class="adm-btn primary" onclick="submitCmPost()" data-i18n="cmPublish"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMUNITY POST MENU -->
+  <div class="modal-overlay" id="cmMenuModal">
+    <div class="modal-sheet">
+      <div class="modal-bar">
+        <button type="button" class="modal-close" onclick="closeModal('cmMenuModal')" aria-label="back">‹</button>
+        <div class="modal-handle"></div>
+      </div>
+      <div class="photo-sheet-actions" id="cmMenuBody"></div>
     </div>
   </div>
 
@@ -4018,6 +4154,7 @@ const CONFIG = {
     LAST_VIEW:'athar_lastview',
     CONTENT:  'athar_content',
     REPORTS:  'athar_reports',
+    POSTS:    'athar_posts',
     VERSION:  'athar_version'
   },
   CAMP_CATEGORIES: {
@@ -4228,7 +4365,11 @@ const T = {
     noResults: 'لا توجد نتائج', noResultsSub: 'جرّب كلمات أو فلاتر مختلفة.',
     greetSub: 'مبادرات مُلهمة تنتظر مشاركتك.', catsTitle: 'تصفّح حسب الفئة', trendingTitle: 'الأكثر تفاعلاً',
     highlightsTitle: 'إضاءات المجتمع', topVolunteers: 'أبرز المتطوعين', activeCities: 'مدن نشطة', featuredTag: 'مميّزة', nearestTag: 'أقرب حملة',
-    communityTitle: 'المجتمع', communitySub: 'تواصل مع صُنّاع الأثر حولك.', communitySoonTitle: 'مجتمع أثر قريباً', communitySoonMsg: 'نبني مساحة تجمع المتطوعين لمشاركة قصصهم وإلهام بعضهم. ترقّبوا.',
+    communityTitle: 'المجتمع', communitySub: 'مساحة صُنّاع الأثر — شارك، الهم، وانتمِ.', communitySoonTitle: 'مجتمع أثر قريباً', communitySoonMsg: 'نبني مساحة تجمع المتطوعين لمشاركة قصصهم وإلهام بعضهم. ترقّبوا.',
+    cmTabFeed: 'الموجز', cmTabStories: 'قصص الأثر', cmTabHighlights: 'الأبرز',
+    cmShareTitle: 'شارك المجتمع', cmTypePost: 'منشور', cmTypeStory: 'قصة أثر', cmTextPh: 'شو بدك تشارك مع المجتمع؟', cmAddPhoto: 'إضافة صورة', cmPublish: 'نشر',
+    cmBefore: 'صورة قبل', cmAfter: 'صورة بعد', cmEmptyFeed: 'كن أول من يشارك لحظة أثر', cmEmptyStories: 'لا قصص بعد — شارك قصتك الأولى', cmComment: 'تعليق', cmComments: 'التعليقات', cmCommentPh: 'أضف تعليقًا لطيفًا…', cmSend: 'إرسال', cmReport: 'إبلاغ', cmDelete: 'حذف', cmPosted: 'تم النشر ✓',
+    cmAutoDone: 'اكتملت مبادرة', cmAutoNew: 'مبادرة جديدة انطلقت', cmAutoHours: 'أنجز ساعات تطوّع', cmAutoCity: 'وصلت لساعات تطوّع', cmHighTopVols: 'أبرز المتطوّعين', cmHighCities: 'المدن الأنشط', cmHighHeroes: 'أبطال الحملات',
     notifTitle: 'الإشعارات', notifSub: 'كل جديد يخصّك في مكان واحد.', notifEmptyTitle: 'لا إشعارات بعد', notifEmptyMsg: 'سنخبرك هنا عند وجود تحديثات على مبادراتك ونشاطك.',
     signupTitle: 'انضم لأَثَرْ', signupBtn: 'انضم الآن',
     loginTitle: 'مرحبًا بعودتك', loginBtn2: 'دخول',
@@ -4414,7 +4555,11 @@ const T = {
     noResults: 'No results', noResultsSub: 'Try different keywords or filters.',
     greetSub: 'Inspiring initiatives await your hands.', catsTitle: 'Browse by category', trendingTitle: 'Trending now',
     highlightsTitle: 'Community highlights', topVolunteers: 'Top volunteers', activeCities: 'Active cities', featuredTag: 'Featured', nearestTag: 'Nearest',
-    communityTitle: 'Community', communitySub: 'Connect with changemakers around you.', communitySoonTitle: 'ATHAR Community is coming', communitySoonMsg: 'We are building a space for volunteers to share stories and inspire each other. Stay tuned.',
+    communityTitle: 'Community', communitySub: 'A space for changemakers — share, inspire, belong.', communitySoonTitle: 'ATHAR Community is coming', communitySoonMsg: 'We are building a space for volunteers to share stories and inspire each other. Stay tuned.',
+    cmTabFeed: 'Feed', cmTabStories: 'Impact Stories', cmTabHighlights: 'Highlights',
+    cmShareTitle: 'Share with community', cmTypePost: 'Post', cmTypeStory: 'Impact story', cmTextPh: 'What do you want to share?', cmAddPhoto: 'Add photo', cmPublish: 'Publish',
+    cmBefore: 'Before photo', cmAfter: 'After photo', cmEmptyFeed: 'Be the first to share an impact moment', cmEmptyStories: 'No stories yet — share your first one', cmComment: 'Comment', cmComments: 'Comments', cmCommentPh: 'Add a kind comment…', cmSend: 'Send', cmReport: 'Report', cmDelete: 'Delete', cmPosted: 'Posted ✓',
+    cmAutoDone: 'completed an initiative', cmAutoNew: 'A new initiative launched', cmAutoHours: 'reached volunteer hours', cmAutoCity: 'reached volunteer hours', cmHighTopVols: 'Top volunteers', cmHighCities: 'Most active cities', cmHighHeroes: 'Campaign heroes',
     notifTitle: 'Notifications', notifSub: 'Everything that matters to you, in one place.', notifEmptyTitle: 'No notifications yet', notifEmptyMsg: 'We will let you know here when there are updates on your initiatives and activity.',
     signupTitle: 'Join ATHAR', signupBtn: 'Join Now',
     loginTitle: 'Welcome Back', loginBtn2: 'Sign In',
@@ -5356,6 +5501,106 @@ function reportContent(targetType, targetId, reason, note) {
   ReportService.add(targetType, targetId, reason, State.cu.id, note);
   toast(State.lang === 'ar' ? 'تم استلام البلاغ، شكرًا لك' : 'Report received, thank you', 'success');
 }
+
+/* ── COMMUNITY (Phase 9 — feed, posts, stories, reactions, comments, auto-updates) ── */
+const REACTIONS = ['support', 'impact', 'appreciation'];
+const REACTION_META = {
+  support:      { emoji: '❤️', ar: 'دعم',   en: 'Support' },
+  impact:       { emoji: '🌱', ar: 'أثر',   en: 'Impact' },
+  appreciation: { emoji: '👏', ar: 'تقدير', en: 'Appreciation' }
+};
+const CommunityService = {
+  getAll()   { return DB.getObj(CONFIG.DB_KEYS.POSTS) || []; },
+  save(list) { DB.setObj(CONFIG.DB_KEYS.POSTS, list); },
+  getById(id) { return this.getAll().find(p => p.id === id) || null; },
+  _author(u) { u = u || State.cu || {}; return { id: u.id || null, name: u.name || 'متطوّع', pic: u.profilePic || null }; },
+  add(data) {
+    const list = this.getAll();
+    const post = {
+      id: 'post' + Date.now() + Math.random().toString(36).slice(2, 5),
+      type: data.type === 'story' ? 'story' : 'post',
+      author: this._author(data.author),
+      text: String(data.text || '').trim(),
+      media: Array.isArray(data.media) ? data.media : [],
+      beforeImg: data.beforeImg || null,
+      afterImg: data.afterImg || null,
+      campId: data.campId || null,
+      reactions: { support: [], impact: [], appreciation: [] },
+      comments: [],
+      createdAt: new Date().toISOString()
+    };
+    list.unshift(post);
+    this.save(list);
+    return post;
+  },
+  remove(id) { this.save(this.getAll().filter(p => p.id !== id)); },
+  react(id, kind, userId) {
+    if (!REACTIONS.includes(kind) || !userId) return null;
+    const list = this.getAll(); const p = list.find(x => x.id === id);
+    if (!p) return null;
+    if (!p.reactions) p.reactions = { support: [], impact: [], appreciation: [] };
+    // one reaction per user across kinds
+    REACTIONS.forEach(k => { p.reactions[k] = (p.reactions[k] || []).filter(uid => uid !== userId); });
+    const had = (this.getById(id).reactions[kind] || []).includes(userId);
+    if (!had) p.reactions[kind].push(userId);
+    this.save(list);
+    return p;
+  },
+  reactionCount(p, kind) { return ((p.reactions && p.reactions[kind]) || []).length; },
+  userReaction(p, userId) {
+    if (!p.reactions) return null;
+    return REACTIONS.find(k => (p.reactions[k] || []).includes(userId)) || null;
+  },
+  addComment(id, text, userId, parentId) {
+    const list = this.getAll(); const p = list.find(x => x.id === id);
+    if (!p) return null;
+    const u = UserService.getById(userId) || State.cu || {};
+    const c = { id: 'c' + Date.now() + Math.random().toString(36).slice(2, 4), author: this._author(u), text: String(text || '').trim(), parentId: parentId || null, date: new Date().toISOString() };
+    if (!c.text) return null;
+    p.comments = p.comments || []; p.comments.push(c);
+    this.save(list);
+    return c;
+  },
+  removeComment(postId, commentId) {
+    const list = this.getAll(); const p = list.find(x => x.id === postId);
+    if (!p) return; p.comments = (p.comments || []).filter(c => c.id !== commentId && c.parentId !== commentId);
+    this.save(list);
+  },
+  /** Derived "alive" community updates from existing data — not persisted. */
+  generateAutoUpdates() {
+    const out = [];
+    const camps = CampaignService.getAll();
+    camps.filter(c => c.status === 'done').slice(0, 6).forEach(c => {
+      out.push({ id: 'auto-done-' + c.id, type: 'auto', auto: 'campaign_done', campId: c.id,
+        text: null, createdAt: c.completedAt || c.updatedAt || c.date || new Date().toISOString(),
+        data: { title: Models.getCampText(c).title, hours: (c.volunteers || 0) * (c.volunteerHours || 0) } });
+    });
+    camps.filter(c => ['approved', 'under_process'].includes(c.status)).slice(0, 4).forEach(c => {
+      out.push({ id: 'auto-new-' + c.id, type: 'auto', auto: 'campaign_new', campId: c.id,
+        text: null, createdAt: c.createdAt || c.date || new Date().toISOString(),
+        data: { title: Models.getCampText(c).title, location: c.location } });
+    });
+    UserService.getAll().filter(u => (u.volunteerHours || 0) >= 10).slice(0, 5).forEach(u => {
+      out.push({ id: 'auto-hours-' + u.id, type: 'auto', auto: 'hours_milestone',
+        text: null, createdAt: u.updatedAt || u.createdAt || new Date().toISOString(),
+        data: { name: u.name, hours: u.volunteerHours } });
+    });
+    // City milestones
+    const cityHours = {};
+    UserService.getAll().forEach(u => { const k = (u.city || '').trim(); if (k) cityHours[k] = (cityHours[k] || 0) + (u.volunteerHours || 0); });
+    Object.keys(cityHours).filter(k => cityHours[k] >= 20).slice(0, 3).forEach(k => {
+      out.push({ id: 'auto-city-' + k, type: 'auto', auto: 'city_milestone',
+        text: null, createdAt: new Date().toISOString(), data: { city: k, hours: cityHours[k] } });
+    });
+    return out;
+  },
+  getFeed() {
+    const stored = this.getAll();
+    const auto = this.generateAutoUpdates();
+    return stored.concat(auto).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+  },
+  getStories() { return this.getAll().filter(p => p.type === 'story'); }
+};
 
 /* ══════════════════════════════════════════
    8. UI HELPERS
@@ -7174,7 +7419,7 @@ function animateCounters() {
 const ROUTES = {
   home:          { title: null,             onEnter: () => HomeUI.enter() },
   explore:       { title: 'navExplore',     onEnter: () => ExploreUI.enter() },
-  community:     { title: 'communityTitle', onEnter: () => {} },
+  community:     { title: 'communityTitle', onEnter: () => renderCommunity() },
   notifications: { title: 'notifTitle', back: true, onEnter: () => { renderNotifications(); if (State.cu) NotificationService.markAllRead(State.cu.id); updateBell(); } },
   create:        { title: 'createTitle', back: true, auth: true, onEnter: () => { renderCampaigns(); renderMyCamps(); } },
   detail:        { title: 'detailHeaderTitle', back: true, onEnter: () => {} },
@@ -7707,6 +7952,255 @@ function enterApp() {
     restoreLastView();
     animateCounters();
   }
+}
+
+/* ══════════════════════════════════════════
+   COMMUNITY UI (Phase 9)
+   ══════════════════════════════════════════ */
+const CommunityUI = { tab: 'feed', type: 'post', media: [], before: null, after: null, openComments: {} };
+
+function renderCommunity() {
+  const fab = document.getElementById('cmFab');
+  if (fab) fab.style.display = (State.cu && !State.isGuest) ? 'flex' : 'none';
+  cmRenderFeed();
+  cmRenderStories();
+  cmRenderHighlights();
+}
+
+function cmSwitchTab(tab) {
+  CommunityUI.tab = tab;
+  document.querySelectorAll('.cm-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.cm-tab').forEach(b => b.classList.toggle('active', b.dataset.cmtab === tab));
+  const pn = document.getElementById('cmPanel-' + tab);
+  if (pn) pn.classList.add('active');
+}
+
+function cmTimeAgo(iso) { return admTimeAgo(iso); }
+
+function cmAvatar(author) {
+  return author && author.pic
+    ? '<img src="' + author.pic + '" alt="">'
+    : '<span class="ig-avatar-initial">' + (((author && author.name) || '?').trim().charAt(0) || '?') + '</span>';
+}
+
+function cmAutoText(p) {
+  const isAr = State.lang === 'ar';
+  const d = p.data || {};
+  if (p.auto === 'campaign_done')  return (d.title || '') + ' — ' + t('cmAutoDone') + (d.hours ? ' · ' + d.hours + (isAr ? ' ساعة' : 'h') : '');
+  if (p.auto === 'campaign_new')   return t('cmAutoNew') + ': ' + (d.title || '') + (d.location ? ' · ' + d.location : '');
+  if (p.auto === 'hours_milestone')return (d.name || '') + ' ' + t('cmAutoHours') + ' · ' + (d.hours || 0) + (isAr ? ' ساعة' : 'h');
+  if (p.auto === 'city_milestone') return (d.city || '') + ' ' + t('cmAutoCity') + ' · ' + (d.hours || 0) + (isAr ? ' ساعة' : 'h');
+  return '';
+}
+
+function cmMediaGrid(media) {
+  if (!media || !media.length) return '';
+  const cls = media.length === 1 ? 'one' : (media.length === 2 ? 'two' : 'multi');
+  return '<div class="cm-media cm-media-' + cls + '">' +
+    media.map(m => '<img src="' + m + '" loading="lazy" onclick="openImageViewer(\'' + m + '\')">').join('') + '</div>';
+}
+
+function cmReactionBar(p) {
+  const mine = State.cu ? CommunityService.userReaction(p, State.cu.id) : null;
+  return '<div class="cm-reactions">' + REACTIONS.map(k => {
+    const m = REACTION_META[k]; const n = CommunityService.reactionCount(p, k);
+    return '<button class="cm-react' + (mine === k ? ' on' : '') + '" onclick="handleReact(\'' + p.id + '\',\'' + k + '\')">' +
+      '<span class="cm-react-emoji">' + m.emoji + '</span><span class="cm-react-n">' + (n || '') + '</span></button>';
+  }).join('') + '</div>';
+}
+
+function cmCommentsBlock(p) {
+  const isAr = State.lang === 'ar';
+  const open = CommunityUI.openComments[p.id];
+  const list = (p.comments || []).filter(c => !c.parentId);
+  const count = (p.comments || []).length;
+  let html = '<button class="cm-comment-toggle" onclick="cmToggleComments(\'' + p.id + '\')">' + t('cmComments') + (count ? ' (' + count + ')' : '') + '</button>';
+  if (!open) return html;
+  const renderC = c => {
+    const replies = (p.comments || []).filter(r => r.parentId === c.id);
+    return '<div class="cm-comment"><div class="cm-comment-ava">' + cmAvatar(c.author) + '</div>' +
+      '<div class="cm-comment-body"><div class="cm-comment-name">' + (c.author.name || '') + '</div>' +
+      '<div class="cm-comment-text">' + c.text + '</div>' +
+      '<div class="cm-comment-meta">' + cmTimeAgo(c.date) +
+        ' · <button class="cm-link" onclick="cmReplyTo(\'' + p.id + '\',\'' + c.id + '\')">' + (isAr ? 'رد' : 'Reply') + '</button>' +
+        (State.isAdmin || (State.cu && c.author.id === State.cu.id) ? ' · <button class="cm-link" onclick="handleDeleteComment(\'' + p.id + '\',\'' + c.id + '\')">' + t('cmDelete') + '</button>' : '') +
+      '</div>' +
+      (replies.length ? '<div class="cm-replies">' + replies.map(r =>
+        '<div class="cm-comment"><div class="cm-comment-ava">' + cmAvatar(r.author) + '</div><div class="cm-comment-body"><div class="cm-comment-name">' + (r.author.name || '') + '</div><div class="cm-comment-text">' + r.text + '</div><div class="cm-comment-meta">' + cmTimeAgo(r.date) +
+        (State.isAdmin || (State.cu && r.author.id === State.cu.id) ? ' · <button class="cm-link" onclick="handleDeleteComment(\'' + p.id + '\',\'' + r.id + '\')">' + t('cmDelete') + '</button>' : '') +
+        '</div></div></div>').join('') + '</div>' : '') +
+      '</div></div>';
+  };
+  html += '<div class="cm-comment-list">' + (list.length ? list.map(renderC).join('') : '<p class="cm-muted">' + (isAr ? 'لا تعليقات بعد' : 'No comments yet') + '</p>') + '</div>';
+  if (State.cu && !State.isGuest) {
+    html += '<div class="cm-comment-input"><input type="text" id="cmCi-' + p.id + '" placeholder="' + t('cmCommentPh') + '" onkeydown="if(event.key===\'Enter\')submitCmComment(\'' + p.id + '\')">' +
+      '<button onclick="submitCmComment(\'' + p.id + '\')">' + t('cmSend') + '</button></div>';
+  }
+  return html;
+}
+
+function cmPostCard(p) {
+  const isAr = State.lang === 'ar';
+  if (p.type === 'auto') {
+    return '<div class="cm-card cm-auto" ' + (p.campId ? 'onclick="openDetail(\'' + p.campId + '\')" style="cursor:pointer;"' : '') + '>' +
+      '<div class="cm-auto-badge">' + (isAr ? 'لحظة أثر' : 'Impact moment') + '</div>' +
+      '<div class="cm-auto-text">' + cmAutoText(p) + '</div>' +
+      '<div class="cm-auto-time">' + cmTimeAgo(p.createdAt) + '</div></div>';
+  }
+  const canDelete = State.isAdmin || (State.cu && p.author.id === State.cu.id);
+  const ba = (p.beforeImg || p.afterImg)
+    ? '<div class="cm-ba">' +
+        (p.beforeImg ? '<div class="cm-ba-cell"><span class="cm-ba-tag">' + (isAr ? 'قبل' : 'Before') + '</span><img src="' + p.beforeImg + '" onclick="openImageViewer(\'' + p.beforeImg + '\')"></div>' : '') +
+        (p.afterImg ? '<div class="cm-ba-cell"><span class="cm-ba-tag">' + (isAr ? 'بعد' : 'After') + '</span><img src="' + p.afterImg + '" onclick="openImageViewer(\'' + p.afterImg + '\')"></div>' : '') +
+      '</div>' : '';
+  return '<div class="cm-card">' +
+    '<div class="cm-card-head"><div class="cm-ava">' + cmAvatar(p.author) + '</div>' +
+      '<div class="cm-head-meta"><div class="cm-author">' + (p.author.name || '') + (p.type === 'story' ? ' <span class="cm-story-chip">' + t('cmTypeStory') + '</span>' : '') + '</div>' +
+      '<div class="cm-time">' + cmTimeAgo(p.createdAt) + '</div></div>' +
+      '<button class="cm-menu-btn" onclick="cmPostMenu(\'' + p.id + '\',' + (canDelete ? 'true' : 'false') + ')" aria-label="more">⋯</button>' +
+    '</div>' +
+    (p.text ? '<div class="cm-text">' + p.text + '</div>' : '') +
+    ba + cmMediaGrid(p.media) +
+    cmReactionBar(p) +
+    cmCommentsBlock(p) +
+    '</div>';
+}
+
+function cmRenderFeed() {
+  const box = document.getElementById('cmFeed'); if (!box) return;
+  const feed = CommunityService.getFeed();
+  box.innerHTML = feed.length ? feed.map(cmPostCard).join('') : '<div class="empty-state"><div class="empty-title">' + t('cmEmptyFeed') + '</div></div>';
+}
+function cmRenderStories() {
+  const box = document.getElementById('cmStories'); if (!box) return;
+  const stories = CommunityService.getStories();
+  box.innerHTML = stories.length ? stories.map(cmPostCard).join('') : '<div class="empty-state"><div class="empty-title">' + t('cmEmptyStories') + '</div></div>';
+}
+function cmRenderHighlights() {
+  const box = document.getElementById('cmHighlights'); if (!box) return;
+  const isAr = State.lang === 'ar';
+  const users = UserService.getAll().filter(u => u.email !== CONFIG.ADMIN_EMAIL);
+  const topVols = users.filter(u => (u.volunteerHours || 0) > 0).sort((a, b) => (b.volunteerHours || 0) - (a.volunteerHours || 0)).slice(0, 5);
+  const cityHours = {};
+  users.forEach(u => { const k = (u.city || '').trim(); if (k) cityHours[k] = (cityHours[k] || 0) + (u.volunteerHours || 0); });
+  const cities = Object.keys(cityHours).sort((a, b) => cityHours[b] - cityHours[a]).slice(0, 5);
+  const heroes = users.filter(u => (u.activitiesJoined || 0) > 0).sort((a, b) => (b.activitiesJoined || 0) - (a.activitiesJoined || 0)).slice(0, 5);
+  const card = (title, rows) => '<div class="cm-high-card"><div class="cm-high-h">' + title + '</div>' + (rows || '<p class="cm-muted">' + (isAr ? 'لا بيانات بعد' : 'No data yet') + '</p>') + '</div>';
+  const volRows = topVols.map((u, i) => '<div class="cm-high-row" onclick="openProfileView(\'' + u.id + '\')"><span class="cm-high-rank' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span><span class="cm-high-name">' + (u.name || '') + '</span><span class="cm-high-val">' + (u.volunteerHours || 0) + (isAr ? ' س' : 'h') + '</span></div>').join('');
+  const cityRows = cities.map((c, i) => '<div class="cm-high-row"><span class="cm-high-rank' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span><span class="cm-high-name">' + c + '</span><span class="cm-high-val">' + cityHours[c] + (isAr ? ' س' : 'h') + '</span></div>').join('');
+  const heroRows = heroes.map((u, i) => '<div class="cm-high-row" onclick="openProfileView(\'' + u.id + '\')"><span class="cm-high-rank' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span><span class="cm-high-name">' + (u.name || '') + '</span><span class="cm-high-val">' + (u.activitiesJoined || 0) + (isAr ? ' نشاط' : '') + '</span></div>').join('');
+  box.innerHTML = card(t('cmHighTopVols'), volRows) + card(t('cmHighCities'), cityRows) + card(t('cmHighHeroes'), heroRows);
+}
+
+/* Compose */
+function openCmCompose() {
+  if (!State.cu || State.isGuest) { requireAuth(); return; }
+  CommunityUI.type = 'post'; CommunityUI.media = []; CommunityUI.before = null; CommunityUI.after = null;
+  const txt = document.getElementById('cmText'); if (txt) txt.value = '';
+  cmSetType('post');
+  document.getElementById('cmMediaPreview').innerHTML = '';
+  document.getElementById('cmBaPreview').innerHTML = '';
+  openModal('cmComposeModal');
+}
+function cmSetType(type) {
+  CommunityUI.type = type;
+  document.querySelectorAll('.cm-type-btn').forEach(b => b.classList.toggle('active', b.dataset.cmtype === type));
+  const sf = document.getElementById('cmStoryFields');
+  if (sf) sf.style.display = type === 'story' ? 'block' : 'none';
+}
+async function cmPickMedia(event) {
+  const file = event.target.files[0]; if (!file) return;
+  try { const d = await b64(file); CommunityUI.media.push(d);
+    document.getElementById('cmMediaPreview').innerHTML = CommunityUI.media.map(m => '<img src="' + m + '">').join('');
+  } catch (e) { toast(t('uploadError'), 'error'); }
+  event.target.value = '';
+}
+async function cmPickBA(event, which) {
+  const file = event.target.files[0]; if (!file) return;
+  try { const d = await b64(file); if (which === 'before') CommunityUI.before = d; else CommunityUI.after = d;
+    const isAr = State.lang === 'ar';
+    document.getElementById('cmBaPreview').innerHTML =
+      (CommunityUI.before ? '<div class="cm-ba-cell"><span class="cm-ba-tag">' + (isAr ? 'قبل' : 'Before') + '</span><img src="' + CommunityUI.before + '"></div>' : '') +
+      (CommunityUI.after ? '<div class="cm-ba-cell"><span class="cm-ba-tag">' + (isAr ? 'بعد' : 'After') + '</span><img src="' + CommunityUI.after + '"></div>' : '');
+  } catch (e) { toast(t('uploadError'), 'error'); }
+  event.target.value = '';
+}
+function submitCmPost() {
+  if (!State.cu || State.isGuest) { requireAuth(); return; }
+  const txtEl = document.getElementById('cmText');
+  const text = txtEl ? txtEl.value.trim() : '';
+  const hasMedia = CommunityUI.media.length || CommunityUI.before || CommunityUI.after;
+  if (!text && !hasMedia) { const e = document.getElementById('cmErr'); if (e) e.textContent = t('errorRequired'); return; }
+  CommunityService.add({
+    type: CommunityUI.type, author: State.cu, text: text,
+    media: CommunityUI.media.slice(), beforeImg: CommunityUI.before, afterImg: CommunityUI.after
+  });
+  CommunityUI.media = []; CommunityUI.before = null; CommunityUI.after = null;
+  closeModal('cmComposeModal');
+  toast(t('cmPosted'), 'success');
+  renderCommunity();
+}
+
+/* Interactions */
+function handleReact(postId, kind) {
+  if (!State.cu || State.isGuest) { requireAuth(); return; }
+  const p = CommunityService.react(postId, kind, State.cu.id);
+  if (p && p.author && p.author.id && p.author.id !== State.cu.id) {
+    NotificationService.add(p.author.id, (State.cu.name || 'متطوّع') + ' تفاعل مع منشورك', (State.cu.name || 'Someone') + ' reacted to your post', 'community');
+    updateBell();
+  }
+  renderCommunity();
+}
+function cmToggleComments(postId) {
+  CommunityUI.openComments[postId] = !CommunityUI.openComments[postId];
+  CommunityUI.replyTo = null;
+  cmRenderFeed(); cmRenderStories();
+}
+function cmReplyTo(postId, commentId) {
+  CommunityUI.replyTo = { postId: postId, commentId: commentId };
+  const inp = document.getElementById('cmCi-' + postId);
+  if (inp) { inp.focus(); inp.placeholder = State.lang === 'ar' ? 'اكتب ردك…' : 'Write a reply…'; }
+}
+function submitCmComment(postId) {
+  if (!State.cu || State.isGuest) { requireAuth(); return; }
+  const inp = document.getElementById('cmCi-' + postId);
+  const text = inp ? inp.value.trim() : '';
+  if (!text) return;
+  const parentId = (CommunityUI.replyTo && CommunityUI.replyTo.postId === postId) ? CommunityUI.replyTo.commentId : null;
+  const c = CommunityService.addComment(postId, text, State.cu.id, parentId);
+  CommunityUI.replyTo = null;
+  const p = CommunityService.getById(postId);
+  if (c && p && p.author && p.author.id && p.author.id !== State.cu.id) {
+    NotificationService.add(p.author.id, (State.cu.name || 'متطوّع') + ' علّق على منشورك', (State.cu.name || 'Someone') + ' commented on your post', 'community');
+    updateBell();
+  }
+  cmRenderFeed(); cmRenderStories();
+}
+function handleDeleteComment(postId, commentId) {
+  CommunityService.removeComment(postId, commentId);
+  cmRenderFeed(); cmRenderStories();
+}
+function cmPostMenu(postId, canDelete) {
+  const isAr = State.lang === 'ar';
+  let html = '<div class="cm-sheet-actions">';
+  if (canDelete) html += '<button class="photo-sheet-btn danger" onclick="handleDeletePost(\'' + postId + '\')">' + t('cmDelete') + '</button>';
+  html += '<button class="photo-sheet-btn" onclick="reportContent(\'post\',\'' + postId + '\',\'inappropriate\');closeModal(\'cmMenuModal\')">' + t('cmReport') + '</button>';
+  html += '<button class="photo-sheet-btn cancel" onclick="closeModal(\'cmMenuModal\')">' + (isAr ? 'إلغاء' : 'Cancel') + '</button></div>';
+  const body = document.getElementById('cmMenuBody'); if (body) body.innerHTML = html;
+  openModal('cmMenuModal');
+}
+function handleDeletePost(postId) {
+  const p = CommunityService.getById(postId);
+  if (!p) return;
+  if (!State.isAdmin && !(State.cu && p.author.id === State.cu.id)) return;
+  CommunityService.remove(postId);
+  closeModal('cmMenuModal');
+  toast(State.lang === 'ar' ? 'تم الحذف' : 'Deleted', 'success');
+  renderCommunity();
+}
+/* Open own profile from highlights (public profile view is a future enhancement) */
+function openProfileView(uid) {
+  if (State.cu && uid === State.cu.id) goPage('profile');
 }
 
 /* Apply admin content overrides to the About page + render FAQ (Phase 8.6). */
