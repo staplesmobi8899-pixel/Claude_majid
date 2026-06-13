@@ -1951,6 +1951,12 @@ body {
 .cm-high-rank.top { background: var(--olive-pale); color: var(--olive); }
 .cm-high-name { flex: 1; min-width: 0; font-size: var(--fs-base); font-weight: 700; color: var(--charcoal); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cm-high-val { flex: none; font-weight: 800; color: var(--olive); font-size: var(--fs-sm); }
+.cm-high-summary { background: linear-gradient(135deg, var(--forest), var(--olive)); border: none; }
+.cm-high-summary .cm-high-h { color: #fff; }
+.cm-sum-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3); }
+.cm-sum { text-align: center; }
+.cm-sum-n { font-family: 'DM Sans', sans-serif; font-size: var(--fs-2xl); font-weight: 800; color: #fff; }
+.cm-sum-l { font-size: var(--fs-2xs); color: rgba(255,255,255,0.75); margin-top: 2px; }
 
 .cm-fab-wrap { position: fixed; bottom: calc(80px + env(safe-area-inset-bottom)); inset-inline-end: var(--sp-5); z-index: 90; display: flex; flex-direction: column; align-items: flex-end; gap: var(--sp-3); }
 .cm-fab { width: 56px; height: 56px; border-radius: 50%; background: var(--accent-btn); color: #fff; border: none; font-size: 1.9rem; line-height: 1;
@@ -4406,7 +4412,7 @@ const T = {
     cmTabFeed: 'الموجز', cmTabStories: 'قصص الأثر', cmTabHighlights: 'الأبرز',
     cmShareTitle: 'شارك المجتمع', cmComposerPrompt: 'ما الذي تودّ مشاركته مع المجتمع؟', cmFabPost: 'منشور', cmFabCampaign: 'حملة', cmTypePost: 'منشور', cmTypeStory: 'قصة أثر', cmTextPh: 'شو بدك تشارك مع المجتمع؟', cmAddPhoto: 'إضافة صورة', cmPublish: 'نشر',
     cmBefore: 'صورة قبل', cmAfter: 'صورة بعد', cmEmptyFeed: 'كن أول من يشارك لحظة أثر', cmEmptyStories: 'لا قصص بعد — شارك قصتك الأولى', cmComment: 'تعليق', cmComments: 'التعليقات', cmCommentPh: 'أضف تعليقًا لطيفًا…', cmSend: 'إرسال', cmReport: 'إبلاغ', cmDelete: 'حذف', cmPosted: 'تم النشر ✓',
-    cmAutoDone: 'اكتملت مبادرة', cmAutoNew: 'مبادرة جديدة انطلقت', cmAutoHours: 'أنجز ساعات تطوّع', cmAutoCity: 'وصلت لساعات تطوّع', cmHighTopVols: 'أبرز المتطوّعين', cmHighCities: 'المدن الأنشط', cmHighHeroes: 'أبطال الحملات',
+    cmAutoDone: 'اكتملت مبادرة', cmAutoNew: 'مبادرة جديدة انطلقت', cmAutoHours: 'أنجز ساعات تطوّع', cmAutoCity: 'وصلت لساعات تطوّع', cmHighMonth: 'حملة أنجزناها هذا الشهر', cmHighTopVols: 'أبرز المتطوّعين', cmHighCities: 'المدن الأنشط', cmHighHeroes: 'أبطال الحملات',
     notifTitle: 'الإشعارات', notifSub: 'كل جديد يخصّك في مكان واحد.', notifEmptyTitle: 'لا إشعارات بعد', notifEmptyMsg: 'سنخبرك هنا عند وجود تحديثات على مبادراتك ونشاطك.',
     signupTitle: 'انضم لأَثَرْ', signupBtn: 'انضم الآن',
     loginTitle: 'مرحبًا بعودتك', loginBtn2: 'دخول',
@@ -4596,7 +4602,7 @@ const T = {
     cmTabFeed: 'Feed', cmTabStories: 'Impact Stories', cmTabHighlights: 'Highlights',
     cmShareTitle: 'Share with community', cmComposerPrompt: 'What would you like to share?', cmFabPost: 'Post', cmFabCampaign: 'Campaign', cmTypePost: 'Post', cmTypeStory: 'Impact story', cmTextPh: 'What do you want to share?', cmAddPhoto: 'Add photo', cmPublish: 'Publish',
     cmBefore: 'Before photo', cmAfter: 'After photo', cmEmptyFeed: 'Be the first to share an impact moment', cmEmptyStories: 'No stories yet — share your first one', cmComment: 'Comment', cmComments: 'Comments', cmCommentPh: 'Add a kind comment…', cmSend: 'Send', cmReport: 'Report', cmDelete: 'Delete', cmPosted: 'Posted ✓',
-    cmAutoDone: 'completed an initiative', cmAutoNew: 'A new initiative launched', cmAutoHours: 'reached volunteer hours', cmAutoCity: 'reached volunteer hours', cmHighTopVols: 'Top volunteers', cmHighCities: 'Most active cities', cmHighHeroes: 'Campaign heroes',
+    cmAutoDone: 'completed an initiative', cmAutoNew: 'A new initiative launched', cmAutoHours: 'reached volunteer hours', cmAutoCity: 'reached volunteer hours', cmHighMonth: 'completed this month', cmHighTopVols: 'Top volunteers', cmHighCities: 'Most active cities', cmHighHeroes: 'Campaign heroes',
     notifTitle: 'Notifications', notifSub: 'Everything that matters to you, in one place.', notifEmptyTitle: 'No notifications yet', notifEmptyMsg: 'We will let you know here when there are updates on your initiatives and activity.',
     signupTitle: 'Join ATHAR', signupBtn: 'Join Now',
     loginTitle: 'Welcome Back', loginBtn2: 'Sign In',
@@ -5898,7 +5904,7 @@ const HomeUI = {
       .sort((a, b) => (b.volunteerHours || 0) - (a.volunteerHours || 0)).slice(0, 3);
     const medals = ['🥇', '🥈', '🥉'];
     const top = users.length
-      ? users.map((u, i) => '<div class="hl-row"><span class="hl-rank">' + medals[i] + '</span><span class="hl-name">' + (u.name || '') + '</span><span class="hl-val">' + (u.volunteerHours || 0) + (isAr ? ' س' : 'h') + '</span></div>').join('')
+      ? users.map((u, i) => '<div class="hl-row"><span class="hl-rank">' + medals[i] + '</span><span class="hl-name">' + publicName(u) + '</span><span class="hl-val">' + (u.volunteerHours || 0) + (isAr ? ' س' : 'h') + '</span></div>').join('')
       : '<div class="empty-sub">' + t('noData') + '</div>';
     const cities = DiscoveryService.cities();
     const cityHtml = cities.length ? '<div class="hl-card"><div class="hl-h">' + t('activeCities') + '</div><div class="hl-cities">' + cities.map(c => '<span class="hl-city">📍 ' + c + '</span>').join('') + '</div></div>' : '';
@@ -8227,6 +8233,17 @@ function cmRenderStories() {
   const stories = CommunityService.getStories();
   box.innerHTML = stories.length ? stories.map(cmPostCard).join('') : '<div class="empty-state"><div class="empty-title">' + t('cmEmptyStories') + '</div></div>';
 }
+/** Public-safe display name: masks private accounts (first letter + ****), except for admin/self. */
+function publicName(user) {
+  if (!user) return '';
+  const name = (user.name || '').trim();
+  if (!name) return '';
+  if (State.isAdmin) return name;
+  if (State.cu && user.id && user.id === State.cu.id) return name;
+  if (user.profilePublic) return name;
+  return name.charAt(0) + '‎****';
+}
+
 function cmRenderHighlights() {
   const box = document.getElementById('cmHighlights'); if (!box) return;
   const isAr = State.lang === 'ar';
@@ -8236,11 +8253,26 @@ function cmRenderHighlights() {
   users.forEach(u => { const k = (u.city || '').trim(); if (k) cityHours[k] = (cityHours[k] || 0) + (u.volunteerHours || 0); });
   const cities = Object.keys(cityHours).sort((a, b) => cityHours[b] - cityHours[a]).slice(0, 5);
   const heroes = users.filter(u => (u.activitiesJoined || 0) > 0).sort((a, b) => (b.activitiesJoined || 0) - (a.activitiesJoined || 0)).slice(0, 5);
+
+  // This-month impact summary (auto)
+  const now = new Date();
+  const camps = CampaignService.getAll();
+  const monthDone = camps.filter(c => { if (c.status !== 'done') return false; const d = new Date(c.completedAt || c.updatedAt || c.date || 0); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); }).length;
+  const monthHours = users.reduce((s, u) => s + (u.volunteerHours || 0), 0);
+  const activeCount = users.filter(u => (u.volunteerHours || 0) > 0 || (u.activitiesJoined || 0) > 0).length;
+  const summary = '<div class="cm-high-card cm-high-summary"><div class="cm-high-h">' + (isAr ? 'أثرنا هذا الشهر' : 'Our impact this month') + '</div>' +
+    '<div class="cm-sum-grid">' +
+      '<div class="cm-sum"><div class="cm-sum-n">' + monthDone + '</div><div class="cm-sum-l">' + t('cmHighMonth') + '</div></div>' +
+      '<div class="cm-sum"><div class="cm-sum-n">' + activeCount + '</div><div class="cm-sum-l">' + (isAr ? 'مشارك نشيط' : 'Active') + '</div></div>' +
+      '<div class="cm-sum"><div class="cm-sum-n">' + monthHours + '</div><div class="cm-sum-l">' + (isAr ? 'ساعة تطوّع' : 'Hours') + '</div></div>' +
+    '</div></div>';
+
   const card = (title, rows) => '<div class="cm-high-card"><div class="cm-high-h">' + title + '</div>' + (rows || '<p class="cm-muted">' + (isAr ? 'لا بيانات بعد' : 'No data yet') + '</p>') + '</div>';
-  const volRows = topVols.map((u, i) => '<div class="cm-high-row" onclick="openProfileView(\'' + u.id + '\')"><span class="cm-high-rank' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span><span class="cm-high-name">' + (u.name || '') + '</span><span class="cm-high-val">' + (u.volunteerHours || 0) + (isAr ? ' س' : 'h') + '</span></div>').join('');
+  const userRow = (u, i, text) => '<div class="cm-high-row" onclick="openProfileView(\'' + u.id + '\')"><span class="cm-high-rank' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span><span class="cm-high-name">' + publicName(u) + '</span><span class="cm-high-val">' + text + '</span></div>';
+  const volRows = topVols.map((u, i) => userRow(u, i, (u.volunteerHours || 0) + (isAr ? ' س' : 'h'))).join('');
   const cityRows = cities.map((c, i) => '<div class="cm-high-row"><span class="cm-high-rank' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span><span class="cm-high-name">' + c + '</span><span class="cm-high-val">' + cityHours[c] + (isAr ? ' س' : 'h') + '</span></div>').join('');
-  const heroRows = heroes.map((u, i) => '<div class="cm-high-row" onclick="openProfileView(\'' + u.id + '\')"><span class="cm-high-rank' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span><span class="cm-high-name">' + (u.name || '') + '</span><span class="cm-high-val">' + (u.activitiesJoined || 0) + (isAr ? ' نشاط' : '') + '</span></div>').join('');
-  box.innerHTML = card(t('cmHighTopVols'), volRows) + card(t('cmHighCities'), cityRows) + card(t('cmHighHeroes'), heroRows);
+  const heroRows = heroes.map((u, i) => userRow(u, i, (u.activitiesJoined || 0) + (isAr ? ' نشاط' : ''))).join('');
+  box.innerHTML = summary + card(t('cmHighTopVols'), volRows) + card(t('cmHighCities'), cityRows) + card(t('cmHighHeroes'), heroRows);
 }
 
 /* Compose */
@@ -8249,6 +8281,9 @@ function openCmCompose(withPhoto) {
   CommunityUI.type = 'post'; CommunityUI.media = []; CommunityUI.before = null; CommunityUI.after = null;
   const txt = document.getElementById('cmText'); if (txt) txt.value = '';
   cmSetType('post');
+  // Impact stories are admin-only — hide the type toggle for regular users
+  const toggle = document.querySelector('.cm-type-toggle');
+  if (toggle) toggle.style.display = State.isAdmin ? 'flex' : 'none';
   document.getElementById('cmMediaPreview').innerHTML = '';
   document.getElementById('cmBaPreview').innerHTML = '';
   openModal('cmComposeModal');
@@ -8279,6 +8314,8 @@ async function cmPickBA(event, which) {
 }
 function submitCmPost() {
   if (!State.cu || State.isGuest) { requireAuth(); return; }
+  // Only admins may publish impact stories
+  if (CommunityUI.type === 'story' && !State.isAdmin) CommunityUI.type = 'post';
   const txtEl = document.getElementById('cmText');
   const text = txtEl ? txtEl.value.trim() : '';
   const hasMedia = CommunityUI.media.length || CommunityUI.before || CommunityUI.after;
