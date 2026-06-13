@@ -98,6 +98,21 @@
   --line-sand-strong: rgba(232,217,196,0.7);
   --olive-a40:        rgba(90,107,58,0.4);
   --scrim:            rgba(0,0,0,0.5);
+
+  /* ── PHASE 11 — status accents (dark-aware) + motion system ── */
+  --info:    var(--info);  --info-bg:   rgba(29,78,216,0.14);
+  --purple:  var(--purple);  --purple-bg: rgba(124,58,237,0.14);
+  --gold:    var(--gold);
+  --ease:    cubic-bezier(0.4, 0, 0.2, 1);
+  --t-fast:  0.15s;
+  --t-med:   0.25s;
+  --t-slow:  0.4s;
+}
+
+[data-theme="dark"] {
+  --info:   #6ea0ff;  --info-bg:   rgba(110,160,255,0.16);
+  --purple: #b896f5;  --purple-bg: rgba(184,150,245,0.16);
+  --gold:   #d8bd76;
 }
 
 /* ══════════════════════════════════════════
@@ -1801,8 +1816,8 @@ body {
 .adm-st { display:inline-block; padding:2px 10px; border-radius:var(--r-full); font-size:var(--fs-2xs); font-weight:800; vertical-align:middle; }
 .adm-st.pending       { background:var(--warn-bg);    color:var(--warn-fg); }
 .adm-st.approved      { background:var(--success-bg); color:var(--success-fg); }
-.adm-st.under_process { background:rgba(29,78,216,0.14);  color:#1d4ed8; }
-.adm-st.done          { background:rgba(124,58,237,0.14); color:#7c3aed; }
+.adm-st.under_process { background:rgba(29,78,216,0.14);  color:var(--info); }
+.adm-st.done          { background:rgba(124,58,237,0.14); color:var(--purple); }
 .adm-st.rejected      { background:var(--red-bg);     color:var(--red-fg); }
 .adm-st.banned        { background:var(--red-bg);     color:var(--red-fg); }
 .adm-st.archived      { background:var(--line-sand-8); color:var(--charcoal-50); }
@@ -1826,8 +1841,8 @@ body {
 .adm-btn.primary { background:var(--accent-btn); color:#fff; }
 .adm-btn.ok      { background:var(--success); color:#fff; }
 .adm-btn.danger  { background:var(--red); color:#fff; }
-.adm-btn.process { background:#1d4ed8; color:#fff; }
-.adm-btn.done    { background:#7c3aed; color:#fff; }
+.adm-btn.process { background:var(--info); color:#fff; }
+.adm-btn.done    { background:var(--purple); color:#fff; }
 .adm-btn.ghost   { background:transparent; color:var(--charcoal); border:1.5px solid var(--sand-dark); }
 
 .adm-msection { margin-top:var(--sp-5); }
@@ -1867,8 +1882,8 @@ body {
 .adm-notif-row { display:flex; align-items:center; gap:var(--sp-3); }
 .adm-notif-dot { flex:none; width:8px; height:8px; border-radius:50%; }
 .adm-notif-dot.user { background:var(--olive); }
-.adm-notif-dot.camp { background:#1d4ed8; }
-.adm-notif-dot.partner { background:#7c3aed; }
+.adm-notif-dot.camp { background:var(--info); }
+.adm-notif-dot.partner { background:var(--purple); }
 .adm-notif-main { flex:1; min-width:0; }
 .adm-notif-txt { font-size:var(--fs-base); font-weight:700; color:var(--charcoal); }
 .adm-notif-time { font-size:var(--fs-xs); color:var(--charcoal-50); margin-top:2px; }
@@ -2865,9 +2880,9 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
 .notif-text { font-size: var(--fs-sm); color: var(--charcoal); line-height: 1.6; }
 .notif-time { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: var(--sp-1); }
 .notif-item { cursor: pointer; transition: background 0.15s; }
-.notif-dot.community { background: var(--olive); } .notif-dot.campaign { background: #1d4ed8; }
-.notif-dot.approval { background: var(--success); } .notif-dot.achievement { background: #c9a34e; }
-.notif-dot.announce { background: #7c3aed; } .notif-dot.welcome { background: var(--olive-light); }
+.notif-dot.community { background: var(--olive); } .notif-dot.campaign { background: var(--info); }
+.notif-dot.approval { background: var(--success); } .notif-dot.achievement { background: var(--gold); }
+.notif-dot.announce { background: var(--purple); } .notif-dot.welcome { background: var(--olive-light); }
 .notif-dot.danger { background: var(--red); }
 .notif-item.unread .notif-dot { box-shadow: 0 0 0 4px var(--olive-pale); }
 .notif-head { max-width: var(--content-max); margin: 0 auto; padding: var(--sp-3) var(--sp-5) 0; display: flex; align-items: center; justify-content: space-between; }
@@ -3109,7 +3124,7 @@ html, body { overflow-x: hidden; }
 .tl-item:last-child .tl-marker::before { display: none; }
 .tl-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent-btn); margin-top: 4px; border: 2px solid var(--warm-white); z-index: 1; }
 .tl-item.done .tl-dot { background: var(--forest); }
-.tl-item.badge .tl-dot { background: #c9a34e; }
+.tl-item.badge .tl-dot { background: var(--gold); }
 .tl-item.account .tl-dot { background: var(--charcoal-20); }
 .tl-body { flex: 1; min-width: 0; padding-bottom: var(--sp-1); }
 .tl-title { font-size: var(--fs-sm); font-weight: 700; color: var(--charcoal); line-height: 1.5; }
@@ -3171,6 +3186,68 @@ html, body { overflow-x: hidden; }
 .privacy-dot { width: 10px; height: 10px; border-radius: var(--r-full); background: var(--charcoal-20); }
 .privacy-toggle.on { border-color: var(--olive); color: var(--olive); }
 .privacy-toggle.on .privacy-dot { background: var(--accent-btn); }
+
+/* ══════════════════════════════════════════
+   PHASE 11 — MOTION, INTERACTION & ACCESSIBILITY POLISH
+   (additive only — preserves the approved aesthetic)
+   ══════════════════════════════════════════ */
+
+/* Accessible focus — calm olive ring, only for keyboard users */
+:focus { outline: none; }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible,
+select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--olive);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+/* Gentle press feedback on interactive controls (consistent across the app) */
+.join-btn, .submit-btn, .auth-btn, .create-btn, .dark-submit, .ig-btn, .adm-btn,
+.cm-action, .cm-react, .cm-fab, .cm-fab-opt-ico, .pill-btn, .edit-save, .edit-cancel,
+.set-logout, .manage-btn, .approve-btn, .reject-btn, .detail-join-btn, .info-edit-btn,
+.cm-tab, .adm-chip, .cat-chip, .seg-btn, .switch, .photo-sheet-btn {
+  transition: transform var(--t-fast) var(--ease), background var(--t-fast) var(--ease),
+              opacity var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+.join-btn:active, .submit-btn:active, .auth-btn:active, .create-btn:active, .dark-submit:active,
+.ig-btn:active, .adm-btn:active, .cm-fab:active, .cm-fab-opt-ico:active, .pill-btn:active,
+.edit-save:active, .set-logout:active, .manage-btn:active, .approve-btn:active, .reject-btn:active,
+.detail-join-btn:active, .photo-sheet-btn:active { transform: scale(0.97); }
+.cm-action:active, .cm-react:active { transform: scale(0.9); }
+
+/* Card hover elevation — only on hover-capable (desktop) devices, keeps mobile calm */
+@media (hover: hover) {
+  .cm-card, .cert-card, .about-block, .partner-slot.filled, .hl-card,
+  .cm-high-card, .adm-stat-card, .impact-tile, .featured-card {
+    transition: transform var(--t-med) var(--ease), box-shadow var(--t-med) var(--ease), border-color var(--t-med) var(--ease);
+  }
+  .cm-card:hover, .cert-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .adm-stat-card:hover { box-shadow: var(--shadow-md); }
+}
+
+/* Unified entrance for pages & feed cards (calm, brief) */
+.page.active .cm-card, .page.active .campaign-card, .page.active .cert-card {
+  animation: cardIn 0.4s var(--ease) both;
+}
+@keyframes cardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* Skeleton shimmer for loading states (reusable) */
+.skel { position: relative; overflow: hidden; background: var(--sand); border-radius: var(--r-md); }
+.skel::after { content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+  transform: translateX(-100%); animation: shimmer 1.3s infinite; }
+[data-theme="dark"] .skel::after { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent); }
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -7331,8 +7408,8 @@ function admRenderAnalytics(users, camps) {
       const approvalRate = camps.length ? Math.round((approvedC / camps.length) * 100) : 0;
       engEl.innerHTML =
         admBar(isAr ? 'متوسّط الإشغال' : 'Avg fill rate', avgFill, 100, 'var(--olive)') +
-        admBar(isAr ? 'نسبة الإنجاز' : 'Completion rate', completionRate, 100, '#7c3aed') +
-        admBar(isAr ? 'نسبة القبول' : 'Approval rate', approvalRate, 100, '#1d4ed8');
+        admBar(isAr ? 'نسبة الإنجاز' : 'Completion rate', completionRate, 100, 'var(--purple)') +
+        admBar(isAr ? 'نسبة القبول' : 'Approval rate', approvalRate, 100, 'var(--info)');
     }
 
     // Campaigns by category
