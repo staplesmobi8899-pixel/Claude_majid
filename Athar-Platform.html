@@ -1709,6 +1709,7 @@ body {
 .faq-item:last-child { border-bottom: none; }
 .faq-q { font-size: var(--fs-base); font-weight: 800; color: var(--charcoal); margin-bottom: var(--sp-1); }
 .faq-a { font-size: var(--fs-sm); color: var(--charcoal-50); line-height: 1.7; }
+.detail-origin-note { margin-top: var(--sp-5); text-align: center; font-size: var(--fs-sm); font-weight: 600; color: var(--charcoal-50); padding: var(--sp-3) var(--sp-4); }
 .detail-report { margin-top: var(--sp-5); text-align: center; }
 .detail-report-btn { background: transparent; border: none; color: var(--charcoal-50); font-size: var(--fs-sm); font-weight: 700; cursor: pointer; text-decoration: underline; }
 
@@ -4760,7 +4761,7 @@ const T = {
     noBio: 'أضف نبذة عنك', impactTitle: 'أثري', badgesTitle: 'الشارات',
     profilePublic: 'ملف عام', profilePrivate: 'ملف خاص', profileNowPublic: 'ملفك أصبح عامًا', profileNowPrivate: 'ملفك أصبح خاصًا', completedLabel: 'مكتملة', citiesLabel: 'مدن', scoreLabel: 'نقاط الأثر',
     editInfo: 'تعديل', saveChanges: 'حفظ التعديلات', cancelEdit: 'إلغاء', infoSaved: 'تم حفظ معلوماتك', bioField: 'نبذة عنك', bioPh: 'اكتب نبذة قصيرة تعرّف بك…', emailLocked: 'البريد الإلكتروني لا يمكن تغييره',
-    editProfileBtn: 'تعديل الملف', shareProfileBtn: 'مشاركة الملف', shareCopied: 'تم نسخ رابط ملفك', statCompletedShort: 'حملة منجزة', statHoursShort: 'ساعة', statParticipationShort: 'مشاركة', completedCampsLabel: 'حملات مكتملة', changePhotoCta: 'تغيير صورة الملف', roleJoined: 'مشارِك', roleOrganizer: 'منظِّم',
+    editProfileBtn: 'تعديل الملف', shareProfileBtn: 'مشاركة الملف', shareCopied: 'تم نسخ رابط ملفك', statCompletedShort: 'حملة منجزة', statHoursShort: 'ساعة', statParticipationShort: 'مشاركة', completedCampsLabel: 'حملات مكتملة', changePhotoCta: 'تغيير صورة الملف', roleJoined: 'مشارَكة', roleOrganizer: 'أنت أنشأت هذه الحملة', createdByVolunteer: 'أُنشئت هذه الحملة بطلب من متطوّع', cantLeaveDone: 'لا يمكن مغادرة حملة مكتملة — ساعاتك محفوظة',
     certsTitle: 'الشهادات', timelineTitle: 'سجل النشاط', noCerts: 'شهاداتك', certsPending: 'قيد الانتظار', noActivity: 'ابدأ رحلتك — انضمّ لأول حملة', viewCertBtn: 'عرض',
     tlJoin: 'انضممت إلى', tlDone: 'أكملت حملة', tlBadge: 'حصلت على شارة', tlAccount: 'بدأت رحلتك في أثر',
     certHeading: 'شهادة تقدير', certBody1: 'تشهد منصة أثر أنّ', certBody2: 'قد أتمّ بنجاح المشاركة في', certHoursLine: 'بإجمالي ساعات تطوّع', shareCert: 'مشاركة الشهادة', certShared: 'تم نسخ نص الشهادة',
@@ -4950,7 +4951,7 @@ const T = {
     noBio: 'Add a short bio', impactTitle: 'My impact', badgesTitle: 'Badges',
     profilePublic: 'Public profile', profilePrivate: 'Private profile', profileNowPublic: 'Your profile is now public', profileNowPrivate: 'Your profile is now private', completedLabel: 'Completed', citiesLabel: 'Cities', scoreLabel: 'Impact score',
     editInfo: 'Edit', saveChanges: 'Save changes', cancelEdit: 'Cancel', infoSaved: 'Your info was saved', bioField: 'About you', bioPh: 'Write a short bio about yourself…', emailLocked: 'Email cannot be changed',
-    editProfileBtn: 'Edit profile', shareProfileBtn: 'Share profile', shareCopied: 'Profile link copied', statCompletedShort: 'Completed', statHoursShort: 'Hours', statParticipationShort: 'Participations', completedCampsLabel: 'Completed campaigns', changePhotoCta: 'Change profile photo', roleJoined: 'Participant', roleOrganizer: 'Organizer',
+    editProfileBtn: 'Edit profile', shareProfileBtn: 'Share profile', shareCopied: 'Profile link copied', statCompletedShort: 'Completed', statHoursShort: 'Hours', statParticipationShort: 'Participations', completedCampsLabel: 'Completed campaigns', changePhotoCta: 'Change profile photo', roleJoined: 'Participating', roleOrganizer: 'You created this campaign', createdByVolunteer: 'This campaign was created by a volunteer', cantLeaveDone: 'Cannot leave a completed campaign — your hours are saved',
     certsTitle: 'Certificates', timelineTitle: 'Activity', noCerts: 'Your certificates', certsPending: 'Pending', noActivity: 'Start your journey — join your first campaign', viewCertBtn: 'View',
     tlJoin: 'Joined', tlDone: 'Completed', tlBadge: 'Earned a badge', tlAccount: 'Started your ATHAR journey',
     certHeading: 'Certificate of Appreciation', certBody1: 'ATHAR certifies that', certBody2: 'has successfully participated in', certHoursLine: 'total volunteer hours', shareCert: 'Share certificate', certShared: 'Certificate text copied',
@@ -5827,7 +5828,7 @@ const CampaignService = {
     if (State.cu && State.cu.id === user.id) { Object.assign(State.cu, patch); DB.setObj(CONFIG.DB_KEYS.SESSION, State.cu); }
 
     if (camp.createdBy && camp.createdBy !== user.id) {
-      NotificationService.add(camp.createdBy, (user.name || 'متطوع') + ' انضم إلى مبادرتك ', (user.name || 'A volunteer') + ' joined your initiative ', 'join');
+      NotificationService.add(camp.createdBy, 'انضمّ متطوّع جديد إلى مبادرتك', 'A new volunteer joined your campaign', 'join');
     }
     const msg = ` ${t('successJoined')} +${hours} ${State.lang === 'ar' ? 'ساعة' : 'hrs'}`;
     return { success: true, message: msg, updatedUser: updated };
@@ -5839,6 +5840,8 @@ const CampaignService = {
     if (ci === -1) return { success: false };
     const camp = camps[ci];
     if (!(camp.joinedUsers || []).includes(user.id)) return { success: false, message: t('notJoined') };
+    // Completed campaigns: hours are earned permanently — cannot be removed.
+    if (camp.status === 'done') return { success: false, message: t('cantLeaveDone') };
     camps[ci].joinedUsers = (camp.joinedUsers || []).filter(id => id !== user.id);
     camps[ci].volunteers = Math.max(0, (camp.volunteers || 1) - 1);
     if (camps[ci].status === 'under_process' && camps[ci].volunteers < camps[ci].needed) camps[ci].status = 'approved';
@@ -5853,6 +5856,10 @@ const CampaignService = {
     let updated = UserService.updateById(user.id, patch);
     if (!updated) updated = Object.assign({}, user, patch);
     if (State.cu && State.cu.id === user.id) { Object.assign(State.cu, patch); DB.setObj(CONFIG.DB_KEYS.SESSION, State.cu); }
+    // Notify the campaign creator that a volunteer left (not for own campaigns).
+    if (camp.createdBy && camp.createdBy !== user.id) {
+      NotificationService.add(camp.createdBy, (maskName(user.name) || 'متطوّع') + ' غادر مبادرتك', (maskName(user.name) || 'A volunteer') + ' left your campaign', 'join');
+    }
     return { success: true, message: t('leftCamp'), updatedUser: updated };
   },
   getParticipants(camp) {
@@ -7330,6 +7337,10 @@ function saveCampEdit(id) {
     needed: Math.max(1, parseInt(g('ecNeeded').value) || 1),
     date: g('ecDate').value
   });
+  const ec = CampaignService.getById(id);
+  if (ec && ec.createdBy && ec.createdBy !== 'admin' && (!State.cu || ec.createdBy !== State.cu.id)) {
+    NotificationService.add(ec.createdBy, 'تم تحديث مبادرتك من قِبل الإدارة', 'Your campaign was updated by admin', 'campaign');
+  }
   toast(t('changesSaved'), 'success');
   if (typeof renderAdmin === 'function') renderAdmin();
   admViewCamp(id);
@@ -7876,7 +7887,7 @@ function renderDetail(id) {
 
   const reqs = [t('req1'), t('req2'), t('req3')];
   const partHtml = parts.length
-    ? parts.slice(0, 14).map(u => '<div class="part-chip" title="' + (u.name || '') + '">' + ((u.name || '؟').charAt(0)) + '</div>').join('') + (parts.length > 14 ? '<div class="part-chip more">+' + (parts.length - 14) + '</div>' : '')
+    ? parts.slice(0, 14).map(u => '<div class="part-chip" title="' + publicName(u) + '">' + ((u.name || '؟').charAt(0)) + '</div>').join('') + (parts.length > 14 ? '<div class="part-chip more">+' + (parts.length - 14) + '</div>' : '')
     : '<div class="empty-sub">' + t('noParticipants') + '</div>';
 
   const manage = canManage
@@ -7914,6 +7925,7 @@ function renderDetail(id) {
       ((c.gallery && c.gallery.length) ? '<section class="detail-section"><h3 class="detail-h">' + t('galleryTitle') + '</h3><div class="detail-gallery">' + c.gallery.map(function(g){return '<img src="' + g + '" loading="lazy" onclick="openImageViewer(\'' + g + '\')">';}).join('') + '</div></section>' : '') +
       manage +
       ((!canManage && State.cu && !State.isGuest) ? '<div class="detail-report"><button class="detail-report-btn" onclick="reportContent(\'campaign\',\'' + id + '\',\'inappropriate\')">' + t('reportBtn') + '</button></div>' : '') +
+      (Models.isCommunity(c) ? '<div class="detail-origin-note">' + t('createdByVolunteer') + '</div>' : '') +
     '</div>';
 }
 
@@ -8871,7 +8883,16 @@ function publicName(user) {
   if (State.isAdmin) return name;
   if (State.cu && user.id && user.id === State.cu.id) return name;
   if (user.profilePublic) return name;
-  return name.charAt(0) + '‎****';
+  return maskName(name);
+}
+
+/** Mask a name to its first 1–2 letters + stars (privacy). Admin/self/public bypass via publicName. */
+function maskName(name) {
+  const n = (name || '').trim();
+  if (!n) return '';
+  const keep = n.length <= 3 ? 1 : 2;
+  const stars = '*'.repeat(Math.max(3, n.length - keep));
+  return n.slice(0, keep) + '‎' + stars;
 }
 
 function cmRenderHighlights() {
