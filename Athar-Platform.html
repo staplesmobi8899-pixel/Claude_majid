@@ -3081,10 +3081,12 @@ html, body { overflow-x: hidden; }
   padding-bottom: var(--sp-2); scrollbar-width: none; }
 .cat-chips::-webkit-scrollbar { display: none; }
 .cat-chip .ic { width: 16px; height: 16px; }
-.cat-chip { flex: none; white-space: nowrap; padding: var(--sp-2) var(--sp-4); border-radius: var(--r-full);
-  border: 1.5px solid var(--sand-dark); background: var(--white); color: var(--charcoal);
-  font-family: inherit; font-size: var(--fs-sm); font-weight: 700; cursor: pointer; transition: background 0.18s, color 0.18s, border-color 0.18s; }
-.cat-chip.active { background: var(--accent-btn); color: var(--off-white); border-color: var(--olive); }
+.cat-chip { flex: none; white-space: nowrap; padding: var(--sp-2) var(--sp-5); border-radius: var(--r-full);
+  border: 1px solid transparent; background: var(--card-hl-img) center / cover no-repeat, var(--forest); color: var(--off-white);
+  font-family: inherit; font-size: var(--fs-sm); font-weight: 800; cursor: pointer; transition: filter 0.18s, background 0.18s, color 0.18s; }
+.cat-chip:hover { filter: brightness(1.1); }
+.cat-chip:active { filter: brightness(1.15); }
+.cat-chip.active { background: var(--warm-beige); color: var(--forest); }
 
 /* ══════════════════════════════════════════
    PHASE 4.2 — HOME EXPERIENCE
