@@ -1907,6 +1907,9 @@ body {
 .adm-st.banned        { background:var(--red-bg);     color:var(--red-fg); }
 .adm-st.archived      { background:var(--line-sand-8); color:var(--charcoal-50); }
 .adm-rolechip { display:inline-block; padding:2px 10px; border-radius:var(--r-full); font-size:var(--fs-2xs); font-weight:800; background:var(--olive-pale); color:var(--olive); vertical-align:middle; }
+.adm-noimg { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--sp-2); width:100%; height:120px; margin-bottom:var(--sp-4); border:1px dashed var(--sand-dark); border-radius:var(--r-md); color:var(--charcoal-50); background:var(--warm-beige); font-size:var(--fs-sm); font-weight:700; }
+.adm-noimg svg { width:26px; height:26px; }
+.adm-noimg-badge { display:inline-block; padding:2px 8px; border-radius:var(--r-full); font-size:var(--fs-2xs); font-weight:800; background:var(--warm-beige); color:var(--charcoal-50); border:1px dashed var(--sand-dark); vertical-align:middle; }
 
 .adm-mhead { text-align:center; margin-bottom:var(--sp-5); }
 .adm-mava { width:72px; height:72px; border-radius:50%; background:var(--olive-pale); display:flex; align-items:center; justify-content:center; margin:0 auto var(--sp-2); overflow:hidden; }
@@ -2011,6 +2014,18 @@ body {
 .cm-time { font-size: var(--fs-xs); color: var(--charcoal-50); }
 .cm-menu-btn { flex: none; border: none; background: transparent; color: var(--charcoal-50); font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 0 var(--sp-2); }
 .cm-text { font-size: var(--fs-base); color: var(--charcoal-80); line-height: 1.7; white-space: pre-wrap; margin-bottom: var(--sp-3); }
+.cm-hashtag { color: var(--olive); font-weight: 700; cursor: pointer; }
+.cm-hashtag:hover { text-decoration: underline; }
+.cm-search-wrap { display: flex; align-items: center; gap: var(--sp-2); background: var(--white); border: 1px solid var(--line-sand-strong);
+  border-radius: var(--r-full); padding: var(--sp-2) var(--sp-3); margin-bottom: var(--sp-3); box-shadow: var(--elev-input); }
+.cm-search-ic { width: 18px; height: 18px; color: var(--charcoal-50); flex: none; }
+.cm-search-input { flex: 1; border: none; background: transparent; outline: none; font-size: var(--fs-sm); color: var(--charcoal); font-family: inherit; min-width: 0; }
+.cm-search-go { flex: none; border: none; background: var(--olive); color: var(--off-white); font-weight: 700; font-size: var(--fs-xs);
+  border-radius: var(--r-full); padding: var(--sp-1) var(--sp-3); cursor: pointer; }
+.cm-trending { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); margin-bottom: var(--sp-3); }
+.cm-trending-h { font-size: var(--fs-xs); font-weight: 800; color: var(--charcoal-50); margin-inline-end: var(--sp-1); }
+.cm-trending .cm-hashtag { background: var(--olive-pale); border: none; border-radius: var(--r-full); padding: 3px var(--sp-3); font-size: var(--fs-xs); }
+.ht-section-h { font-size: var(--fs-sm); font-weight: 800; color: var(--olive); margin: var(--sp-4) 0 var(--sp-2); }
 
 /* Instagram-like media sizing: single = 4:5 portrait, grids = 1:1 square */
 .cm-media { display: grid; gap: 3px; border-radius: var(--r-lg); overflow: hidden; margin-bottom: var(--sp-3); background: var(--sand); }
@@ -4524,6 +4539,16 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
     <div id="topVolBody"></div>
   </div>
 </div>
+<div class="modal-overlay" id="hashtagModal">
+  <div class="modal-sheet">
+    <div class="modal-bar">
+      <button type="button" class="modal-close" onclick="closeModal('hashtagModal')" aria-label="back">‹</button>
+      <div class="modal-handle"></div>
+    </div>
+    <div class="modal-title" id="hashtagTitle"></div>
+    <div id="hashtagBody"></div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════
      ONBOARDING (Phase 2.6)
@@ -4849,7 +4874,7 @@ const T = {
     storyTitle: 'القصة', reqTitle: 'المتطلبات', detailsTitle: 'التفاصيل', durationLabel: 'المدة', participantsTitle: 'المشاركون',
     markedDone: 'تم إنهاء المبادرة ', archivedToast: 'تمت الأرشفة', shareVia: 'أثر', linkCopied: 'تم نسخ الرابط',
     bannedMsg: 'حسابك محظور حتى', userBanned: 'تم حظر الحساب', userUnbanned: 'تم رفع الحظر',
-    manageParticipants: 'المشاركون والحضور', attended: 'حضر', absent: 'لم يحضر', banShort: 'حظر',
+    manageParticipants: 'المشاركون والحضور', attended: 'حضر', absent: 'لم يحضر', banShort: 'حظر', admNoImage: 'بدون صورة — أضف صورة',
     communityReq: 'بطلب من المجتمع', editCamp: 'تعديل الحملة',
     savedTitle: 'المحفوظات', savedSub: 'المبادرات التي حفظتها', noSaved: 'لا توجد مبادرات محفوظة بعد',
     hoursLabel: 'الساعات المطلوبة', campGallery: 'معرض الصور (اختياري)', galleryTitle: 'معرض الصور', campTitleLabel: 'عنوان الحملة', neededLabel: 'عدد المتطوعين المقدّر', categoryLabel: 'الفئة', saveChanges: 'حفظ التعديلات', changesSaved: 'تم حفظ التعديلات ',
@@ -4860,7 +4885,7 @@ const T = {
     highlightsTitle: 'إضاءات المجتمع', topVolunteers: 'أبرز المتطوعين', viewAll: 'عرض الكل', activeCities: 'مدن نشطة', featuredTag: 'مميّزة', nearestTag: 'أقرب حملة',
     communityTitle: 'المجتمع', communitySub: 'مساحة صُنّاع الأثر — شارك، الهم، وانتمِ.', communitySoonTitle: 'مجتمع أثر قريباً', communitySoonMsg: 'نبني مساحة تجمع المتطوعين لمشاركة قصصهم وإلهام بعضهم. ترقّبوا.',
     cmTabFeed: 'الموجز', cmTabStories: 'قصص الأثر', cmTabHighlights: 'الأبرز',
-    cmShareTitle: 'شارك المجتمع', cmComposerPrompt: 'ما الذي تودّ مشاركته مع المجتمع؟', cmFabPost: 'منشور', cmFabCampaign: 'حملة', cmTypePost: 'منشور', cmTypeStory: 'قصة أثر', cmTextPh: 'شو بدك تشارك مع المجتمع؟', cmAddPhoto: 'إضافة صورة', cmUploading: 'جارٍ الرفع…', cmStorageFull: 'المساحة ممتلئة — جرّب صورة أصغر أو احذف منشورات قديمة', cmPublish: 'نشر',
+    cmShareTitle: 'شارك المجتمع', cmComposerPrompt: 'ما الذي تودّ مشاركته مع المجتمع؟', cmFabPost: 'منشور', cmFabCampaign: 'حملة', cmTypePost: 'منشور', cmTypeStory: 'قصة أثر', cmTextPh: 'شو بدك تشارك مع المجتمع؟', cmAddPhoto: 'إضافة صورة', cmUploading: 'جارٍ الرفع…', cmStorageFull: 'المساحة ممتلئة — جرّب صورة أصغر أو احذف منشورات قديمة', cmPublish: 'نشر', cmSearchPh: 'ابحث عن وسم أو منشور…', cmSearchBtn: 'بحث', cmTrending: 'الوسوم الرائجة', cmRelatedCampaigns: 'حملات ذات صلة', cmRelatedPosts: 'منشورات ذات صلة', cmNoResults: 'لا نتائج مطابقة',
     cmBefore: 'صورة قبل', cmAfter: 'صورة بعد', cmEmptyFeed: 'كن أول من يشارك لحظة أثر', cmEmptyStories: 'لا قصص بعد — شارك قصتك الأولى', cmComment: 'تعليق', cmComments: 'التعليقات', cmCommentPh: 'أضف تعليقًا لطيفًا…', cmSend: 'إرسال', cmReport: 'إبلاغ', cmDelete: 'حذف', cmPosted: 'تم النشر ',
     cmAutoDone: 'اكتملت مبادرة', cmAutoNew: 'مبادرة جديدة انطلقت', cmAutoHours: 'أنجز ساعات تطوّع', cmAutoCity: 'وصلت لساعات تطوّع', cmHighMonth: 'حملة أنجزناها هذا الشهر', cmHighTopVols: 'أبرز المتطوّعين', cmHighCities: 'المدن الأنشط', cmHighHeroes: 'أبطال الحملات',
     notifTitle: 'الإشعارات', notifSub: 'كل جديد يخصّك في مكان واحد.', notifEmptyTitle: 'لا إشعارات بعد', notifEmptyMsg: 'سنخبرك هنا عند وجود تحديثات على مبادراتك ونشاطك.',
@@ -5039,7 +5064,7 @@ const T = {
     storyTitle: 'The story', reqTitle: 'Requirements', detailsTitle: 'Details', durationLabel: 'Duration', participantsTitle: 'Participants',
     markedDone: 'Initiative completed ', archivedToast: 'Archived', shareVia: 'ATHAR', linkCopied: 'Link copied',
     bannedMsg: 'Your account is banned until', userBanned: 'Account banned', userUnbanned: 'Account unbanned',
-    manageParticipants: 'Participants & attendance', attended: 'Present', absent: 'Absent', banShort: 'Ban',
+    manageParticipants: 'Participants & attendance', attended: 'Present', absent: 'Absent', banShort: 'Ban', admNoImage: 'No image — add one',
     communityReq: 'Community request', editCamp: 'Edit campaign',
     savedTitle: 'Saved', savedSub: 'Initiatives you bookmarked', noSaved: 'No saved initiatives yet',
     hoursLabel: 'Hours needed', campGallery: 'Gallery (optional)', galleryTitle: 'Gallery', campTitleLabel: 'Campaign title', neededLabel: 'Estimated volunteers', categoryLabel: 'Category', saveChanges: 'Save changes', changesSaved: 'Changes saved ',
@@ -5050,7 +5075,7 @@ const T = {
     highlightsTitle: 'Community highlights', topVolunteers: 'Top volunteers', viewAll: 'View all', activeCities: 'Active cities', featuredTag: 'Featured', nearestTag: 'Nearest',
     communityTitle: 'Community', communitySub: 'A space for changemakers — share, inspire, belong.', communitySoonTitle: 'ATHAR Community is coming', communitySoonMsg: 'We are building a space for volunteers to share stories and inspire each other. Stay tuned.',
     cmTabFeed: 'Feed', cmTabStories: 'Impact Stories', cmTabHighlights: 'Highlights',
-    cmShareTitle: 'Share with community', cmComposerPrompt: 'What would you like to share?', cmFabPost: 'Post', cmFabCampaign: 'Campaign', cmTypePost: 'Post', cmTypeStory: 'Impact story', cmTextPh: 'What do you want to share?', cmAddPhoto: 'Add photo', cmUploading: 'Uploading…', cmStorageFull: 'Storage full — try a smaller image or remove old posts', cmPublish: 'Publish',
+    cmShareTitle: 'Share with community', cmComposerPrompt: 'What would you like to share?', cmFabPost: 'Post', cmFabCampaign: 'Campaign', cmTypePost: 'Post', cmTypeStory: 'Impact story', cmTextPh: 'What do you want to share?', cmAddPhoto: 'Add photo', cmUploading: 'Uploading…', cmStorageFull: 'Storage full — try a smaller image or remove old posts', cmPublish: 'Publish', cmSearchPh: 'Search a hashtag or post…', cmSearchBtn: 'Search', cmTrending: 'Trending tags', cmRelatedCampaigns: 'Related campaigns', cmRelatedPosts: 'Related posts', cmNoResults: 'No matching results',
     cmBefore: 'Before photo', cmAfter: 'After photo', cmEmptyFeed: 'Be the first to share an impact moment', cmEmptyStories: 'No stories yet — share your first one', cmComment: 'Comment', cmComments: 'Comments', cmCommentPh: 'Add a kind comment…', cmSend: 'Send', cmReport: 'Report', cmDelete: 'Delete', cmPosted: 'Posted ',
     cmAutoDone: 'completed an initiative', cmAutoNew: 'A new initiative launched', cmAutoHours: 'reached volunteer hours', cmAutoCity: 'reached volunteer hours', cmHighMonth: 'completed this month', cmHighTopVols: 'Top volunteers', cmHighCities: 'Most active cities', cmHighHeroes: 'Campaign heroes',
     notifTitle: 'Notifications', notifSub: 'Everything that matters to you, in one place.', notifEmptyTitle: 'No notifications yet', notifEmptyMsg: 'We will let you know here when there are updates on your initiatives and activity.',
@@ -7376,7 +7401,9 @@ function admViewCamp(id) {
     partsHtml += '</div>';
 
     admOpenModal(
-      (c.img ? '<img src="' + c.img + '" style="width:100%;height:150px;object-fit:cover;border-radius:var(--r-md);margin-bottom:var(--sp-4);cursor:pointer;" onclick="openImageViewer(\'' + c.img + '\')">' : '') +
+      (c.img
+        ? '<img src="' + c.img + '" style="width:100%;height:150px;object-fit:cover;border-radius:var(--r-md);margin-bottom:var(--sp-4);cursor:pointer;" onclick="openImageViewer(\'' + c.img + '\')">'
+        : '<div class="adm-noimg">' + icon('image') + '<span>' + t('admNoImage') + '</span></div>') +
       '<div class="adm-mname" style="text-align:start;">' + (txt.title || '') + '</div>' +
       '<div class="adm-mchips" style="justify-content:flex-start;margin-bottom:var(--sp-3);">' + admStatusChip(c.status) + (c.community ? '<span class="adm-rolechip">' + (isAr ? 'بطلب من المجتمع' : 'Community') + '</span>' : '') + '</div>' +
       (txt.desc ? '<div style="font-size:var(--fs-base);color:var(--charcoal-80);line-height:1.6;margin-bottom:var(--sp-4);">' + txt.desc + '</div>' : '') +
@@ -7676,7 +7703,7 @@ function admRenderCampaigns() {
         }
         return '<div class="admin-card" onclick="admViewCamp(\'' + c.id + '\')" style="cursor:pointer;">' +
           '<div class="admin-info">' +
-            '<div class="admin-info-name">' + (txt.title || '') + ' ' + admStatusChip(c.status) + '</div>' +
+            '<div class="admin-info-name">' + (txt.title || '') + ' ' + admStatusChip(c.status) + (!c.img ? ' <span class="adm-noimg-badge">' + t('admNoImage') + '</span>' : '') + '</div>' +
             '<div class="admin-info-row">' + (c.location || '') + ' · ' + (c.date || '') + '</div>' +
             '<div class="admin-info-row">' + (c.volunteers || 0) + '/' + (c.needed || 0) + ' · ' + (c.volunteerHours || 2) + (isAr ? ' س' : 'h') + ' · ' + (c.creatorName || '') + '</div>' +
           '</div>' +
@@ -8858,14 +8885,14 @@ function cmCommentsBlock(p) {
   const renderC = c => {
     const replies = (p.comments || []).filter(r => r.parentId === c.id);
     return '<div class="cm-comment"><div class="cm-comment-ava">' + cmAvatar(c.author) + '</div>' +
-      '<div class="cm-comment-body"><div class="cm-comment-name">' + (c.author.name || '') + '</div>' +
-      '<div class="cm-comment-text">' + c.text + '</div>' +
+      '<div class="cm-comment-body"><div class="cm-comment-name">' + escapeHtml(c.author.name || '') + '</div>' +
+      '<div class="cm-comment-text">' + cmFormatText(c.text) + '</div>' +
       '<div class="cm-comment-meta">' + cmTimeAgo(c.date) +
         ' · <button class="cm-link" onclick="cmReplyTo(\'' + p.id + '\',\'' + c.id + '\')">' + (isAr ? 'رد' : 'Reply') + '</button>' +
         (State.isAdmin || (State.cu && c.author.id === State.cu.id) ? ' · <button class="cm-link" onclick="handleDeleteComment(\'' + p.id + '\',\'' + c.id + '\')">' + t('cmDelete') + '</button>' : '') +
       '</div>' +
       (replies.length ? '<div class="cm-replies">' + replies.map(r =>
-        '<div class="cm-comment"><div class="cm-comment-ava">' + cmAvatar(r.author) + '</div><div class="cm-comment-body"><div class="cm-comment-name">' + (r.author.name || '') + '</div><div class="cm-comment-text">' + r.text + '</div><div class="cm-comment-meta">' + cmTimeAgo(r.date) +
+        '<div class="cm-comment"><div class="cm-comment-ava">' + cmAvatar(r.author) + '</div><div class="cm-comment-body"><div class="cm-comment-name">' + escapeHtml(r.author.name || '') + '</div><div class="cm-comment-text">' + cmFormatText(r.text) + '</div><div class="cm-comment-meta">' + cmTimeAgo(r.date) +
         (State.isAdmin || (State.cu && r.author.id === State.cu.id) ? ' · <button class="cm-link" onclick="handleDeleteComment(\'' + p.id + '\',\'' + r.id + '\')">' + t('cmDelete') + '</button>' : '') +
         '</div></div></div>').join('') + '</div>' : '') +
       '</div></div>';
@@ -8882,6 +8909,24 @@ function cmPostHeader(author, sub, chip, menu) {
   return '<div class="cm-card-head"><div class="cm-ava">' + cmAvatar(author) + '</div>' +
     '<div class="cm-head-meta"><div class="cm-author">' + (author.name || '') + (chip || '') + '</div>' +
     '<div class="cm-time">' + (sub || '') + '</div></div>' + (menu || '') + '</div>';
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+/** Hashtag token: # followed by Arabic/Latin letters, digits or underscore. */
+const HASHTAG_RE = /#[0-9A-Za-z_؀-ۿ]+/g;
+function extractHashtags(text) {
+  const out = [];
+  String(text || '').replace(HASHTAG_RE, m => { const k = m.slice(1).toLowerCase(); if (!out.includes(k)) out.push(k); return m; });
+  return out;
+}
+/** Escape text then linkify #hashtags. Safe for innerHTML. */
+function cmFormatText(text) {
+  return escapeHtml(text).replace(HASHTAG_RE, m => {
+    const tag = m.slice(1);
+    return '<span class="cm-hashtag" onclick="openHashtag(\'' + tag.toLowerCase() + '\')">' + m + '</span>';
+  });
 }
 
 function cmPostCard(p) {
@@ -8916,7 +8961,7 @@ function cmPostCard(p) {
       '</div>' : '';
   return '<div class="cm-card">' +
     cmPostHeader(author, sub, chip, menu) +
-    (p.text ? '<div class="cm-text">' + p.text + '</div>' : '') +
+    (p.text ? '<div class="cm-text">' + cmFormatText(p.text) + '</div>' : '') +
     ba + cmMediaGrid(p.media) +
     cmActionBar(p) +
     cmCommentsBlock(p) +
@@ -8958,7 +9003,72 @@ function cmRenderFeed() {
   const box = document.getElementById('cmFeed'); if (!box) return;
   const feed = CommunityService.getFeed();
   const body = feed.length ? feed.map(cmPostCard).join('') : '<div class="empty-state"><div class="empty-title">' + t('cmEmptyFeed') + '</div></div>';
-  box.innerHTML = cmComposerCard() + cmStoryCircles() + body;
+  box.innerHTML = cmSearchBar() + cmTrendingTags() + cmComposerCard() + cmStoryCircles() + body;
+}
+
+function cmSearchBar() {
+  return '<div class="cm-search-wrap">' +
+    icon('search', 'cm-search-ic') +
+    '<input type="text" id="cmSearchInput" class="cm-search-input" placeholder="' + t('cmSearchPh') + '" ' +
+      'onkeydown="if(event.key===\'Enter\')cmDoSearch()" oninput="if(!this.value.trim())0">' +
+    '<button class="cm-search-go" onclick="cmDoSearch()">' + t('cmSearchBtn') + '</button>' +
+  '</div>';
+}
+
+/** Top hashtags by usage across posts. */
+function cmTrendingTags() {
+  const counts = {};
+  CommunityService.getAll().forEach(p => extractHashtags(p.text).forEach(h => { counts[h] = (counts[h] || 0) + 1; }));
+  const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 8);
+  if (!tags.length) return '';
+  return '<div class="cm-trending"><span class="cm-trending-h">' + t('cmTrending') + '</span>' +
+    tags.map(h => '<button class="cm-hashtag" onclick="openHashtag(\'' + h + '\')">#' + escapeHtml(h) + '</button>').join('') +
+  '</div>';
+}
+
+function cmDoSearch() {
+  const el = document.getElementById('cmSearchInput');
+  const q = el ? el.value.trim() : '';
+  if (!q) return;
+  openHashtagResults(q);
+}
+function openHashtag(tag) { openHashtagResults('#' + tag); }
+
+/** Show posts + campaigns matching a hashtag or free-text query. */
+function openHashtagResults(query) {
+  const isAr = State.lang === 'ar';
+  const raw = String(query || '').trim();
+  const term = raw.replace(/^#/, '').toLowerCase();
+  if (!term) return;
+  const isTag = raw.charAt(0) === '#';
+
+  const posts = CommunityService.getAll().filter(p => {
+    if (p.type === 'auto') return false;
+    if (isTag) return extractHashtags(p.text).includes(term);
+    return String(p.text || '').toLowerCase().includes(term);
+  });
+  const camps = CampaignService.getVisible().filter(c => {
+    const tx = Models.getCampText(c);
+    const hay = [tx.title, tx.desc, c.location, Models.catLabel(c)].join(' ').toLowerCase();
+    return hay.includes(term);
+  });
+
+  const head = document.getElementById('hashtagTitle');
+  if (head) head.textContent = (isTag ? '#' : '') + term;
+  const body = document.getElementById('hashtagBody');
+  if (!body) return;
+  let html = '';
+  if (camps.length) {
+    html += '<div class="ht-section-h">' + t('cmRelatedCampaigns') + ' (' + camps.length + ')</div>' +
+      '<div class="camps-grid">' + camps.map(c => campCardHTML(c)).join('') + '</div>';
+  }
+  if (posts.length) {
+    html += '<div class="ht-section-h">' + t('cmRelatedPosts') + ' (' + posts.length + ')</div>' +
+      posts.map(cmPostCard).join('');
+  }
+  if (!html) html = '<div class="empty-state"><div class="empty-title">' + t('cmNoResults') + '</div></div>';
+  body.innerHTML = html;
+  openModal('hashtagModal');
 }
 function handleSavePost(postId) {
   if (!State.cu || State.isGuest) { requireAuth(); return; }
