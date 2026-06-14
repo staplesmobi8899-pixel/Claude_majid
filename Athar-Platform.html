@@ -3069,14 +3069,16 @@ html, body { overflow-x: hidden; }
 /* ── PHASE 4.1 — Explore (search + chips + filters) ── */
 .explore-top { padding: var(--sp-5) var(--sp-4) var(--sp-2); max-width: var(--content-max); margin: 0 auto; }
 .search-bar { display: flex; align-items: center; gap: var(--sp-3); padding: 0 var(--sp-4);
-  height: 48px; background: var(--white); border: 1.5px solid var(--sand-dark); border-radius: var(--r-full); }
-.search-bar svg { width: 18px; height: 18px; fill: none; stroke: var(--charcoal-50); stroke-width: 2; flex: none; }
+  height: 48px; background: var(--card-hl-img) center / cover no-repeat, var(--forest); border: 1px solid transparent; border-radius: var(--r-full); }
+.search-bar svg { width: 18px; height: 18px; fill: none; stroke: var(--off-white); stroke-width: 2; flex: none; }
 .search-bar input { flex: 1; border: none; background: transparent; outline: none; font-family: inherit;
-  font-size: 16px; color: var(--charcoal); min-width: 0; }
+  font-size: 16px; color: var(--off-white); min-width: 0; }
+.search-bar input::placeholder { color: rgba(245,242,236,0.65); }
 .explore-filters { display: flex; gap: var(--sp-2); margin-top: var(--sp-3); }
-.explore-filters select { flex: 1; min-width: 0; height: 40px; padding: 0 var(--sp-3); border-radius: var(--r-md);
-  border: 1.5px solid var(--sand-dark); background: var(--white); color: var(--charcoal);
-  font-family: inherit; font-size: var(--fs-sm); -webkit-appearance: none; appearance: none; cursor: pointer; }
+.explore-filters select { flex: 1; min-width: 0; height: 40px; padding: 0 var(--sp-4); border-radius: var(--r-full);
+  border: 1px solid transparent; background: var(--card-hl-img) center / cover no-repeat, var(--forest); color: var(--off-white);
+  font-family: inherit; font-size: var(--fs-sm); font-weight: 700; -webkit-appearance: none; appearance: none; cursor: pointer; text-align: center; }
+.explore-filters select option { color: var(--charcoal); background: var(--white); }
 .cat-chips { display: flex; gap: var(--sp-2); margin-top: var(--sp-4); overflow-x: auto;
   padding-bottom: var(--sp-2); scrollbar-width: none; }
 .cat-chips::-webkit-scrollbar { display: none; }
