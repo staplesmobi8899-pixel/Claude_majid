@@ -3242,6 +3242,10 @@ html, body { overflow-x: hidden; }
 /* ── PHASE 6.3 — certificates + activity timeline ── */
 .cert-list { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--sp-5);
   display: flex; flex-direction: column; gap: var(--sp-3); }
+.cert-pending-chip { display: inline-block; margin-top: var(--sp-2);
+  font-size: var(--fs-xs); font-weight: 700; color: var(--olive);
+  background: var(--olive-pale); border-radius: var(--r-full);
+  padding: 2px var(--sp-3); }
 .cert-card { display: flex; align-items: center; gap: var(--sp-4);
   background: var(--white); border: 1px solid var(--line-sand-strong); border-radius: var(--r-lg);
   padding: var(--sp-4); cursor: pointer; transition: background 0.15s, box-shadow 0.15s; }
@@ -4737,7 +4741,7 @@ const T = {
     profilePublic: 'ملف عام', profilePrivate: 'ملف خاص', profileNowPublic: 'ملفك أصبح عامًا', profileNowPrivate: 'ملفك أصبح خاصًا', completedLabel: 'مكتملة', citiesLabel: 'مدن', scoreLabel: 'نقاط الأثر',
     editInfo: 'تعديل', saveChanges: 'حفظ التعديلات', cancelEdit: 'إلغاء', infoSaved: 'تم حفظ معلوماتك', bioField: 'نبذة عنك', bioPh: 'اكتب نبذة قصيرة تعرّف بك…', emailLocked: 'البريد الإلكتروني لا يمكن تغييره',
     editProfileBtn: 'تعديل الملف', shareProfileBtn: 'مشاركة الملف', shareCopied: 'تم نسخ رابط ملفك', statCompletedShort: 'حملة منجزة', statHoursShort: 'ساعة', statParticipationShort: 'مشاركة', completedCampsLabel: 'حملات مكتملة', changePhotoCta: 'تغيير صورة الملف', roleJoined: 'مشارِك', roleOrganizer: 'منظِّم',
-    certsTitle: 'الشهادات', timelineTitle: 'سجل النشاط', noCerts: 'أكمل حملة لتحصل على شهادتك الأولى', noActivity: 'ابدأ رحلتك — انضمّ لأول حملة', viewCertBtn: 'عرض',
+    certsTitle: 'الشهادات', timelineTitle: 'سجل النشاط', noCerts: 'شهاداتك', certsPending: 'قيد الانتظار', noActivity: 'ابدأ رحلتك — انضمّ لأول حملة', viewCertBtn: 'عرض',
     tlJoin: 'انضممت إلى', tlDone: 'أكملت حملة', tlBadge: 'حصلت على شارة', tlAccount: 'بدأت رحلتك في أثر',
     certHeading: 'شهادة تقدير', certBody1: 'تشهد منصة أثر أنّ', certBody2: 'قد أتمّ بنجاح المشاركة في', certHoursLine: 'بإجمالي ساعات تطوّع', shareCert: 'مشاركة الشهادة', certShared: 'تم نسخ نص الشهادة',
     settingsTitle: 'الإعدادات', settingsSub: 'المظهر · اللغة · الخصوصية · الدعم',
@@ -4927,7 +4931,7 @@ const T = {
     profilePublic: 'Public profile', profilePrivate: 'Private profile', profileNowPublic: 'Your profile is now public', profileNowPrivate: 'Your profile is now private', completedLabel: 'Completed', citiesLabel: 'Cities', scoreLabel: 'Impact score',
     editInfo: 'Edit', saveChanges: 'Save changes', cancelEdit: 'Cancel', infoSaved: 'Your info was saved', bioField: 'About you', bioPh: 'Write a short bio about yourself…', emailLocked: 'Email cannot be changed',
     editProfileBtn: 'Edit profile', shareProfileBtn: 'Share profile', shareCopied: 'Profile link copied', statCompletedShort: 'Completed', statHoursShort: 'Hours', statParticipationShort: 'Participations', completedCampsLabel: 'Completed campaigns', changePhotoCta: 'Change profile photo', roleJoined: 'Participant', roleOrganizer: 'Organizer',
-    certsTitle: 'Certificates', timelineTitle: 'Activity', noCerts: 'Complete a campaign to earn your first certificate', noActivity: 'Start your journey — join your first campaign', viewCertBtn: 'View',
+    certsTitle: 'Certificates', timelineTitle: 'Activity', noCerts: 'Your certificates', certsPending: 'Pending', noActivity: 'Start your journey — join your first campaign', viewCertBtn: 'View',
     tlJoin: 'Joined', tlDone: 'Completed', tlBadge: 'Earned a badge', tlAccount: 'Started your ATHAR journey',
     certHeading: 'Certificate of Appreciation', certBody1: 'ATHAR certifies that', certBody2: 'has successfully participated in', certHoursLine: 'total volunteer hours', shareCert: 'Share certificate', certShared: 'Certificate text copied',
     settingsTitle: 'Settings', settingsSub: 'Appearance · Language · Privacy · Support',
@@ -9370,7 +9374,7 @@ function renderCerts(u) {
   const box = document.getElementById('profileCerts');
   if (!box) return;
   const certs = CertificateService.getFor(u);
-  if (!certs.length) { box.innerHTML = '<div class="empty-state"><div class="empty-title">' + t('noCerts') + '</div></div>'; return; }
+  if (!certs.length) { box.innerHTML = '<div class="empty-state"><div class="empty-title">' + t('noCerts') + '</div><span class="cert-pending-chip">' + t('certsPending') + '</span></div>'; return; }
   box.innerHTML = certs.map(c =>
     '<div class="cert-card" onclick="openCert(\'' + c.campId + '\')">' +
       '<div class="cert-seal">' + icon('star') + '</div>' +
