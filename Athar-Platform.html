@@ -746,6 +746,19 @@ body {
 [data-lang="ar"] .camp-badge { right: 0.9rem; }
 [data-lang="en"] .camp-badge { left: 0.9rem; }
 
+/* Top-leading badge stack (status + days + community) — no overlap */
+.camp-badges-tl { position: absolute; top: 0.9rem; display: flex; flex-direction: column; gap: 6px; z-index: 2; }
+[data-lang="ar"] .camp-badges-tl { right: 0.9rem; align-items: flex-end; }
+[data-lang="en"] .camp-badges-tl { left: 0.9rem; align-items: flex-start; }
+.camp-badges-tl .camp-badge { position: static; top: auto; right: auto; left: auto; }
+
+/* Emergency corner box (bottom-right), only on emergency campaigns */
+.camp-emergency-corner { position: absolute; bottom: 0.9rem; right: 0.9rem; z-index: 3;
+  display: inline-flex; align-items: center; gap: 4px; padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--r-md); background: rgba(179,38,30,0.94); color: #fff;
+  font-size: var(--fs-2xs); font-weight: 800; box-shadow: 0 2px 10px rgba(179,38,30,0.45); backdrop-filter: blur(6px); }
+.camp-emergency-corner svg { width: 13px; height: 13px; }
+
 .camp-badge-cat {
   position: absolute;
   top: 0.9rem;
@@ -1918,6 +1931,9 @@ body {
 .adm-st.approved      { background:var(--success-bg); color:var(--success-fg); }
 .adm-st.under_process { background:rgba(29,78,216,0.14);  color:var(--info); }
 .adm-st.emergency     { background:rgba(179,38,30,0.14);  color:#b3261e; }
+.adm-status-control { margin: var(--sp-3) 0; }
+.adm-status-btns { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.adm-btn.current { opacity: 0.5; outline: 2px solid var(--olive); }
 .adm-st.done          { background:rgba(124,58,237,0.14); color:var(--purple); }
 .adm-st.rejected      { background:var(--red-bg);     color:var(--red-fg); }
 .adm-st.banned        { background:var(--red-bg);     color:var(--red-fg); }
@@ -4963,7 +4979,7 @@ const T = {
     leaveBtn: 'مغادرة المبادرة', cantLeave: 'لا يمكنك مغادرة الحملة الآن (أقل من يومين على موعدها)',
     saved: 'تم الحفظ ', unsaved: 'أُزيل من المحفوظات',
     req1: 'الالتزام بموعد المبادرة', req2: 'روح التعاون والعمل الجماعي', req3: 'الالتزام بتعليمات المنظّم',
-    noParticipants: 'كن أول المشاركين!', manageCamp: 'إدارة المبادرة', markDoneBtn: 'إنهاء المبادرة', archiveBtn: 'أرشفة', markEmergencyBtn: 'تحديد كطارئة', clearEmergencyBtn: 'إلغاء الحالة الطارئة', emergencyOnToast: 'تم تحديد الحملة كطارئة', emergencyOffToast: 'تم إلغاء الحالة الطارئة', limitReached: 'اكتمل عدد المتطوّعين — بانتظار التنفيذ',
+    noParticipants: 'كن أول المشاركين!', manageCamp: 'إدارة المبادرة', markDoneBtn: 'إنهاء المبادرة', archiveBtn: 'أرشفة', markEmergencyBtn: 'تحديد كطارئة', clearEmergencyBtn: 'إلغاء الحالة الطارئة', emergencyOnToast: 'تم تحديد الحملة كطارئة', emergencyOffToast: 'تم إلغاء الحالة الطارئة', limitReached: 'اكتمل عدد المتطوّعين — بانتظار التنفيذ', emergencyTag: 'طارئة', admChangeStatus: 'تغيير الحالة', statusUpdatedToast: 'تم تحديث حالة الحملة',
     storyTitle: 'القصة', reqTitle: 'المتطلبات', detailsTitle: 'التفاصيل', durationLabel: 'المدة', participantsTitle: 'المشاركون',
     markedDone: 'تم إنهاء المبادرة ', archivedToast: 'تمت الأرشفة', shareVia: 'أثر', linkCopied: 'تم نسخ الرابط',
     bannedMsg: 'حسابك محظور حتى', userBanned: 'تم حظر الحساب', userUnbanned: 'تم رفع الحظر',
@@ -5154,7 +5170,7 @@ const T = {
     leaveBtn: 'Leave initiative', cantLeave: 'You can\'t leave now (less than 2 days to the date)',
     saved: 'Saved ', unsaved: 'Removed from saved',
     req1: 'Commit to the initiative date', req2: 'Teamwork and collaboration', req3: 'Follow the organizer\'s instructions',
-    noParticipants: 'Be the first to join!', manageCamp: 'Manage initiative', markDoneBtn: 'Complete', archiveBtn: 'Archive', markEmergencyBtn: 'Mark as Emergency', clearEmergencyBtn: 'Clear Emergency', emergencyOnToast: 'Campaign marked as Emergency', emergencyOffToast: 'Emergency cleared', limitReached: 'Volunteer limit reached — waiting for execution',
+    noParticipants: 'Be the first to join!', manageCamp: 'Manage initiative', markDoneBtn: 'Complete', archiveBtn: 'Archive', markEmergencyBtn: 'Mark as Emergency', clearEmergencyBtn: 'Clear Emergency', emergencyOnToast: 'Campaign marked as Emergency', emergencyOffToast: 'Emergency cleared', limitReached: 'Volunteer limit reached — waiting for execution', emergencyTag: 'Emergency', admChangeStatus: 'Change status', statusUpdatedToast: 'Campaign status updated',
     storyTitle: 'The story', reqTitle: 'Requirements', detailsTitle: 'Details', durationLabel: 'Duration', participantsTitle: 'Participants',
     markedDone: 'Initiative completed ', archivedToast: 'Archived', shareVia: 'ATHAR', linkCopied: 'Link copied',
     bannedMsg: 'Your account is banned until', userBanned: 'Account banned', userUnbanned: 'Account unbanned',
@@ -6659,7 +6675,7 @@ function campCardHTML(c) {
     const saved  = State.cu ? CampaignService.isSaved(c.id) : false;
     const txt    = Models.getCampText(c);
     const pct    = c.needed ? Math.min(100, Math.round(((c.volunteers || 0) / c.needed) * 100)) : 0;
-    const si     = Models.getStatusInfo(Models.displayStatus(c));
+    const si     = Models.getStatusInfo(c.status);
     const isEmergency = Models.displayStatus(c) === 'emergency';
     const daysBadge = Models.daysLeftBadge(c);
     const fallbackColor = ['#3a4a28','#2d3a1e','#4a5a32','#1e2a14'][parseInt(String(c.id).slice(-1)) % 4] || '#3a4a28';
@@ -6678,25 +6694,27 @@ function campCardHTML(c) {
     const imgHtml = `<img src="${imgSrc}" alt="${title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" onclick="event.stopPropagation();openImageViewer('${imgSrc}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="camp-img-fallback" style="display:none;background:${fallbackColor}"></div>`;
 
     let joinBtnHtml = '';
-    if (c.status === 'done') {
-      joinBtnHtml = `<button class="join-btn" disabled style="opacity:0.5;"> ${State.lang === 'ar' ? 'منتهية' : 'Ended'}</button>`;
-    } else if (c.status === 'rejected') {
-      joinBtnHtml = `<button class="join-btn" disabled style="opacity:0.5;background:#ef4444;">${State.lang === 'ar' ? 'مرفوضة' : 'Rejected'}</button>`;
-    } else if (vol >= needed && needed > 0) {
-      joinBtnHtml = `<button class="join-btn" disabled style="opacity:0.5;background:#f59e0b;">${State.lang === 'ar' ? 'امتلأت' : 'Full'}</button>`;
-    } else if (c.status === 'approved' || c.status === 'under_process') {
-      joinBtnHtml = `<button class="join-btn" onclick="event.stopPropagation();handleJoin('${c.id}')" ${joined ? 'disabled' : ''}>${joined ? t('joinedBtn') : t('joinBtn')}</button>`;
+    if (c.status === 'approved' || c.status === 'under_process') {
+      if (vol >= needed && needed > 0) {
+        joinBtnHtml = `<button class="join-btn" disabled style="opacity:0.6;">${si[State.lang]}</button>`;
+      } else {
+        joinBtnHtml = `<button class="join-btn" onclick="event.stopPropagation();handleJoin('${c.id}')" ${joined ? 'disabled' : ''}>${joined ? t('joinedBtn') : t('joinBtn')}</button>`;
+      }
     } else {
-      joinBtnHtml = `<button class="join-btn" disabled>${t('unavailBtn')}</button>`;
+      // pending / done / rejected / archived → show the status itself (no generic "unavailable")
+      joinBtnHtml = `<button class="join-btn" disabled style="opacity:0.6;">${si[State.lang]}</button>`;
     }
 
     return `
     <div class="camp-card${isEmergency ? ' camp-card-emergency' : ''}" onclick="openDetail('${c.id}')">
       <div class="camp-img">${imgHtml}<div class="camp-img-overlay"></div>
-        <span class="camp-badge camp-badge-status ${si.cls}">${si[State.lang]}</span>
-        ${daysBadge}
+        <div class="camp-badges-tl">
+          <span class="camp-badge camp-badge-status ${si.cls}">${si[State.lang]}</span>
+          ${daysBadge}
+          ${Models.isCommunity(c) ? `<span class="camp-badge camp-badge-community"> ${t('communityReq')}</span>` : ''}
+        </div>
         <span class="camp-badge camp-badge-cat">${catIcon}${cat}</span>
-        ${Models.isCommunity(c) ? `<span class="camp-badge camp-badge-community"> ${t('communityReq')}</span>` : ''}
+        ${isEmergency ? `<span class="camp-emergency-corner">${icon('alert')} ${t('emergencyTag')}</span>` : ''}
         <button class="card-save${saved ? ' saved' : ''}" onclick="event.stopPropagation();handleCardSave('${c.id}',this)" aria-label="save">${saved ? '' : ''}</button>
       </div>
       <div class="camp-body">
@@ -7627,18 +7645,20 @@ function admViewCamp(id) {
     const row = (label, val) => val
       ? '<div class="adm-drow"><span class="adm-dlabel">' + label + '</span><span class="adm-dval">' + val + '</span></div>' : '';
 
-    let actions = '';
-    if (c.status === 'pending') {
-      actions += '<button class="adm-btn ok" onclick="handleApproveCamp(\'' + c.id + '\');admCloseModal()">' + (isAr ? 'قبول' : 'Approve') + '</button>' +
-                 '<button class="adm-btn danger" onclick="handleRejectCamp(\'' + c.id + '\');admCloseModal()">' + (isAr ? 'رفض' : 'Reject') + '</button>';
-    } else if (c.status === 'approved') {
-      actions += '<button class="adm-btn process" onclick="handleCampUnderProcess(\'' + c.id + '\');admViewCamp(\'' + c.id + '\')">' + (isAr ? 'قيد التنفيذ' : 'In Progress') + '</button>' +
-                 '<button class="adm-btn done" onclick="handleCampDone(\'' + c.id + '\');admViewCamp(\'' + c.id + '\')">' + (isAr ? 'إنهاء' : 'Mark Done') + '</button>';
-    } else if (c.status === 'under_process') {
-      actions += '<button class="adm-btn done" onclick="handleCampDone(\'' + c.id + '\');admViewCamp(\'' + c.id + '\')">' + (isAr ? 'إنهاء' : 'Mark Done') + '</button>';
-    }
+    // Full status control — admin can move the campaign to any status
+    const stOrder = ['pending', 'approved', 'under_process', 'done', 'rejected'];
+    const stBtnClass = { pending: 'ghost', approved: 'ok', under_process: 'process', done: 'done', rejected: 'danger' };
+    let actions = '<div class="adm-status-control"><div class="adm-msection-h">' + t('admChangeStatus') + '</div><div class="adm-status-btns">';
+    stOrder.forEach(s => {
+      const cur = c.status === s;
+      const lbl = CONFIG.CAMP_STATUS[s][isAr ? 'ar' : 'en'];
+      actions += '<button class="adm-btn ' + (stBtnClass[s] || 'ghost') + (cur ? ' current' : '') + '"' +
+        (cur ? ' disabled' : '') +
+        ' onclick="handleSetCampStatus(\'' + c.id + '\',\'' + s + '\')">' + lbl + '</button>';
+    });
+    actions += '</div></div>';
     if (c.status === 'approved' || c.status === 'under_process') {
-      actions += '<button class="adm-btn ghost" onclick="handleToggleEmergency(\'' + c.id + '\')">' + (c.emergency ? t('clearEmergencyBtn') : t('markEmergencyBtn')) + '</button>';
+      actions += '<div class="adm-status-btns" style="margin-top:var(--sp-2);"><button class="adm-btn ' + (c.emergency ? 'danger' : 'ghost') + '" onclick="handleToggleEmergency(\'' + c.id + '\')">' + (c.emergency ? t('clearEmergencyBtn') : t('markEmergencyBtn')) + '</button></div>';
     }
 
     // Participants block
@@ -8241,8 +8261,9 @@ function admSendBroadcast() {
 function renderDetail(id) {
   const c = CampaignService.getById(id); if (!c) return;
   const txt = Models.getCampText(c);
-  const si  = Models.getStatusInfo(Models.displayStatus(c));
+  const si  = Models.getStatusInfo(c.status);
   const cm  = Models.catMeta(c);
+  const isEmergency = Models.displayStatus(c) === 'emergency';
   const isFull = (c.volunteers || 0) >= (c.needed || 0) && c.needed > 0;
   const isAr = State.lang === 'ar';
   const pct = c.needed ? Math.min(100, Math.round(((c.volunteers || 0) / c.needed) * 100)) : 0;
@@ -8264,7 +8285,7 @@ function renderDetail(id) {
   let actionBtn;
   if (joined) actionBtn = '<button class="detail-join-btn leave" onclick="handleLeave(\'' + id + '\')">' + t('leaveBtn') + '</button>';
   else if (c.status === 'done' || c.status === 'archived') actionBtn = '<button class="detail-join-btn" disabled>' + t('campDone') + '</button>';
-  else if (c.status !== 'approved' && c.status !== 'under_process') actionBtn = '<button class="detail-join-btn" disabled>' + t('unavailBtn') + '</button>';
+  else if (c.status !== 'approved' && c.status !== 'under_process') actionBtn = '<button class="detail-join-btn" disabled>' + si[State.lang] + '</button>';
   else if ((c.volunteers || 0) >= (c.needed || 0) && c.needed > 0) actionBtn = '<button class="detail-join-btn" disabled>' + t('campFull') + '</button>';
   else actionBtn = '<button class="detail-join-btn" onclick="handleJoin(\'' + id + '\')">' + t('joinBtn') + '</button>';
 
@@ -8287,6 +8308,7 @@ function renderDetail(id) {
   document.getElementById('detailBody').innerHTML =
     '<div class="detail-body-inner">' +
       '<div class="detail-badges"><span class="camp-badge ' + si.cls + '">' + si[State.lang] + '</span>' +
+        (isEmergency ? '<span class="camp-badge status-emergency">' + icon('alert') + ' ' + t('emergencyTag') + '</span>' : '') +
         Models.daysLeftBadge(c) +
         (cm ? '<span class="detail-cat-pill">' + (cm.icon ? icon(cm.icon) + ' ' : '') + (isAr ? cm.ar : cm.en) + '</span>' : '') +
         (Models.isCommunity(c) ? '<span class="detail-cat-pill community">' + icon('sprout') + ' ' + t('communityReq') + '</span>' : '') + '</div>' +
@@ -8414,6 +8436,22 @@ function handleArchive(id) {
   toast(t('archivedToast'), 'success');
   if (State.currentPage === 'detail') renderDetail(id);
   if (State.currentPage === 'admin') { renderAdmin(); admViewCamp(id); }
+}
+
+/** Admin-only: set a campaign to any status, with the right side effects. */
+function handleSetCampStatus(id, status) {
+  if (!(State.isAdmin || Permissions.can(State.cu, 'manage_campaigns'))) return;
+  const c = CampaignService.getById(id); if (!c || c.status === status) return;
+  if (status === 'approved')          CampaignService.approve(id);
+  else if (status === 'rejected')     CampaignService.reject(id);
+  else if (status === 'under_process')CampaignService.markUnderProcess(id);
+  else if (status === 'done')         CampaignService.markDone(id);
+  else if (status === 'pending')      CampaignService.updateById(id, { status: 'pending', emergency: false });
+  else                                CampaignService.updateById(id, { status: status });
+  toast(t('statusUpdatedToast'), 'success');
+  updateBell(); animateCounters();
+  if (State.currentPage === 'admin') { if (typeof renderAdmin === 'function') renderAdmin(); admViewCamp(id); }
+  if (State.currentPage === 'detail') renderDetail(id);
 }
 
 /** Admin-only: toggle the Emergency flag on an active campaign. */
