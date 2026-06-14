@@ -882,6 +882,17 @@ body {
   color: var(--olive-light);
   cursor: not-allowed;
 }
+/* Unified status/action button — when joining stops, the button shows the status */
+.join-btn.status-display { cursor: default; display: inline-flex; align-items: center; gap: 4px; }
+.join-btn.status-display svg { width: 13px; height: 13px; }
+.join-btn.js-joined    { background: var(--olive-pale);          color: var(--olive); }
+.join-btn.js-pending   { background: rgba(254,243,199,0.95);     color: #92400e; }
+.join-btn.js-waiting   { background: rgba(236,245,224,0.98);     color: #4a6324; }
+.join-btn.js-progress  { background: rgba(255,237,213,0.98);     color: #9a5b18; }
+.join-btn.js-done      { background: rgba(224,231,255,0.95);     color: #3730a3; }
+.join-btn.js-rejected  { background: rgba(254,226,226,0.95);     color: #991b1b; }
+.join-btn.js-archived  { background: rgba(233,228,219,0.98);     color: #6b6256; }
+.join-btn.js-emergency { background: rgba(179,38,30,0.94);       color: #fff; }
 
 /* ══════════════════════════════════════════
    CAMPAIGN DETAIL PAGE
@@ -6694,27 +6705,26 @@ function campCardHTML(c) {
     const imgHtml = `<img src="${imgSrc}" alt="${title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" onclick="event.stopPropagation();openImageViewer('${imgSrc}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="camp-img-fallback" style="display:none;background:${fallbackColor}"></div>`;
 
     let joinBtnHtml = '';
-    if (c.status === 'approved' || c.status === 'under_process') {
-      if (vol >= needed && needed > 0) {
-        joinBtnHtml = `<button class="join-btn" disabled style="opacity:0.6;">${si[State.lang]}</button>`;
-      } else {
-        joinBtnHtml = `<button class="join-btn" onclick="event.stopPropagation();handleJoin('${c.id}')" ${joined ? 'disabled' : ''}>${joined ? t('joinedBtn') : t('joinBtn')}</button>`;
-      }
+    const full = vol >= needed && needed > 0;
+    const stCls = { pending: 'js-pending', approved: 'js-waiting', under_process: 'js-progress', done: 'js-done', rejected: 'js-rejected', archived: 'js-archived' };
+    if (joined) {
+      joinBtnHtml = `<span class="join-btn js-joined status-display">${t('joinedBtn')}</span>`;
+    } else if (isEmergency) {
+      joinBtnHtml = `<span class="join-btn js-emergency status-display">${icon('alert')} ${t('emergencyTag')}</span>`;
+    } else if ((c.status === 'approved' || c.status === 'under_process') && !full) {
+      joinBtnHtml = `<button class="join-btn" onclick="event.stopPropagation();handleJoin('${c.id}')">${t('joinBtn')}</button>`;
     } else {
-      // pending / done / rejected / archived → show the status itself (no generic "unavailable")
-      joinBtnHtml = `<button class="join-btn" disabled style="opacity:0.6;">${si[State.lang]}</button>`;
+      joinBtnHtml = `<span class="join-btn ${stCls[c.status] || 'js-pending'} status-display">${si[State.lang]}</span>`;
     }
 
     return `
     <div class="camp-card${isEmergency ? ' camp-card-emergency' : ''}" onclick="openDetail('${c.id}')">
       <div class="camp-img">${imgHtml}<div class="camp-img-overlay"></div>
         <div class="camp-badges-tl">
-          <span class="camp-badge camp-badge-status ${si.cls}">${si[State.lang]}</span>
           ${daysBadge}
           ${Models.isCommunity(c) ? `<span class="camp-badge camp-badge-community"> ${t('communityReq')}</span>` : ''}
         </div>
         <span class="camp-badge camp-badge-cat">${catIcon}${cat}</span>
-        ${isEmergency ? `<span class="camp-emergency-corner">${icon('alert')} ${t('emergencyTag')}</span>` : ''}
         <button class="card-save${saved ? ' saved' : ''}" onclick="event.stopPropagation();handleCardSave('${c.id}',this)" aria-label="save">${saved ? '' : ''}</button>
       </div>
       <div class="camp-body">
