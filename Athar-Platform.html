@@ -3407,6 +3407,66 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
     scroll-behavior: auto !important;
   }
 }
+
+/* ══════════════════════════════════════════
+   PHASE 11 — UNIFIED ELEVATION SYSTEM (soft, iOS-calm)
+   Authoritative (placed last). Additive shadows only — no borders/glow.
+   ══════════════════════════════════════════ */
+:root {
+  --elev-btn:        0 6px 18px rgba(0,0,0,0.06);
+  --elev-btn-hover:  0 4px 12px rgba(0,0,0,0.05);
+  --elev-card:       0 8px 24px rgba(0,0,0,0.05);
+  --elev-card-hover: 0 12px 30px rgba(0,0,0,0.06);
+  --elev-chip:       0 3px 10px rgba(0,0,0,0.04);
+  --elev-input:      0 4px 14px rgba(0,0,0,0.035);
+  --elev-fab:        0 12px 30px rgba(0,0,0,0.12);
+}
+
+/* Buttons (keep existing :active scale from the motion block) */
+.btn, .submit-btn, .join-btn, .create-btn, .dark-submit, .ig-btn, .adm-btn, .auth-btn, .pill-btn,
+.manage-btn, .approve-btn, .reject-btn, .detail-join-btn, .edit-save, .edit-cancel, .set-logout,
+.info-edit-btn, .privacy-toggle, .cm-comment-input button {
+  box-shadow: var(--elev-btn);
+}
+.btn:hover, .submit-btn:hover, .join-btn:hover, .create-btn:hover, .dark-submit:hover, .ig-btn:hover,
+.adm-btn:hover, .auth-btn:hover, .pill-btn:hover, .manage-btn:hover, .approve-btn:hover, .reject-btn:hover,
+.detail-join-btn:hover:not(:disabled), .edit-save:hover, .set-logout:hover {
+  box-shadow: var(--elev-btn-hover);
+}
+.btn:disabled, .adm-btn:disabled, .auth-btn:disabled, .detail-join-btn:disabled, .join-btn:disabled { box-shadow: none; }
+
+/* Cards */
+.cm-card, .cm-high-card, .hl-card, .about-block, .offer-card, .adm-card, .adm-stat-card, .cert-card,
+.set-card, .menu-card, .partner-section, .about-impact, .impact-tile, .admin-card, .featured-card,
+.cm-stories-wrap, .cm-composer, .cm-fab-opt-label, .ig-impact .impact-tile {
+  box-shadow: var(--elev-card);
+}
+@media (hover: hover) {
+  .cm-card:hover, .cert-card:hover, .offer-card:hover, .adm-stat-card:hover, .featured-card:hover {
+    box-shadow: var(--elev-card-hover);
+    transform: translateY(-2px);
+  }
+}
+
+/* Small chips / tags */
+.cat-chip, .cm-tag, .value-chip, .adm-chip, .status-chip, .adm-st, .adm-rolechip, .cm-story-chip,
+.partner-slot, .ig-role, .badge.on .badge-ico, .cm-impact-chip, .my-camp-tag {
+  box-shadow: var(--elev-chip);
+}
+
+/* Input containers */
+.auth-input, .dark-input, .adm-search, .adm-select, .edit-field input, .edit-field textarea,
+.cm-comment-input input, .search-bar, #admGlobalSearch, #cmText {
+  box-shadow: var(--elev-input);
+}
+
+/* Floating button — a touch more lift */
+.cm-fab, .fab, .cm-fab-opt-ico { box-shadow: var(--elev-fab); }
+.cm-fab:active, .fab:active { box-shadow: var(--elev-btn-hover); }
+
+/* Icon / reaction buttons — gentle lift */
+.cm-action, .cm-react, .detail-icon-btn, .photo-sheet-btn { box-shadow: var(--elev-chip); }
+.cm-action:hover, .cm-react:hover { box-shadow: var(--elev-btn-hover); }
 </style>
 </head>
 <body>
