@@ -1976,9 +1976,10 @@ body {
 .cm-sub { font-size: var(--fs-sm); color: var(--charcoal-50); margin-top: var(--sp-1); }
 .cm-tabs { position: sticky; top: 60px; z-index: 20; display: flex; gap: var(--sp-2); max-width: var(--content-max); margin: 0 auto;
   padding: var(--sp-2) var(--sp-5); background: var(--warm-white); border-bottom: 1px solid var(--line-sand-6); overflow-x: auto; }
-.cm-tab { flex: none; border: none; background: transparent; color: var(--charcoal-50); font-family: inherit; font-size: var(--fs-sm); font-weight: 800;
-  padding: var(--sp-2) var(--sp-3); border-radius: var(--r-full); cursor: pointer; white-space: nowrap; }
-.cm-tab.active { background: var(--olive-pale); color: var(--olive); }
+.cm-tab { flex: none; border: 1px solid transparent; background: var(--card-hl-img) center / cover no-repeat, var(--forest); color: rgba(245,242,236,0.8); font-family: inherit; font-size: var(--fs-sm); font-weight: 800;
+  padding: var(--sp-2) var(--sp-5); border-radius: var(--r-full); cursor: pointer; white-space: nowrap; box-shadow: var(--elev-chip); transition: filter 0.18s; }
+.cm-tab:hover { filter: brightness(1.1); }
+.cm-tab.active { background: var(--warm-beige); color: var(--forest); }
 .cm-panel { display: none; max-width: 640px; margin: 0 auto; padding: var(--sp-4) var(--sp-5) var(--sp-9); }
 .cm-panel.active { display: block; animation: fadeIn 0.25s; }
 
@@ -2706,22 +2707,22 @@ input[type="file"]::file-selector-button {
 .adm-chips::-webkit-scrollbar { display: none; }
 .adm-chip {
   flex: none;
-  padding: var(--sp-2) var(--sp-4);
+  padding: var(--sp-2) var(--sp-5);
   border-radius: 9999px;
-  border: 1.5px solid var(--line-sand-8);
-  background: var(--white);
+  border: 1px solid transparent;
+  background: var(--card-hl-img) center / cover no-repeat, var(--forest);
   font-family: inherit;
   font-size: var(--fs-sm);
   font-weight: 800;
-  color: var(--charcoal-80);
+  color: rgba(245,242,236,0.85);
   cursor: pointer;
   transition: all 0.15s;
   white-space: nowrap;
 }
 .adm-chip.active {
-  background: var(--accent-btn);
-  border-color: var(--olive);
-  color: var(--white);
+  background: var(--warm-beige);
+  border-color: transparent;
+  color: var(--forest);
 }
 
 /* ── Admin: Modal ── */
@@ -3460,7 +3461,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 
 /* Input containers */
 .auth-input, .dark-input, .adm-search, .adm-select, .edit-field input, .edit-field textarea,
-.cm-comment-input input, .search-bar, #admGlobalSearch, #cmText {
+.cm-comment-input input, .search-bar, #admGlobalSearch, #cmText, .explore-filters select {
   box-shadow: var(--elev-input);
 }
 
