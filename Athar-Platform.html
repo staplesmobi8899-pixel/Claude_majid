@@ -8436,6 +8436,8 @@ const Router = {
       if (this.stack.length > 50) this.stack.shift();
     }
     try {
+      // Close any open modal/sheet so it never bleeds onto the next page
+      document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
       const pg = document.getElementById(name + 'Page');
@@ -9548,6 +9550,7 @@ function openCmCompose(withPhoto, communityId) {
   document.getElementById('cmBaPreview').innerHTML = '';
   openModal('cmComposeModal');
   if (withPhoto === true) setTimeout(() => { const m = document.getElementById('cmMedia'); if (m) m.click(); }, 150);
+  else setTimeout(() => { const tx = document.getElementById('cmText'); if (tx) tx.focus(); }, 200);
 }
 function cmSetType(type) {
   CommunityUI.type = type;
