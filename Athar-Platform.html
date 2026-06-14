@@ -2056,18 +2056,18 @@ body {
 .cm-sum-l { font-size: var(--fs-2xs); color: rgba(255,255,255,0.75); margin-top: 2px; }
 
 /* ── Phase 11 — community template: story circles, participants, groups, trending ── */
-.cm-stories-wrap { background: var(--white); border: 1px solid var(--line-sand-6); border-radius: var(--r-xl); padding: var(--sp-4) 0 var(--sp-4) var(--sp-4); margin-bottom: var(--sp-5); }
-.cm-stories-h { font-size: var(--fs-sm); font-weight: 800; color: var(--charcoal-80); margin-bottom: var(--sp-3); padding-inline-end: var(--sp-4); }
+.cm-stories-wrap { background: var(--card-hl-img) right bottom / cover no-repeat, var(--forest); border: 1px solid transparent; border-radius: var(--r-xl); padding: var(--sp-4) 0 var(--sp-4) var(--sp-4); margin-bottom: var(--sp-5); }
+.cm-stories-h { font-size: var(--fs-sm); font-weight: 800; color: var(--off-white); margin-bottom: var(--sp-3); padding-inline-end: var(--sp-4); }
 .cm-stories-row { display: flex; gap: var(--sp-4); overflow-x: auto; padding-inline-end: var(--sp-4); scrollbar-width: none; }
 .cm-stories-row::-webkit-scrollbar { display: none; }
 .cm-story { flex: none; width: 64px; background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; font-family: inherit; }
 .cm-story-ring { position: relative; width: 60px; height: 60px; border-radius: 50%; padding: 2.5px; background: linear-gradient(135deg, var(--olive), var(--olive-light)); display: flex; }
-.cm-story-ring.add { background: var(--sand-dark); }
+.cm-story-ring.add { background: rgba(245,242,236,0.45); }
 .cm-story-ava { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: var(--olive-pale); border: 2px solid var(--white); display: flex; align-items: center; justify-content: center; }
 .cm-story-ava img { width: 100%; height: 100%; object-fit: cover; }
 .cm-story-ava .ig-avatar-initial { font-size: 1.2rem; }
 .cm-story-plus { position: absolute; bottom: 0; inset-inline-end: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--accent-btn); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; border: 2px solid var(--white); }
-.cm-story-name { font-size: var(--fs-2xs); color: var(--charcoal-80); font-weight: 700; max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cm-story-name { font-size: var(--fs-2xs); color: rgba(245,242,236,0.9); font-weight: 700; max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .cm-part-row { display: flex; gap: var(--sp-3); overflow-x: auto; scrollbar-width: none; padding-bottom: var(--sp-1); }
 .cm-part-row::-webkit-scrollbar { display: none; }
@@ -2108,11 +2108,11 @@ body {
 .cm-compose-actions .adm-btn { flex: 1; }
 
 /* ── Phase 9 redesign — social feed ── */
-.cm-composer { background: var(--white); border: 1px solid var(--line-sand-6); border-radius: var(--r-xl); padding: var(--sp-4); margin-bottom: var(--sp-5); }
+.cm-composer { background: var(--card-hl-img) right bottom / cover no-repeat, var(--forest); border: 1px solid transparent; border-radius: var(--r-xl); padding: var(--sp-4); margin-bottom: var(--sp-5); }
 .cm-composer-top { display: flex; align-items: center; gap: var(--sp-3); }
-.cm-composer-input { flex: 1; text-align: start; background: var(--sand); border: none; border-radius: var(--r-full); padding: var(--sp-3) var(--sp-5); color: var(--charcoal-50); font-family: inherit; font-size: var(--fs-sm); cursor: pointer; }
-.cm-composer-actions { display: flex; margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid var(--line-sand-soft); }
-.cm-composer-photo { display: inline-flex; align-items: center; gap: var(--sp-2); background: none; border: none; color: var(--olive); font-family: inherit; font-weight: 800; font-size: var(--fs-sm); cursor: pointer; }
+.cm-composer-input { flex: 1; text-align: start; background: rgba(245,242,236,0.14); border: none; border-radius: var(--r-full); padding: var(--sp-3) var(--sp-5); color: rgba(245,242,236,0.75); font-family: inherit; font-size: var(--fs-sm); cursor: pointer; }
+.cm-composer-actions { display: flex; margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid rgba(245,242,236,0.16); }
+.cm-composer-photo { display: inline-flex; align-items: center; gap: var(--sp-2); background: none; border: none; color: var(--off-white); font-family: inherit; font-weight: 800; font-size: var(--fs-sm); cursor: pointer; }
 .cm-composer-photo svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
 .cm-verified { display: inline-flex; vertical-align: middle; }
