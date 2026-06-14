@@ -3156,6 +3156,24 @@ html, body { overflow-x: hidden; }
 .hl-cities { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
 .hl-city { font-size: var(--fs-xs); font-weight: 700; color: var(--off-white); background: rgba(245,242,236,0.18);
   padding: var(--sp-2) var(--sp-3); border-radius: var(--r-full); }
+.hl-viewall { margin-top: var(--sp-3); width: 100%; background: rgba(245,242,236,0.16); color: var(--off-white);
+  border: none; border-radius: var(--r-full); padding: var(--sp-2) var(--sp-4); font-size: var(--fs-sm); font-weight: 700;
+  cursor: pointer; transition: background var(--t-fast) var(--ease); }
+.hl-viewall:hover { background: rgba(245,242,236,0.26); }
+/* Top volunteers modal rows */
+.topvol-row { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-3) var(--sp-1); border-bottom: 1px solid var(--line-sand-6); }
+.topvol-row:last-child { border-bottom: none; }
+.topvol-rank { flex: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: var(--fs-sm); font-weight: 800; background: var(--olive-pale); color: var(--olive); }
+.topvol-rank.top { background: var(--olive); color: var(--off-white); }
+.topvol-ava { flex: none; width: 42px; height: 42px; border-radius: 50%; overflow: hidden; background: var(--olive-pale);
+  display: flex; align-items: center; justify-content: center; color: var(--olive); font-weight: 800; }
+.topvol-ava img { width: 100%; height: 100%; object-fit: cover; }
+.topvol-main { flex: 1; min-width: 0; }
+.topvol-name { font-size: var(--fs-base); font-weight: 800; color: var(--charcoal); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.topvol-city { font-size: var(--fs-xs); color: var(--charcoal-50); display: flex; align-items: center; gap: 4px; }
+.topvol-city svg { width: 13px; height: 13px; }
+.topvol-hours { flex: none; font-size: var(--fs-base); font-weight: 800; color: var(--olive); }
 
 /* ══════════════════════════════════════════
    PHASE 5.1 — CAMPAIGN DETAIL (cinematic)
@@ -4113,7 +4131,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
         <div class="cm-ba-preview" id="cmBaPreview"></div>
       </div>
       <div id="cmMediaPreview" class="cm-media-preview"></div>
-      <input type="file" id="cmMedia" accept="image/*" class="hidden-file" onchange="cmPickMedia(event)">
+      <input type="file" id="cmMedia" accept="image/*" multiple class="hidden-file" onchange="cmPickMedia(event)">
       <input type="file" id="cmBefore" accept="image/*" class="hidden-file" onchange="cmPickBA(event,'before')">
       <input type="file" id="cmAfter" accept="image/*" class="hidden-file" onchange="cmPickBA(event,'after')">
       <div class="cm-compose-actions">
@@ -4496,6 +4514,16 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
     <div id="participantsBody"></div>
   </div>
 </div>
+<div class="modal-overlay" id="topVolModal">
+  <div class="modal-sheet">
+    <div class="modal-bar">
+      <button type="button" class="modal-close" onclick="closeModal('topVolModal')" aria-label="back">‹</button>
+      <div class="modal-handle"></div>
+    </div>
+    <div class="modal-title" data-i18n="topVolunteers"></div>
+    <div id="topVolBody"></div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════
      ONBOARDING (Phase 2.6)
@@ -4829,10 +4857,10 @@ const T = {
     sortRecent: 'الأحدث', sortPopular: 'الأكثر تفاعلاً', sortUrgent: 'الأقرب موعداً',
     noResults: 'لا توجد نتائج', noResultsSub: 'جرّب كلمات أو فلاتر مختلفة.',
     greetSub: 'مبادرات مُلهمة تنتظر مشاركتك.', catsTitle: 'تصفّح حسب الفئة', trendingTitle: 'الأكثر تفاعلاً',
-    highlightsTitle: 'إضاءات المجتمع', topVolunteers: 'أبرز المتطوعين', activeCities: 'مدن نشطة', featuredTag: 'مميّزة', nearestTag: 'أقرب حملة',
+    highlightsTitle: 'إضاءات المجتمع', topVolunteers: 'أبرز المتطوعين', viewAll: 'عرض الكل', activeCities: 'مدن نشطة', featuredTag: 'مميّزة', nearestTag: 'أقرب حملة',
     communityTitle: 'المجتمع', communitySub: 'مساحة صُنّاع الأثر — شارك، الهم، وانتمِ.', communitySoonTitle: 'مجتمع أثر قريباً', communitySoonMsg: 'نبني مساحة تجمع المتطوعين لمشاركة قصصهم وإلهام بعضهم. ترقّبوا.',
     cmTabFeed: 'الموجز', cmTabStories: 'قصص الأثر', cmTabHighlights: 'الأبرز',
-    cmShareTitle: 'شارك المجتمع', cmComposerPrompt: 'ما الذي تودّ مشاركته مع المجتمع؟', cmFabPost: 'منشور', cmFabCampaign: 'حملة', cmTypePost: 'منشور', cmTypeStory: 'قصة أثر', cmTextPh: 'شو بدك تشارك مع المجتمع؟', cmAddPhoto: 'إضافة صورة', cmPublish: 'نشر',
+    cmShareTitle: 'شارك المجتمع', cmComposerPrompt: 'ما الذي تودّ مشاركته مع المجتمع؟', cmFabPost: 'منشور', cmFabCampaign: 'حملة', cmTypePost: 'منشور', cmTypeStory: 'قصة أثر', cmTextPh: 'شو بدك تشارك مع المجتمع؟', cmAddPhoto: 'إضافة صورة', cmUploading: 'جارٍ الرفع…', cmStorageFull: 'المساحة ممتلئة — جرّب صورة أصغر أو احذف منشورات قديمة', cmPublish: 'نشر',
     cmBefore: 'صورة قبل', cmAfter: 'صورة بعد', cmEmptyFeed: 'كن أول من يشارك لحظة أثر', cmEmptyStories: 'لا قصص بعد — شارك قصتك الأولى', cmComment: 'تعليق', cmComments: 'التعليقات', cmCommentPh: 'أضف تعليقًا لطيفًا…', cmSend: 'إرسال', cmReport: 'إبلاغ', cmDelete: 'حذف', cmPosted: 'تم النشر ',
     cmAutoDone: 'اكتملت مبادرة', cmAutoNew: 'مبادرة جديدة انطلقت', cmAutoHours: 'أنجز ساعات تطوّع', cmAutoCity: 'وصلت لساعات تطوّع', cmHighMonth: 'حملة أنجزناها هذا الشهر', cmHighTopVols: 'أبرز المتطوّعين', cmHighCities: 'المدن الأنشط', cmHighHeroes: 'أبطال الحملات',
     notifTitle: 'الإشعارات', notifSub: 'كل جديد يخصّك في مكان واحد.', notifEmptyTitle: 'لا إشعارات بعد', notifEmptyMsg: 'سنخبرك هنا عند وجود تحديثات على مبادراتك ونشاطك.',
@@ -5019,10 +5047,10 @@ const T = {
     sortRecent: 'Recent', sortPopular: 'Most active', sortUrgent: 'Soonest',
     noResults: 'No results', noResultsSub: 'Try different keywords or filters.',
     greetSub: 'Inspiring initiatives await your hands.', catsTitle: 'Browse by category', trendingTitle: 'Trending now',
-    highlightsTitle: 'Community highlights', topVolunteers: 'Top volunteers', activeCities: 'Active cities', featuredTag: 'Featured', nearestTag: 'Nearest',
+    highlightsTitle: 'Community highlights', topVolunteers: 'Top volunteers', viewAll: 'View all', activeCities: 'Active cities', featuredTag: 'Featured', nearestTag: 'Nearest',
     communityTitle: 'Community', communitySub: 'A space for changemakers — share, inspire, belong.', communitySoonTitle: 'ATHAR Community is coming', communitySoonMsg: 'We are building a space for volunteers to share stories and inspire each other. Stay tuned.',
     cmTabFeed: 'Feed', cmTabStories: 'Impact Stories', cmTabHighlights: 'Highlights',
-    cmShareTitle: 'Share with community', cmComposerPrompt: 'What would you like to share?', cmFabPost: 'Post', cmFabCampaign: 'Campaign', cmTypePost: 'Post', cmTypeStory: 'Impact story', cmTextPh: 'What do you want to share?', cmAddPhoto: 'Add photo', cmPublish: 'Publish',
+    cmShareTitle: 'Share with community', cmComposerPrompt: 'What would you like to share?', cmFabPost: 'Post', cmFabCampaign: 'Campaign', cmTypePost: 'Post', cmTypeStory: 'Impact story', cmTextPh: 'What do you want to share?', cmAddPhoto: 'Add photo', cmUploading: 'Uploading…', cmStorageFull: 'Storage full — try a smaller image or remove old posts', cmPublish: 'Publish',
     cmBefore: 'Before photo', cmAfter: 'After photo', cmEmptyFeed: 'Be the first to share an impact moment', cmEmptyStories: 'No stories yet — share your first one', cmComment: 'Comment', cmComments: 'Comments', cmCommentPh: 'Add a kind comment…', cmSend: 'Send', cmReport: 'Report', cmDelete: 'Delete', cmPosted: 'Posted ',
     cmAutoDone: 'completed an initiative', cmAutoNew: 'A new initiative launched', cmAutoHours: 'reached volunteer hours', cmAutoCity: 'reached volunteer hours', cmHighMonth: 'completed this month', cmHighTopVols: 'Top volunteers', cmHighCities: 'Most active cities', cmHighHeroes: 'Campaign heroes',
     notifTitle: 'Notifications', notifSub: 'Everything that matters to you, in one place.', notifEmptyTitle: 'No notifications yet', notifEmptyMsg: 'We will let you know here when there are updates on your initiatives and activity.',
@@ -6118,7 +6146,7 @@ const CM_ICONS = {
 const CM_ICONS_CHECK = '<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>';
 const CommunityService = {
   getAll()   { return DB.getObj(CONFIG.DB_KEYS.POSTS) || []; },
-  save(list) { DB.setObj(CONFIG.DB_KEYS.POSTS, list); },
+  save(list) { return DB.setObj(CONFIG.DB_KEYS.POSTS, list); },
   getById(id) { return this.getAll().find(p => p.id === id) || null; },
   _author(u) { u = u || State.cu || {}; return { id: u.id || null, name: u.name || 'متطوّع', pic: u.profilePic || null }; },
   add(data) {
@@ -6137,7 +6165,8 @@ const CommunityService = {
       createdAt: new Date().toISOString()
     };
     list.unshift(post);
-    this.save(list);
+    const ok = this.save(list);
+    if (!ok) { list.shift(); return null; }
     return post;
   },
   remove(id) { this.save(this.getAll().filter(p => p.id !== id)); },
@@ -6305,6 +6334,40 @@ function b64(file) {
   });
 }
 
+/**
+ * Read + downscale + re-encode an image so it fits comfortably in localStorage.
+ * Prevents the "image post silently dropped" bug caused by quota overflow.
+ * Falls back to the raw data URL if canvas encoding is unavailable.
+ */
+function compressImage(file, maxDim, quality) {
+  maxDim = maxDim || 1280;
+  quality = quality || 0.8;
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          let w = img.naturalWidth || img.width;
+          let h = img.naturalHeight || img.height;
+          const scale = Math.min(1, maxDim / Math.max(w, h));
+          w = Math.max(1, Math.round(w * scale));
+          h = Math.max(1, Math.round(h * scale));
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        } catch (e) { resolve(r.result); }
+      };
+      img.onerror = () => reject(new Error('Image load error'));
+      img.src = r.result;
+    };
+    r.onerror = () => reject(new Error('File read error'));
+    r.readAsDataURL(file);
+  });
+}
+
 /** Open image viewer overlay */
 function openImageViewer(src) {
   if (!src) return;
@@ -6455,16 +6518,60 @@ const HomeUI = {
   highlights() {
     const el = document.getElementById('homeHighlights'); if (!el) return;
     const isAr = State.lang === 'ar';
-    const users = UserService.getAll().filter(u => u.status === 'approved' && u.email !== CONFIG.ADMIN_EMAIL)
-      .sort((a, b) => (b.volunteerHours || 0) - (a.volunteerHours || 0)).slice(0, 3);
+    const ranked = TopVolunteers.ranked();
+    const users = ranked.slice(0, 3);
     const top = users.length
       ? users.map((u, i) => '<div class="hl-row"><span class="hl-rank' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span><span class="hl-name">' + publicName(u) + '</span><span class="hl-val">' + (u.volunteerHours || 0) + (isAr ? ' س' : 'h') + '</span></div>').join('')
       : '<div class="empty-sub">' + t('noData') + '</div>';
+    const viewAll = ranked.length > 3
+      ? '<button class="hl-viewall" onclick="openTopVolunteers()">' + t('viewAll') + '</button>'
+      : '';
     const cities = DiscoveryService.cities();
     const cityHtml = cities.length ? '<div class="hl-card"><div class="hl-h">' + t('activeCities') + '</div><div class="hl-cities">' + cities.map(c => '<span class="hl-city">' + c + '</span>').join('') + '</div></div>' : '';
-    el.innerHTML = '<div class="hl-card"><div class="hl-h">' + t('topVolunteers') + '</div>' + top + '</div>' + cityHtml;
+    el.innerHTML = '<div class="hl-card"><div class="hl-h">' + t('topVolunteers') + '</div>' + top + viewAll + '</div>' + cityHtml;
   }
 };
+
+/* Top Volunteers — Top 10 leaderboard (Phase 12) */
+const TopVolunteers = {
+  ranked() {
+    return UserService.getAll()
+      .filter(u => u.status === 'approved' && u.email !== CONFIG.ADMIN_EMAIL && (u.volunteerHours || 0) > 0)
+      .sort((a, b) => (b.volunteerHours || 0) - (a.volunteerHours || 0) || String(a.name || '').localeCompare(String(b.name || '')))
+      .slice(0, 10);
+  }
+};
+
+function firstNameOnly(name) {
+  const n = (name || '').trim();
+  if (!n) return '';
+  return n.split(/\s+/)[0];
+}
+
+function openTopVolunteers() {
+  const isAr = State.lang === 'ar';
+  const ranked = TopVolunteers.ranked();
+  const body = document.getElementById('topVolBody');
+  if (!body) return;
+  if (!ranked.length) {
+    body.innerHTML = '<div class="empty-sub" style="text-align:center;padding:var(--sp-6);">' + t('noData') + '</div>';
+  } else {
+    body.innerHTML = ranked.map((u, i) => {
+      const ava = u.profilePic
+        ? '<img src="' + u.profilePic + '" alt="">'
+        : '<span>' + ((u.name || '؟').charAt(0)) + '</span>';
+      const nm = (State.isAdmin || (State.cu && u.id === State.cu.id) || u.profilePublic) ? firstNameOnly(u.name) : maskName(firstNameOnly(u.name));
+      return '<div class="topvol-row">' +
+        '<span class="topvol-rank' + (i < 3 ? ' top' : '') + '">' + (i + 1) + '</span>' +
+        '<div class="topvol-ava">' + ava + '</div>' +
+        '<div class="topvol-main"><div class="topvol-name">' + nm + '</div>' +
+          '<div class="topvol-city">' + (u.city ? icon('pin') + ' ' + u.city : '') + '</div></div>' +
+        '<span class="topvol-hours">' + (u.volunteerHours || 0) + (isAr ? ' س' : ' h') + '</span>' +
+      '</div>';
+    }).join('');
+  }
+  openModal('topVolModal');
+}
 
 /* ── Explore experience (Phase 4.1) ── */
 const ExploreUI = {
@@ -8975,15 +9082,24 @@ function cmSetType(type) {
   if (sf) sf.style.display = type === 'story' ? 'block' : 'none';
 }
 async function cmPickMedia(event) {
-  const file = event.target.files[0]; if (!file) return;
-  try { const d = await b64(file); CommunityUI.media.push(d);
+  const files = Array.from(event.target.files || []); if (!files.length) return;
+  const btn = document.getElementById('cmAddPhotoBtn');
+  const prevText = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = t('cmUploading'); }
+  try {
+    for (const file of files) {
+      if (CommunityUI.media.length >= 4) break; // cap per post
+      const d = await compressImage(file, 1280, 0.8);
+      CommunityUI.media.push(d);
+    }
     document.getElementById('cmMediaPreview').innerHTML = CommunityUI.media.map(m => '<img src="' + m + '">').join('');
   } catch (e) { toast(t('uploadError'), 'error'); }
+  if (btn) { btn.disabled = false; btn.textContent = prevText; }
   event.target.value = '';
 }
 async function cmPickBA(event, which) {
   const file = event.target.files[0]; if (!file) return;
-  try { const d = await b64(file); if (which === 'before') CommunityUI.before = d; else CommunityUI.after = d;
+  try { const d = await compressImage(file, 1280, 0.8); if (which === 'before') CommunityUI.before = d; else CommunityUI.after = d;
     const isAr = State.lang === 'ar';
     document.getElementById('cmBaPreview').innerHTML =
       (CommunityUI.before ? '<div class="cm-ba-cell"><span class="cm-ba-tag">' + (isAr ? 'قبل' : 'Before') + '</span><img src="' + CommunityUI.before + '"></div>' : '') +
@@ -8999,10 +9115,11 @@ function submitCmPost() {
   const text = txtEl ? txtEl.value.trim() : '';
   const hasMedia = CommunityUI.media.length || CommunityUI.before || CommunityUI.after;
   if (!text && !hasMedia) { const e = document.getElementById('cmErr'); if (e) e.textContent = t('errorRequired'); return; }
-  CommunityService.add({
+  const created = CommunityService.add({
     type: CommunityUI.type, author: State.cu, text: text,
     media: CommunityUI.media.slice(), beforeImg: CommunityUI.before, afterImg: CommunityUI.after
   });
+  if (!created) { const e = document.getElementById('cmErr'); if (e) e.textContent = t('cmStorageFull'); return; }
   CommunityUI.media = []; CommunityUI.before = null; CommunityUI.after = null;
   closeModal('cmComposeModal');
   toast(t('cmPosted'), 'success');
