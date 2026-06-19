@@ -4,6 +4,9 @@
 --  Safe to re-run (uses IF NOT EXISTS / CREATE OR REPLACE).
 -- ============================================================
 
+-- Allow functions to reference tables created later in this script
+set check_function_bodies = off;
+
 -- ---------- Helper: is the current user an admin? ----------
 create or replace function public.is_admin()
 returns boolean
