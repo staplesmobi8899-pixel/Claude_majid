@@ -4708,8 +4708,68 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 'use strict';
+
+/* ============================================================
+   SUPABASE (Phase 14 — backend). Real auth + database.
+   ============================================================ */
+const SUPABASE_URL = 'https://kpzddwexfdjxdedurqkv.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwemRkd2V4ZmRqeGRlZHVycWt2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3ODgzOTQsImV4cCI6MjA5NzM2NDM5NH0.tYC6nkuSe1CydRQp9sYD8s1KpgSCXQp4gPnxxSK_rXg';
+let sb = null;
+try {
+  if (window.supabase && window.supabase.createClient) {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } else {
+    console.warn('[Supabase] SDK not loaded — falling back to local mode.');
+  }
+} catch (e) { console.error('[Supabase] init failed:', e); }
+
+/* Map a DB profile row -> the app's in-memory user shape. */
+function profileToUser(p, fallbackEmail) {
+  p = p || {};
+  return {
+    id: p.id,
+    name: p.name || '',
+    email: p.email || fallbackEmail || '',
+    phone: p.phone || '',
+    city: p.city || '',
+    country: p.country || '',
+    bio: p.bio || '',
+    profilePic: p.profile_pic || null,
+    role: p.role || CONFIG.DEFAULT_ROLE,
+    status: p.status || 'pending',
+    volunteerHours: Number(p.volunteer_hours) || 0,
+    activitiesJoined: 0,
+    profilePublic: !!p.profile_public,
+    savedCampaigns: p.saved_campaigns || [],
+    savedPosts: p.saved_posts || [],
+    joinedCamps: [],
+    achievements: []
+  };
+}
+
+/* Keep a localStorage mirror so the (not-yet-migrated) UI keeps working. */
+function mirrorUser(u) {
+  if (!u || !u.id) return;
+  try {
+    const users = UserService.getAll();
+    const i = users.findIndex(x => x.id === u.id);
+    if (i >= 0) users[i] = Object.assign({}, users[i], u);
+    else users.push(u);
+    UserService.save(users);
+  } catch (e) { console.error('[mirrorUser]', e); }
+}
+
+/* Load a profile row by id; returns the app user shape (or null). */
+async function loadProfile(uid, email) {
+  if (!sb || !uid) return null;
+  const { data, error } = await sb.from('profiles').select('*').eq('id', uid).single();
+  if (error) { console.error('[loadProfile]', error.message); return null; }
+  return profileToUser(data, email);
+}
+
 /* ████████████████████████████████████████████████████
    ATHAR PLATFORM — Production JS v3.0
    Architecture: Modular | Strict | Validated
@@ -5857,17 +5917,40 @@ const AuthService = {
     else DB.remove(CONFIG.DB_KEYS.SESSION);
     return user;
   },
-  restoreSession() {
+  async restoreSession() {
+    if (sb) {
+      try {
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session || !session.user) return null;
+        const u = await loadProfile(session.user.id, session.user.email);
+        if (!u) return null;
+        mirrorUser(u);
+        State.setUser(u);
+        return u;
+      } catch (e) { console.error('[restoreSession]', e); return null; }
+    }
+    // Local fallback
     const session = DB.getObj(CONFIG.DB_KEYS.SESSION);
     if (!session || !session.id) return null;
     const fresh = (session.email === CONFIG.ADMIN_EMAIL) ? session : (UserService.getById(session.id) || session);
     State.setUser(fresh);
     return fresh;
   },
-  login(identifier, password) {
+  async login(identifier, password) {
     identifier = String(identifier || '').trim();
     password   = String(password || '').trim();
     if (!identifier || !password) return { ok: false, error: 'required' };
+    if (sb) {
+      const { data: au, error } = await sb.auth.signInWithPassword({ email: identifier.toLowerCase(), password });
+      if (error) return { ok: false, error: 'invalid' };
+      const u = await loadProfile(au.user.id, au.user.email);
+      if (!u) return { ok: false, error: 'invalid' };
+      if (u.status === 'banned')   return { ok: false, error: 'banned', user: u };
+      if (u.status === 'rejected') return { ok: false, error: 'rejected', user: u };
+      mirrorUser(u);
+      return { ok: true, user: u, status: u.status };
+    }
+    // Local fallback
     if (identifier === CONFIG.ADMIN_EMAIL && password === CONFIG.ADMIN_PASS) {
       return { ok: true, user: this.buildAdminUser() };
     }
@@ -5879,9 +5962,34 @@ const AuthService = {
     if (u.status === 'rejected') return { ok: false, error: 'rejected', user: u };
     return { ok: true, user: u, status: u.status };
   },
-  register(data) {
+  async register(data) {
     const { valid, errors } = Validators.signup(data);
     if (!valid) return { ok: false, errors };
+    if (sb) {
+      // Real Supabase signup (email + password)
+      const { data: au, error } = await sb.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: { data: { name: data.name } }
+      });
+      if (error) {
+        const msg = /registered|exists/i.test(error.message) ? t('errorEmail') : error.message;
+        return { ok: false, errors: { email: msg } };
+      }
+      const uid = au.user && au.user.id;
+      // Trigger created the base profile row; fill in the extra fields.
+      if (uid) {
+        await sb.from('profiles').update({
+          name: data.name, phone: data.phone || '', city: data.city || '',
+          country: data.country || '', status: 'pending'
+        }).eq('id', uid);
+      }
+      const user = profileToUser({ id: uid, email: data.email, name: data.name,
+        phone: data.phone, city: data.city, country: data.country, status: 'pending' }, data.email);
+      mirrorUser(user);
+      return { ok: true, user };
+    }
+    // Local fallback
     if (UserService.getByEmail(data.email)) return { ok: false, errors: { email: t('errorEmail') } };
     const user = Models.createUser(data);
     const users = UserService.getAll();
@@ -5897,6 +6005,7 @@ const AuthService = {
     return guest;
   },
   logout() {
+    if (sb) { try { sb.auth.signOut(); } catch (e) {} }
     State.setUser(null);
     DB.remove(CONFIG.DB_KEYS.SESSION);
   },
@@ -8771,7 +8880,7 @@ async function doSignup(e) {
     btn && (btn.disabled = false);
     return;
   }
-  if (UserService.getByEmail(data.email)) {
+  if (!sb && UserService.getByEmail(data.email)) {
     showFieldError(form, 'email', t('errorEmail'));
     return;
   }
@@ -8783,7 +8892,7 @@ async function doSignup(e) {
     data.profilePic = ppFile?.files[0] ? await b64(ppFile.files[0]) : null;
     data.idPhoto    = idFile?.files[0] ? await b64(idFile.files[0]) : null;
 
-    const res = AuthService.register(data);
+    const res = await AuthService.register(data);
     if (!res.ok) {
       Object.entries(res.errors).forEach(([field, msg]) => showFieldError(form, field, msg));
       setLoading(btn, false);
@@ -9034,14 +9143,17 @@ function renderNotifications() {
   '</div>';
 }
 
-function doLogin(e) {
+async function doLogin(e) {
   e.preventDefault();
   const form  = e.target;
   clearFieldErrors(form);
   const identifier = form.querySelector('[name="email"]')?.value    || '';
   const password   = form.querySelector('[name="password"]')?.value || '';
+  const loginBtn = form.querySelector('.submit-btn');
+  if (loginBtn) setLoading(loginBtn, true);
 
-  const res = AuthService.login(identifier, password);
+  const res = await AuthService.login(identifier, password);
+  if (loginBtn) setLoading(loginBtn, false);
   if (!res.ok) {
     if (res.error === 'required') {
       if (!identifier.trim()) showFieldError(form, 'email', t('errorRequired'));
@@ -10395,10 +10507,10 @@ document.addEventListener('DOMContentLoaded', () => {
     populateDob();
     populateCategories();
 
-    // Restore session (centralized in AuthService)
-    if (AuthService.restoreSession()) {
-      enterApp();
-    }
+    // Restore session (centralized in AuthService) — async for Supabase
+    Promise.resolve(AuthService.restoreSession()).then(function (u) {
+      if (u) enterApp();
+    }).catch(function (e) { console.error('[restoreSession]', e); });
 
     // Attach modal backdrop close handlers
     document.querySelectorAll('.modal-overlay').forEach(m => {
