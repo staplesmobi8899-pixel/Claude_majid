@@ -4770,6 +4770,106 @@ async function loadProfile(uid, email) {
   return profileToUser(data, email);
 }
 
+/* ---- Field mappers (app shape <-> DB columns) ---- */
+function userChangesToDb(ch) {
+  const m = {};
+  if ('name' in ch) m.name = ch.name;
+  if ('phone' in ch) m.phone = ch.phone;
+  if ('city' in ch) m.city = ch.city;
+  if ('country' in ch) m.country = ch.country;
+  if ('bio' in ch) m.bio = ch.bio;
+  if ('status' in ch) m.status = ch.status;
+  if ('role' in ch) m.role = ch.role;
+  if ('volunteerHours' in ch) m.volunteer_hours = ch.volunteerHours;
+  if ('profilePic' in ch) m.profile_pic = ch.profilePic;
+  if ('profilePublic' in ch) m.profile_public = ch.profilePublic;
+  if ('savedCampaigns' in ch) m.saved_campaigns = ch.savedCampaigns;
+  if ('savedPosts' in ch) m.saved_posts = ch.savedPosts;
+  if ('banned' in ch) {
+    if (ch.banned && ch.banned.until) { m.status = 'banned'; m.ban_until = ch.banned.until; }
+    else { m.ban_until = null; m.status = 'approved'; }
+  }
+  return m;
+}
+function campRowToApp(r, parts) {
+  parts = parts || [];
+  const cat = CONFIG.CAMP_CATEGORIES[r.category] || {};
+  const joinedUsers = parts.map(p => p.user_id);
+  const attendance = {};
+  parts.forEach(p => { if (p.attendance) attendance[p.user_id] = p.attendance; });
+  return {
+    id: r.id,
+    ar: { title: r.title, desc: r.description || '', cat: cat.ar || r.category },
+    en: { title: r.title, desc: r.description || '', cat: cat.en || r.category },
+    category: r.category, location: r.location || '', date: r.date || '',
+    needed: r.needed || 1, volunteers: joinedUsers.length, volunteerHours: Number(r.volunteer_hours) || 2,
+    status: r.status || 'pending', emergency: !!r.emergency, community: !!r.community,
+    createdBy: r.created_by, creatorName: r.creator_name || '', creatorPhone: r.creator_phone || '',
+    img: r.img || null, joinedUsers: joinedUsers, participants: [], attendance: attendance,
+    gallery: [], campHours: {},
+    createdAt: r.created_at, updatedAt: r.updated_at, completedAt: r.completed_at
+  };
+}
+function campAppToDbInsert(c) {
+  return {
+    id: c.id,
+    title: (c.ar && c.ar.title) || (c.en && c.en.title) || c.title || '',
+    description: (c.ar && c.ar.desc) || c.desc || '',
+    category: c.category || null, location: c.location || '', date: c.date || null,
+    needed: c.needed || 1, volunteer_hours: c.volunteerHours || 2,
+    status: c.status || 'pending', emergency: !!c.emergency, community: !!c.community,
+    created_by: isUuid(c.createdBy) ? c.createdBy : null, creator_name: c.creatorName || '', creator_phone: c.creatorPhone || '',
+    img: c.img || null
+  };
+}
+function campChangesToDb(ch) {
+  const m = {};
+  if (ch.ar) { m.title = ch.ar.title; m.description = ch.ar.desc; }
+  if ('category' in ch) m.category = ch.category;
+  if ('location' in ch) m.location = ch.location;
+  if ('date' in ch) m.date = ch.date || null;
+  if ('needed' in ch) m.needed = ch.needed;
+  if ('volunteerHours' in ch) m.volunteer_hours = ch.volunteerHours;
+  if ('status' in ch) m.status = ch.status;
+  if ('emergency' in ch) m.emergency = ch.emergency;
+  if ('img' in ch) m.img = ch.img;
+  if ('completedAt' in ch) m.completed_at = ch.completedAt;
+  m.updated_at = new Date().toISOString();
+  return m;
+}
+/* uuid check — only push real DB rows (skip 'admin'/'guest'/legacy ids) */
+function isUuid(id) { return typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id); }
+function newId() { return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('c' + Date.now() + Math.random().toString(36).slice(2, 8)); }
+
+/* ---- Sync: pull shared data from Supabase into the local cache ---- */
+const Sync = {
+  async pullUsers() {
+    if (!sb) return;
+    const { data, error } = await sb.from('profiles').select('*');
+    if (error) { console.error('[pullUsers]', error.message); return; }
+    UserService.save((data || []).map(p => profileToUser(p)));
+  },
+  async pullCampaigns() {
+    if (!sb) return;
+    const { data: camps, error } = await sb.from('campaigns').select('*').order('created_at', { ascending: false });
+    if (error) { console.error('[pullCampaigns]', error.message); return; }
+    const { data: parts } = await sb.from('campaign_participants').select('*');
+    const byCamp = {};
+    (parts || []).forEach(p => { (byCamp[p.campaign_id] = byCamp[p.campaign_id] || []).push(p); });
+    CampaignService.save((camps || []).map(r => campRowToApp(r, byCamp[r.id] || [])));
+  },
+  async pullAll() {
+    if (!sb) return;
+    try { await Promise.all([this.pullUsers(), this.pullCampaigns()]); }
+    catch (e) { console.error('[Sync.pullAll]', e); }
+  },
+  /** Refresh shared data then re-render the current page. */
+  async refresh() {
+    await this.pullAll();
+    try { Router.go(State.currentPage || 'home', { replace: true }); } catch (e) {}
+  }
+};
+
 /* ████████████████████████████████████████████████████
    ATHAR PLATFORM — Production JS v3.0
    Architecture: Modular | Strict | Validated
@@ -5482,7 +5582,7 @@ const Models = {
     const title  = String(data.title || '').trim();
     const desc   = String(data.desc  || '').trim();
     return {
-      id:           'c' + Date.now() + Math.random().toString(36).slice(2,6),
+      id:           newId(),
       ar:           { title, desc, cat: catAr },
       en:           { title, desc, cat: catEn },
       category:     catKey,
@@ -5653,6 +5753,15 @@ const UserService = {
     if (State.cu && State.cu.id === id) {
       State.setUser(users[idx]);
       DB.setObj(CONFIG.DB_KEYS.SESSION, users[idx]);
+    }
+    // Write-through to Supabase (guarded; real profiles only)
+    if (sb && isUuid(id)) {
+      const patch = userChangesToDb(changes);
+      if (Object.keys(patch).length) {
+        sb.from('profiles').update(patch).eq('id', id).then(function (r) {
+          if (r.error) console.error('[profiles.update]', r.error.message);
+        });
+      }
     }
     return users[idx];
   },
@@ -6049,7 +6158,14 @@ const CampaignService = {
   add(camp) {
     const camps = this.getAll();
     camps.unshift(camp);
-    return this.save(camps);
+    this.save(camps);
+    // Write-through: insert the campaign row
+    if (sb && isUuid(camp.id)) {
+      sb.from('campaigns').insert(campAppToDbInsert(camp)).then(function (r) {
+        if (r.error) console.error('[campaigns.insert]', r.error.message);
+      });
+    }
+    return true;
   },
 
   updateById(id, changes) {
@@ -6058,6 +6174,11 @@ const CampaignService = {
     if (idx === -1) return false;
     camps[idx] = { ...camps[idx], ...changes, updatedAt: new Date().toISOString() };
     this.save(camps);
+    if (sb && isUuid(id)) {
+      sb.from('campaigns').update(campChangesToDb(changes)).eq('id', id).then(function (r) {
+        if (r.error) console.error('[campaigns.update]', r.error.message);
+      });
+    }
     return camps[idx];
   },
 
@@ -6158,6 +6279,15 @@ const CampaignService = {
     if (camp.createdBy && camp.createdBy !== user.id) {
       NotificationService.add(camp.createdBy, 'انضمّ متطوّع جديد إلى مبادرتك', 'A new volunteer joined your campaign', 'join');
     }
+    // Write-through: participant + (maybe) status
+    if (sb && isUuid(campId) && isUuid(user.id)) {
+      sb.from('campaign_participants').insert({ campaign_id: campId, user_id: user.id }).then(function (r) {
+        if (r.error) console.error('[participant.insert]', r.error.message);
+      });
+      if (camps[ci].status === 'under_process') {
+        sb.from('campaigns').update({ status: 'under_process', updated_at: new Date().toISOString() }).eq('id', campId).then(function () {});
+      }
+    }
     const msg = ` ${t('successJoined')} +${hours} ${State.lang === 'ar' ? 'ساعة' : 'hrs'}`;
     return { success: true, message: msg, updatedUser: updated };
   },
@@ -6187,6 +6317,15 @@ const CampaignService = {
     // Notify the campaign creator that a volunteer left (not for own campaigns).
     if (camp.createdBy && camp.createdBy !== user.id) {
       NotificationService.add(camp.createdBy, (maskName(user.name) || 'متطوّع') + ' غادر مبادرتك', (maskName(user.name) || 'A volunteer') + ' left your campaign', 'join');
+    }
+    // Write-through: remove participant + (maybe) revert status
+    if (sb && isUuid(campId) && isUuid(user.id)) {
+      sb.from('campaign_participants').delete().eq('campaign_id', campId).eq('user_id', user.id).then(function (r) {
+        if (r.error) console.error('[participant.delete]', r.error.message);
+      });
+      if (camps[ci].status === 'approved') {
+        sb.from('campaigns').update({ status: 'approved', updated_at: new Date().toISOString() }).eq('id', campId).then(function () {});
+      }
     }
     return { success: true, message: t('leftCamp'), updatedUser: updated };
   },
@@ -9174,6 +9313,7 @@ async function doLogin(e) {
   AuthService.startSession(res.user, remember);
   closeModal('loginModal');
   enterApp();
+  Sync.refresh();
 }
 
 function doLogout() {
@@ -10509,7 +10649,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Restore session (centralized in AuthService) — async for Supabase
     Promise.resolve(AuthService.restoreSession()).then(function (u) {
-      if (u) enterApp();
+      if (u) { enterApp(); Sync.refresh(); }
     }).catch(function (e) { console.error('[restoreSession]', e); });
 
     // Attach modal backdrop close handlers
