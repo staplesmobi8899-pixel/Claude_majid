@@ -2286,6 +2286,22 @@ body {
   from { transform: translateY(100%); }
   to   { transform: translateY(0); }}
 
+/* Compose post: a clean top-anchored dialog (keyboard never covers it) */
+#cmComposeModal { align-items: flex-start; }
+#cmComposeModal .modal-sheet {
+  margin: calc(46px + env(safe-area-inset-top)) var(--sp-3) var(--sp-3);
+  width: auto; align-self: stretch; max-width: 560px;
+  border-radius: var(--r-2xl);
+  padding-bottom: var(--sp-5);
+  max-height: 82vh;
+  animation: modalPop 0.22s ease;
+}
+@media (min-width: 600px) { #cmComposeModal .modal-sheet { align-self: center; width: 100%; } }
+#cmComposeModal #cmText { min-height: 120px; }
+@keyframes modalPop {
+  from { opacity: 0; transform: translateY(-12px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }}
+
 .modal-bar { position: sticky; top: 0; z-index: 3; background: var(--white);
   display: flex; align-items: center; justify-content: center; padding-top: var(--sp-2); }
 .modal-close { position: absolute; inset-inline-start: 0; top: 0.5rem;
