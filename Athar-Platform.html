@@ -10612,6 +10612,17 @@ function submitPartner(e) {
    12. INITIALIZATION
    ══════════════════════════════════════════ */
 function initData() {
+  // Backend mode: never seed demo data. Clear any old local demo seeds ONCE.
+  if (sb) {
+    if (DB.getObj(CONFIG.DB_KEYS.VERSION) !== 'backend-' + CONFIG.SCHEMA_VERSION) {
+      DB.set(CONFIG.DB_KEYS.CAMPS, []);
+      DB.set(CONFIG.DB_KEYS.USERS, []);
+      DB.set(CONFIG.DB_KEYS.PARTNERS, []);
+      DB.setObj(CONFIG.DB_KEYS.POSTS, []);
+      DB.setObj(CONFIG.DB_KEYS.VERSION, 'backend-' + CONFIG.SCHEMA_VERSION);
+    }
+    return;
+  }
   if (DB.getObj(CONFIG.DB_KEYS.VERSION) === CONFIG.SCHEMA_VERSION) return;
 
   DB.set(CONFIG.DB_KEYS.USERS, [
@@ -10637,7 +10648,7 @@ function initData() {
     { id:'p003', org:'بلدية دمشق', contact:'المهندس طارق نور', email:'tarek@damascus.gov.sy', phone:'0933445566', type:'gov', msg:'نقدم دعماً لوجستياً لجميع المبادرات البيئية.', status:'pending', date:'2026-06-05T10:00:00.000Z' }
   ]);
 
-  try { CommunityService.seedDemo(); } catch (e) {}
+  if (!sb) { try { CommunityService.seedDemo(); } catch (e) {} }
 
   DB.setObj(CONFIG.DB_KEYS.VERSION, CONFIG.SCHEMA_VERSION);
   console.log('[ATHAR] Data initialized — schema v' + CONFIG.SCHEMA_VERSION);
