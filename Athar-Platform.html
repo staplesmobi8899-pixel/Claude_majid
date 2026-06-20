@@ -4708,7 +4708,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 'use strict';
 
@@ -4846,22 +4846,28 @@ const Sync = {
   async pullUsers() {
     if (!sb) return;
     const { data, error } = await sb.from('profiles').select('*');
-    if (error) { console.error('[pullUsers]', error.message); return; }
+    if (error) { console.error('[pullUsers]', error.message); toast('DB users: ' + error.message, 'error'); return; }
     UserService.save((data || []).map(p => profileToUser(p)));
+    console.log('[Sync] users loaded:', (data || []).length);
   },
   async pullCampaigns() {
     if (!sb) return;
     const { data: camps, error } = await sb.from('campaigns').select('*').order('created_at', { ascending: false });
-    if (error) { console.error('[pullCampaigns]', error.message); return; }
+    if (error) { console.error('[pullCampaigns]', error.message); toast('DB campaigns: ' + error.message, 'error'); return; }
     const { data: parts } = await sb.from('campaign_participants').select('*');
     const byCamp = {};
     (parts || []).forEach(p => { (byCamp[p.campaign_id] = byCamp[p.campaign_id] || []).push(p); });
     CampaignService.save((camps || []).map(r => campRowToApp(r, byCamp[r.id] || [])));
+    console.log('[Sync] campaigns loaded:', (camps || []).length);
+    return (camps || []).length;
   },
   async pullAll() {
-    if (!sb) return;
-    try { await Promise.all([this.pullUsers(), this.pullCampaigns()]); }
-    catch (e) { console.error('[Sync.pullAll]', e); }
+    if (!sb) { toast('غير متصل بقاعدة البيانات', 'warning'); return; }
+    try {
+      const n = await this.pullCampaigns();
+      await this.pullUsers();
+      toast((State.lang === 'ar' ? 'تمت المزامنة — حملات: ' : 'Synced — campaigns: ') + (n || 0), 'success');
+    } catch (e) { console.error('[Sync.pullAll]', e); toast('Sync error: ' + (e && e.message), 'error'); }
   },
   /** Refresh shared data then re-render the current page. */
   async refresh() {
