@@ -2079,6 +2079,46 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
 .cm-trending-h { font-size: var(--fs-xs); font-weight: 800; color: var(--charcoal-50); margin-inline-end: var(--sp-1); }
 .cm-trending .cm-hashtag { background: var(--olive-pale); border: none; border-radius: var(--r-full); padding: 3px var(--sp-3); font-size: var(--fs-xs); }
 .ht-section-h { font-size: var(--fs-sm); font-weight: 800; color: var(--olive); margin: var(--sp-4) 0 var(--sp-2); }
+/* Community redesign — horizontal sections */
+.cm-sec { margin: var(--sp-4) 0; }
+.cm-sec-h { font-size: var(--fs-base); font-weight: 800; color: var(--charcoal); margin-bottom: var(--sp-3); }
+.cm-hrow { display: flex; gap: var(--sp-3); overflow-x: auto; padding-bottom: var(--sp-2); scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+.cm-hrow::-webkit-scrollbar { display: none; }
+.cm-feed-list { display: flex; flex-direction: column; gap: var(--sp-4); }
+/* Featured community card */
+.cm-fcom { flex: 0 0 160px; scroll-snap-align: start; background: var(--white); border: 1px solid var(--line-sand-strong); border-radius: var(--r-lg); overflow: hidden; cursor: pointer; box-shadow: var(--elev-card); }
+.cm-fcom-cover { height: 74px; background-size: cover; background-position: center; }
+.cm-fcom-cover.ph { display: flex; align-items: center; justify-content: center; background: var(--olive-pale); color: var(--olive); }
+.cm-fcom-cover.ph svg { width: 26px; height: 26px; }
+.cm-fcom-body { padding: var(--sp-2) var(--sp-3) var(--sp-3); }
+.cm-fcom-name { font-size: var(--fs-sm); font-weight: 800; color: var(--charcoal); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cm-fcom-meta { font-size: var(--fs-2xs); color: var(--charcoal-50); margin-bottom: var(--sp-2); }
+.cm-fcom-btn { width: 100%; border: none; border-radius: var(--r-full); background: var(--olive); color: var(--off-white); font-size: var(--fs-xs); font-weight: 800; padding: 5px; cursor: pointer; }
+.cm-fcom-btn.joined { background: var(--olive-pale); color: var(--olive); }
+/* Suggested volunteer card */
+.cm-svol { flex: 0 0 96px; scroll-snap-align: start; background: var(--white); border: 1px solid var(--line-sand-strong); border-radius: var(--r-lg); padding: var(--sp-3) var(--sp-2); cursor: pointer; text-align: center; box-shadow: var(--elev-chip); }
+.cm-svol-ava { width: 52px; height: 52px; border-radius: 50%; margin: 0 auto var(--sp-2); overflow: hidden; background: var(--olive-pale); color: var(--olive); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: var(--fs-lg); }
+.cm-svol-ava img { width: 100%; height: 100%; object-fit: cover; }
+.cm-svol-name { font-size: var(--fs-xs); font-weight: 700; color: var(--charcoal); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cm-svol-meta { font-size: var(--fs-2xs); font-weight: 800; color: var(--olive); }
+/* Recent searches */
+.cm-recent { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); margin-bottom: var(--sp-3); }
+.cm-recent-h { font-size: var(--fs-xs); font-weight: 800; color: var(--charcoal-50); }
+/* Search result row */
+.cm-srow { display: flex; align-items: center; gap: var(--sp-3); width: 100%; background: var(--white); border: 1px solid var(--line-sand-6); border-radius: var(--r-md); padding: var(--sp-2) var(--sp-3); margin-bottom: var(--sp-2); cursor: pointer; text-align: start; }
+.cm-srow-ava { flex: none; width: 38px; height: 38px; border-radius: 50%; overflow: hidden; background: var(--olive-pale); color: var(--olive); display: flex; align-items: center; justify-content: center; font-weight: 800; }
+.cm-srow-ava img { width: 100%; height: 100%; object-fit: cover; }
+.cm-srow-ava svg { width: 18px; height: 18px; }
+.cm-srow-main { display: flex; flex-direction: column; min-width: 0; }
+.cm-srow-main b { font-size: var(--fs-sm); color: var(--charcoal); font-weight: 800; }
+.cm-srow-main small { font-size: var(--fs-2xs); color: var(--charcoal-50); }
+/* Premium empty state */
+.cm-empty { text-align: center; padding: var(--sp-9) var(--sp-5); }
+.cm-empty-ico { width: 64px; height: 64px; margin: 0 auto var(--sp-4); border-radius: 50%; background: var(--olive-pale); color: var(--olive); display: flex; align-items: center; justify-content: center; }
+.cm-empty-ico svg { width: 30px; height: 30px; }
+.cm-empty-title { font-size: var(--fs-lg); font-weight: 800; color: var(--charcoal); }
+.cm-empty-sub { font-size: var(--fs-sm); color: var(--charcoal-50); margin: var(--sp-2) 0 var(--sp-4); }
+.cm-empty-btn { border: none; border-radius: var(--r-full); background: var(--olive); color: var(--off-white); font-weight: 800; font-size: var(--fs-sm); padding: var(--sp-2) var(--sp-6); cursor: pointer; }
 /* Communities */
 .cg-create-btn { display: flex; align-items: center; justify-content: center; gap: var(--sp-2); width: 100%;
   background: var(--olive); color: var(--off-white); border: none; border-radius: var(--r-lg); padding: var(--sp-3) var(--sp-4);
@@ -10012,9 +10052,85 @@ async function submitCommunity() {
 function cmRenderFeed() {
   const box = document.getElementById('cmFeed'); if (!box) return;
   const feed = CommunityService.getFeed();
-  const body = feed.length ? feed.map(cmPostCard).join('') : '<div class="empty-state"><div class="empty-title">' + t('cmEmptyFeed') + '</div></div>';
-  box.innerHTML = cmSearchBar() + cmTrendingTags() + cmComposerCard() + cmStoryCircles() + body;
+  const body = feed.length
+    ? '<div class="cm-feed-list">' + feed.map(cmPostCard).join('') + '</div>'
+    : cmFeedEmpty();
+  box.innerHTML =
+    cmSearchBar() +
+    cmRecentSearches() +
+    cmComposerCard() +
+    cmTrendingTags() +
+    cmFeaturedCommunities() +
+    cmStoryCircles() +
+    body +
+    cmSuggestedVolunteers();
 }
+
+function cmFeedEmpty() {
+  const isAr = State.lang === 'ar';
+  return '<div class="cm-empty">' +
+    '<div class="cm-empty-ico">' + icon('people') + '</div>' +
+    '<div class="cm-empty-title">' + t('cmEmptyFeed') + '</div>' +
+    '<div class="cm-empty-sub">' + (isAr ? 'انضمّ لمجتمعات وشارك لحظاتك لتكتشف المزيد' : 'Join communities and share your moments to discover more') + '</div>' +
+    (State.cu && !State.isGuest ? '<button class="cm-empty-btn" onclick="openCmCompose()">' + (isAr ? 'شارك منشورك الأول' : 'Share your first post') + '</button>' : '') +
+  '</div>';
+}
+
+/** Featured communities — horizontal cards (top by members). */
+function cmFeaturedCommunities() {
+  const isAr = State.lang === 'ar';
+  const uid = State.cu ? State.cu.id : null;
+  const list = CommunityGroupService.getAll().slice()
+    .sort((a, b) => ((b.members || []).length) - ((a.members || []).length)).slice(0, 10);
+  if (!list.length) return '';
+  return '<div class="cm-sec"><div class="cm-sec-h">' + (isAr ? 'مجتمعات مميّزة' : 'Featured communities') + '</div>' +
+    '<div class="cm-hrow">' + list.map(g => {
+      const joined = (g.members || []).includes(uid);
+      const cov = g.cover ? ' style="background-image:url(\'' + g.cover + '\')"' : '';
+      return '<div class="cm-fcom" onclick="cmOpenCommunity(\'' + g.id + '\')">' +
+        '<div class="cm-fcom-cover' + (g.cover ? '' : ' ph') + '"' + cov + '>' + (g.cover ? '' : icon('people')) + '</div>' +
+        '<div class="cm-fcom-body"><div class="cm-fcom-name">' + escapeHtml(g.name) + '</div>' +
+        '<div class="cm-fcom-meta">' + ((g.members || []).length) + ' ' + t('cgMembers') + '</div>' +
+        '<button class="cm-fcom-btn' + (joined ? ' joined' : '') + '" onclick="event.stopPropagation();cmQuickJoin(\'' + g.id + '\')">' + (joined ? t('cgJoined') : t('cgJoin')) + '</button></div>' +
+      '</div>';
+    }).join('') + '</div></div>';
+}
+function cmOpenCommunity(id) { cmSwitchTab('communities'); openCommunity(id); }
+function cmQuickJoin(id) {
+  if (!requireAuth()) return;
+  const r = CommunityGroupService.join(id);
+  if (r && r.ok) { toast(r.pending ? t('cgRequestSent') : t('cgJoinedToast'), 'success'); updateBell(); cmRenderFeed(); }
+  else if (r && r.msg) toast(r.msg, 'warning');
+}
+
+/** Suggested volunteers — horizontal cards (top by hours). */
+function cmSuggestedVolunteers() {
+  const isAr = State.lang === 'ar';
+  const ranked = TopVolunteers.ranked();
+  if (!ranked.length) return '';
+  return '<div class="cm-sec"><div class="cm-sec-h">' + t('topVolunteers') + '</div>' +
+    '<div class="cm-hrow">' + ranked.map(u => {
+      const ava = u.profilePic ? '<img src="' + u.profilePic + '">' : '<span>' + ((u.name || '؟').charAt(0)) + '</span>';
+      const nm = firstNameOnly((State.isAdmin || u.profilePublic || (State.cu && u.id === State.cu.id)) ? u.name : maskName(u.name));
+      return '<button class="cm-svol" onclick="openProfileView(\'' + u.id + '\')">' +
+        '<div class="cm-svol-ava">' + ava + '</div>' +
+        '<div class="cm-svol-name">' + escapeHtml(nm) + '</div>' +
+        '<div class="cm-svol-meta">' + (u.volunteerHours || 0) + (isAr ? ' س' : 'h') + '</div>' +
+      '</button>';
+    }).join('') + '</div></div>';
+}
+
+/* Recent searches */
+function cmGetRecent() { try { return JSON.parse(localStorage.getItem('athar_recent') || '[]'); } catch (e) { return []; } }
+function cmAddRecent(q) { let r = cmGetRecent().filter(x => x !== q); r.unshift(q); r = r.slice(0, 6); try { localStorage.setItem('athar_recent', JSON.stringify(r)); } catch (e) {} }
+function cmRecentSearches() {
+  const r = cmGetRecent(); if (!r.length) return '';
+  const isAr = State.lang === 'ar';
+  return '<div class="cm-recent"><span class="cm-recent-h">' + (isAr ? 'بحث أخير' : 'Recent') + '</span>' +
+    r.map(q => '<button class="cm-hashtag" onclick="cmRunSearch(\'' + escapeHtml(q).replace(/'/g, '') + '\')">' + escapeHtml(q) + '</button>').join('') +
+  '</div>';
+}
+function cmRunSearch(q) { const el = document.getElementById('cmSearchInput'); if (el) el.value = q; cmDoSearch(); }
 
 function cmSearchBar() {
   return '<div class="cm-search-wrap">' +
@@ -10040,11 +10156,12 @@ function cmDoSearch() {
   const el = document.getElementById('cmSearchInput');
   const q = el ? el.value.trim() : '';
   if (!q) return;
+  cmAddRecent(q);
   openHashtagResults(q);
 }
 function openHashtag(tag) { openHashtagResults('#' + tag); }
 
-/** Show posts + campaigns matching a hashtag or free-text query. */
+/** Global search: hashtags, posts, campaigns, communities, users. */
 function openHashtagResults(query) {
   const isAr = State.lang === 'ar';
   const raw = String(query || '').trim();
@@ -10059,15 +10176,27 @@ function openHashtagResults(query) {
   });
   const camps = CampaignService.getVisible().filter(c => {
     const tx = Models.getCampText(c);
-    const hay = [tx.title, tx.desc, c.location, Models.catLabel(c)].join(' ').toLowerCase();
-    return hay.includes(term);
+    return [tx.title, tx.desc, c.location, Models.catLabel(c)].join(' ').toLowerCase().includes(term);
   });
+  let comms = [], users = [];
+  if (!isTag) {
+    comms = CommunityGroupService.getAll().filter(g => (String(g.name || '') + ' ' + String(g.desc || '')).toLowerCase().includes(term));
+    users = UserService.getAll().filter(u => u.status === 'approved' && u.email !== CONFIG.ADMIN_EMAIL && String(u.name || '').toLowerCase().includes(term)).slice(0, 12);
+  }
 
   const head = document.getElementById('hashtagTitle');
   if (head) head.textContent = (isTag ? '#' : '') + term;
   const body = document.getElementById('hashtagBody');
   if (!body) return;
   let html = '';
+  if (comms.length) {
+    html += '<div class="ht-section-h">' + (isAr ? 'مجتمعات' : 'Communities') + ' (' + comms.length + ')</div>' +
+      comms.map(g => '<button class="cm-srow" onclick="closeModal(\'hashtagModal\');cmOpenCommunity(\'' + g.id + '\')"><span class="cm-srow-ava">' + icon('people') + '</span><span class="cm-srow-main"><b>' + escapeHtml(g.name) + '</b><small>' + ((g.members || []).length) + ' ' + t('cgMembers') + '</small></span></button>').join('');
+  }
+  if (users.length) {
+    html += '<div class="ht-section-h">' + (isAr ? 'متطوّعون' : 'Volunteers') + ' (' + users.length + ')</div>' +
+      users.map(u => { const nm = firstNameOnly((State.isAdmin || u.profilePublic) ? u.name : maskName(u.name)); return '<button class="cm-srow" onclick="closeModal(\'hashtagModal\');openProfileView(\'' + u.id + '\')"><span class="cm-srow-ava">' + (u.profilePic ? '<img src="' + u.profilePic + '">' : ((u.name || '؟').charAt(0))) + '</span><span class="cm-srow-main"><b>' + escapeHtml(nm) + '</b><small>' + (u.city || '') + '</small></span></button>'; }).join('');
+  }
   if (camps.length) {
     html += '<div class="ht-section-h">' + t('cmRelatedCampaigns') + ' (' + camps.length + ')</div>' +
       '<div class="camps-grid">' + camps.map(c => campCardHTML(c)).join('') + '</div>';
