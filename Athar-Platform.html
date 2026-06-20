@@ -4770,6 +4770,22 @@ async function loadProfile(uid, email) {
   return profileToUser(data, email);
 }
 
+/* Upload a base64/data-URL image to Supabase Storage; returns a public URL
+   (or the original value if upload is unavailable/fails). */
+async function uploadImage(dataUrl, bucket) {
+  if (!sb || !dataUrl || typeof dataUrl !== 'string' || dataUrl.indexOf('data:') !== 0) return dataUrl;
+  try {
+    const blob = await (await fetch(dataUrl)).blob();
+    const ext = ((blob.type.split('/')[1]) || 'jpg').replace('jpeg', 'jpg');
+    const uid = (State.cu && State.cu.id) || 'anon';
+    const path = uid + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+    const up = await sb.storage.from(bucket).upload(path, blob, { contentType: blob.type, upsert: false });
+    if (up.error) { console.error('[uploadImage]', up.error.message); return dataUrl; }
+    const { data } = sb.storage.from(bucket).getPublicUrl(path);
+    return (data && data.publicUrl) || dataUrl;
+  } catch (e) { console.error('[uploadImage]', e); return dataUrl; }
+}
+
 /* ---- Field mappers (app shape <-> DB columns) ---- */
 function userChangesToDb(ch) {
   const m = {};
@@ -4861,11 +4877,34 @@ const Sync = {
     console.log('[Sync] campaigns loaded:', (camps || []).length);
     return (camps || []).length;
   },
+  async pullPosts() {
+    if (!sb) return;
+    const res = await Promise.all([
+      sb.from('posts').select('*').order('created_at', { ascending: false }),
+      sb.from('post_reactions').select('*'),
+      sb.from('post_comments').select('*').order('created_at', { ascending: true })
+    ]);
+    if (res[0].error) { console.error('[pullPosts]', res[0].error.message); return; }
+    const posts = res[0].data || [], reacts = res[1].data || [], comments = res[2].data || [];
+    const rBy = {}; reacts.forEach(r => { const o = rBy[r.post_id] = rBy[r.post_id] || { like: [], support: [] }; (o[r.kind] = o[r.kind] || []).push(r.user_id); });
+    const cBy = {}; comments.forEach(c => { (cBy[c.post_id] = cBy[c.post_id] || []).push(c); });
+    const authorOf = id => { const u = UserService.getById(id); return { id: id, name: (u && u.name) || 'متطوّع', pic: (u && u.profilePic) || null }; };
+    CommunityService.save(posts.map(r => ({
+      id: r.id, type: r.type, author: authorOf(r.author_id),
+      text: r.text || '', media: r.media || [], beforeImg: r.before_img, afterImg: r.after_img,
+      campId: r.camp_id, communityId: r.community_id,
+      reactions: rBy[r.id] || { like: [], support: [] },
+      comments: (cBy[r.id] || []).map(c => ({ id: c.id, author: authorOf(c.author_id), text: c.text, parentId: c.parent_id, date: c.created_at })),
+      createdAt: r.created_at
+    })));
+    console.log('[Sync] posts loaded:', posts.length);
+  },
   async pullAll() {
     if (!sb) { toast('غير متصل بقاعدة البيانات', 'warning'); return; }
     try {
       const n = await this.pullCampaigns();
       await this.pullUsers();
+      await this.pullPosts();
       toast((State.lang === 'ar' ? 'تمت المزامنة — حملات: ' : 'Synced — campaigns: ') + (n || 0), 'success');
     } catch (e) { console.error('[Sync.pullAll]', e); toast('Sync error: ' + (e && e.message), 'error'); }
   },
@@ -6600,7 +6639,7 @@ const CommunityService = {
   add(data) {
     const list = this.getAll();
     const post = {
-      id: 'post' + Date.now() + Math.random().toString(36).slice(2, 5),
+      id: newId(),
       type: data.type === 'story' ? 'story' : 'post',
       author: this._author(data.author),
       text: String(data.text || '').trim(),
@@ -6616,9 +6655,20 @@ const CommunityService = {
     list.unshift(post);
     const ok = this.save(list);
     if (!ok) { list.shift(); return null; }
+    // Write-through (main-feed posts only; community-group posts stay local until 14.4)
+    if (sb && isUuid(post.id) && isUuid(post.author.id) && !post.communityId) {
+      sb.from('posts').insert({
+        id: post.id, type: post.type, author_id: post.author.id,
+        text: post.text, media: post.media, before_img: post.beforeImg, after_img: post.afterImg,
+        camp_id: isUuid(post.campId) ? post.campId : null, community_id: null
+      }).then(function (r) { if (r.error) console.error('[posts.insert]', r.error.message); });
+    }
     return post;
   },
-  remove(id) { this.save(this.getAll().filter(p => p.id !== id)); },
+  remove(id) {
+    this.save(this.getAll().filter(p => p.id !== id));
+    if (sb && isUuid(id)) sb.from('posts').delete().eq('id', id).then(function () {});
+  },
   react(id, kind, userId) {
     if (!REACTIONS.includes(kind) || !userId) return null;
     const list = this.getAll(); const p = list.find(x => x.id === id);
@@ -6626,9 +6676,14 @@ const CommunityService = {
     if (!p.reactions) p.reactions = { like: [], support: [] };
     if (!p.reactions[kind]) p.reactions[kind] = [];
     // independent toggle per kind (a user can both like and support)
-    if (p.reactions[kind].includes(userId)) p.reactions[kind] = p.reactions[kind].filter(uid => uid !== userId);
-    else p.reactions[kind].push(userId);
+    let added;
+    if (p.reactions[kind].includes(userId)) { p.reactions[kind] = p.reactions[kind].filter(uid => uid !== userId); added = false; }
+    else { p.reactions[kind].push(userId); added = true; }
     this.save(list);
+    if (sb && isUuid(id) && isUuid(userId)) {
+      if (added) sb.from('post_reactions').upsert({ post_id: id, user_id: userId, kind: kind }).then(function () {});
+      else sb.from('post_reactions').delete().eq('post_id', id).eq('user_id', userId).eq('kind', kind).then(function () {});
+    }
     return p;
   },
   reactionCount(p, kind) { return ((p.reactions && p.reactions[kind]) || []).length; },
@@ -6637,16 +6692,26 @@ const CommunityService = {
     const list = this.getAll(); const p = list.find(x => x.id === id);
     if (!p) return null;
     const u = UserService.getById(userId) || State.cu || {};
-    const c = { id: 'c' + Date.now() + Math.random().toString(36).slice(2, 4), author: this._author(u), text: String(text || '').trim(), parentId: parentId || null, date: new Date().toISOString() };
+    const c = { id: newId(), author: this._author(u), text: String(text || '').trim(), parentId: parentId || null, date: new Date().toISOString() };
     if (!c.text) return null;
     p.comments = p.comments || []; p.comments.push(c);
     this.save(list);
+    if (sb && isUuid(id) && isUuid(c.author.id) && !p.communityId) {
+      sb.from('post_comments').insert({
+        id: c.id, post_id: id, author_id: c.author.id, text: c.text,
+        parent_id: isUuid(c.parentId) ? c.parentId : null
+      }).then(function (r) { if (r.error) console.error('[comments.insert]', r.error.message); });
+    }
     return c;
   },
   removeComment(postId, commentId) {
     const list = this.getAll(); const p = list.find(x => x.id === postId);
     if (!p) return; p.comments = (p.comments || []).filter(c => c.id !== commentId && c.parentId !== commentId);
     this.save(list);
+    if (sb && isUuid(commentId)) {
+      sb.from('post_comments').delete().eq('id', commentId).then(function () {});
+      sb.from('post_comments').delete().eq('parent_id', commentId).then(function () {});
+    }
   },
   /** Derived "alive" community updates from existing data — not persisted. */
   generateAutoUpdates() {
@@ -9979,7 +10044,7 @@ async function cmPickBA(event, which) {
   } catch (e) { toast(t('uploadError'), 'error'); }
   event.target.value = '';
 }
-function submitCmPost() {
+async function submitCmPost() {
   if (!State.cu || State.isGuest) { requireAuth(); return; }
   // Only admins may publish impact stories
   if (CommunityUI.type === 'story' && !State.isAdmin) CommunityUI.type = 'post';
@@ -9988,9 +10053,18 @@ function submitCmPost() {
   const hasMedia = CommunityUI.media.length || CommunityUI.before || CommunityUI.after;
   if (!text && !hasMedia) { const e = document.getElementById('cmErr'); if (e) e.textContent = t('errorRequired'); return; }
   const communityId = CommunityUI.composeCommunity || null;
+  // Upload images to Storage (real URLs) instead of base64
+  let media = CommunityUI.media.slice(), before = CommunityUI.before, after = CommunityUI.after;
+  if (sb && !communityId) {
+    try {
+      const out = []; for (const m of media) out.push(await uploadImage(m, 'posts')); media = out;
+      if (before) before = await uploadImage(before, 'posts');
+      if (after) after = await uploadImage(after, 'posts');
+    } catch (e) { console.error('[post media upload]', e); }
+  }
   const created = CommunityService.add({
     type: CommunityUI.type, author: State.cu, text: text,
-    media: CommunityUI.media.slice(), beforeImg: CommunityUI.before, afterImg: CommunityUI.after,
+    media: media, beforeImg: before, afterImg: after,
     communityId: communityId
   });
   if (!created) { const e = document.getElementById('cmErr'); if (e) e.textContent = t('cmStorageFull'); return; }
