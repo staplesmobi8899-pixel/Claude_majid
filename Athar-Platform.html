@@ -3687,6 +3687,81 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 /* Icon / reaction buttons — gentle lift */
 .cm-action, .cm-react, .detail-icon-btn, .photo-sheet-btn { box-shadow: var(--elev-chip); }
 .cm-action:hover, .cm-react:hover { box-shadow: var(--elev-btn-hover); }
+
+/* ════════════════════════════════════════════════════════════
+   PREMIUM MOTION & LIQUID-GLASS REFINEMENT (additive · GPU-only)
+   Uses transform/opacity only → 60fps. Identity unchanged.
+   ════════════════════════════════════════════════════════════ */
+:root { --spring: cubic-bezier(0.34, 1.4, 0.5, 1); --ease-soft: cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* Unified press feedback on interactive elements */
+.join-btn, .auth-btn, .adm-btn, .dark-submit, .submit-btn, .create-btn, .cat-chip, .cm-tab,
+.cm-action, .cm-fab, .fab, .detail-join-btn, .cg-action, .cg-mini, .cm-fcom-btn, .cm-fcom,
+.cm-svol, .cm-search-go, .hl-viewall, .cm-empty-btn, .partner-slot, .menu-row, .set-row,
+.nav-btn, .privacy-toggle, .approve-btn, .reject-btn, .manage-btn, .pw-eye, .card-save,
+.value-chip, .cm-hashtag, .photo-sheet-btn {
+  transition: transform 0.18s var(--ease-soft), box-shadow 0.18s var(--ease-soft), background 0.18s var(--ease-soft), filter 0.18s var(--ease-soft);
+  -webkit-tap-highlight-color: transparent;
+}
+.join-btn:active:not(:disabled), .auth-btn:active, .adm-btn:active, .dark-submit:active,
+.submit-btn:active, .create-btn:active, .cm-action:active, .detail-join-btn:active:not(:disabled),
+.cg-action:active, .cg-mini:active, .cm-fcom-btn:active, .cm-search-go:active, .cm-empty-btn:active,
+.menu-row:active, .set-row:active, .privacy-toggle:active, .approve-btn:active, .reject-btn:active,
+.manage-btn:active, .card-save:active, .cm-hashtag:active, .photo-sheet-btn:active {
+  transform: scale(0.96);
+}
+/* Cards — subtle touch lift / press */
+.camp-card, .cm-card, .cg-card, .offer-card, .adm-card, .featured-card, .cert-card,
+.cm-fcom, .cm-svol, .topvol-row, .my-camp-row, .cm-srow {
+  transition: transform 0.2s var(--ease-soft), box-shadow 0.2s var(--ease-soft);
+  will-change: transform;
+}
+.camp-card:active, .cm-card:active, .cg-card:active, .offer-card:active, .adm-card:active,
+.featured-card:active, .cert-card:active, .cm-fcom:active, .cm-svol:active, .my-camp-row:active, .cm-srow:active {
+  transform: scale(0.985);
+}
+
+/* Floating glass bottom navigation */
+.bottom-nav {
+  left: 10px; right: 10px;
+  bottom: calc(8px + env(safe-area-inset-bottom));
+  height: 60px;
+  border-radius: 22px;
+  border: 1px solid var(--line-sand-6);
+  background: rgba(253,250,246,0.78);
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow: 0 10px 30px rgba(40,46,28,0.12);
+}
+#appScreen { padding-bottom: 86px; }
+.nav-btn svg, .nav-btn .ic { transition: transform 0.22s var(--spring); }
+.nav-btn.active svg, .nav-btn.active .ic { transform: translateY(-2px) scale(1.08); }
+
+/* Liquid-glass on search bars + modal headers (subtle) */
+.cm-search-wrap, .search-bar, #admGlobalSearch {
+  background: rgba(255,255,255,0.72) !important;
+  backdrop-filter: blur(14px) saturate(1.3);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+}
+.modal-bar { background: rgba(255,255,255,0.82) !important; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+
+/* Like / reaction micro-interaction */
+@keyframes cmPop { 0% { transform: scale(1); } 40% { transform: scale(1.32); } 100% { transform: scale(1); } }
+.cm-action.on svg { animation: cmPop 0.32s var(--spring); }
+
+/* Momentum / premium scrolling */
+#appScreen, .cm-panel, .adm-content, .modal-sheet, .adm-modal-body, .cm-hrow {
+  -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain;
+}
+
+/* Smooth page transition */
+.page.active { animation: pageIn 0.28s var(--ease-soft); }
+@keyframes pageIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .page.active, .cm-action.on svg { animation: none; }
+  .nav-btn.active svg, .nav-btn.active .ic { transform: none; }
+}
 </style>
 </head>
 <body>
