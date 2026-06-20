@@ -6114,7 +6114,7 @@ const AuthService = {
     if (!identifier || !password) return { ok: false, error: 'required' };
     if (sb) {
       const { data: au, error } = await sb.auth.signInWithPassword({ email: identifier.toLowerCase(), password });
-      if (error) return { ok: false, error: 'invalid' };
+      if (error) return { ok: false, error: 'supa', message: error.message };
       const u = await loadProfile(au.user.id, au.user.email);
       if (!u) return { ok: false, error: 'invalid' };
       if (u.status === 'banned')   return { ok: false, error: 'banned', user: u };
@@ -9391,6 +9391,10 @@ async function doLogin(e) {
       toast(t('bannedMsg') + ' ' + until, 'error');
     } else if (res.error === 'rejected') {
       toast(t('rejectedBanner'), 'error');
+    } else if (res.error === 'supa') {
+      toast(res.message || t('errorLogin'), 'error');
+      showFieldError(form, 'email', ' ');
+      showFieldError(form, 'password', ' ');
     } else {
       showFieldError(form, 'email', t('errorLogin'));
       showFieldError(form, 'password', ' ');
