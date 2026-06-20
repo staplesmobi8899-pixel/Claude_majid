@@ -10066,7 +10066,9 @@ async function cmPickBA(event, which) {
   } catch (e) { toast(t('uploadError'), 'error'); }
   event.target.value = '';
 }
+let _cmPosting = false;
 async function submitCmPost() {
+  if (_cmPosting) return;
   if (!State.cu || State.isGuest) { requireAuth(); return; }
   // Only admins may publish impact stories
   if (CommunityUI.type === 'story' && !State.isAdmin) CommunityUI.type = 'post';
@@ -10075,27 +10077,37 @@ async function submitCmPost() {
   const hasMedia = CommunityUI.media.length || CommunityUI.before || CommunityUI.after;
   if (!text && !hasMedia) { const e = document.getElementById('cmErr'); if (e) e.textContent = t('errorRequired'); return; }
   const communityId = CommunityUI.composeCommunity || null;
-  // Upload images to Storage (real URLs) instead of base64
-  let media = CommunityUI.media.slice(), before = CommunityUI.before, after = CommunityUI.after;
-  if (sb && !communityId) {
-    try {
-      const out = []; for (const m of media) out.push(await uploadImage(m, 'posts')); media = out;
-      if (before) before = await uploadImage(before, 'posts');
-      if (after) after = await uploadImage(after, 'posts');
-    } catch (e) { console.error('[post media upload]', e); }
+  // Lock the publish button + show progress (prevents duplicate posts)
+  _cmPosting = true;
+  const pubBtn = document.querySelector('#cmComposeModal .cm-compose-actions .adm-btn.primary');
+  const prevTxt = pubBtn ? pubBtn.textContent : '';
+  if (pubBtn) { pubBtn.disabled = true; pubBtn.textContent = t('cmUploading'); }
+  try {
+    // Upload images to Storage (real URLs) instead of base64
+    let media = CommunityUI.media.slice(), before = CommunityUI.before, after = CommunityUI.after;
+    if (sb && !communityId) {
+      try {
+        const out = []; for (const m of media) out.push(await uploadImage(m, 'posts')); media = out;
+        if (before) before = await uploadImage(before, 'posts');
+        if (after) after = await uploadImage(after, 'posts');
+      } catch (e) { console.error('[post media upload]', e); }
+    }
+    const created = CommunityService.add({
+      type: CommunityUI.type, author: State.cu, text: text,
+      media: media, beforeImg: before, afterImg: after,
+      communityId: communityId
+    });
+    if (!created) { const e = document.getElementById('cmErr'); if (e) e.textContent = t('cmStorageFull'); return; }
+    CommunityUI.media = []; CommunityUI.before = null; CommunityUI.after = null;
+    CommunityUI.composeCommunity = null;
+    closeModal('cmComposeModal');
+    toast(t('cmPosted'), 'success');
+    if (communityId) cmRenderCommunityDetail(communityId);
+    else renderCommunity();
+  } finally {
+    _cmPosting = false;
+    if (pubBtn) { pubBtn.disabled = false; pubBtn.textContent = prevTxt; }
   }
-  const created = CommunityService.add({
-    type: CommunityUI.type, author: State.cu, text: text,
-    media: media, beforeImg: before, afterImg: after,
-    communityId: communityId
-  });
-  if (!created) { const e = document.getElementById('cmErr'); if (e) e.textContent = t('cmStorageFull'); return; }
-  CommunityUI.media = []; CommunityUI.before = null; CommunityUI.after = null;
-  CommunityUI.composeCommunity = null;
-  closeModal('cmComposeModal');
-  toast(t('cmPosted'), 'success');
-  if (communityId) cmRenderCommunityDetail(communityId);
-  else renderCommunity();
 }
 
 /* Interactions */
