@@ -1751,6 +1751,11 @@ body {
 .faq-q { font-size: var(--fs-base); font-weight: 800; color: var(--charcoal); margin-bottom: var(--sp-1); }
 .faq-a { font-size: var(--fs-sm); color: var(--charcoal-50); line-height: 1.7; }
 .detail-origin-note { margin-top: var(--sp-5); text-align: center; font-size: var(--fs-sm); font-weight: 600; color: var(--charcoal-50); padding: var(--sp-3) var(--sp-4); }
+.pw-wrap { position: relative; }
+.pw-wrap .auth-input { padding-inline-end: 44px; }
+.pw-eye { position: absolute; inset-inline-end: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 6px; color: var(--olive-light); display: inline-flex; }
+.pw-eye svg { width: 20px; height: 20px; }
+.pw-eye.on { color: var(--olive); }
 .detail-report { margin-top: var(--sp-5); text-align: center; }
 .detail-report-btn { background: transparent; border: none; color: var(--charcoal-50); font-size: var(--fs-sm); font-weight: 700; cursor: pointer; text-decoration: underline; }
 
@@ -3712,7 +3717,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
         </div>
         <div class="auth-field">
           <label class="auth-label" data-i18n="password"></label>
-          <input class="auth-input" name="password" type="password" autocomplete="current-password">
+          <div class="pw-wrap"><input class="auth-input" name="password" type="password" autocomplete="current-password"><button type="button" class="pw-eye" tabindex="-1" onclick="togglePw(this)" aria-label="show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
         </div>
         <div class="auth-row">
           <label class="auth-check"><input type="checkbox" name="remember" checked><span data-i18n="rememberMe"></span></label>
@@ -3745,9 +3750,9 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
             <div class="phone-group"><span class="phone-prefix" dir="ltr">+963</span>
               <input class="auth-input" name="phone" type="tel" inputmode="numeric" placeholder="9XXXXXXXX"></div></div>
           <div class="auth-field"><label class="auth-label" data-i18n="password"></label>
-            <input class="auth-input" name="password" type="password" autocomplete="new-password"></div>
+            <div class="pw-wrap"><input class="auth-input" name="password" type="password" autocomplete="new-password"><button type="button" class="pw-eye" tabindex="-1" onclick="togglePw(this)" aria-label="show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
           <div class="auth-field"><label class="auth-label" data-i18n="passwordConfirm"></label>
-            <input class="auth-input" name="password2" type="password" autocomplete="new-password"></div>
+            <div class="pw-wrap"><input class="auth-input" name="password2" type="password" autocomplete="new-password"><button type="button" class="pw-eye" tabindex="-1" onclick="togglePw(this)" aria-label="show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
           <button type="button" class="auth-btn auth-btn-primary" onclick="Reg.next()" data-i18n="nextStep"></button>
         </div>
         <div class="reg-step" data-regstep="2">
@@ -4664,6 +4669,19 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
     <div id="hashtagBody"></div>
   </div>
 </div>
+<div class="modal-overlay" id="reportModal">
+  <div class="modal-sheet">
+    <div class="modal-bar">
+      <button type="button" class="modal-close" onclick="closeModal('reportModal')" aria-label="back">‹</button>
+      <div class="modal-handle"></div>
+    </div>
+    <div class="modal-title" data-i18n="reportBtn"></div>
+    <div class="edit-field"><label data-i18n="fullName"></label><input id="rpName" type="text"></div>
+    <div class="edit-field"><label data-i18n="phone"></label><input id="rpPhone" type="tel" inputmode="tel"></div>
+    <div class="edit-field"><label data-i18n="reportProblem"></label><textarea id="rpMsg" rows="4"></textarea><div class="edit-err" id="rpErr"></div></div>
+    <button class="dark-submit" onclick="submitReport()" data-i18n="reportSend"></button>
+  </div>
+</div>
 <div class="modal-overlay" id="communityModal">
   <div class="modal-sheet">
     <div class="modal-bar">
@@ -5221,11 +5239,11 @@ const T = {
     abMissionIntro: 'رسالة «أَثَرْ» هي تنظيم وتمكين المبادرات الشبابية عبر منصّة عصرية تربط الناس بفرص ذات معنى للمشاركة والتعاون وصناعة أثر اجتماعي قابل للقياس.',
     abMiss1: 'تشجيع المشاركة المجتمعية', abMiss2: 'دعم المبادرات الشبابية', abMiss3: 'تبسيط التطوّع', abMiss4: 'تعزيز المسؤولية الاجتماعية', abMiss5: 'خلق أثر منظَّم', abMiss6: 'بناء مجتمع متّصل ومتحفّز',
     abVal1: 'التعاون', abVal2: 'المشاركة', abVal3: 'المسؤولية', abVal4: 'التفاؤل', abVal5: 'النموّ', abVal6: 'التواصل الإنساني',
-    abImpactTitle: 'أرقام حقيقية. أثر حقيقي.', faqTitle: 'الأسئلة الشائعة', reportBtn: 'الإبلاغ عن مشكلة',
+    abImpactTitle: 'أرقام حقيقية. أثر حقيقي.', faqTitle: 'الأسئلة الشائعة', reportBtn: 'الإبلاغ عن مشكلة', reportProblem: 'صف المشكلة', reportSend: 'إرسال البلاغ',
     abPartnersTitle: 'المنظمات والشركاء الداعمون لأَثَرْ',
     abPartnersDesc: 'تفخر «أَثَرْ» بالتعاون مع المنظمات والشركات والداعمين الذين يؤمنون بتمكين الشباب وتقوية المجتمعات وصناعة أثر اجتماعي ذي معنى معًا.',
     abPartnerSlot: 'شعارك هنا', abPartnersInvite: 'كن من أوائل الشركاء الذين يصنعون الأثر معنا.', abPerksTitle: 'مكافآت ومزايا قادمة', abPerksDesc: 'مع نموّ مجتمع «أَثَرْ»، سنُطلق تدريجيًا منظومة مكافآت تقديرًا لمتطوّعينا وساعات عطائهم — مزايا وخصومات حصرية من شركائنا تصلك مع الوقت.', abPerks1: 'خصومات من محلات ومتاجر محلية', abPerks2: 'مزايا وعروض من جامعات ومراكز تعليمية', abPerks3: 'امتيازات في مجمّعات ومرافق شريكة', abPerksSoon: 'قريبًا',
-    abCtaQuestion: 'مهتمّ بدعم «أَثَرْ» وتصبح جزءًا من الحركة؟', abCtaLine: 'لنصنع أثرًا ذا معنى معًا.',
+    abCtaQuestion: 'مهتمّ بدعم «أَثَرْ» وتصبح جزءًا من المجتمع؟', abCtaLine: 'لنصنع أثرًا ذا معنى معًا.',
     partnerTitle: 'لنصنع أثرًا حقيقيًا معًا', partnerSub: 'إذا كنت تؤمن بأن التغيير المجتمعي يبدأ بالشباب، كن شريك الأثر وادعم حملاتنا الهادفة.',
     partnerFormTitle: 'كن شريك الأثر', partnerFormSub: 'شارك معنا رؤيتك — سنتواصل معك لنبدأ معًا.',
     orgName: 'اسم الجهة', contactPerson: 'المسؤول عن التواصل',
@@ -5412,11 +5430,11 @@ const T = {
     abMissionIntro: "ATHAR's mission is to organize and empower youth initiatives through a modern platform that connects people with meaningful opportunities to participate, collaborate, and create measurable social impact.",
     abMiss1: 'Encourage community participation', abMiss2: 'Support youth-led initiatives', abMiss3: 'Simplify volunteering', abMiss4: 'Strengthen social responsibility', abMiss5: 'Create organized impact', abMiss6: 'Build a connected, motivated community',
     abVal1: 'Collaboration', abVal2: 'Participation', abVal3: 'Responsibility', abVal4: 'Optimism', abVal5: 'Growth', abVal6: 'Human connection',
-    abImpactTitle: 'Real Numbers. Real Impact.', faqTitle: 'Frequently Asked Questions', reportBtn: 'Report an issue',
+    abImpactTitle: 'Real Numbers. Real Impact.', faqTitle: 'Frequently Asked Questions', reportBtn: 'Report an issue', reportProblem: 'Describe the issue', reportSend: 'Send report',
     abPartnersTitle: 'Organizations & Partners Supporting ATHAR',
     abPartnersDesc: 'ATHAR proudly collaborates with organizations, companies, and supporters who believe in empowering youth, strengthening communities, and creating meaningful social impact together.',
     abPartnerSlot: 'Your logo here', abPartnersInvite: 'Be among the first partners creating impact with us.', abPerksTitle: 'Rewards & perks coming soon', abPerksDesc: 'As the ATHAR community grows, we will gradually launch a rewards program to recognize our volunteers and their hours — exclusive perks and discounts from our partners, reaching you over time.', abPerks1: 'Discounts from local shops & stores', abPerks2: 'Perks & offers from universities and learning centers', abPerks3: 'Privileges at partner malls and venues', abPerksSoon: 'Soon',
-    abCtaQuestion: 'Interested in supporting ATHAR and becoming part of the movement?', abCtaLine: "Let's create meaningful impact together.",
+    abCtaQuestion: 'Interested in supporting ATHAR and becoming part of the community?', abCtaLine: "Let's create meaningful impact together.",
     partnerTitle: "Let's create real impact together", partnerSub: 'If you believe community change starts with youth, become an ATHAR partner and support our campaigns.',
     partnerFormTitle: 'Become an ATHAR Partner', partnerFormSub: 'Share your vision with us — we will reach out to start together.',
     orgName: 'Organization Name', contactPerson: 'Contact Person',
@@ -6196,6 +6214,11 @@ const AuthService = {
           country: data.country || '', status: 'pending'
         }).eq('id', uid);
       }
+      // Notify all admins of the new account awaiting approval
+      try {
+        const ad = await sb.from('profiles').select('id').eq('role', 'admin');
+        (ad.data || []).forEach(a => NotificationService.add(a.id, 'طلب حساب جديد بانتظار موافقتك: ' + (data.name || ''), 'New account awaiting your approval: ' + (data.name || ''), 'account'));
+      } catch (e) {}
       const user = profileToUser({ id: uid, email: data.email, name: data.name,
         phone: data.phone, city: data.city, country: data.country, status: 'pending' }, data.email);
       mirrorUser(user);
@@ -6618,6 +6641,7 @@ const PartnerService = {
   },
   approve(id) { return this.updateById(id, { status: 'approved' }); },
   reject(id)  { return this.updateById(id, { status: 'rejected', featured: false }); },
+  // (partner reject keeps featured off)
   toggleFeatured(id) {
     const p = this.getById(id);
     if (!p) return null;
@@ -6681,6 +6705,29 @@ function reportContent(targetType, targetId, reason, note) {
   if (!State.cu || State.isGuest) { requireAuth(); return; }
   ReportService.add(targetType, targetId, reason, State.cu.id, note);
   toast(State.lang === 'ar' ? 'تم استلام البلاغ، شكرًا لك' : 'Report received, thank you', 'success');
+}
+let _reportTarget = { type: null, id: null };
+function openReportForm(type, id) {
+  if (!requireAuth()) return;
+  _reportTarget = { type: type || 'app', id: id || '-' };
+  const g = i => document.getElementById(i);
+  if (g('rpName')) g('rpName').value = (State.cu && State.cu.name) || '';
+  if (g('rpPhone')) g('rpPhone').value = (State.cu && State.cu.phone) || '';
+  if (g('rpMsg')) g('rpMsg').value = '';
+  if (g('rpErr')) g('rpErr').textContent = '';
+  openModal('reportModal');
+}
+function submitReport() {
+  if (!State.cu || State.isGuest) { requireAuth(); return; }
+  const g = i => document.getElementById(i);
+  const name = g('rpName') ? g('rpName').value.trim() : '';
+  const phone = g('rpPhone') ? g('rpPhone').value.trim() : '';
+  const msg = g('rpMsg') ? g('rpMsg').value.trim() : '';
+  if (!msg) { if (g('rpErr')) g('rpErr').textContent = t('errorRequired'); return; }
+  const note = (State.lang === 'ar' ? 'الاسم: ' : 'Name: ') + name + ' | ' + (State.lang === 'ar' ? 'الهاتف: ' : 'Phone: ') + phone + ' | ' + (State.lang === 'ar' ? 'المشكلة: ' : 'Issue: ') + msg;
+  ReportService.add(_reportTarget.type, _reportTarget.id, 'user_report', State.cu.id, note);
+  closeModal('reportModal');
+  toast(State.lang === 'ar' ? 'تم استلام بلاغك، شكرًا لك' : 'Report received, thank you', 'success');
 }
 
 /* ── COMMUNITY (Phase 9 — social feed, posts, stories, reactions, comments, auto-updates) ── */
@@ -8764,7 +8811,7 @@ function renderDetail(id) {
       '<section class="detail-section"><h3 class="detail-h">' + t('participantsTitle') + ' (' + parts.length + ')</h3><div class="detail-parts">' + partHtml + '</div></section>' +
       ((c.gallery && c.gallery.length) ? '<section class="detail-section"><h3 class="detail-h">' + t('galleryTitle') + '</h3><div class="detail-gallery">' + c.gallery.map(function(g){return '<img src="' + g + '" loading="lazy" onclick="openImageViewer(\'' + g + '\')">';}).join('') + '</div></section>' : '') +
       manage +
-      ((!canManage && State.cu && !State.isGuest) ? '<div class="detail-report"><button class="detail-report-btn" onclick="reportContent(\'campaign\',\'' + id + '\',\'inappropriate\')">' + t('reportBtn') + '</button></div>' : '') +
+      ((!canManage && State.cu && !State.isGuest) ? '<div class="detail-report"><button class="detail-report-btn" onclick="openReportForm(\'campaign\',\'' + id + '\')">' + t('reportBtn') + '</button></div>' : '') +
       (Models.isCommunity(c) ? '<div class="detail-origin-note">' + t('createdByVolunteer') + '</div>' : '') +
     '</div>';
 }
@@ -9454,6 +9501,14 @@ function renderNotifications() {
   '</div>';
 }
 
+function togglePw(btn) {
+  const inp = btn.parentNode && btn.parentNode.querySelector('input');
+  if (!inp) return;
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  btn.classList.toggle('on', show);
+}
+
 async function doLogin(e) {
   e.preventDefault();
   const form  = e.target;
@@ -9504,6 +9559,11 @@ function doLogout() {
 
 /* ── Guest gate: actions that need a real account (Phase 2) ── */
 function requireAuth() {
+  // Signed-in but not yet approved: can browse, can't interact
+  if (State.cu && !State.isGuest && !State.isAdmin && State.cu.status && State.cu.status !== 'approved') {
+    toast(t('pendingBanner'), 'warning');
+    return false;
+  }
   if (State.cu && !State.isGuest) return true;
   document.getElementById('appScreen').classList.remove('show');
   document.getElementById('navbar').style.display = 'none';
@@ -10238,7 +10298,7 @@ function cmPostMenu(postId, canDelete) {
   const isAr = State.lang === 'ar';
   let html = '<div class="cm-sheet-actions">';
   if (canDelete) html += '<button class="photo-sheet-btn danger" onclick="handleDeletePost(\'' + postId + '\')">' + t('cmDelete') + '</button>';
-  html += '<button class="photo-sheet-btn" onclick="reportContent(\'post\',\'' + postId + '\',\'inappropriate\');closeModal(\'cmMenuModal\')">' + t('cmReport') + '</button>';
+  html += '<button class="photo-sheet-btn" onclick="openReportForm(\'post\',\'' + postId + '\');closeModal(\'cmMenuModal\')">' + t('cmReport') + '</button>';
   html += '<button class="photo-sheet-btn cancel" onclick="closeModal(\'cmMenuModal\')">' + (isAr ? 'إلغاء' : 'Cancel') + '</button></div>';
   const body = document.getElementById('cmMenuBody'); if (body) body.innerHTML = html;
   openModal('cmMenuModal');
