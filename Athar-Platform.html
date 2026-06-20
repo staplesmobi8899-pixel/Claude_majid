@@ -428,6 +428,8 @@ body {
   opacity: var(--app-bg-opacity, 0.6);
 }
 #appScreen > * { position: relative; z-index: 1; }
+/* Modals placed inside #appScreen must stay fixed full-screen overlays */
+#appScreen > .modal-overlay { position: fixed; z-index: 600; }
 [data-theme="dark"] #appScreen::before { opacity: 0.10; filter: saturate(0.7); }
 
 /* ── PAGES ── */
