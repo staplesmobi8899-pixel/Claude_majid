@@ -4917,12 +4917,45 @@ const Sync = {
     })));
     console.log('[Sync] posts loaded:', posts.length);
   },
+  async pullCommunities() {
+    if (!sb) return;
+    const res = await Promise.all([
+      sb.from('communities').select('*').order('created_at', { ascending: false }),
+      sb.from('community_members').select('*')
+    ]);
+    if (res[0].error) { console.error('[pullCommunities]', res[0].error.message); return; }
+    const gs = res[0].data || [], ms = res[1].data || [];
+    const memBy = {}, penBy = {};
+    ms.forEach(m => { const b = (m.status === 'pending') ? penBy : memBy; (b[m.community_id] = b[m.community_id] || []).push(m.user_id); });
+    CommunityGroupService.save(gs.map(g => ({
+      id: g.id, name: g.name, desc: g.description || '', cover: g.cover || null, private: !!g.private,
+      owner: g.owner, members: memBy[g.id] || [], pending: penBy[g.id] || [], pinned: g.pinned || [], createdAt: g.created_at
+    })));
+  },
+  async pullPartners() {
+    if (!sb) return;
+    const { data, error } = await sb.from('partners').select('*').order('created_at', { ascending: false });
+    if (error) { console.error('[pullPartners]', error.message); return; }
+    PartnerService.save((data || []).map(p => ({ id: p.id, org: p.org, contact: p.contact, email: p.email, phone: p.phone, type: p.type, msg: p.msg, status: p.status, featured: !!p.featured, logo: p.logo, date: p.created_at })));
+  },
+  async pullNotifications() {
+    if (!sb || !State.cu || !isUuid(State.cu.id)) return;
+    const { data, error } = await sb.from('notifications').select('*').eq('user_id', State.cu.id).order('created_at', { ascending: false });
+    if (error) { console.error('[pullNotifications]', error.message); return; }
+    const m = NotificationService._all();
+    m[State.cu.id] = (data || []).map(n => ({ id: n.id, ar: n.ar, en: n.en, type: n.type, read: n.read, createdAt: n.created_at, link: null }));
+    NotificationService._save(m);
+  },
   async pullAll() {
     if (!sb) { toast('غير متصل بقاعدة البيانات', 'warning'); return; }
     try {
       const n = await this.pullCampaigns();
       await this.pullUsers();
       await this.pullPosts();
+      await this.pullCommunities();
+      await this.pullPartners();
+      await this.pullNotifications();
+      try { updateBell(); } catch (e) {}
       toast((State.lang === 'ar' ? 'تمت المزامنة — حملات: ' : 'Synced — campaigns: ') + (n || 0), 'success');
     } catch (e) { console.error('[Sync.pullAll]', e); toast('Sync error: ' + (e && e.message), 'error'); }
   },
@@ -5673,7 +5706,7 @@ const Models = {
   /** Create a valid Partner request */
   createPartner(data) {
     return {
-      id:      'p' + Date.now(),
+      id:      newId(),
       org:     String(data.org     || '').trim(),
       contact: String(data.contact || '').trim(),
       email:   String(data.email   || '').toLowerCase().trim(),
@@ -5865,10 +5898,15 @@ const NotificationService = {
     if (this.isMuted(uid, type)) return;
     const m = this._all();
     if (!m[uid]) m[uid] = [];
-    m[uid].push({ id: 'n' + Date.now() + Math.random().toString(36).slice(2, 5),
+    const nid = newId();
+    m[uid].push({ id: nid,
       ar, en, type: type, read: false, createdAt: new Date().toISOString(),
       link: (meta && meta.link) || null });
     this._save(m);
+    if (sb && isUuid(uid)) {
+      sb.from('notifications').insert({ id: nid, user_id: uid, ar: ar, en: en, type: type, read: false })
+        .then(function (r) { if (r.error) console.error('[notif.insert]', r.error.message); });
+    }
     // Live + optional web push for the current user
     if (typeof RealtimeService !== 'undefined') RealtimeService.emit({ type: 'notification', uid: uid });
     if (State.cu && State.cu.id === uid && typeof PushService !== 'undefined') {
@@ -5880,10 +5918,12 @@ const NotificationService = {
   markAllRead(uid) {
     const m = this._all(); if (!uid || !m[uid]) return;
     m[uid].forEach(n => { n.read = true; }); this._save(m);
+    if (sb && isUuid(uid)) sb.from('notifications').update({ read: true }).eq('user_id', uid).then(function () {});
   },
   markRead(uid, id) {
     const m = this._all(); if (!uid || !m[uid]) return;
     const n = m[uid].find(x => x.id === id); if (n) { n.read = true; this._save(m); }
+    if (sb && isUuid(id)) sb.from('notifications').update({ read: true }).eq('id', id).then(function () {});
   },
   ensureWelcome(user) {
     if (!user || !user.id || user.isGuest || user.email === CONFIG.ADMIN_EMAIL) return;
@@ -6556,7 +6596,12 @@ const PartnerService = {
   add(p)      {
     const list = this.getAll();
     list.unshift(p);
-    return this.save(list);
+    this.save(list);
+    if (sb && isUuid(p.id)) {
+      sb.from('partners').insert({ id: p.id, org: p.org, contact: p.contact, email: p.email, phone: p.phone, type: p.type, msg: p.msg, status: p.status || 'pending', featured: !!p.featured, logo: p.logo || null })
+        .then(function (r) { if (r.error) console.error('[partners.insert]', r.error.message); });
+    }
+    return true;
   },
   updateById(id, patch) {
     const list = this.getAll();
@@ -6564,6 +6609,11 @@ const PartnerService = {
     if (i === -1) return null;
     list[i] = Object.assign({}, list[i], patch);
     this.save(list);
+    if (sb && isUuid(id)) {
+      const m = {};
+      ['org', 'contact', 'email', 'phone', 'type', 'msg', 'status', 'featured', 'logo'].forEach(k => { if (k in patch) m[k] = patch[k]; });
+      if (Object.keys(m).length) sb.from('partners').update(m).eq('id', id).then(function () {});
+    }
     return list[i];
   },
   approve(id) { return this.updateById(id, { status: 'approved' }); },
@@ -6673,12 +6723,13 @@ const CommunityService = {
     list.unshift(post);
     const ok = this.save(list);
     if (!ok) { list.shift(); return null; }
-    // Write-through (main-feed posts only; community-group posts stay local until 14.4)
-    if (sb && isUuid(post.id) && isUuid(post.author.id) && !post.communityId) {
+    // Write-through (feed + community-group posts)
+    if (sb && isUuid(post.id) && isUuid(post.author.id)) {
       sb.from('posts').insert({
         id: post.id, type: post.type, author_id: post.author.id,
         text: post.text, media: post.media, before_img: post.beforeImg, after_img: post.afterImg,
-        camp_id: isUuid(post.campId) ? post.campId : null, community_id: null
+        camp_id: isUuid(post.campId) ? post.campId : null,
+        community_id: isUuid(post.communityId) ? post.communityId : null
       }).then(function (r) { if (r.error) console.error('[posts.insert]', r.error.message); });
     }
     return post;
@@ -6714,7 +6765,7 @@ const CommunityService = {
     if (!c.text) return null;
     p.comments = p.comments || []; p.comments.push(c);
     this.save(list);
-    if (sb && isUuid(id) && isUuid(c.author.id) && !p.communityId) {
+    if (sb && isUuid(id) && isUuid(c.author.id)) {
       sb.from('post_comments').insert({
         id: c.id, post_id: id, author_id: c.author.id, text: c.text,
         parent_id: isUuid(c.parentId) ? c.parentId : null
@@ -6815,7 +6866,7 @@ const CommunityGroupService = {
     const u = State.cu; if (!u || !u.id) return null;
     const list = this.getAll();
     const g = {
-      id: 'grp' + Date.now() + Math.random().toString(36).slice(2, 5),
+      id: newId(),
       name: String(data.name || '').trim(),
       desc: String(data.desc || '').trim(),
       cover: data.cover || null,
@@ -6829,19 +6880,40 @@ const CommunityGroupService = {
     if (!g.name) return null;
     list.unshift(g);
     if (!this.save(list)) { list.shift(); return null; }
+    if (sb && isUuid(g.id) && isUuid(u.id)) {
+      sb.from('communities').insert({ id: g.id, name: g.name, description: g.desc, cover: g.cover, private: g.private, owner: u.id, pinned: [] })
+        .then(function (r) {
+          if (r.error) { console.error('[communities.insert]', r.error.message); return; }
+          sb.from('community_members').insert({ community_id: g.id, user_id: u.id, status: 'member' }).then(function () {});
+        });
+    }
     return g;
   },
   update(id, changes) {
     const list = this.getAll(); const i = list.findIndex(g => g.id === id);
     if (i === -1) return false;
     list[i] = { ...list[i], ...changes };
-    this.save(list); return list[i];
+    this.save(list);
+    if (sb && isUuid(id)) {
+      const m = {};
+      if ('name' in changes) m.name = changes.name;
+      if ('desc' in changes) m.description = changes.desc;
+      if ('cover' in changes) m.cover = changes.cover;
+      if ('private' in changes) m.private = changes.private;
+      if ('pinned' in changes) m.pinned = changes.pinned;
+      if (Object.keys(m).length) sb.from('communities').update(m).eq('id', id).then(function () {});
+    }
+    return list[i];
   },
   remove(id) {
     this.save(this.getAll().filter(g => g.id !== id));
     // Also drop posts that belonged to this community
     const posts = CommunityService.getAll().filter(p => p.communityId !== id);
     CommunityService.save(posts);
+    if (sb && isUuid(id)) {
+      sb.from('posts').delete().eq('community_id', id).then(function () {});
+      sb.from('communities').delete().eq('id', id).then(function () {});
+    }
   },
   isMember(g, uid) { return !!(g && uid && (g.members || []).includes(uid)); },
   isOwner(g, uid)  { return !!(g && uid && g.owner === uid); },
@@ -6854,11 +6926,13 @@ const CommunityGroupService = {
     if (g.private) {
       if (!(g.pending || []).includes(u.id)) g.pending = [...(g.pending || []), u.id];
       this.save(list);
+      if (sb && isUuid(id) && isUuid(u.id)) sb.from('community_members').upsert({ community_id: id, user_id: u.id, status: 'pending' }).then(function () {});
       if (g.owner) NotificationService.add(g.owner, 'طلب انضمام جديد لمجتمعك', 'New join request for your community', 'community');
       return { ok: true, pending: true };
     }
     g.members = [...(g.members || []), u.id];
     this.save(list);
+    if (sb && isUuid(id) && isUuid(u.id)) sb.from('community_members').upsert({ community_id: id, user_id: u.id, status: 'member' }).then(function () {});
     if (g.owner && g.owner !== u.id) NotificationService.add(g.owner, 'عضو جديد انضم لمجتمعك', 'A new member joined your community', 'community');
     return { ok: true };
   },
@@ -6868,7 +6942,9 @@ const CommunityGroupService = {
     if (!g || g.owner === u.id) return false; // owner can't leave; must delete
     g.members = (g.members || []).filter(x => x !== u.id);
     g.pending = (g.pending || []).filter(x => x !== u.id);
-    this.save(list); return true;
+    this.save(list);
+    if (sb && isUuid(id) && isUuid(u.id)) sb.from('community_members').delete().eq('community_id', id).eq('user_id', u.id).then(function () {});
+    return true;
   },
   approve(id, uid) {
     const list = this.getAll(); const g = list.find(x => x.id === id);
@@ -6876,6 +6952,7 @@ const CommunityGroupService = {
     g.pending = (g.pending || []).filter(x => x !== uid);
     if (!(g.members || []).includes(uid)) g.members = [...(g.members || []), uid];
     this.save(list);
+    if (sb && isUuid(id) && isUuid(uid)) sb.from('community_members').upsert({ community_id: id, user_id: uid, status: 'member' }).then(function () {});
     NotificationService.add(uid, 'تمت الموافقة على انضمامك للمجتمع', 'Your community join was approved', 'community');
     return true;
   },
@@ -6883,13 +6960,17 @@ const CommunityGroupService = {
     const list = this.getAll(); const g = list.find(x => x.id === id);
     if (!g) return false;
     g.pending = (g.pending || []).filter(x => x !== uid);
-    this.save(list); return true;
+    this.save(list);
+    if (sb && isUuid(id) && isUuid(uid)) sb.from('community_members').delete().eq('community_id', id).eq('user_id', uid).then(function () {});
+    return true;
   },
   removeMember(id, uid) {
     const list = this.getAll(); const g = list.find(x => x.id === id);
     if (!g || uid === g.owner) return false;
     g.members = (g.members || []).filter(x => x !== uid);
-    this.save(list); return true;
+    this.save(list);
+    if (sb && isUuid(id) && isUuid(uid)) sb.from('community_members').delete().eq('community_id', id).eq('user_id', uid).then(function () {});
+    return true;
   },
   togglePin(id, postId) {
     const list = this.getAll(); const g = list.find(x => x.id === id);
@@ -6897,7 +6978,9 @@ const CommunityGroupService = {
     g.pinned = g.pinned || [];
     if (g.pinned.includes(postId)) g.pinned = g.pinned.filter(p => p !== postId);
     else g.pinned = [postId, ...g.pinned];
-    this.save(list); return true;
+    this.save(list);
+    if (sb && isUuid(id)) sb.from('communities').update({ pinned: g.pinned }).eq('id', id).then(function () {});
+    return true;
   }
 };
 
@@ -9831,20 +9914,22 @@ async function cmPickCommunityCover(event) {
   } catch (e) { toast(t('uploadError'), 'error'); }
   event.target.value = '';
 }
-function submitCommunity() {
+async function submitCommunity() {
   if (!State.cu || State.isGuest) { requireAuth(); return; }
   const g = i => document.getElementById(i);
   const name = g('cgName') ? g('cgName').value.trim() : '';
   if (!name) { const e = g('cgErr'); if (e) e.textContent = t('errorRequired'); return; }
   const desc = g('cgDesc') ? g('cgDesc').value.trim() : '';
   const priv = g('cgPrivate') ? g('cgPrivate').checked : false;
+  let cover = CommunityUI.communityCover;
+  if (sb && cover) { try { cover = await uploadImage(cover, 'communities'); } catch (e) {} }
   if (CommunityUI.editCommunity) {
-    CommunityGroupService.update(CommunityUI.editCommunity, { name, desc, private: priv, cover: CommunityUI.communityCover });
+    CommunityGroupService.update(CommunityUI.editCommunity, { name, desc, private: priv, cover: cover });
     closeModal('communityModal');
     toast(t('cgSavedToast'), 'success');
     cmRenderCommunityDetail(CommunityUI.editCommunity);
   } else {
-    const created = CommunityGroupService.create({ name, desc, private: priv, cover: CommunityUI.communityCover });
+    const created = CommunityGroupService.create({ name, desc, private: priv, cover: cover });
     if (!created) { const e = g('cgErr'); if (e) e.textContent = t('cmStorageFull'); return; }
     closeModal('communityModal');
     toast(t('cgCreatedToast'), 'success');
@@ -10085,7 +10170,7 @@ async function submitCmPost() {
   try {
     // Upload images to Storage (real URLs) instead of base64
     let media = CommunityUI.media.slice(), before = CommunityUI.before, after = CommunityUI.after;
-    if (sb && !communityId) {
+    if (sb) {
       try {
         const out = []; for (const m of media) out.push(await uploadImage(m, 'posts')); media = out;
         if (before) before = await uploadImage(before, 'posts');
