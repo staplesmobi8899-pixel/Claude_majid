@@ -428,8 +428,11 @@ body {
   opacity: var(--app-bg-opacity, 0.6);
 }
 #appScreen > * { position: relative; z-index: 1; }
-/* Modals placed inside #appScreen must stay fixed full-screen overlays */
+/* Modals/overlays placed inside #appScreen must stay fixed full-screen overlays */
 #appScreen > .modal-overlay { position: fixed; z-index: 600; }
+#appScreen > .adm-modal-backdrop { position: fixed; z-index: 700; }
+/* Hide bottom nav + FABs whenever a modal is open (so it can't overlap) */
+body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab, body.modal-open #createFab { display: none !important; }
 [data-theme="dark"] #appScreen::before { opacity: 0.10; filter: saturate(0.7); }
 
 /* ── PAGES ── */
@@ -7652,10 +7655,12 @@ function admOpenModal(html) {
   if (!m || !c) return;
   c.innerHTML = html;
   m.classList.add('open');
+  if (typeof syncModalOpenClass === 'function') syncModalOpenClass();
 }
 function admCloseModal() {
   const m = admEl('admModal');
   if (m) m.classList.remove('open');
+  if (typeof syncModalOpenClass === 'function') syncModalOpenClass();
 }
 
 /* ── Main entry ── */
@@ -9041,7 +9046,8 @@ const Router = {
     }
     try {
       // Close any open modal/sheet so it never bleeds onto the next page
-      document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+      document.querySelectorAll('.modal-overlay.open, .adm-modal-backdrop.open').forEach(m => m.classList.remove('open'));
+      document.body.classList.remove('modal-open');
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
       const pg = document.getElementById(name + 'Page');
@@ -9115,10 +9121,14 @@ function toggleMenu(id) {
   if (!isOpen) { body.style.display = 'block'; if (arr) arr.textContent = '⌄'; }
 }
 
+function syncModalOpenClass() {
+  document.body.classList.toggle('modal-open', !!document.querySelector('.modal-overlay.open, .adm-modal-backdrop.open'));
+}
 function openModal(id) {
   const el = document.getElementById(id);
   if (!el) return;
   el.classList.add('open');
+  syncModalOpenClass();
   if (id === 'createModal') {
     const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
     const di = document.getElementById('campDate');
@@ -9129,6 +9139,7 @@ function openModal(id) {
 function closeModal(id) {
   const el = document.getElementById(id);
   if (el) el.classList.remove('open');
+  syncModalOpenClass();
 }
 
 function switchTab(tab) {
@@ -10925,7 +10936,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Attach modal backdrop close handlers
     document.querySelectorAll('.modal-overlay').forEach(m => {
       m.addEventListener('click', e => {
-        if (e.target === m) m.classList.remove('open');
+        if (e.target === m) { m.classList.remove('open'); if (typeof syncModalOpenClass === 'function') syncModalOpenClass(); }
       });
     });
   } catch (e) {
