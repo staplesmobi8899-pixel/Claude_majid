@@ -442,15 +442,30 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
 }
 .page.active {
   display: block;
-  animation: pageIn 0.34s cubic-bezier(0.22, 0.61, 0.36, 1);
+  position: relative;
+  z-index: 2;
+  animation: pageIn 0.34s cubic-bezier(0.33, 1, 0.68, 1);
 }
-
+/* Outgoing page fades out on top while the new one fades in (cross-dissolve) */
+.page.page-leaving {
+  display: block !important;
+  position: absolute;
+  top: calc(60px + env(safe-area-inset-top));
+  left: 0; right: 0;
+  z-index: 1;
+  pointer-events: none;
+  animation: pageOut 0.24s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+}
 @keyframes pageIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }}
+  from { opacity: 0; transform: translate3d(0, 8px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }}
+@keyframes pageOut {
+  from { opacity: 1; transform: translate3d(0, 0, 0); }
+  to   { opacity: 0; transform: translate3d(0, -6px, 0); }}
 
 @media (prefers-reduced-motion: reduce) {
   .page.active { animation: none; }
+  .page.page-leaving { display: none !important; animation: none; }
 }
 
 @keyframes fadeUp {
@@ -3767,9 +3782,6 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
   -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain;
 }
 
-/* Smooth page transition */
-.page.active { animation: pageIn 0.28s var(--ease-soft); }
-@keyframes pageIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (prefers-reduced-motion: reduce) {
   .page.active, .cm-action.on svg { animation: none; }
@@ -9221,10 +9233,17 @@ const Router = {
       // Close any open modal/sheet so it never bleeds onto the next page
       document.querySelectorAll('.modal-overlay.open, .adm-modal-backdrop.open').forEach(m => m.classList.remove('open'));
       document.body.classList.remove('modal-open');
+      // Smooth cross-fade: briefly keep the outgoing page fading out
+      const _outgoing = document.querySelector('.page.active');
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.page.page-leaving').forEach(p => p.classList.remove('page-leaving'));
       document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
       const pg = document.getElementById(name + 'Page');
       const nb = document.getElementById('nav-' + name);
+      if (_outgoing && _outgoing !== pg) {
+        _outgoing.classList.add('page-leaving');
+        setTimeout(function () { _outgoing.classList.remove('page-leaving'); }, 240);
+      }
       if (pg) pg.classList.add('active');
       if (nb) nb.classList.add('active');
       State.setPage(name);
