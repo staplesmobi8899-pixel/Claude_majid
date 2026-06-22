@@ -2094,6 +2094,16 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
 .cm-trending-h { font-size: var(--fs-xs); font-weight: 800; color: var(--charcoal-50); margin-inline-end: var(--sp-1); }
 .cm-trending .cm-hashtag { background: var(--olive-pale); border: none; border-radius: var(--r-full); padding: 3px var(--sp-3); font-size: var(--fs-xs); }
 .ht-section-h { font-size: var(--fs-sm); font-weight: 800; color: var(--olive); margin: var(--sp-4) 0 var(--sp-2); }
+/* Help guide */
+.help-body { padding: var(--sp-2) 0 var(--sp-4); }
+.help-row { display: flex; align-items: flex-start; gap: var(--sp-3); padding: var(--sp-3) 0; border-bottom: 1px solid var(--line-sand-6); }
+.help-row:last-of-type { border-bottom: none; }
+.help-ico { flex: none; width: 40px; height: 40px; border-radius: var(--r-md); background: var(--olive-pale); color: var(--olive); display: flex; align-items: center; justify-content: center; }
+.help-ico svg { width: 20px; height: 20px; }
+.help-h { font-size: var(--fs-base); font-weight: 800; color: var(--charcoal); }
+.help-d { font-size: var(--fs-sm); color: var(--charcoal-50); line-height: 1.6; }
+.help-tip { display: flex; align-items: center; gap: 6px; margin-top: var(--sp-3); padding: var(--sp-3); border-radius: var(--r-md); background: var(--warm-beige); font-size: var(--fs-sm); font-weight: 700; color: var(--olive); }
+.help-tip svg { width: 16px; height: 16px; flex: none; }
 /* Community redesign — horizontal sections */
 .cm-sec { margin: var(--sp-4) 0; }
 .cm-sec-h { font-size: var(--fs-base); font-weight: 800; color: var(--charcoal); margin-bottom: var(--sp-3); }
@@ -4120,6 +4130,15 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
     <div class="cert-list" id="profileCerts"></div>
     <div class="profile-menu">
       <div class="menu-card">
+        <div class="menu-row" onclick="openHelpGuide()">
+          <div class="menu-icon"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.7"/><line x1="12" y1="17" x2="12" y2="17"/></svg></div>
+          <div class="menu-texts">
+            <div class="menu-title" data-i18n="helpTitle"></div>
+            <div class="menu-sub" data-i18n="helpSub"></div>
+          </div>
+          <div class="menu-arrow">›</div>
+        </div>
+
         <div class="menu-row" onclick="goPage('settings')">
           <div class="menu-icon"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.2a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 4 13H3.8a2 2 0 0 1 0-4H4a1.6 1.6 0 0 0 1.1-2.7l-.1-.1A2 2 0 1 1 7.8 3.4l.1.1A1.6 1.6 0 0 0 10 4V3.8a2 2 0 0 1 4 0V4a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.6 1.6 0 0 0 20 10h.2a2 2 0 0 1 0 4z"/></svg></div>
           <div class="menu-texts">
@@ -4845,6 +4864,16 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
     <div id="hashtagBody"></div>
   </div>
 </div>
+<div class="modal-overlay" id="helpModal">
+  <div class="modal-sheet">
+    <div class="modal-bar">
+      <button type="button" class="modal-close" onclick="closeModal('helpModal')" aria-label="back">‹</button>
+      <div class="modal-handle"></div>
+    </div>
+    <div class="modal-title" data-i18n="helpTitle"></div>
+    <div id="helpBody" class="help-body"></div>
+  </div>
+</div>
 <div class="modal-overlay" id="reportModal">
   <div class="modal-sheet">
     <div class="modal-bar">
@@ -5388,7 +5417,7 @@ const T = {
     certsTitle: 'الشهادات', timelineTitle: 'سجل النشاط', noCerts: 'شهاداتك', certsPending: 'قيد الانتظار', noActivity: 'ابدأ رحلتك — انضمّ لأول حملة', viewCertBtn: 'عرض',
     tlJoin: 'انضممت إلى', tlDone: 'أكملت حملة', tlBadge: 'حصلت على شارة', tlAccount: 'بدأت رحلتك في أثر',
     certHeading: 'شهادة تقدير', certBody1: 'تشهد منصة أثر أنّ', certBody2: 'قد أتمّ بنجاح المشاركة في', certHoursLine: 'بإجمالي ساعات تطوّع', shareCert: 'مشاركة الشهادة', certShared: 'تم نسخ نص الشهادة',
-    settingsTitle: 'الإعدادات', settingsSub: 'المظهر · اللغة · الخصوصية · الدعم',
+    settingsTitle: 'الإعدادات', settingsSub: 'المظهر · اللغة · الخصوصية · الدعم', helpTitle: 'كيف يعمل أثر؟', helpSub: 'دليل سريع لأقسام التطبيق',
     setAppearance: 'المظهر', setDark: 'الوضع الداكن', setDarkSub: 'مظهر مريح للعين ليلًا', setLang: 'اللغة', setLangSub: 'لغة الواجهة',
     setPrivacyGroup: 'الخصوصية', setNotifPrefs: 'تفضيلات الإشعارات', setNtCampaign: 'الحملات والمشاركة', setNtCommunity: 'تفاعلات المجتمع', setNtAchievement: 'الإنجازات', setNtAnnounce: 'إعلانات الإدارة', setQuiet: 'الوضع الصامت', setQuietSub: 'إيقاف التنبيهات المنبثقة', setPush: 'تنبيهات المتصفح', setPushOn: 'مفعّلة', setPushOff: 'اضغط للتفعيل', setPushNo: 'غير مدعومة', setPublic: 'ملف عام', setPublicSub: 'السماح للآخرين بزيارة ملفك', setNotif: 'الإشعارات', setNotifSub: 'تنبيهات الحملات والتحديثات',
     setSupportGroup: 'الدعم والسياسات', setContact: 'تواصل معنا', setContactSub: 'مساعدة أو اقتراح', setPrivacyPolicy: 'سياسة الخصوصية', setTerms: 'شروط الاستخدام',
@@ -5579,7 +5608,7 @@ const T = {
     certsTitle: 'Certificates', timelineTitle: 'Activity', noCerts: 'Your certificates', certsPending: 'Pending', noActivity: 'Start your journey — join your first campaign', viewCertBtn: 'View',
     tlJoin: 'Joined', tlDone: 'Completed', tlBadge: 'Earned a badge', tlAccount: 'Started your ATHAR journey',
     certHeading: 'Certificate of Appreciation', certBody1: 'ATHAR certifies that', certBody2: 'has successfully participated in', certHoursLine: 'total volunteer hours', shareCert: 'Share certificate', certShared: 'Certificate text copied',
-    settingsTitle: 'Settings', settingsSub: 'Appearance · Language · Privacy · Support',
+    settingsTitle: 'Settings', settingsSub: 'Appearance · Language · Privacy · Support', helpTitle: 'How ATHAR works', helpSub: 'A quick guide to the app',
     setAppearance: 'Appearance', setDark: 'Dark mode', setDarkSub: 'Easier on the eyes at night', setLang: 'Language', setLangSub: 'Interface language',
     setPrivacyGroup: 'Privacy', setNotifPrefs: 'Notification preferences', setNtCampaign: 'Campaigns & participation', setNtCommunity: 'Community interactions', setNtAchievement: 'Achievements', setNtAnnounce: 'Admin announcements', setQuiet: 'Quiet mode', setQuietSub: 'Mute pop-up alerts', setPush: 'Browser notifications', setPushOn: 'Enabled', setPushOff: 'Tap to enable', setPushNo: 'Not supported', setPublic: 'Public profile', setPublicSub: 'Let others visit your profile', setNotif: 'Notifications', setNotifSub: 'Campaign alerts and updates',
     setSupportGroup: 'Support & Policies', setContact: 'Contact us', setContactSub: 'Help or feedback', setPrivacyPolicy: 'Privacy policy', setTerms: 'Terms of use',
@@ -6882,6 +6911,27 @@ function reportContent(targetType, targetId, reason, note) {
   ReportService.add(targetType, targetId, reason, State.cu.id, note);
   toast(State.lang === 'ar' ? 'تم استلام البلاغ، شكرًا لك' : 'Report received, thank you', 'success');
 }
+function openHelpGuide() {
+  const isAr = State.lang === 'ar';
+  const steps = [
+    { ic: 'pin',    t: isAr ? 'الرئيسية' : 'Home',        d: isAr ? 'تصفّح الحملات القريبة وأبرز المتطوّعين، وانضمّ بضغطة.' : 'Browse nearby campaigns and top volunteers, and join in a tap.' },
+    { ic: 'search', t: isAr ? 'استكشف' : 'Explore',       d: isAr ? 'ابحث وفلتر الحملات حسب الفئة والمدينة.' : 'Search and filter campaigns by category and city.' },
+    { ic: 'people', t: isAr ? 'المجتمع' : 'Community',     d: isAr ? 'انشر لحظاتك، تفاعل، أنشئ/انضمّ لمجتمعات، واستعمل #هاشتاغ.' : 'Share moments, react, create/join communities, and use #hashtags.' },
+    { ic: 'leaf',   t: isAr ? 'من نحن' : 'About',          d: isAr ? 'قصة أثر، الشركاء، وكن شريكًا داعمًا.' : 'The ATHAR story, partners, and become a supporter.' },
+    { ic: 'person', t: isAr ? 'الملف' : 'Profile',         d: isAr ? 'ساعاتك، حملاتك، شهاداتك وإعداداتك.' : 'Your hours, campaigns, certificates and settings.' }
+  ];
+  const fab = isAr ? 'زر (+) لإنشاء حملة أو منشور.' : 'The (+) button creates a campaign or post.';
+  const body = document.getElementById('helpBody');
+  if (body) {
+    body.innerHTML = steps.map(s =>
+      '<div class="help-row"><span class="help-ico">' + icon(s.ic) + '</span>' +
+      '<div class="help-txt"><div class="help-h">' + s.t + '</div><div class="help-d">' + s.d + '</div></div></div>'
+    ).join('') +
+    '<div class="help-tip">' + icon('star') + ' ' + fab + '</div>';
+  }
+  openModal('helpModal');
+}
+
 let _reportTarget = { type: null, id: null };
 function openReportForm(type, id) {
   if (!requireAuth()) return;
