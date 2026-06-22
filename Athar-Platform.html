@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>أَثَرْ | ATHAR</title>
+<meta name="description" content="منصة التطوّع والأثر المجتمعي للشباب السوري">
+<meta name="theme-color" content="#6b7a4f">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="أَثَرْ">
+<meta name="mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 
@@ -5103,14 +5111,14 @@ const Sync = {
   async pullUsers() {
     if (!sb) return;
     const { data, error } = await sb.from('profiles').select('*');
-    if (error) { console.error('[pullUsers]', error.message); toast('DB users: ' + error.message, 'error'); return; }
+    if (error) { console.error('[pullUsers]', error.message); return; }
     UserService.save((data || []).map(p => profileToUser(p)));
     console.log('[Sync] users loaded:', (data || []).length);
   },
   async pullCampaigns() {
     if (!sb) return;
     const { data: camps, error } = await sb.from('campaigns').select('*').order('created_at', { ascending: false });
-    if (error) { console.error('[pullCampaigns]', error.message); toast('DB campaigns: ' + error.message, 'error'); return; }
+    if (error) { console.error('[pullCampaigns]', error.message); return; }
     const { data: parts } = await sb.from('campaign_participants').select('*');
     const byCamp = {};
     (parts || []).forEach(p => { (byCamp[p.campaign_id] = byCamp[p.campaign_id] || []).push(p); });
@@ -5170,17 +5178,16 @@ const Sync = {
     NotificationService._save(m);
   },
   async pullAll() {
-    if (!sb) { toast('غير متصل بقاعدة البيانات', 'warning'); return; }
+    if (!sb) return;
     try {
-      const n = await this.pullCampaigns();
+      await this.pullCampaigns();
       await this.pullUsers();
       await this.pullPosts();
       await this.pullCommunities();
       await this.pullPartners();
       await this.pullNotifications();
       try { updateBell(); } catch (e) {}
-      toast((State.lang === 'ar' ? 'تمت المزامنة — حملات: ' : 'Synced — campaigns: ') + (n || 0), 'success');
-    } catch (e) { console.error('[Sync.pullAll]', e); toast('Sync error: ' + (e && e.message), 'error'); }
+    } catch (e) { console.error('[Sync.pullAll]', e); }
   },
   /** Refresh shared data then re-render the current page. */
   async refresh() {
@@ -5422,7 +5429,7 @@ const T = {
     setPrivacyGroup: 'الخصوصية', setNotifPrefs: 'تفضيلات الإشعارات', setNtCampaign: 'الحملات والمشاركة', setNtCommunity: 'تفاعلات المجتمع', setNtAchievement: 'الإنجازات', setNtAnnounce: 'إعلانات الإدارة', setQuiet: 'الوضع الصامت', setQuietSub: 'إيقاف التنبيهات المنبثقة', setPush: 'تنبيهات المتصفح', setPushOn: 'مفعّلة', setPushOff: 'اضغط للتفعيل', setPushNo: 'غير مدعومة', setPublic: 'ملف عام', setPublicSub: 'السماح للآخرين بزيارة ملفك', setNotif: 'الإشعارات', setNotifSub: 'تنبيهات الحملات والتحديثات',
     setSupportGroup: 'الدعم والسياسات', setContact: 'تواصل معنا', setContactSub: 'مساعدة أو اقتراح', setPrivacyPolicy: 'سياسة الخصوصية', setTerms: 'شروط الاستخدام',
     notifOn: 'تم تفعيل الإشعارات', notifOff: 'تم إيقاف الإشعارات',
-    policyPrivacyTitle: 'سياسة الخصوصية', policyPrivacyBody: 'نحن في «أثر» نحترم خصوصيتك. تُحفظ بياناتك (الاسم، البريد، الهاتف، نشاطك التطوّعي) على جهازك محليًا فقط لتشغيل التطبيق، ولا تُشارك مع أي طرف ثالث. يمكنك تعديل معلوماتك أو حذف حسابك في أي وقت. صورتك الشخصية وصورة الهوية تُستخدمان فقط للتحقّق وعرض ملفك.',
+    policyPrivacyTitle: 'سياسة الخصوصية', policyPrivacyBody: 'نحن في «أَثَرْ» نحترم خصوصيتك. نجمع بياناتك (الاسم، البريد الإلكتروني، الهاتف، المدينة، نشاطك التطوّعي) لتشغيل المنصة، وتُخزَّن بشكل آمن على خوادم سحابية موثوقة. بعض المعلومات — مثل اسمك الأول، ساعات تطوّعك، ومنشوراتك العامة — قد تظهر للمستخدمين الآخرين كجزء من طبيعة المنصة الاجتماعية، مع إخفاء اسمك الكامل افتراضيًا. لا نبيع بياناتك لأي طرف ثالث. تُستخدم صورتك الشخصية وصورة الهوية للتحقّق وعرض ملفك فقط. يمكنك تعديل معلوماتك أو طلب حذف حسابك في أي وقت.',
     policyTermsTitle: 'شروط الاستخدام', policyTermsBody: 'باستخدامك «أثر» فإنك توافق على المشاركة في الحملات التطوّعية باحترام ومسؤولية، وعلى تقديم معلومات صحيحة، وعلى الالتزام بمواعيد الحملات التي تنضمّ إليها. يحقّ للإدارة مراجعة الحملات المنشورة وتعليق الحسابات المخالفة. الهدف من المنصة خدمة المجتمع وصناعة أثر إيجابي.',
     supportMsg: 'للتواصل أو الاقتراحات: support@athar.sy', appVersion: 'أثر · الإصدار 1.0',
     photoSheetTitle: 'صورة الملف الشخصي', photoChoose: 'اختر صورة', photoRemove: 'حذف الصورة الحالية', photoRemoved: 'تم حذف الصورة', sheetCancel: 'إلغاء',
@@ -5613,7 +5620,7 @@ const T = {
     setPrivacyGroup: 'Privacy', setNotifPrefs: 'Notification preferences', setNtCampaign: 'Campaigns & participation', setNtCommunity: 'Community interactions', setNtAchievement: 'Achievements', setNtAnnounce: 'Admin announcements', setQuiet: 'Quiet mode', setQuietSub: 'Mute pop-up alerts', setPush: 'Browser notifications', setPushOn: 'Enabled', setPushOff: 'Tap to enable', setPushNo: 'Not supported', setPublic: 'Public profile', setPublicSub: 'Let others visit your profile', setNotif: 'Notifications', setNotifSub: 'Campaign alerts and updates',
     setSupportGroup: 'Support & Policies', setContact: 'Contact us', setContactSub: 'Help or feedback', setPrivacyPolicy: 'Privacy policy', setTerms: 'Terms of use',
     notifOn: 'Notifications enabled', notifOff: 'Notifications disabled',
-    policyPrivacyTitle: 'Privacy Policy', policyPrivacyBody: 'At ATHAR we respect your privacy. Your data (name, email, phone, volunteering activity) is stored locally on your device only to run the app, and is never shared with third parties. You can edit your information or delete your account at any time. Your profile and ID photos are used only for verification and displaying your profile.',
+    policyPrivacyTitle: 'Privacy Policy', policyPrivacyBody: 'At ATHAR we respect your privacy. We collect your data (name, email, phone, city, volunteering activity) to operate the platform, stored securely on trusted cloud servers. Some information — such as your first name, volunteer hours and public posts — may be visible to other users as part of the social nature of the platform, while your full name is masked by default. We never sell your data to third parties. Your profile and ID photos are used only for verification and displaying your profile. You can edit your information or request account deletion at any time.',
     policyTermsTitle: 'Terms of Use', policyTermsBody: 'By using ATHAR you agree to take part in volunteering campaigns respectfully and responsibly, to provide accurate information, and to honor the schedule of campaigns you join. The admin may review published campaigns and suspend violating accounts. The platform exists to serve the community and create positive impact.',
     supportMsg: 'Contact or feedback: support@athar.sy', appVersion: 'ATHAR · Version 1.0',
     photoSheetTitle: 'Profile photo', photoChoose: 'Choose photo', photoRemove: 'Remove current photo', photoRemoved: 'Photo removed', sheetCancel: 'Cancel',
@@ -11262,6 +11269,13 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('[ATHAR Bootstrap] Fatal error:', e);
   }
 });
+
+/* PWA: register service worker (installable + offline shell) */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function (e) { console.warn('[SW]', e && e.message); });
+  });
+}
 </script>
 </body>
 </html>
