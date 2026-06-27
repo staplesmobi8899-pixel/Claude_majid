@@ -189,12 +189,14 @@
 
 /* ── RESET ── */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing:border-box; }
-html { scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+html { scroll-behavior:smooth; -webkit-text-size-adjust:100%;
+  overscroll-behavior: none; background: var(--off-white); }
 body {
   background: var(--warm-white);
   color: var(--charcoal);
   min-height: 100vh;
   overflow-x: hidden;
+  overscroll-behavior: none;
 }
 
 /* ── TYPOGRAPHY SYSTEM ── */
@@ -3019,7 +3021,7 @@ input[type="file"]::file-selector-button {
 #loginScreen {
   min-height: 100vh; min-height: 100dvh;
   display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;
-  position: relative; overflow-y: auto;
+  position: relative; overflow-y: auto; overscroll-behavior: none;
   background: linear-gradient(180deg, var(--off-white) 0%, var(--warm-beige) 100%);
   color: var(--forest);
   padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom);
