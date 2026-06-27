@@ -3131,6 +3131,23 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
 .field-err { width: 100%; }
 .phone-group { flex-wrap: wrap; }
 .auth-guest-link { margin-top: var(--sp-2); align-self: center; }
+.auth-welcome-foot { position: absolute; left: 0; right: 0;
+  bottom: calc(env(safe-area-inset-bottom) + var(--sp-4));
+  display: flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  flex-wrap: wrap; padding: 0 var(--sp-4); z-index: 2; }
+.auth-foot-link { background: none; border: none; color: rgba(46,61,31,0.55);
+  font-family: inherit; font-size: var(--fs-xs); font-weight: 600; cursor: pointer; padding: 4px 2px; }
+.auth-foot-link:active { color: var(--forest); }
+.auth-foot-sep { color: rgba(46,61,31,0.3); font-size: var(--fs-xs); }
+.contact-row { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--line-sand-6); text-decoration: none; }
+.contact-row:last-child { border-bottom: none; }
+.contact-ico { flex: none; width: 40px; height: 40px; border-radius: var(--r-md);
+  background: var(--olive-pale); color: var(--olive); display: flex; align-items: center; justify-content: center; }
+.contact-ico svg { width: 20px; height: 20px; }
+.contact-label { font-size: var(--fs-xs); color: var(--charcoal-50); }
+.contact-value { font-size: var(--fs-base); font-weight: 700; color: var(--charcoal); direction: ltr; }
+.contact-empty { padding: var(--sp-5) 0; text-align: center; color: var(--charcoal-50); font-size: var(--fs-sm); }
 .auth-lang { position: absolute; top: calc(env(safe-area-inset-top) + var(--sp-4));
   inset-inline-end: var(--sp-5); z-index: 4; height: 34px; padding: 0 var(--sp-3);
   border-radius: var(--r-full); border: 1px solid rgba(46,61,31,0.18);
@@ -3820,7 +3837,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 
 /* Frosted (ghost / secondary / outline) buttons: translucent glass */
 .auth-btn-ghost, .adm-btn.ghost, .manage-btn, .manage-btn.ghost, .cg-action.ghost, .cg-mini.ghost,
-.auth-seg-btn, .auth-guest-link, .detail-join-btn.leave, .adm-role-opt, .menu-row, .set-row {
+.auth-seg-btn, .detail-join-btn.leave, .adm-role-opt, .menu-row, .set-row {
   box-shadow: inset 0 1px 0.5px rgba(255,255,255,0.6), var(--elev-chip);
   transition: transform 0.18s var(--ease-soft), background 0.18s var(--ease-soft), filter 0.18s var(--ease-soft);
   -webkit-tap-highlight-color: transparent;
@@ -3890,6 +3907,13 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
         <button class="auth-btn auth-btn-secondary" onclick="Auth.go('register')" data-i18n="joinCta"></button>
         <button class="auth-link auth-guest-link" onclick="AuthService.continueAsGuest()" data-i18n="continueGuest"></button>
       </div>
+    </div>
+    <div class="auth-welcome-foot">
+      <button class="auth-foot-link" onclick="openContact()" data-i18n="setContact"></button>
+      <span class="auth-foot-sep">·</span>
+      <button class="auth-foot-link" onclick="openPolicy('terms')" data-i18n="setTerms"></button>
+      <span class="auth-foot-sep">·</span>
+      <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
     </div>
   </section>
 
@@ -4886,6 +4910,16 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
     <div id="helpBody" class="help-body"></div>
   </div>
 </div>
+<div class="modal-overlay" id="contactModal">
+  <div class="modal-sheet">
+    <div class="modal-bar">
+      <button type="button" class="modal-close" onclick="closeModal('contactModal')" aria-label="back">‹</button>
+      <div class="modal-handle"></div>
+    </div>
+    <div class="modal-title" data-i18n="setContact"></div>
+    <div id="contactBody"></div>
+  </div>
+</div>
 <div class="modal-overlay" id="reportModal">
   <div class="modal-sheet">
     <div class="modal-bar">
@@ -5256,6 +5290,8 @@ const Sync = {
 const CONFIG = {
   ADMIN_EMAIL:    'admin@athar.sy',
   ADMIN_PASS:     'Admin@Athar2024',
+  // Public contact details shown in the "Contact us" sheet — fill in later.
+  CONTACT: { email: '', phone: '' },
   SCHEMA_VERSION: '3.0',
   DB_KEYS: {
     USERS:    'athar_users',
@@ -5386,7 +5422,7 @@ function icon(name, cls) {
    ══════════════════════════════════════════ */
 const T = {
   ar: {
-    tagline: 'لمسة تترك أثراً',
+    tagline: 'كل لمسة إنسانية تترك أثراً إيجابياً',
     getStarted: 'ابدأ الآن',
     loginSub: 'أهلاً بعودتك. لنُكمل صناعة الأثر.',
     methodEmail: 'البريد',
@@ -5577,7 +5613,7 @@ const T = {
     campPending: ' تم إرسال حملتك — قيد المراجعة',
   },
   en: {
-    tagline: 'Every touch leaves a legacy.',
+    tagline: 'Every human touch leaves a positive impact.',
     getStarted: 'Get Started',
     loginSub: 'Welcome back. Let\u2019s keep making impact.',
     methodEmail: 'Email',
@@ -11272,9 +11308,32 @@ function openPolicy(kind) {
   openModal('policyModal');
 }
 
-function openSupport() {
-  toast(t('supportMsg'), 'success');
+function openContact() {
+  const isAr = State.lang === 'ar';
+  const email = (CONFIG.CONTACT && CONFIG.CONTACT.email) || '';
+  const phone = (CONFIG.CONTACT && CONFIG.CONTACT.phone) || '';
+  const body = document.getElementById('contactBody');
+  if (body) {
+    let html = '';
+    if (email) {
+      html += '<a class="contact-row" href="mailto:' + email + '">' +
+        '<span class="contact-ico">' + icon('mail') + '</span>' +
+        '<div><div class="contact-label">' + (isAr ? 'البريد الإلكتروني' : 'Email') + '</div>' +
+        '<div class="contact-value">' + email + '</div></div></a>';
+    }
+    if (phone) {
+      html += '<a class="contact-row" href="tel:' + normPhoneSY(phone) + '">' +
+        '<span class="contact-ico">' + icon('phone') + '</span>' +
+        '<div><div class="contact-label">' + (isAr ? 'الهاتف' : 'Phone') + '</div>' +
+        '<div class="contact-value">' + fmtPhone(phone) + '</div></div></a>';
+    }
+    if (!html) html = '<div class="contact-empty">' + (isAr ? 'سيتم إضافة معلومات التواصل قريبًا' : 'Contact details coming soon') + '</div>';
+    body.innerHTML = html;
+  }
+  openModal('contactModal');
 }
+
+function openSupport() { openContact(); }
 
 /* ── PARTNER FORM ── */
 function submitPartner(e) {
