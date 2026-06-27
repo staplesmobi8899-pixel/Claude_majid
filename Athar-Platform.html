@@ -4014,7 +4014,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v29</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v30</span>
     </div>
   </section>
 
@@ -5308,11 +5308,20 @@ const Sync = {
   async pullUsers() {
     if (!sb) return;
     const { data, error } = await sb.from('profiles').select('*');
-    if (error) { try { toast('\ud83d\udd27 profiles ERROR: ' + error.message, 'error'); } catch (e) {} return; }
-    let mapped = [], mapErr = null;
-    try { mapped = (data || []).map(p => profileToUser(p)); } catch (e) { mapErr = e && e.message; }
-    const saved = UserService.save(mapped);
-    try { toast('\ud83d\udd27 rows:' + (data || []).length + ' mapped:' + mapped.length + (mapErr ? ' MAPERR:' + mapErr : '') + ' saved:' + saved + ' got:' + UserService.getAll().length, mapErr || !saved ? 'error' : 'success'); } catch (e) {}
+    if (error) { console.error('[pullUsers]', error.message); return; }
+    // localStorage can't hold large base64 avatars — keep only lightweight URL pics
+    // in the shared mirror (the signed-in user's full photo still lives in State.cu).
+    const lean = (data || []).map(p => {
+      const u = profileToUser(p);
+      if (u.profilePic && typeof u.profilePic === 'string' && u.profilePic.indexOf('data:') === 0) u.profilePic = null;
+      return u;
+    });
+    let saved = UserService.save(lean);
+    if (!saved) {
+      const minimal = lean.map(u => Object.assign({}, u, { profilePic: null, bio: '' }));
+      saved = UserService.save(minimal);
+    }
+    console.log('[Sync] users loaded:', lean.length, 'saved:', saved);
   },
   async pullCampaigns() {
     if (!sb) return;
