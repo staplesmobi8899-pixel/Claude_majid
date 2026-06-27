@@ -3863,6 +3863,33 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
   transform: scale(0.97); filter: brightness(0.97);
 }
 
+/* ── Unified Liquid-Glass button system (global pass) ── */
+/* Consistent spring press + smooth release on every primary action button */
+.auth-btn, .submit-btn, .join-btn, .edit-save, .card-save, .approve-btn, .reject-btn,
+.cg-action, .adm-btn, .pill-btn, .modal-close, .cm-svol, .cm-search-go {
+  transition: transform 0.18s var(--spring), box-shadow 0.22s var(--ease-soft),
+              filter 0.22s var(--ease-soft), background 0.2s var(--ease-soft);
+  -webkit-tap-highlight-color: transparent;
+}
+.auth-btn:active, .submit-btn:active, .join-btn:not(.status-display):active, .edit-save:active,
+.card-save:active, .approve-btn:active, .reject-btn:active, .cg-action:active, .adm-btn:active,
+.pill-btn:active, .modal-close:active, .cm-svol:active, .cm-search-go:active {
+  transform: scale(0.96);
+}
+/* Filled (primary) buttons get premium glass depth: soft brand shadow + top light reflection */
+.auth-btn-primary, .submit-btn, .join-btn:not(.status-display), .edit-save, .card-save {
+  box-shadow: 0 6px 18px rgba(46,61,31,0.16), inset 0 1px 0.5px rgba(255,255,255,0.30);
+}
+.auth-btn-primary:active, .submit-btn:active, .join-btn:not(.status-display):active,
+.edit-save:active, .card-save:active {
+  box-shadow: 0 3px 9px rgba(46,61,31,0.14), inset 0 1px 0.5px rgba(255,255,255,0.30);
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-btn:active, .submit-btn:active, .join-btn:active, .edit-save:active, .card-save:active,
+  .approve-btn:active, .reject-btn:active, .cg-action:active, .adm-btn:active, .pill-btn:active,
+  .modal-close:active, .cm-svol:active, .cm-search-go:active { transform: none; }
+}
+
 /* Chips: subtle glass rim + press */
 .cat-chip, .cm-tab, .value-chip, .cm-hashtag, .status-chip, .adm-chip, .my-camp-tag, .cm-impact-chip {
   box-shadow: inset 0 1px 0.5px rgba(255,255,255,0.4), var(--elev-chip);
@@ -3931,7 +3958,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v21</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v22</span>
     </div>
   </section>
 
