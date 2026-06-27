@@ -4388,7 +4388,8 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
               </div>
               <div class="dark-field">
                 <label data-i18n="phone"></label>
-                <input class="dark-input" name="phone" type="tel" required>
+                <div class="phone-group"><span class="phone-prefix" dir="ltr">+963</span>
+                <input class="dark-input" name="phone" type="tel" inputmode="numeric" placeholder="9XXXXXXXX" required></div>
               </div>
             </div>
             <div class="dark-field">
@@ -4890,7 +4891,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
     </div>
     <div class="modal-title" data-i18n="reportBtn"></div>
     <div class="edit-field"><label data-i18n="fullName"></label><input id="rpName" type="text"></div>
-    <div class="edit-field"><label data-i18n="phone"></label><input id="rpPhone" type="tel" inputmode="tel"></div>
+    <div class="edit-field"><label data-i18n="phone"></label><div class="phone-group"><span class="phone-prefix" dir="ltr">+963</span><input id="rpPhone" type="tel" inputmode="numeric" placeholder="9XXXXXXXX"></div></div>
     <div class="edit-field"><label data-i18n="reportProblem"></label><textarea id="rpMsg" rows="4"></textarea><div class="edit-err" id="rpErr"></div></div>
     <button class="dark-submit" onclick="submitReport()" data-i18n="reportSend"></button>
   </div>
@@ -7001,7 +7002,7 @@ function openReportForm(type, id) {
   _reportTarget = { type: type || 'app', id: id || '-' };
   const g = i => document.getElementById(i);
   if (g('rpName')) g('rpName').value = (State.cu && State.cu.name) || '';
-  if (g('rpPhone')) g('rpPhone').value = (State.cu && State.cu.phone) || '';
+  if (g('rpPhone')) g('rpPhone').value = phoneLocal(State.cu && State.cu.phone) || '';
   if (g('rpMsg')) g('rpMsg').value = '';
   if (g('rpErr')) g('rpErr').textContent = '';
   openModal('reportModal');
@@ -7010,7 +7011,7 @@ function submitReport() {
   if (!State.cu || State.isGuest) { requireAuth(); return; }
   const g = i => document.getElementById(i);
   const name = g('rpName') ? g('rpName').value.trim() : '';
-  const phone = g('rpPhone') ? g('rpPhone').value.trim() : '';
+  const phone = g('rpPhone') ? fmtPhone(g('rpPhone').value) : '';
   const msg = g('rpMsg') ? g('rpMsg').value.trim() : '';
   if (!msg) { if (g('rpErr')) g('rpErr').textContent = t('errorRequired'); return; }
   const note = (State.lang === 'ar' ? 'الاسم: ' : 'Name: ') + name + ' | ' + (State.lang === 'ar' ? 'الهاتف: ' : 'Phone: ') + phone + ' | ' + (State.lang === 'ar' ? 'المشكلة: ' : 'Issue: ') + msg;
@@ -7453,7 +7454,7 @@ function campCardHTML(c) {
     const catIcon  = (catMeta && catMeta.icon) ? icon(catMeta.icon) + ' ' : '';
     const location = c.location  || '';
     const date     = c.date      || '';
-    const phone    = c.creatorPhone || '';
+    const phone    = fmtPhone(c.creatorPhone);
     const vol      = c.volunteers   || 0;
     const needed   = c.needed       || 0;
 
@@ -8307,7 +8308,7 @@ function admViewUser(id) {
         '<div class="adm-mchips">' + admStatusChip(banned ? 'banned' : u.status) + admRoleChip(u) + '</div>' +
       '</div>' +
       row(isAr ? 'البريد' : 'Email', u.email) +
-      row(isAr ? 'الهاتف' : 'Phone', u.phone) +
+      row(isAr ? 'الهاتف' : 'Phone', fmtPhone(u.phone)) +
       row(isAr ? 'المدينة' : 'City', [u.city, u.country].filter(Boolean).join('، ')) +
       row(isAr ? 'الميلاد' : 'DOB', u.dob) +
       row(isAr ? 'احتياجات خاصة' : 'Special needs', u.special) +
@@ -8384,7 +8385,7 @@ function admSaveUser(id) {
   if (!Validators.isName(name)) { setErr('eu-name', t('errorNameLength')); ok = false; }
   if (!Validators.isRequired(phone) || !Validators.isPhone(phone)) { setErr('eu-phone', t('errorRequired')); ok = false; }
   if (!ok) return;
-  UserService.updateById(id, { name, phone, city, dob });
+  UserService.updateById(id, { name, phone: normPhoneSY(phone), city, dob });
   toast(State.lang === 'ar' ? 'تم حفظ بيانات المستخدم' : 'User saved', 'success');
   renderAdmin();
   admViewUser(id);
@@ -8453,7 +8454,7 @@ function admViewCamp(id) {
       row(isAr ? 'ساعات/متطوّع' : 'Hours / vol', String(hoursEach)) +
       row(isAr ? 'إجمالي الساعات' : 'Total hours', String((c.volunteers || 0) * hoursEach)) +
       row(isAr ? 'المنظّم' : 'Organizer', c.creatorName) +
-      row(isAr ? 'هاتف المنظّم' : 'Organizer phone', c.creatorPhone) +
+      row(isAr ? 'هاتف المنظّم' : 'Organizer phone', fmtPhone(c.creatorPhone)) +
       row(isAr ? 'الظهور للعموم' : 'Public visibility', (['approved', 'under_process', 'done'].includes(c.status)) ? (isAr ? 'ظاهرة' : 'Visible') : (isAr ? 'مخفية' : 'Hidden')) +
       partsHtml +
       (actions ? '<div class="adm-mactions">' + actions + '</div>' : '') +
@@ -8549,7 +8550,7 @@ function admViewPartner(id) {
       '</div>' +
       row(isAr ? 'المسؤول' : 'Contact', p.contact) +
       row(isAr ? 'البريد' : 'Email', p.email) +
-      row(isAr ? 'الهاتف' : 'Phone', p.phone) +
+      row(isAr ? 'الهاتف' : 'Phone', fmtPhone(p.phone)) +
       row(isAr ? 'نوع الجهة' : 'Type', typeMap[p.type] || p.type) +
       row(isAr ? 'التاريخ' : 'Date', p.date ? new Date(p.date).toLocaleDateString() : '') +
       (p.msg ? '<div style="margin-top:var(--sp-4);padding:var(--sp-4);background:var(--sand);border-radius:var(--r-md);font-size:var(--fs-base);color:var(--charcoal-80);line-height:1.6;">' + p.msg + '</div>' : '') +
@@ -9097,7 +9098,7 @@ function renderDetail(id) {
         '<div class="detail-info-card"><div class="detail-info-label">' + t('dateLabel') + '</div><div class="detail-info-value">' + icon('calendar') + ' ' + (c.date || '') + '</div></div>' +
         '<div class="detail-info-card"><div class="detail-info-label">' + t('durationLabel') + '</div><div class="detail-info-value">' + icon('clock') + ' ' + (c.volunteerHours || 0) + ' ' + (isAr ? 'ساعات' : 'hrs') + '</div></div>' +
         '<div class="detail-info-card"><div class="detail-info-label">' + t('locationLabel') + '</div><div class="detail-info-value">' + icon('pin') + ' ' + (c.location || '') + '</div></div>' +
-        '<div class="detail-info-card"><div class="detail-info-label">' + t('contactLabel') + '</div><div class="detail-info-value" style="color:var(--olive)">' + (c.creatorPhone ? icon('phone') + ' ' + c.creatorPhone : '—') + '</div></div>' +
+        '<div class="detail-info-card"><div class="detail-info-label">' + t('contactLabel') + '</div><div class="detail-info-value" style="color:var(--olive)">' + (c.creatorPhone ? icon('phone') + ' ' + fmtPhone(c.creatorPhone) : '—') + '</div></div>' +
       '</div></section>' +
       '<section class="detail-section"><h3 class="detail-h">' + t('participantsTitle') + ' (' + parts.length + ')</h3><div class="detail-parts">' + partHtml + '</div></section>' +
       ((c.gallery && c.gallery.length) ? '<section class="detail-section"><h3 class="detail-h">' + t('galleryTitle') + '</h3><div class="detail-gallery">' + c.gallery.map(function(g){return '<img src="' + g + '" loading="lazy" onclick="openImageViewer(\'' + g + '\')">';}).join('') + '</div></section>' : '') +
@@ -10023,6 +10024,30 @@ function cmPostHeader(author, sub, chip, menu) {
 
 function escapeHtml(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+/* ── Phone helpers (Syria) ──
+   normPhoneSY: any input -> canonical "+963<localdigits>" (no spaces).
+   fmtPhone:    stored value -> display "+963 9XX XXX XXX".
+   phoneLocal:  stored value -> just the local digits (for input fields with a +963 prefix). */
+function normPhoneSY(raw) {
+  let d = String(raw == null ? '' : raw).replace(/\D/g, '');
+  if (!d) return '';
+  if (d.indexOf('00963') === 0) d = d.slice(5);
+  else if (d.indexOf('963') === 0) d = d.slice(3);
+  d = d.replace(/^0+/, '');
+  return d ? '+963' + d : '';
+}
+function phoneLocal(raw) {
+  const c = normPhoneSY(raw);
+  return c ? c.slice(4) : '';
+}
+function fmtPhone(raw) {
+  let d = phoneLocal(raw);
+  if (!d) return '';
+  d = d.slice(-9);
+  const parts = [d.slice(0, 3), d.slice(3, 6), d.slice(6, 9)].filter(Boolean);
+  return '+963 ' + parts.join(' ');
 }
 /** Hashtag token: # followed by Arabic/Latin letters, digits or underscore. */
 const HASHTAG_RE = /#[0-9A-Za-z_؀-ۿ]+/g;
@@ -11006,7 +11031,9 @@ function openEditProfile() {
     '<div class="edit-field"><label>' + t('email') + '</label>' +
       '<input type="email" value="' + esc(u.email) + '" disabled><div class="edit-hint">' + t('emailLocked') + '</div></div>' +
     '<div class="edit-field"><label>' + t('phone') + '</label>' +
-      '<input id="ed-phone" type="tel" value="' + esc(u.phone) + '"><div class="edit-err" id="err-phone"></div></div>' +
+      '<div class="phone-group"><span class="phone-prefix" dir="ltr">+963</span>' +
+      '<input id="ed-phone" type="tel" inputmode="numeric" placeholder="9XXXXXXXX" value="' + esc(phoneLocal(u.phone)) + '"></div>' +
+      '<div class="edit-err" id="err-phone"></div></div>' +
     '<div class="edit-field"><label>' + t('city') + '</label>' +
       '<input id="ed-city" type="text" value="' + esc(u.city) + '"><div class="edit-err" id="err-city"></div></div>' +
     '<div class="edit-field"><label>' + t('dob') + '</label>' +
@@ -11031,7 +11058,7 @@ function saveInfo() {
   if (!Validators.isRequired(phone) || !Validators.isPhone(phone)) { setErr('err-phone', t('errorRequired')); ok = false; }
   if (!Validators.isRequired(city)) { setErr('err-city',  t('errorRequired')); ok = false; }
   if (!ok) return;
-  persistCurrentUser({ name, phone, city, dob, bio });
+  persistCurrentUser({ name, phone: normPhoneSY(phone), city, dob, bio });
   closeModal('editProfileModal');
   toast(t('infoSaved'), 'success');
   renderProfile();
@@ -11235,7 +11262,7 @@ function submitPartner(e) {
     org:     form.querySelector('[name="org"]')?.value     || '',
     contact: form.querySelector('[name="contact"]')?.value || '',
     email:   form.querySelector('[name="email"]')?.value   || '',
-    phone:   form.querySelector('[name="phone"]')?.value   || '',
+    phone:   normPhoneSY(form.querySelector('[name="phone"]')?.value || ''),
     type:    form.querySelector('[name="type"]')?.value    || '',
     msg:     form.querySelector('[name="msg"]')?.value     || ''
   };
