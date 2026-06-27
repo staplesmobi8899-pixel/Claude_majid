@@ -3344,8 +3344,12 @@ html, body { overflow-x: hidden; }
   font-family: inherit; font-size: var(--fs-sm); font-weight: 700; -webkit-appearance: none; appearance: none; cursor: pointer; text-align: center; }
 .explore-filters select option { color: var(--charcoal); background: var(--white); }
 .cat-chips { display: flex; gap: var(--sp-2); margin-top: var(--sp-4); overflow-x: auto;
-  padding-bottom: var(--sp-2); scrollbar-width: none; }
+  padding-bottom: var(--sp-3); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .cat-chips::-webkit-scrollbar { display: none; }
+/* Full-bleed horizontal scroller — chips run to the screen edge instead of being
+   clipped inside the section padding (first/last keep a comfortable inset). */
+.home-section .cat-chips { margin-inline: calc(-1 * var(--sp-5)); padding-inline: var(--sp-5); }
+.explore-top .cat-chips  { margin-inline: calc(-1 * var(--sp-4)); padding-inline: var(--sp-4); }
 .cat-chip .ic { width: 16px; height: 16px; }
 .cat-chip { flex: none; white-space: nowrap; padding: var(--sp-2) var(--sp-5); border-radius: var(--r-full);
   border: 1px solid transparent; background: var(--card-hl-img) center / cover no-repeat, var(--forest); color: var(--off-white);
@@ -4010,7 +4014,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v25</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v26</span>
     </div>
   </section>
 
