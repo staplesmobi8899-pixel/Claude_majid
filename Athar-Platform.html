@@ -2373,6 +2373,16 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
 @keyframes sheetUp {
   from { transform: translateY(100%); }
   to   { transform: translateY(0); }}
+/* Smooth dismiss: backdrop fades out while the sheet slides back down */
+@keyframes overlayIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes overlayOut { from { opacity: 1; } to { opacity: 0; } }
+@keyframes sheetDown  { from { transform: translateY(0); } to { transform: translateY(100%); } }
+.modal-overlay.open { animation: overlayIn 0.24s ease; }
+.modal-overlay.closing { display: flex; animation: overlayOut 0.26s ease forwards; pointer-events: none; }
+.modal-overlay.closing .modal-sheet { animation: sheetDown 0.26s cubic-bezier(0.4,0,1,1) forwards; }
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay.open, .modal-overlay.closing, .modal-overlay.closing .modal-sheet { animation: none; }
+}
 
 /* Compose post: a clean top-anchored dialog (keyboard never covers it) */
 #cmComposeModal { align-items: flex-start; }
@@ -3921,7 +3931,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v20</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v21</span>
     </div>
   </section>
 
@@ -9465,7 +9475,7 @@ const Router = {
 /* ── Smart back + iOS edge swipe-back (Phase 3.3) ── */
 function smartBack() {
   const openModal = document.querySelector('.modal-overlay.open');
-  if (openModal) { openModal.classList.remove('open'); return; }
+  if (openModal) { if (openModal.id) closeModal(openModal.id); else openModal.classList.remove('open'); return; }
   const vs = document.getElementById('verifyScreen');
   if (vs && vs.classList.contains('show')) { Verify.close(); return; }
   Router.back();
@@ -9525,7 +9535,20 @@ function openModal(id) {
 
 function closeModal(id) {
   const el = document.getElementById(id);
-  if (el) el.classList.remove('open');
+  if (!el) { syncModalOpenClass(); return; }
+  if (!el.classList.contains('open')) { el.classList.remove('closing'); syncModalOpenClass(); return; }
+  // Play the dismiss animation, then hide.
+  el.classList.remove('open');
+  el.classList.add('closing');
+  let done = false;
+  const finish = () => {
+    if (done) return; done = true;
+    el.classList.remove('closing');
+    el.removeEventListener('animationend', onEnd);
+  };
+  const onEnd = (e) => { if (e.target === el) finish(); };
+  el.addEventListener('animationend', onEnd);
+  setTimeout(finish, 340);
   syncModalOpenClass();
 }
 
@@ -11495,7 +11518,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Attach modal backdrop close handlers
     document.querySelectorAll('.modal-overlay').forEach(m => {
       m.addEventListener('click', e => {
-        if (e.target === m) { m.classList.remove('open'); if (typeof syncModalOpenClass === 'function') syncModalOpenClass(); }
+        if (e.target === m) { if (m.id && typeof closeModal === 'function') closeModal(m.id); else { m.classList.remove('open'); if (typeof syncModalOpenClass === 'function') syncModalOpenClass(); } }
       });
     });
   } catch (e) {
