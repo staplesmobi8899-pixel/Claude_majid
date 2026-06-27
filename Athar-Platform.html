@@ -4969,7 +4969,15 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 let sb = null;
 try {
   if (window.supabase && window.supabase.createClient) {
-    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storage: window.localStorage,
+        storageKey: 'athar-auth'
+      }
+    });
   } else {
     console.warn('[Supabase] SDK not loaded — falling back to local mode.');
   }
@@ -6360,21 +6368,38 @@ const AuthService = {
     return user;
   },
   async restoreSession() {
+    // Cached profile from the last successful login on this device.
+    const mirror = DB.getObj(CONFIG.DB_KEYS.SESSION);
+    const cached = (mirror && mirror.id && !mirror.isGuest) ? mirror : null;
     if (sb) {
       try {
         const { data: { session } } = await sb.auth.getSession();
-        if (!session || !session.user) return null;
-        const u = await loadProfile(session.user.id, session.user.email);
-        if (!u) return null;
-        mirrorUser(u);
-        State.setUser(u);
-        return u;
-      } catch (e) { console.error('[restoreSession]', e); return null; }
+        if (session && session.user) {
+          // Valid Supabase session — refresh the profile, but never log the user
+          // out over a transient profile-fetch hiccup (weak network, RLS blip).
+          const u = await loadProfile(session.user.id, session.user.email);
+          if (u) {
+            mirrorUser(u);
+            DB.setObj(CONFIG.DB_KEYS.SESSION, u);
+            State.setUser(u);
+            return u;
+          }
+          if (cached) { State.setUser(cached); return cached; }
+          return null;
+        }
+        // No active Supabase session — keep the user signed in via the cached
+        // profile if they didn't explicitly log out (logout clears the mirror).
+        if (cached) { State.setUser(cached); return cached; }
+        return null;
+      } catch (e) {
+        console.error('[restoreSession]', e);
+        if (cached) { State.setUser(cached); return cached; }
+        return null;
+      }
     }
-    // Local fallback
-    const session = DB.getObj(CONFIG.DB_KEYS.SESSION);
-    if (!session || !session.id) return null;
-    const fresh = (session.email === CONFIG.ADMIN_EMAIL) ? session : (UserService.getById(session.id) || session);
+    // Local fallback (no Supabase)
+    if (!cached) return null;
+    const fresh = (cached.email === CONFIG.ADMIN_EMAIL) ? cached : (UserService.getById(cached.id) || cached);
     State.setUser(fresh);
     return fresh;
   },
