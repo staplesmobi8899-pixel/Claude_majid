@@ -3913,6 +3913,8 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <button class="auth-foot-link" onclick="openPolicy('terms')" data-i18n="setTerms"></button>
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
+      <span class="auth-foot-sep">·</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v18</span>
     </div>
   </section>
 
@@ -6457,20 +6459,42 @@ const AuthService = {
     return user;
   },
   async restoreSession() {
-    // Cached profile from the last successful login on this device.
+    // 1) Cached login from this device (localStorage, then cookie — the cookie
+    //    survives iOS PWA localStorage eviction on force-quit).
     let mirror = DB.getObj(CONFIG.DB_KEYS.SESSION);
-    // localStorage may have been evicted (iOS PWA) — fall back to the cookie.
     if (!mirror || !mirror.id) {
       const ck = Persist.get('athar_sess');
-      if (ck) { try { mirror = JSON.parse(ck); if (mirror && mirror.id) DB.setObj(CONFIG.DB_KEYS.SESSION, mirror); } catch (e) {} }
+      if (ck) { try { mirror = JSON.parse(ck); } catch (e) {} }
     }
     const cached = (mirror && mirror.id && !mirror.isGuest) ? mirror : null;
+
+    // 2) If we have a cached login, enter IMMEDIATELY (never block on the network)
+    //    and refresh the full profile + session quietly in the background.
+    if (cached) {
+      DB.setObj(CONFIG.DB_KEYS.SESSION, cached);
+      Persist.set('athar_sess', JSON.stringify(slimUser(cached)), 180);
+      State.setUser(cached);
+      if (sb) {
+        Promise.resolve().then(async () => {
+          try {
+            const fp = await loadProfile(cached.id, cached.email);
+            if (fp) {
+              mirrorUser(fp);
+              DB.setObj(CONFIG.DB_KEYS.SESSION, fp);
+              Persist.set('athar_sess', JSON.stringify(slimUser(fp)), 180);
+              State.setUser(fp);
+            }
+          } catch (e) {}
+        });
+      }
+      return cached;
+    }
+
+    // 3) No cached login (fresh install / cleared data) — ask Supabase directly.
     if (sb) {
       try {
         const { data: { session } } = await sb.auth.getSession();
         if (session && session.user) {
-          // Valid Supabase session — refresh the profile, but never log the user
-          // out over a transient profile-fetch hiccup (weak network, RLS blip).
           const u = await loadProfile(session.user.id, session.user.email);
           if (u) {
             mirrorUser(u);
@@ -6479,31 +6503,11 @@ const AuthService = {
             State.setUser(u);
             return u;
           }
-          if (cached) { State.setUser(cached); return cached; }
-          return null;
         }
-        // No active Supabase session — keep the user signed in via the cached
-        // profile if they didn't explicitly log out (logout clears the mirror).
-        if (cached) {
-          let full = cached;
-          try {
-            const fp = await loadProfile(cached.id, cached.email);
-            if (fp) { full = fp; mirrorUser(fp); DB.setObj(CONFIG.DB_KEYS.SESSION, fp); Persist.set('athar_sess', JSON.stringify(slimUser(fp)), 180); }
-          } catch (e) {}
-          State.setUser(full); return full;
-        }
-        return null;
-      } catch (e) {
-        console.error('[restoreSession]', e);
-        if (cached) { State.setUser(cached); return cached; }
-        return null;
-      }
+      } catch (e) { console.error('[restoreSession]', e); }
+      return null;
     }
-    // Local fallback (no Supabase)
-    if (!cached) return null;
-    const fresh = (cached.email === CONFIG.ADMIN_EMAIL) ? cached : (UserService.getById(cached.id) || cached);
-    State.setUser(fresh);
-    return fresh;
+    return null;
   },
   async login(identifier, password) {
     identifier = String(identifier || '').trim();
