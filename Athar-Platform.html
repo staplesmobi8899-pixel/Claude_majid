@@ -9671,12 +9671,26 @@ const Forgot = {
   }
 };
 
+/* Per-device record of users who already completed onboarding.
+   The profiles table has no `onboarded` column, and restoreSession reloads the
+   server profile (which would drop a local flag), so we persist it separately. */
+const OnboardedStore = {
+  KEY: 'athar_onboarded_ids',
+  all() { try { return JSON.parse(localStorage.getItem(this.KEY) || '[]'); } catch (e) { return []; } },
+  has(id) { return !!id && this.all().indexOf(id) !== -1; },
+  add(id) {
+    if (!id) return;
+    const a = this.all();
+    if (a.indexOf(id) === -1) { a.push(id); try { localStorage.setItem(this.KEY, JSON.stringify(a)); } catch (e) {} }
+  }
+};
+
 /* ── Onboarding controller (Phase 2.6) ── */
 const Onb = {
   cats: new Set(), causes: new Set(),
   needs(user) {
     return !!(user && !user.isGuest && user.email !== CONFIG.ADMIN_EMAIL
-      && user.status === 'approved' && !user.onboarded);
+      && user.status === 'approved' && !user.onboarded && !OnboardedStore.has(user.id));
   },
   render() {
     this.cats   = new Set((State.cu && State.cu.interests) || []);
@@ -9700,12 +9714,17 @@ const Onb = {
   show() { this.render(); document.getElementById('onboardingScreen').classList.add('show'); },
   hide() { document.getElementById('onboardingScreen').classList.remove('show'); },
   finish() {
-    if (State.cu && State.cu.id)
+    if (State.cu && State.cu.id) {
+      OnboardedStore.add(State.cu.id);
       UserService.updateById(State.cu.id, { interests: [...this.cats], causes: [...this.causes], onboarded: true });
+    }
     this.hide(); goPage('home'); animateCounters(); toast(t('onbWelcome'), 'success');
   },
   skip() {
-    if (State.cu && State.cu.id) UserService.updateById(State.cu.id, { onboarded: true });
+    if (State.cu && State.cu.id) {
+      OnboardedStore.add(State.cu.id);
+      UserService.updateById(State.cu.id, { onboarded: true });
+    }
     this.hide(); goPage('home'); animateCounters();
   }
 };
