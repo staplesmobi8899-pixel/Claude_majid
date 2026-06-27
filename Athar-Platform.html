@@ -3914,7 +3914,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v18</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v19</span>
     </div>
   </section>
 
@@ -4783,6 +4783,10 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <svg width="22" height="22" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       <span class="nav-btn-text" data-i18n="navProfile"></span>
     </button>
+    <button class="nav-btn" id="nav-admin" onclick="goPage('admin')" style="display:none;">
+      <svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5z"/><path d="M9 12l2 2 4-4"/></svg>
+      <span class="nav-btn-text" data-i18n="navAdmin"></span>
+    </button>
   </div>
 </div>
 <button class="fab" id="createFab" onclick="goPage('create')" aria-label="create">+</button>
@@ -5563,7 +5567,7 @@ const T = {
     admContentSoon: 'إدارة المحتوى (About · الأسئلة الشائعة · السياسات · الحملات المميّزة) — تُبنى في الدفعة 8.6.',
     admSettingsSoon: 'إعدادات اللوحة — تُبنى لاحقًا.',
     tabAccounts: 'الحسابات', tabCamps: 'الحملات', tabPartners: 'الشراكات',
-    navHome: 'الرئيسية', navExplore: 'استكشف', navCommunity: 'المجتمع', navNotifications: 'الإشعارات', navCreate: 'إنشاء', navProfile: 'الملف', navAbout: 'من نحن', navAdmin: 'إدارة',
+    navHome: 'الرئيسية', navExplore: 'الحملات', navCommunity: 'من المجتمع', navNotifications: 'الإشعارات', navCreate: 'إنشاء', navProfile: 'الملف', navAbout: 'عنا', navAdmin: 'إدارة',
     aboutRowSub: 'تعرّف على منصة أثر ورسالتنا', adminRowSub: 'لوحة إدارة المنصة',
     detailHeaderTitle: 'تفاصيل المبادرة',
     chooseCat: 'اختر الفئة', noDataSub: 'كن أول من يطلق مبادرة ويصنع الأثر.',
@@ -5754,7 +5758,7 @@ const T = {
     admContentSoon: 'Content management (About · FAQ · Policies · Featured campaigns) — built in batch 8.6.',
     admSettingsSoon: 'Dashboard settings — coming soon.',
     tabAccounts: 'Accounts', tabCamps: 'Campaigns', tabPartners: 'Partnerships',
-    navHome: 'Home', navExplore: 'Explore', navCommunity: 'Community', navNotifications: 'Alerts', navCreate: 'Create', navProfile: 'Profile', navAbout: 'About Us', navAdmin: 'Admin',
+    navHome: 'Home', navExplore: 'Campaigns', navCommunity: 'Community', navNotifications: 'Alerts', navCreate: 'Create', navProfile: 'Profile', navAbout: 'About', navAdmin: 'Admin',
     aboutRowSub: 'Learn about ATHAR and our mission', adminRowSub: 'Platform admin dashboard',
     detailHeaderTitle: 'Initiative Details',
     chooseCat: 'Choose a category', noDataSub: 'Be the first to launch an initiative and make an impact.',
@@ -10004,8 +10008,11 @@ function enterApp() {
   const lb = document.getElementById('logoutBtn');
   if (lb) { lb.style.display = 'block'; lb.textContent = State.isGuest ? t('loginCta') : t('logout'); }
 
+  // Admin entry lives in the bottom nav (admins only) — not on the profile page.
   const adminRow = document.getElementById('menuAdminRow');
-  if (adminRow) adminRow.style.display = State.isAdmin ? 'flex' : 'none';
+  if (adminRow) adminRow.style.display = 'none';
+  const adminNav = document.getElementById('nav-admin');
+  if (adminNav) adminNav.style.display = State.isAdmin ? 'flex' : 'none';
 
   Verify._dismissed = false;
   Verify.bannerCheck();
