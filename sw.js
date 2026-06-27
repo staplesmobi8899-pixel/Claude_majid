@@ -1,6 +1,6 @@
 /* ATHAR service worker — app shell cache (network-first for HTML). */
 const CACHE = 'athar-v4';
-const SHELL = ['./Athar-Platform.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
+const SHELL = ['./Athar-Platform.html', './manifest.json', './icon-192-v4.png', './icon-512-v4.png', './icon-maskable-512-v4.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).catch(() => {}));
