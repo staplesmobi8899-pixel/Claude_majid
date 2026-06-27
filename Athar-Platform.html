@@ -5056,6 +5056,28 @@ function mirrorUser(u) {
   } catch (e) { console.error('[mirrorUser]', e); }
 }
 
+/* Cookie-backed persistence — iOS standalone PWAs can wipe localStorage on
+   force-quit, so we mirror the login + onboarding flags to long-lived cookies. */
+const Persist = {
+  set(name, value, days) {
+    try {
+      const d = new Date(); d.setTime(d.getTime() + (days || 180) * 86400000);
+      document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
+    } catch (e) {}
+  },
+  get(name) {
+    try { const m = document.cookie.match('(?:^|; )' + name + '=([^;]*)'); return m ? decodeURIComponent(m[1]) : null; }
+    catch (e) { return null; }
+  },
+  del(name) { try { document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'; } catch (e) {} }
+};
+/* A slim, cookie-sized snapshot of the user (no heavy fields like photos/arrays). */
+function slimUser(u) {
+  if (!u) return null;
+  return { id: u.id, name: u.name, email: u.email, phone: u.phone, role: u.role,
+           status: u.status, isGuest: !!u.isGuest, onboarded: !!u.onboarded };
+}
+
 /* Load a profile row by id; returns the app user shape (or null). */
 async function loadProfile(uid, email) {
   if (!sb || !uid) return null;
@@ -6426,13 +6448,22 @@ const AuthService = {
   },
   startSession(user, persist = true) {
     State.setUser(user);
-    if (persist) DB.setObj(CONFIG.DB_KEYS.SESSION, user);
-    else DB.remove(CONFIG.DB_KEYS.SESSION);
+    if (persist) {
+      DB.setObj(CONFIG.DB_KEYS.SESSION, user);
+      if (user && !user.isGuest) Persist.set('athar_sess', JSON.stringify(slimUser(user)), 180);
+    } else {
+      DB.remove(CONFIG.DB_KEYS.SESSION);
+    }
     return user;
   },
   async restoreSession() {
     // Cached profile from the last successful login on this device.
-    const mirror = DB.getObj(CONFIG.DB_KEYS.SESSION);
+    let mirror = DB.getObj(CONFIG.DB_KEYS.SESSION);
+    // localStorage may have been evicted (iOS PWA) — fall back to the cookie.
+    if (!mirror || !mirror.id) {
+      const ck = Persist.get('athar_sess');
+      if (ck) { try { mirror = JSON.parse(ck); if (mirror && mirror.id) DB.setObj(CONFIG.DB_KEYS.SESSION, mirror); } catch (e) {} }
+    }
     const cached = (mirror && mirror.id && !mirror.isGuest) ? mirror : null;
     if (sb) {
       try {
@@ -6444,6 +6475,7 @@ const AuthService = {
           if (u) {
             mirrorUser(u);
             DB.setObj(CONFIG.DB_KEYS.SESSION, u);
+            Persist.set('athar_sess', JSON.stringify(slimUser(u)), 180);
             State.setUser(u);
             return u;
           }
@@ -6452,7 +6484,14 @@ const AuthService = {
         }
         // No active Supabase session — keep the user signed in via the cached
         // profile if they didn't explicitly log out (logout clears the mirror).
-        if (cached) { State.setUser(cached); return cached; }
+        if (cached) {
+          let full = cached;
+          try {
+            const fp = await loadProfile(cached.id, cached.email);
+            if (fp) { full = fp; mirrorUser(fp); DB.setObj(CONFIG.DB_KEYS.SESSION, fp); Persist.set('athar_sess', JSON.stringify(slimUser(fp)), 180); }
+          } catch (e) {}
+          State.setUser(full); return full;
+        }
         return null;
       } catch (e) {
         console.error('[restoreSession]', e);
@@ -6550,6 +6589,7 @@ const AuthService = {
     if (sb) { try { sb.auth.signOut(); } catch (e) {} }
     State.setUser(null);
     DB.remove(CONFIG.DB_KEYS.SESSION);
+    Persist.del('athar_sess');
   },
   // Phase 2.5 (forgot password) — architecture-ready
   requestReset(identifier) {
@@ -9711,12 +9751,21 @@ const Forgot = {
    server profile (which would drop a local flag), so we persist it separately. */
 const OnboardedStore = {
   KEY: 'athar_onboarded_ids',
-  all() { try { return JSON.parse(localStorage.getItem(this.KEY) || '[]'); } catch (e) { return []; } },
+  all() {
+    let ls = [];
+    try { ls = JSON.parse(localStorage.getItem(this.KEY) || '[]'); } catch (e) {}
+    let ck = [];
+    try { ck = JSON.parse(Persist.get(this.KEY) || '[]'); } catch (e) {}
+    // Merge both sources (cookie survives iOS localStorage eviction).
+    return Array.from(new Set([].concat(ls || [], ck || [])));
+  },
   has(id) { return !!id && this.all().indexOf(id) !== -1; },
   add(id) {
     if (!id) return;
     const a = this.all();
-    if (a.indexOf(id) === -1) { a.push(id); try { localStorage.setItem(this.KEY, JSON.stringify(a)); } catch (e) {} }
+    if (a.indexOf(id) === -1) a.push(id);
+    try { localStorage.setItem(this.KEY, JSON.stringify(a)); } catch (e) {}
+    Persist.set(this.KEY, JSON.stringify(a), 365);
   }
 };
 
