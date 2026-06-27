@@ -188,7 +188,7 @@
 [data-theme="dark"] img { filter: brightness(0.92); }
 
 /* ── RESET ── */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing:border-box; }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
 html { scroll-behavior:smooth; -webkit-text-size-adjust:100%;
   overscroll-behavior: none; background: var(--off-white); }
 body {
@@ -197,6 +197,9 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* ── TYPOGRAPHY SYSTEM ── */
@@ -3665,9 +3668,13 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 .skel { position: relative; overflow: hidden; background: var(--sand); border-radius: var(--r-md); }
 .skel::after { content: ''; position: absolute; inset: 0;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
-  transform: translateX(-100%); animation: shimmer 1.3s infinite; }
+  transform: translateX(-100%); animation: shimmerSlide 1.3s infinite; }
 [data-theme="dark"] .skel::after { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent); }
-@keyframes shimmer { 100% { transform: translateX(100%); } }
+@keyframes shimmerSlide { 100% { transform: translateX(100%); } }
+/* Premium image fade-in (plays on render; never leaves an image hidden) */
+@keyframes imgIn { from { opacity: 0; } to { opacity: 1; } }
+.img-in { animation: imgIn 0.5s var(--ease-soft) both; }
+@media (prefers-reduced-motion: reduce) { .img-in { animation: none; } }
 
 /* Respect users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
@@ -3914,7 +3921,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v19</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v20</span>
     </div>
   </section>
 
@@ -7545,7 +7552,7 @@ function campCardHTML(c) {
     const needed   = c.needed       || 0;
 
     const imgSrc = Models.campImage(c);
-    const imgHtml = `<img src="${imgSrc}" alt="${title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" onclick="event.stopPropagation();openImageViewer('${imgSrc}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="camp-img-fallback" style="display:none;background:${fallbackColor}"></div>`;
+    const imgHtml = `<img src="${imgSrc}" alt="${title}" loading="lazy" decoding="async" class="img-in" style="width:100%;height:100%;object-fit:cover;display:block;" onclick="event.stopPropagation();openImageViewer('${imgSrc}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="camp-img-fallback" style="display:none;background:${fallbackColor}"></div>`;
 
     let joinBtnHtml = '';
     const full = vol >= needed && needed > 0;
