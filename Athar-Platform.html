@@ -3400,6 +3400,16 @@ html, body { overflow-x: hidden; }
   border: none; border-radius: var(--r-full); padding: var(--sp-2) var(--sp-4); font-size: var(--fs-sm); font-weight: 700;
   cursor: pointer; transition: background var(--t-fast) var(--ease); }
 .hl-viewall:hover { background: rgba(245,242,236,0.26); }
+/* Community impact stat cards (volunteer hours · active volunteers) */
+.hl-stats { display: flex; gap: var(--sp-3); margin-bottom: var(--sp-3); }
+.hl-stat { flex: 1; min-width: 0; background: var(--card-hl-img) right bottom / cover no-repeat, var(--forest);
+  border: 1px solid var(--line-sand-6); border-radius: var(--r-lg); padding: var(--sp-4) var(--sp-3);
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
+.hl-stat-ico { width: 36px; height: 36px; border-radius: 50%; background: rgba(245,242,236,0.16);
+  display: flex; align-items: center; justify-content: center; color: var(--off-white); margin-bottom: 2px; }
+.hl-stat-ico svg { width: 18px; height: 18px; }
+.hl-stat-num { font-size: var(--fs-2xl); font-weight: 800; color: var(--off-white); line-height: 1.05; }
+.hl-stat-label { font-size: var(--fs-xs); font-weight: 700; color: rgba(245,242,236,0.72); }
 /* Top volunteers modal rows */
 .topvol-row { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-3) var(--sp-1); border-bottom: 1px solid var(--line-sand-6); }
 .topvol-row:last-child { border-bottom: none; }
@@ -3958,7 +3968,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v23</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v24</span>
     </div>
   </section>
 
@@ -7710,9 +7720,21 @@ const HomeUI = {
     const viewAll = ranked.length > 3
       ? '<button class="hl-viewall" onclick="openTopVolunteers()">' + t('viewAll') + '</button>'
       : '';
+    // Community impact stats: total volunteer hours + active volunteer count.
+    const approvedVols = UserService.getAll().filter(u => u.status === 'approved' && u.email !== CONFIG.ADMIN_EMAIL && !u.isGuest);
+    const totalHours = approvedVols.reduce((s, u) => s + (u.volunteerHours || 0), 0);
+    const activeVols = approvedVols.length;
+    const statHtml = '<div class="hl-stats">' +
+      '<div class="hl-stat"><span class="hl-stat-ico">' + icon('clock') + '</span>' +
+        '<span class="hl-stat-num">' + totalHours.toLocaleString('en-US') + '</span>' +
+        '<span class="hl-stat-label">' + (isAr ? 'ساعة تطوّع' : 'Volunteer hours') + '</span></div>' +
+      '<div class="hl-stat"><span class="hl-stat-ico">' + icon('people') + '</span>' +
+        '<span class="hl-stat-num">' + activeVols.toLocaleString('en-US') + '</span>' +
+        '<span class="hl-stat-label">' + (isAr ? 'متطوّع نشيط' : 'Active volunteers') + '</span></div>' +
+      '</div>';
     const cities = DiscoveryService.cities();
     const cityHtml = cities.length ? '<div class="hl-card"><div class="hl-h">' + t('activeCities') + '</div><div class="hl-cities">' + cities.map(c => '<span class="hl-city">' + c + '</span>').join('') + '</div></div>' : '';
-    el.innerHTML = '<div class="hl-card"><div class="hl-h">' + t('topVolunteers') + '</div>' + top + viewAll + '</div>' + cityHtml;
+    el.innerHTML = '<div class="hl-card"><div class="hl-h">' + t('topVolunteers') + '</div>' + top + viewAll + '</div>' + statHtml + cityHtml;
   }
 };
 
