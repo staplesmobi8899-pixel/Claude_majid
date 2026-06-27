@@ -3021,7 +3021,7 @@ input[type="file"]::file-selector-button {
 #loginScreen {
   min-height: 100vh; min-height: 100dvh;
   display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;
-  position: relative; overflow-y: auto; overscroll-behavior: none;
+  position: fixed; inset: 0; overflow-y: auto; overscroll-behavior: none; -webkit-overflow-scrolling: touch;
   background: linear-gradient(180deg, var(--off-white) 0%, var(--warm-beige) 100%);
   color: var(--forest);
   padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom);
