@@ -3907,7 +3907,10 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
         </div>
         <div class="auth-field">
           <label class="auth-label" id="authIdLabel" data-i18n="email"></label>
-          <input class="auth-input" name="email" id="authIdInput" type="email" autocomplete="username" inputmode="email">
+          <div class="phone-group">
+            <span class="phone-prefix" id="authIdPrefix" dir="ltr" style="display:none">+963</span>
+            <input class="auth-input" name="email" id="authIdInput" type="email" autocomplete="username" inputmode="email">
+          </div>
         </div>
         <div class="auth-field">
           <label class="auth-label" data-i18n="password"></label>
@@ -9589,11 +9592,14 @@ const Auth = {
       b.classList.toggle('active', b.dataset.method === this.method));
     const input = document.getElementById('authIdInput');
     const label = document.getElementById('authIdLabel');
+    const prefix = document.getElementById('authIdPrefix');
     if (input) {
       input.type = (this.method === 'phone') ? 'tel' : 'email';
-      input.setAttribute('inputmode', this.method === 'phone' ? 'tel' : 'email');
+      input.setAttribute('inputmode', this.method === 'phone' ? 'numeric' : 'email');
+      input.placeholder = (this.method === 'phone') ? '9XXXXXXXX' : '';
       input.value = '';
     }
+    if (prefix) prefix.style.display = (this.method === 'phone') ? 'flex' : 'none';
     if (label) label.textContent = t(this.method === 'phone' ? 'phone' : 'email');
   }
 };
