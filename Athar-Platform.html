@@ -4014,7 +4014,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v28</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v29</span>
     </div>
   </section>
 
@@ -5308,10 +5308,11 @@ const Sync = {
   async pullUsers() {
     if (!sb) return;
     const { data, error } = await sb.from('profiles').select('*');
-    if (error) { console.error('[pullUsers]', error.message); try { toast('\ud83d\udd27 profiles ERROR: ' + error.message, 'error'); } catch (e) {} return; }
-    try { toast('\ud83d\udd27 profiles rows: ' + (data || []).length, 'success'); } catch (e) {}
-    UserService.save((data || []).map(p => profileToUser(p)));
-    console.log('[Sync] users loaded:', (data || []).length);
+    if (error) { try { toast('\ud83d\udd27 profiles ERROR: ' + error.message, 'error'); } catch (e) {} return; }
+    let mapped = [], mapErr = null;
+    try { mapped = (data || []).map(p => profileToUser(p)); } catch (e) { mapErr = e && e.message; }
+    const saved = UserService.save(mapped);
+    try { toast('\ud83d\udd27 rows:' + (data || []).length + ' mapped:' + mapped.length + (mapErr ? ' MAPERR:' + mapErr : '') + ' saved:' + saved + ' got:' + UserService.getAll().length, mapErr || !saved ? 'error' : 'success'); } catch (e) {}
   },
   async pullCampaigns() {
     if (!sb) return;
