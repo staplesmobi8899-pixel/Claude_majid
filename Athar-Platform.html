@@ -5027,6 +5027,30 @@ async function loadProfile(uid, email) {
   return profileToUser(data, email);
 }
 
+/* Resolve the account email for a phone-number login.
+   Supabase auth signs in by email, so when the user types a phone we look up
+   their profile (exact first, then by digits to tolerate +/0/spaces). */
+async function resolveEmailByPhone(phone) {
+  if (!sb) return null;
+  const raw = String(phone || '').trim();
+  if (!raw) return null;
+  try {
+    let { data } = await sb.from('profiles').select('email,phone').eq('phone', raw).limit(1);
+    if (data && data.length && data[0].email) return data[0].email;
+    const digits = raw.replace(/\D/g, '');
+    if (digits.length >= 6) {
+      const tail = digits.slice(-8);
+      const res = await sb.from('profiles').select('email,phone').ilike('phone', '%' + tail + '%').limit(50);
+      const hit = (res.data || []).find(r => {
+        const d = String(r.phone || '').replace(/\D/g, '');
+        return d && (d.endsWith(digits.slice(-9)) || digits.endsWith(d.slice(-9)));
+      });
+      if (hit && hit.email) return hit.email;
+    }
+  } catch (e) { console.error('[resolveEmailByPhone]', e); }
+  return null;
+}
+
 /* Upload a base64/data-URL image to Supabase Storage; returns a public URL
    (or the original value if upload is unavailable/fails). */
 async function uploadImage(dataUrl, bucket) {
@@ -6408,7 +6432,14 @@ const AuthService = {
     password   = String(password || '').trim();
     if (!identifier || !password) return { ok: false, error: 'required' };
     if (sb) {
-      const { data: au, error } = await sb.auth.signInWithPassword({ email: identifier.toLowerCase(), password });
+      // Sign in by email; if the user typed a phone number, resolve it to their email first.
+      let email = identifier.toLowerCase();
+      if (!Validators.isEmail(identifier)) {
+        const resolved = await resolveEmailByPhone(identifier);
+        if (!resolved) return { ok: false, error: 'invalid' };
+        email = resolved.toLowerCase();
+      }
+      const { data: au, error } = await sb.auth.signInWithPassword({ email, password });
       if (error) return { ok: false, error: 'supa', message: error.message };
       const u = await loadProfile(au.user.id, au.user.email);
       if (!u) return { ok: false, error: 'invalid' };
