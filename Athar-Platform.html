@@ -4037,7 +4037,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v38</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v39</span>
     </div>
   </section>
 
@@ -4231,6 +4231,8 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
           <option value="recent" data-i18n-opt="sortRecent"></option>
           <option value="popular" data-i18n-opt="sortPopular"></option>
           <option value="urgent" data-i18n-opt="sortUrgent"></option>
+          <option value="farthest" data-i18n-opt="sortFarthest"></option>
+          <option value="saved" data-i18n-opt="sortSaved"></option>
         </select>
       </div>
       <div class="cat-chips" id="exploreChips"></div>
@@ -4331,15 +4333,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
           <div id="profileCampsBox"></div>
         </div>
 
-        <div class="menu-row" onclick="toggleMenu('m-saved')">
-          <div class="menu-icon"><svg class="ic" viewBox="0 0 24 24"><path d="M18 21l-6-4.5L6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/></svg></div>
-          <div class="menu-texts">
-            <div class="menu-title" data-i18n="savedTitle"></div>
-            <div class="menu-sub" data-i18n="savedSub"></div>
-          </div>
-          <div class="menu-arrow" id="arr-m-saved">›</div>
-        </div>
-        <div class="menu-section-body" id="m-saved"><div id="savedBox"></div></div>
+
 
         <div class="menu-row" id="menuAdminRow" style="display:none;" onclick="goPage('admin')">
           <div class="menu-icon"><svg class="ic" viewBox="0 0 24 24"><path d="M12 21s7.5-3.5 7.5-9.5V5.5L12 2.8 4.5 5.5v6C4.5 17.5 12 21 12 21z"/></svg></div>
@@ -5727,7 +5721,7 @@ const T = {
     savedTitle: 'المحفوظات', savedSub: 'المبادرات التي حفظتها', noSaved: 'لا توجد مبادرات محفوظة بعد',
     hoursLabel: 'الساعات المطلوبة', campGallery: 'معرض الصور (اختياري)', galleryTitle: 'معرض الصور', campTitleLabel: 'عنوان الحملة', neededLabel: 'عدد المتطوعين المقدّر', categoryLabel: 'الفئة', saveChanges: 'حفظ التعديلات', changesSaved: 'تم حفظ التعديلات ',
     allCats: 'الكل', allCities: 'كل المدن', searchPlaceholder: 'ابحث عن مبادرة، فئة، أو مدينة...',
-    sortRecent: 'الأحدث', sortPopular: 'الأكثر تفاعلاً', sortUrgent: 'الأقرب موعداً',
+    sortRecent: 'الأحدث', sortPopular: 'الأكثر تفاعلاً', sortUrgent: 'الأقرب موعداً', sortFarthest: 'الأبعد موعداً', sortSaved: 'لوقت لاحق',
     noResults: 'لا توجد نتائج', noResultsSub: 'جرّب كلمات أو فلاتر مختلفة.',
     greetSub: 'مبادرات مُلهمة تنتظر مشاركتك، وأرضٌ تنتظر خطوتك.', catsTitle: 'تصفّح حسب الفئة', trendingTitle: 'الأكثر تفاعلاً',
     highlightsTitle: 'إضاءات المجتمع', topVolunteers: 'أبرز المتطوعين', viewAll: 'عرض الكل', activeCities: 'مدن نشطة', featuredTag: 'مميّزة', nearestTag: 'أقرب حملة',
@@ -5918,7 +5912,7 @@ const T = {
     savedTitle: 'Saved', savedSub: 'Initiatives you bookmarked', noSaved: 'No saved initiatives yet',
     hoursLabel: 'Hours needed', campGallery: 'Gallery (optional)', galleryTitle: 'Gallery', campTitleLabel: 'Campaign title', neededLabel: 'Estimated volunteers', categoryLabel: 'Category', saveChanges: 'Save changes', changesSaved: 'Changes saved ',
     allCats: 'All', allCities: 'All cities', searchPlaceholder: 'Search initiatives, categories, or cities...',
-    sortRecent: 'Recent', sortPopular: 'Most active', sortUrgent: 'Soonest',
+    sortRecent: 'Recent', sortPopular: 'Most active', sortUrgent: 'Soonest', sortFarthest: 'Latest date', sortSaved: 'For later',
     noResults: 'No results', noResultsSub: 'Try different keywords or filters.',
     greetSub: 'Inspiring initiatives await your hands, and a land awaits your steps.', catsTitle: 'Browse by category', trendingTitle: 'Trending now',
     highlightsTitle: 'Community highlights', topVolunteers: 'Top volunteers', viewAll: 'View all', activeCities: 'Active cities', featuredTag: 'Featured', nearestTag: 'Nearest',
@@ -7007,6 +7001,7 @@ const DiscoveryService = {
     const a = list.slice();
     if (sort === 'popular') a.sort((x, y) => (y.volunteers || 0) - (x.volunteers || 0));
     else if (sort === 'urgent') a.sort((x, y) => String(x.date || '9999').localeCompare(String(y.date || '9999')));
+    else if (sort === 'farthest') a.sort((x, y) => String(y.date || '0').localeCompare(String(x.date || '0')));
     else a.sort((x, y) => String(y.createdAt || '').localeCompare(String(x.createdAt || '')));
     // Emergency campaigns get priority visibility (stable: keep relative order otherwise)
     const emg = c => (Models.displayStatus(c) === 'emergency') ? 0 : 1;
@@ -7015,6 +7010,10 @@ const DiscoveryService = {
   },
   query({ search = '', category = 'all', city = 'all', sort = 'recent' } = {}) {
     let list = this._base();
+    if (sort === 'saved') {
+      const sv = (State.cu && State.cu.savedCampaigns) || [];
+      list = list.filter(c => sv.indexOf(c.id) !== -1);
+    }
     if (category && category !== 'all') list = list.filter(c => Models.catKey(c.category) === category);
     if (city && city !== 'all') list = list.filter(c => c.location === city);
     const q = String(search || '').trim().toLowerCase();
