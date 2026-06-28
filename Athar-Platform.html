@@ -4029,7 +4029,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v35</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v36</span>
     </div>
   </section>
 
@@ -6751,13 +6751,14 @@ const CampaignService = {
     return this.getAll().find(c => c.id === id) || null;
   },
 
-  /** Get visible campaigns (approved, under_process, done, OR created by current user) */
+  /** Public listings (home / explore / search): only admin-approved campaigns.
+      A creator's own pending/rejected campaign is NOT shown here — it lives in
+      "My Campaigns" (profile) until an admin approves it. */
   getVisible() {
     return this.getAll().filter(c =>
       c.status === 'approved' ||
       c.status === 'under_process' ||
-      c.status === 'done' ||
-      (State.cu && c.createdBy === State.cu.id)
+      c.status === 'done'
     );
   },
 
