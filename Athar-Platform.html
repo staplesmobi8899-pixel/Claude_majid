@@ -891,6 +891,15 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
   justify-content: space-between;
   gap: var(--sp-3);
 }
+/* Admin-only campaign controls inside the card */
+.camp-admin-row { display: flex; gap: var(--sp-2); margin-top: var(--sp-3);
+  padding-top: var(--sp-3); border-top: 1px solid var(--line-sand-6); }
+.camp-adm-btn { flex: 1; height: 38px; border-radius: var(--r-full); border: 1px solid var(--line-sand-6);
+  font-family: inherit; font-size: var(--fs-xs); font-weight: 800; cursor: pointer; background: var(--white);
+  transition: transform 0.16s var(--ease-soft), filter 0.16s var(--ease-soft); -webkit-tap-highlight-color: transparent; }
+.camp-adm-btn:active { transform: scale(0.96); }
+.camp-adm-btn.cancel { color: #991b1b; background: rgba(254,226,226,0.55); border-color: rgba(153,27,27,0.18); }
+.camp-adm-btn.hide { color: var(--charcoal-50); }
 
 .camp-pct {
   font-size: var(--fs-sm);
@@ -3479,6 +3488,7 @@ html, body { overflow-x: hidden; }
 .manage-btn { flex: 1; min-width: 130px; height: 46px; border: none; border-radius: var(--r-full); background: var(--accent-btn);
   color: var(--off-white); font-family: inherit; font-weight: 800; font-size: var(--fs-sm); cursor: pointer; }
 .manage-btn.ghost { background: transparent; color: var(--charcoal-80); border: 1.5px solid var(--sand-dark); }
+.manage-btn.danger { background: rgba(254,226,226,0.6); color: #991b1b; border: 1.5px solid rgba(153,27,27,0.2); }
 
 /* ── PHASE 5.3 — participants & attendance ── */
 .part-row { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2);
@@ -4017,7 +4027,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v32</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v33</span>
     </div>
   </section>
 
@@ -5469,7 +5479,8 @@ const CONFIG = {
     emergency:     { ar: 'طارئة',               en: 'Emergency',              cls: 'status-emergency' },
     done:          { ar: 'مكتملة',              en: 'Completed',              cls: 'status-done'      },
     rejected:      { ar: 'مرفوضة',              en: 'Rejected',               cls: 'status-rejected'  },
-    archived:      { ar: 'مؤرشفة',              en: 'Archived',               cls: 'status-archived'  }
+    archived:      { ar: 'مؤرشفة',              en: 'Archived',               cls: 'status-archived'  },
+    cancelled:     { ar: 'ملغاة',               en: 'Cancelled',              cls: 'status-rejected'  }
   },
   USER_STATUS: {
     pending:  { ar: 'قيد المراجعة', en: 'Pending Review' },
@@ -5722,7 +5733,7 @@ const T = {
     catClean: 'تنظيف', catPlant: 'تشجير', catImprove: 'تحسين', catSupport: 'دعم', catEdu: 'تعليم',
     volLabel: 'المتطوعون', organizerLabel: 'المنظم', progress: 'التقدم', contactLabel: 'للتواصل',
     sApproved: 'متاحة', sPending: 'قيد المراجعة', sRejected: 'مرفوضة', sDone: 'منتهية',
-    joinBtn: 'انضمام', joinedBtn: ' منضم', unavailBtn: 'غير متاح', leaveCampBtn: 'مغادرة الحملة', campFull: 'العدد مكتمل', campRunning: 'قيد التنفيذ',
+    joinBtn: 'انضمام', joinedBtn: ' منضم', unavailBtn: 'غير متاح', leaveCampBtn: 'مغادرة الحملة', campFull: 'العدد مكتمل', campRunning: 'قيد التنفيذ', cancelCampBtn: 'إلغاء الحملة', hideCampBtn: 'إخفاء', unhideCampBtn: 'إظهار', cancelCampConfirm: 'هل تريد إلغاء هذه الحملة؟', campCancelled: 'تم إلغاء الحملة', campHidden: 'تم إخفاء الحملة', campShown: 'تم إظهار الحملة',
     pendingBanner: ' حسابك قيد المراجعة — بانتظار موافقة المسؤول',
     approvedBanner: ' حسابك مفعّل — مرحبًا بك في أَثَرْ',
     rejectedBanner: ' تم رفض حسابك — تواصل مع المسؤول',
@@ -5913,7 +5924,7 @@ const T = {
     catClean: 'Cleaning', catPlant: 'Planting', catImprove: 'Improvement', catSupport: 'Support', catEdu: 'Education',
     volLabel: 'Volunteers', organizerLabel: 'Organizer', progress: 'Progress', contactLabel: 'Contact',
     sApproved: 'Available', sPending: 'Under Review', sRejected: 'Rejected', sDone: 'Completed',
-    joinBtn: 'Join', joinedBtn: ' Joined', unavailBtn: 'Unavailable', leaveCampBtn: 'Leave campaign', campFull: 'Full', campRunning: 'In progress',
+    joinBtn: 'Join', joinedBtn: ' Joined', unavailBtn: 'Unavailable', leaveCampBtn: 'Leave campaign', campFull: 'Full', campRunning: 'In progress', cancelCampBtn: 'Cancel campaign', hideCampBtn: 'Hide', unhideCampBtn: 'Show', cancelCampConfirm: 'Cancel this campaign?', campCancelled: 'Campaign cancelled', campHidden: 'Campaign hidden', campShown: 'Campaign shown',
     pendingBanner: ' Your account is under review — awaiting admin approval',
     approvedBanner: ' Your account is active — welcome to ATHAR',
     rejectedBanner: ' Your account was rejected — contact the admin',
@@ -7713,6 +7724,10 @@ function campCardHTML(c) {
           <div class="camp-pct"><strong>${pct}%</strong> ${t('complete')}</div>
           ${joinBtnHtml}
         </div>
+        ${State.isAdmin ? `<div class="camp-admin-row">
+          <button class="camp-adm-btn cancel" onclick="event.stopPropagation();handleCancelCamp('${c.id}')">${t('cancelCampBtn')}</button>
+          <button class="camp-adm-btn hide" onclick="event.stopPropagation();handleHideCamp('${c.id}')">${c.status === 'archived' ? t('unhideCampBtn') : t('hideCampBtn')}</button>
+        </div>` : ''}
       </div>
     </div>`;
   } catch (e) {
@@ -9278,12 +9293,27 @@ function renderDetail(id) {
       '<button class="detail-hero-save' + (saved ? ' saved' : '') + '" id="detailSaveBtn" onclick="handleSave(\'' + id + '\')" aria-label="save">' + icon('heart') + '</button>';
   }
 
+  // Unified with the card: Join → Leave → Full → In-progress (same logic everywhere).
+  // The one extra rule here: when full, a joined user can still leave from INSIDE the detail.
   let actionBtn;
-  if (joined) actionBtn = '<button class="detail-join-btn leave" onclick="handleLeave(\'' + id + '\')">' + t('leaveBtn') + '</button>';
-  else if (c.status === 'done' || c.status === 'archived') actionBtn = '<button class="detail-join-btn" disabled>' + t('campDone') + '</button>';
-  else if (c.status !== 'approved' && c.status !== 'under_process') actionBtn = '<button class="detail-join-btn" disabled>' + si[State.lang] + '</button>';
-  else if ((c.volunteers || 0) >= (c.needed || 0) && c.needed > 0) actionBtn = '<button class="detail-join-btn" disabled>' + t('campFull') + '</button>';
-  else actionBtn = '<button class="detail-join-btn" onclick="handleJoin(\'' + id + '\')">' + t('joinBtn') + '</button>';
+  const dOpen = (c.status === 'approved' || c.status === 'under_process');
+  let dDays = 999;
+  if (c.date) { const dd = (new Date(c.date + 'T00:00:00') - new Date()) / 86400000; if (!isNaN(dd)) dDays = dd; }
+  if (!dOpen) {
+    actionBtn = '<button class="detail-join-btn" disabled>' + si[State.lang] + '</button>';
+  } else if (dDays <= 1) {
+    actionBtn = '<button class="detail-join-btn" disabled>' + t('campRunning') + '</button>';
+  } else if (isFull) {
+    actionBtn = joined
+      ? '<button class="detail-join-btn leave" onclick="handleLeave(\'' + id + '\')">' + t('leaveCampBtn') + '</button>'
+      : '<button class="detail-join-btn" disabled>' + t('campFull') + '</button>';
+  } else if (joined) {
+    actionBtn = CampaignService.canLeave(c)
+      ? '<button class="detail-join-btn leave" onclick="handleLeave(\'' + id + '\')">' + t('leaveCampBtn') + '</button>'
+      : '<button class="detail-join-btn leave" onclick="toast(t(\'cantLeave\'),\'warning\')">' + t('leaveCampBtn') + '</button>';
+  } else {
+    actionBtn = '<button class="detail-join-btn" onclick="handleJoin(\'' + id + '\')">' + t('joinBtn') + '</button>';
+  }
 
   const reqs = [t('req1'), t('req2'), t('req3')];
   const partHtml = parts.length
@@ -9296,7 +9326,8 @@ function renderDetail(id) {
       (c.status !== 'done' ? '<button class="manage-btn" onclick="handleManageDone(\'' + id + '\')">' + t('markDoneBtn') + '</button>' : '') +
       (canAdmin && (c.status === 'approved' || c.status === 'under_process')
         ? '<button class="manage-btn ' + (c.emergency ? '' : 'ghost') + '" onclick="handleToggleEmergency(\'' + id + '\')">' + (c.emergency ? t('clearEmergencyBtn') : t('markEmergencyBtn')) + '</button>' : '') +
-      (c.status !== 'archived' ? '<button class="manage-btn ghost" onclick="handleArchive(\'' + id + '\')">' + t('archiveBtn') + '</button>' : '') +
+      (c.status !== 'archived' ? '<button class="manage-btn ghost" onclick="handleHideCamp(\'' + id + '\')">' + t('hideCampBtn') + '</button>' : '<button class="manage-btn ghost" onclick="handleHideCamp(\'' + id + '\')">' + t('unhideCampBtn') + '</button>') +
+      (canAdmin && c.status !== 'cancelled' ? '<button class="manage-btn danger" onclick="handleCancelCamp(\'' + id + '\')">' + t('cancelCampBtn') + '</button>' : '') +
       '<button class="manage-btn ghost" onclick="openParticipants(\'' + id + '\')">' + t('manageParticipants') + '</button>' +
       '</div></section>'
     : '';
@@ -9432,6 +9463,32 @@ function handleArchive(id) {
   if (!Permissions.canManageCampaign(State.cu, CampaignService.getById(id))) return;
   CampaignService.archive(id);
   toast(t('archivedToast'), 'success');
+  if (State.currentPage === 'detail') renderDetail(id);
+  if (State.currentPage === 'admin') { renderAdmin(); admViewCamp(id); }
+}
+
+/* Admin/owner: cancel a campaign (hidden from users, kept in admin). */
+function handleCancelCamp(id) {
+  const c = CampaignService.getById(id);
+  if (!Permissions.canManageCampaign(State.cu, c)) return;
+  if (!confirm(t('cancelCampConfirm'))) return;
+  CampaignService.updateById(id, { status: 'cancelled' });
+  toast(t('campCancelled'), 'success');
+  try { renderCampaigns(); } catch (e) {}
+  try { if (typeof ExploreUI !== 'undefined') ExploreUI.render(); } catch (e) {}
+  if (State.currentPage === 'detail') renderDetail(id);
+  if (State.currentPage === 'admin') { renderAdmin(); admViewCamp(id); }
+}
+
+/* Admin/owner: hide (archive) a campaign from users — toggles back to visible. */
+function handleHideCamp(id) {
+  const c = CampaignService.getById(id);
+  if (!Permissions.canManageCampaign(State.cu, c)) return;
+  const hide = c.status !== 'archived';
+  CampaignService.updateById(id, { status: hide ? 'archived' : 'approved' });
+  toast(t(hide ? 'campHidden' : 'campShown'), 'success');
+  try { renderCampaigns(); } catch (e) {}
+  try { if (typeof ExploreUI !== 'undefined') ExploreUI.render(); } catch (e) {}
   if (State.currentPage === 'detail') renderDetail(id);
   if (State.currentPage === 'admin') { renderAdmin(); admViewCamp(id); }
 }
