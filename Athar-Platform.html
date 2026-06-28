@@ -4029,7 +4029,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v36</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v37</span>
     </div>
   </section>
 
@@ -5346,6 +5346,14 @@ const Sync = {
     const byCamp = {};
     (parts || []).forEach(p => { (byCamp[p.campaign_id] = byCamp[p.campaign_id] || []).push(p); });
     CampaignService.save((camps || []).map(r => campRowToApp(r, byCamp[r.id] || [])));
+    // Rebuild the signed-in user's joined list from the authoritative participant
+    // data so the Join/Leave button + "My Campaigns" survive logout/app-restart.
+    if (State.cu && State.cu.id && !State.cu.isGuest) {
+      const jc = CampaignService.rebuildJoined(State.cu);
+      State.cu.joinedCamps = jc;
+      try { mirrorUser({ id: State.cu.id, joinedCamps: jc }); } catch (e) {}
+      try { DB.setObj(CONFIG.DB_KEYS.SESSION, State.cu); } catch (e) {}
+    }
     console.log('[Sync] campaigns loaded:', (camps || []).length);
     return (camps || []).length;
   },
@@ -6762,6 +6770,23 @@ const CampaignService = {
     );
   },
 
+  /** Reliable "is this user joined?" — uses the synced participant list
+      (joinedUsers, the source of truth) with the local list as a fallback. */
+  isJoined(c, user) {
+    user = user || State.cu;
+    if (!c || !user || !user.id) return false;
+    return (c.joinedUsers || []).indexOf(user.id) !== -1
+        || (user.joinedCamps || []).indexOf(c.id) !== -1;
+  },
+
+  /** Rebuild a user's joined-campaign id list from the authoritative
+      participant data (so it survives logout/app-restart). */
+  rebuildJoined(user) {
+    user = user || State.cu;
+    if (!user || !user.id) return [];
+    return this.getAll().filter(c => (c.joinedUsers || []).indexOf(user.id) !== -1).map(c => c.id);
+  },
+
   save(camps) { return DB.set(CONFIG.DB_KEYS.CAMPS, camps); },
 
   add(camp) {
@@ -7653,7 +7678,7 @@ function openImageViewer(src) {
 /** Render a single campaign card HTML */
 function campCardHTML(c) {
   try {
-    const joined = (State.cu?.joinedCamps || []).includes(c.id);
+    const joined = CampaignService.isJoined(c);
     const saved  = State.cu ? CampaignService.isSaved(c.id) : false;
     const txt    = Models.getCampText(c);
     const pct    = c.needed ? Math.min(100, Math.round(((c.volunteers || 0) / c.needed) * 100)) : 0;
@@ -9281,7 +9306,7 @@ function renderDetail(id) {
   const isFull = (c.volunteers || 0) >= (c.needed || 0) && c.needed > 0;
   const isAr = State.lang === 'ar';
   const pct = c.needed ? Math.min(100, Math.round(((c.volunteers || 0) / c.needed) * 100)) : 0;
-  const joined = (State.cu && (State.cu.joinedCamps || []).includes(id));
+  const joined = CampaignService.isJoined(c);
   const saved = CampaignService.isSaved(id);
   const canManage = Permissions.canManageCampaign(State.cu, c);
   const parts = CampaignService.getParticipants(c);
@@ -9529,7 +9554,7 @@ function _updateDetailJoinBtn(id) {
   if (!btn) return;
   const c = CampaignService.getById(id);
   if (!c) return;
-  const joined = (State.cu?.joinedCamps || []).includes(id);
+  const joined = CampaignService.isJoined(c);
   btn.textContent = joined ? t('joinedBtn') : t('joinBtn');
   btn.disabled    = joined || (c.status !== 'approved' && c.status !== 'under_process');
   btn.onclick     = () => handleJoin(id);
