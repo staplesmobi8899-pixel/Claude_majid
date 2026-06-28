@@ -2657,8 +2657,6 @@ input[type="file"]::file-selector-button {
   padding: var(--sp-3) var(--sp-4);
   background: var(--warm-white);
   border-bottom: 1px solid var(--line-sand);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
 }
 
 .adm-sidebar-toggle,
@@ -3830,6 +3828,10 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
   border: 1px solid var(--line-sand-6);
   background: #fdfaf6;
   box-shadow: 0 10px 30px rgba(40,46,28,0.12);
+  /* Keep the fixed bar on its own GPU layer — stops iOS scroll "stuck mid-page" glitch */
+  transform: translateZ(0);
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
 }
 #appScreen { padding-bottom: 86px; }
 .nav-btn svg, .nav-btn .ic { transition: transform 0.22s var(--spring); }
@@ -4027,7 +4029,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v33</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v34</span>
     </div>
   </section>
 
