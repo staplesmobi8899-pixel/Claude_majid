@@ -786,9 +786,13 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
 [data-lang="en"] .camp-badge { left: 0.9rem; }
 
 /* Top-leading badge stack (status + days + community) — no overlap */
-.camp-badges-tl { position: absolute; top: 0.9rem; display: flex; flex-direction: column; gap: 6px; z-index: 2; }
-[data-lang="ar"] .camp-badges-tl { right: 0.9rem; align-items: flex-end; }
-[data-lang="en"] .camp-badges-tl { left: 0.9rem; align-items: flex-start; }
+.camp-badges-tl { position: absolute; bottom: 0.9rem; display: flex; flex-direction: column; gap: 6px; z-index: 2; }
+[data-lang="ar"] .camp-badges-tl { left: 0.9rem; align-items: flex-start; }
+[data-lang="en"] .camp-badges-tl { right: 0.9rem; align-items: flex-end; }
+/* Community badge — bottom-right corner of the image */
+.camp-community-br { position: absolute; top: auto; bottom: 0.9rem; z-index: 2; }
+[data-lang="ar"] .camp-community-br { right: 0.9rem; left: auto; }
+[data-lang="en"] .camp-community-br { left: 0.9rem; right: auto; }
 .camp-badges-tl .camp-badge { position: static; top: auto; right: auto; left: auto; }
 
 /* Emergency corner box (bottom-right), only on emergency campaigns */
@@ -804,8 +808,8 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
   background: rgba(255,255,255,0.88);
   color: var(--olive);
 }
-[data-lang="ar"] .camp-badge-cat { left: 0.9rem; }
-[data-lang="en"] .camp-badge-cat { right: 0.9rem; }
+[data-lang="ar"] .camp-badge-cat { left: 0.9rem; right: auto; }
+[data-lang="en"] .camp-badge-cat { right: 0.9rem; left: auto; }
 
 .status-approved { background: rgba(220,252,231,0.9); color: #166534; }
 .status-pending  { background: rgba(254,243,199,0.9); color: #92400e; }
@@ -3502,9 +3506,13 @@ html, body { overflow-x: hidden; }
   color: #fff; font-family: inherit; font-size: var(--fs-xs); font-weight: 800; cursor: pointer; }
 .camp-badge-community { background: var(--olive-pale) !important; color: var(--olive) !important; }
 .detail-cat-pill.community { background: var(--olive) !important; color: var(--off-white) !important; }
-.card-save { position: absolute; top: var(--sp-3); inset-inline-start: var(--sp-3); width: 32px; height: 32px;
-  border-radius: var(--r-full); border: none; background: rgba(255,255,255,0.9); color: var(--red);
-  font-size: 1rem; line-height: 1; cursor: pointer; z-index: 2; box-shadow: var(--shadow-sm); }
+.card-save { position: absolute; top: var(--sp-3); inset-inline-start: var(--sp-3); width: 34px; height: 34px;
+  border-radius: var(--r-full); border: none; background: rgba(255,255,255,0.92); color: var(--red);
+  cursor: pointer; z-index: 3; box-shadow: var(--shadow-sm);
+  display: flex; align-items: center; justify-content: center; }
+.card-save svg { width: 18px; height: 18px; fill: none; stroke: var(--red); stroke-width: 2; transition: fill 0.2s var(--ease-soft); }
+.card-save.saved svg { fill: var(--red); }
+.card-save:active { transform: scale(0.88); }
 .card-save.saved { background: var(--red); color: #fff; }
 
 /* ── PHASE 5 — create steps + gallery ── */
@@ -7731,12 +7739,10 @@ function campCardHTML(c) {
     return `
     <div class="camp-card${isEmergency ? ' camp-card-emergency' : ''}" onclick="openDetail('${c.id}')">
       <div class="camp-img">${imgHtml}<div class="camp-img-overlay"></div>
-        <div class="camp-badges-tl">
-          ${daysBadge}
-          ${Models.isCommunity(c) ? `<span class="camp-badge camp-badge-community"> ${t('communityReq')}</span>` : ''}
-        </div>
         <span class="camp-badge camp-badge-cat">${catIcon}${cat}</span>
-        <button class="card-save${saved ? ' saved' : ''}" onclick="event.stopPropagation();handleCardSave('${c.id}',this)" aria-label="save">${saved ? '' : ''}</button>
+        <div class="camp-badges-tl">${daysBadge}</div>
+        ${Models.isCommunity(c) ? `<span class="camp-badge camp-badge-community camp-community-br">${t('communityReq')}</span>` : ''}
+        <button class="card-save${saved ? ' saved' : ''}" onclick="event.stopPropagation();handleCardSave('${c.id}',this)" aria-label="save">${icon('heart')}</button>
       </div>
       <div class="camp-body">
         <div class="camp-title">${title}</div>
@@ -9434,7 +9440,7 @@ function markAtt(campId, userId, status) {
 function handleCardSave(id, btn) {
   if (!requireAuth()) return;
   const now = CampaignService.toggleSave(id);
-  if (btn) { btn.classList.toggle('saved', now); btn.textContent = now ? '' : ''; }
+  if (btn) { btn.classList.toggle('saved', now); }
   toast(now ? t('saved') : t('unsaved'), '');
 }
 function renderSaved() {
