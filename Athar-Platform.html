@@ -4029,7 +4029,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v34</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v35</span>
     </div>
   </section>
 
@@ -4730,7 +4730,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
             <div class="adm-stats-grid" id="admStatsGrid"></div>
             <div class="adm-quick-grid" id="admQuickActions"></div>
             <div class="adm-card">
-              <h2 id="admHdPending">Pending Reviews</h2>
+              <h2 id="admHdPending">Under reviews</h2>
               <div id="admPendingList"></div>
             </div>
             <div class="adm-card">
@@ -5475,7 +5475,7 @@ const CONFIG = {
     food_aid: 'community', animal_care: 'community'
   },
   CAMP_STATUS: {
-    pending:       { ar: 'قيد المراجعة',        en: 'Pending Review',         cls: 'status-pending'   },
+    pending:       { ar: 'قيد التدقيق',        en: 'Under review',         cls: 'status-pending'   },
     approved:      { ar: 'بانتظار المتطوّعين',  en: 'Waiting for Volunteers', cls: 'status-waiting'   },
     under_process: { ar: 'قيد التنفيذ',         en: 'In Progress',            cls: 'status-progress'  },
     emergency:     { ar: 'طارئة',               en: 'Emergency',              cls: 'status-emergency' },
@@ -5485,7 +5485,7 @@ const CONFIG = {
     cancelled:     { ar: 'ملغاة',               en: 'Cancelled',              cls: 'status-rejected'  }
   },
   USER_STATUS: {
-    pending:  { ar: 'قيد المراجعة', en: 'Pending Review' },
+    pending:  { ar: 'قيد التدقيق', en: 'Under review' },
     approved: { ar: 'مفعّل',        en: 'Active'         },
     rejected: { ar: 'مرفوض',        en: 'Rejected'       }
   },
@@ -5591,7 +5591,7 @@ const T = {
     nextStep: 'التالي',
     prevStep: 'السابق',
     haveAccount: 'لديك حساب؟',
-    pendingTitle: 'طلبك قيد المراجعة',
+    pendingTitle: 'طلبك قيد التدقيق',
     pendingMsg: 'تم استلام طلبك بنجاح. يقوم فريقنا بمراجعة حسابك، وسيتم تفعيله قريباً. شكراً لانضمامك إلى أثر.',
     backToLogin: 'العودة لتسجيل الدخول',
     forgotTitle: 'استعادة كلمة المرور',
@@ -5734,9 +5734,9 @@ const T = {
     campImg: 'صورة المبادرة (اختياري)', publishBtn: 'أرسل المبادرة',
     catClean: 'تنظيف', catPlant: 'تشجير', catImprove: 'تحسين', catSupport: 'دعم', catEdu: 'تعليم',
     volLabel: 'المتطوعون', organizerLabel: 'المنظم', progress: 'التقدم', contactLabel: 'للتواصل',
-    sApproved: 'متاحة', sPending: 'قيد المراجعة', sRejected: 'مرفوضة', sDone: 'منتهية',
+    sApproved: 'متاحة', sPending: 'قيد التدقيق', sRejected: 'مرفوضة', sDone: 'منتهية',
     joinBtn: 'انضمام', joinedBtn: ' منضم', unavailBtn: 'غير متاح', leaveCampBtn: 'مغادرة الحملة', campFull: 'العدد مكتمل', campRunning: 'قيد التنفيذ', cancelCampBtn: 'إلغاء الحملة', hideCampBtn: 'إخفاء', unhideCampBtn: 'إظهار', cancelCampConfirm: 'هل تريد إلغاء هذه الحملة؟', campCancelled: 'تم إلغاء الحملة', campHidden: 'تم إخفاء الحملة', campShown: 'تم إظهار الحملة',
-    pendingBanner: ' حسابك قيد المراجعة — بانتظار موافقة المسؤول',
+    pendingBanner: ' حسابك قيد التدقيق — بانتظار موافقة المسؤول',
     approvedBanner: ' حسابك مفعّل — مرحبًا بك في أَثَرْ',
     rejectedBanner: ' تم رفض حسابك — تواصل مع المسؤول',
     noData: 'لا توجد بيانات بعد',
@@ -5749,7 +5749,7 @@ const T = {
     errorEmail: 'البريد الإلكتروني مستخدم مسبقاً',
     errorPhone: 'رقم الهاتف مستخدم مسبقاً',
     errorLogin: 'بيانات الدخول غير صحيحة',
-    errorStatus: 'حسابك لا يزال قيد المراجعة',
+    errorStatus: 'حسابك لا يزال قيد التدقيق',
     errorRequired: 'هذا الحقل مطلوب',
     errorEmailFormat: 'صيغة البريد الإلكتروني غير صحيحة',
     errorPasswordLength: 'كلمة المرور يجب أن تكون 8 أحرف على الأقل',
@@ -5764,7 +5764,7 @@ const T = {
     campStatusUpdated: ' تم تحديث حالة الحملة',
     campDoneMsg: ' تم إنهاء الحملة بنجاح',
     campCreated: 'تم إنشاء الحملة',
-    campPending: ' تم إرسال حملتك — قيد المراجعة',
+    campPending: ' تم إرسال حملتك — قيد التدقيق',
   },
   en: {
     tagline: 'Every human touch leaves a positive impact.',
@@ -8136,7 +8136,7 @@ function admEl(id) { return document.getElementById(id); }
 function admStatusChip(status) {
   const isAr = State.lang === 'ar';
   const map = {
-    pending:       { ar: 'قيد المراجعة',       en: 'Pending Review' },
+    pending:       { ar: 'قيد التدقيق',       en: 'Under review' },
     approved:      { ar: 'بانتظار المتطوّعين', en: 'Waiting for Volunteers' },
     under_process: { ar: 'قيد التنفيذ',        en: 'In Progress' },
     emergency:     { ar: 'طارئة',              en: 'Emergency' },
@@ -8345,7 +8345,7 @@ function admRenderSettings() {
 function admRenderHeaders() {
   const isAr = State.lang === 'ar';
   const set = (id, ar, en) => { const el = admEl(id); if (el) el.textContent = isAr ? ar : en; };
-  set('admHdPending',   'بانتظار المراجعة',   'Pending Reviews');
+  set('admHdPending',   'بانتظار المراجعة',   'Under reviews');
   set('admHdModeration','الإشراف والبلاغات',   'Moderation');
   set('admHdActivity',  'آخر النشاطات',       'Recent Activity');
   set('admHdUsers',     'المستخدمين',          'Users');
@@ -8880,7 +8880,7 @@ function admRenderUsers() {
       const all = UserService.getAll();
       const opts = [
         { k: 'all',      ar: 'الكل',          en: 'All',      n: all.length },
-        { k: 'pending',  ar: 'قيد المراجعة',  en: 'Pending',  n: all.filter(u => u.status === 'pending').length },
+        { k: 'pending',  ar: 'قيد التدقيق',  en: 'Pending',  n: all.filter(u => u.status === 'pending').length },
         { k: 'approved', ar: 'مفعّل',          en: 'Approved', n: all.filter(u => u.status === 'approved').length },
         { k: 'rejected', ar: 'مرفوض',          en: 'Rejected', n: all.filter(u => u.status === 'rejected').length },
         { k: 'banned',   ar: 'محظور',          en: 'Banned',   n: all.filter(u => UserService.isBanned(u)).length }
@@ -8947,7 +8947,7 @@ function admRenderCampaigns() {
       const all = CampaignService.getAll();
       const opts = [
         { k: 'all',           ar: 'الكل',         en: 'All',         n: all.length },
-        { k: 'pending',       ar: 'قيد المراجعة', en: 'Pending',     n: all.filter(c => c.status === 'pending').length },
+        { k: 'pending',       ar: 'قيد التدقيق', en: 'Pending',     n: all.filter(c => c.status === 'pending').length },
         { k: 'approved',      ar: 'موافق عليها',  en: 'Approved',    n: all.filter(c => c.status === 'approved').length },
         { k: 'under_process', ar: 'قيد التنفيذ',  en: 'In Progress', n: all.filter(c => c.status === 'under_process').length },
         { k: 'done',          ar: 'منجزة',        en: 'Done',        n: all.filter(c => c.status === 'done').length },
@@ -9013,7 +9013,7 @@ function admRenderPartners() {
     if (chips) {
       const opts = [
         { k: 'all',      ar: 'الكل',         en: 'All',      n: all.length },
-        { k: 'pending',  ar: 'قيد المراجعة', en: 'Pending',  n: all.filter(p => p.status === 'pending').length },
+        { k: 'pending',  ar: 'قيد التدقيق', en: 'Pending',  n: all.filter(p => p.status === 'pending').length },
         { k: 'approved', ar: 'مقبولة',        en: 'Approved', n: all.filter(p => p.status === 'approved').length },
         { k: 'rejected', ar: 'مرفوضة',        en: 'Rejected', n: all.filter(p => p.status === 'rejected').length }
       ];
