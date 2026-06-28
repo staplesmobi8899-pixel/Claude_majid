@@ -932,6 +932,9 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
 .join-btn.js-rejected  { background: rgba(254,226,226,0.95);     color: #991b1b; }
 .join-btn.js-archived  { background: rgba(233,228,219,0.98);     color: #6b6256; }
 .join-btn.js-emergency { background: rgba(179,38,30,0.94);       color: #fff; }
+/* Leave-campaign button (joined) + its locked state within 2 days of the date */
+.join-btn.js-leave     { background: var(--warm-beige); color: var(--forest); border: 1px solid var(--line-sand-6); }
+.join-btn.js-leave-off { background: var(--sand); color: var(--charcoal-50); opacity: 0.75; }
 
 /* ══════════════════════════════════════════
    CAMPAIGN DETAIL PAGE
@@ -4014,7 +4017,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v31</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v32</span>
     </div>
   </section>
 
@@ -5719,7 +5722,7 @@ const T = {
     catClean: 'تنظيف', catPlant: 'تشجير', catImprove: 'تحسين', catSupport: 'دعم', catEdu: 'تعليم',
     volLabel: 'المتطوعون', organizerLabel: 'المنظم', progress: 'التقدم', contactLabel: 'للتواصل',
     sApproved: 'متاحة', sPending: 'قيد المراجعة', sRejected: 'مرفوضة', sDone: 'منتهية',
-    joinBtn: 'انضمام', joinedBtn: ' منضم', unavailBtn: 'غير متاح',
+    joinBtn: 'انضمام', joinedBtn: ' منضم', unavailBtn: 'غير متاح', leaveCampBtn: 'مغادرة الحملة', campFull: 'العدد مكتمل', campRunning: 'قيد التنفيذ',
     pendingBanner: ' حسابك قيد المراجعة — بانتظار موافقة المسؤول',
     approvedBanner: ' حسابك مفعّل — مرحبًا بك في أَثَرْ',
     rejectedBanner: ' تم رفض حسابك — تواصل مع المسؤول',
@@ -5910,7 +5913,7 @@ const T = {
     catClean: 'Cleaning', catPlant: 'Planting', catImprove: 'Improvement', catSupport: 'Support', catEdu: 'Education',
     volLabel: 'Volunteers', organizerLabel: 'Organizer', progress: 'Progress', contactLabel: 'Contact',
     sApproved: 'Available', sPending: 'Under Review', sRejected: 'Rejected', sDone: 'Completed',
-    joinBtn: 'Join', joinedBtn: ' Joined', unavailBtn: 'Unavailable',
+    joinBtn: 'Join', joinedBtn: ' Joined', unavailBtn: 'Unavailable', leaveCampBtn: 'Leave campaign', campFull: 'Full', campRunning: 'In progress',
     pendingBanner: ' Your account is under review — awaiting admin approval',
     approvedBanner: ' Your account is active — welcome to ATHAR',
     rejectedBanner: ' Your account was rejected — contact the admin',
@@ -7661,14 +7664,29 @@ function campCardHTML(c) {
     let joinBtnHtml = '';
     const full = vol >= needed && needed > 0;
     const stCls = { pending: 'js-pending', approved: 'js-waiting', under_process: 'js-progress', done: 'js-done', rejected: 'js-rejected', archived: 'js-archived' };
-    if (joined) {
-      joinBtnHtml = `<span class="join-btn js-joined status-display">${t('joinedBtn')}</span>`;
-    } else if (isEmergency) {
-      joinBtnHtml = `<span class="join-btn js-emergency status-display">${icon('alert')} ${t('emergencyTag')}</span>`;
-    } else if ((c.status === 'approved' || c.status === 'under_process') && !full) {
-      joinBtnHtml = `<button class="join-btn" onclick="event.stopPropagation();handleJoin('${c.id}')">${t('joinBtn')}</button>`;
-    } else {
+    const isOpen = (c.status === 'approved' || c.status === 'under_process');
+    // Days remaining until the campaign date (float; <=1 means it is about to run)
+    let daysUntil = 999;
+    if (c.date) { const dd = (new Date(c.date + 'T00:00:00') - new Date()) / 86400000; if (!isNaN(dd)) daysUntil = dd; }
+    if (!isOpen) {
+      // pending / done / rejected / archived → non-action status label
       joinBtnHtml = `<span class="join-btn ${stCls[c.status] || 'js-pending'} status-display">${si[State.lang]}</span>`;
+    } else if (daysUntil <= 1) {
+      // one day before the date (or it has arrived) → In progress
+      joinBtnHtml = `<span class="join-btn js-progress status-display">${t('campRunning')}</span>`;
+    } else if (full) {
+      // required count reached → Full (joined users leave from inside the detail page)
+      joinBtnHtml = `<span class="join-btn js-done status-display">${t('campFull')}</span>`;
+    } else if (joined) {
+      // joined → leave; locked within 2 days of the date
+      if (CampaignService.canLeave(c)) {
+        joinBtnHtml = `<button class="join-btn js-leave" onclick="event.stopPropagation();handleLeave('${c.id}')">${t('leaveCampBtn')}</button>`;
+      } else {
+        joinBtnHtml = `<button class="join-btn js-leave-off" onclick="event.stopPropagation();toast(t('cantLeave'),'warning')">${t('leaveCampBtn')}</button>`;
+      }
+    } else {
+      // open & not joined & not full → join
+      joinBtnHtml = `<button class="join-btn" onclick="event.stopPropagation();handleJoin('${c.id}')">${t('joinBtn')}</button>`;
     }
 
     return `
@@ -9389,6 +9407,8 @@ function handleLeave(id) {
     toast(res.message, 'success');
     if (res.updatedUser) State.setUser(res.updatedUser);
     updateBell();
+    try { renderCampaigns(); } catch (e) {}
+    try { if (typeof ExploreUI !== 'undefined') ExploreUI.render(); } catch (e) {}
     if (State.currentPage === 'detail') renderDetail(id);
   } else { toast(res.message || t('noData'), 'warning'); }
 }
