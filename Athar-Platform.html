@@ -3513,7 +3513,6 @@ html, body { overflow-x: hidden; }
 .card-save svg { width: 18px; height: 18px; fill: none; stroke: var(--red); stroke-width: 2; transition: fill 0.2s var(--ease-soft); }
 .card-save.saved svg { fill: var(--red); }
 .card-save:active { transform: scale(0.88); }
-.card-save.saved { background: var(--red); color: #fff; }
 
 /* ── PHASE 5 — create steps + gallery ── */
 .create-step { display: none; }
@@ -4037,7 +4036,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v39</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v40</span>
     </div>
   </section>
 
@@ -5721,7 +5720,7 @@ const T = {
     savedTitle: 'المحفوظات', savedSub: 'المبادرات التي حفظتها', noSaved: 'لا توجد مبادرات محفوظة بعد',
     hoursLabel: 'الساعات المطلوبة', campGallery: 'معرض الصور (اختياري)', galleryTitle: 'معرض الصور', campTitleLabel: 'عنوان الحملة', neededLabel: 'عدد المتطوعين المقدّر', categoryLabel: 'الفئة', saveChanges: 'حفظ التعديلات', changesSaved: 'تم حفظ التعديلات ',
     allCats: 'الكل', allCities: 'كل المدن', searchPlaceholder: 'ابحث عن مبادرة، فئة، أو مدينة...',
-    sortRecent: 'الأحدث', sortPopular: 'الأكثر تفاعلاً', sortUrgent: 'الأقرب موعداً', sortFarthest: 'الأبعد موعداً', sortSaved: 'لوقت لاحق',
+    sortRecent: 'الأحدث', sortPopular: 'الأكثر تفاعلاً', sortUrgent: 'الأقرب موعداً', sortFarthest: 'الأبعد موعداً', sortSaved: '♡ لوقت لاحق',
     noResults: 'لا توجد نتائج', noResultsSub: 'جرّب كلمات أو فلاتر مختلفة.',
     greetSub: 'مبادرات مُلهمة تنتظر مشاركتك، وأرضٌ تنتظر خطوتك.', catsTitle: 'تصفّح حسب الفئة', trendingTitle: 'الأكثر تفاعلاً',
     highlightsTitle: 'إضاءات المجتمع', topVolunteers: 'أبرز المتطوعين', viewAll: 'عرض الكل', activeCities: 'مدن نشطة', featuredTag: 'مميّزة', nearestTag: 'أقرب حملة',
@@ -5912,7 +5911,7 @@ const T = {
     savedTitle: 'Saved', savedSub: 'Initiatives you bookmarked', noSaved: 'No saved initiatives yet',
     hoursLabel: 'Hours needed', campGallery: 'Gallery (optional)', galleryTitle: 'Gallery', campTitleLabel: 'Campaign title', neededLabel: 'Estimated volunteers', categoryLabel: 'Category', saveChanges: 'Save changes', changesSaved: 'Changes saved ',
     allCats: 'All', allCities: 'All cities', searchPlaceholder: 'Search initiatives, categories, or cities...',
-    sortRecent: 'Recent', sortPopular: 'Most active', sortUrgent: 'Soonest', sortFarthest: 'Latest date', sortSaved: 'For later',
+    sortRecent: 'Recent', sortPopular: 'Most active', sortUrgent: 'Soonest', sortFarthest: 'Latest date', sortSaved: '♡ For later',
     noResults: 'No results', noResultsSub: 'Try different keywords or filters.',
     greetSub: 'Inspiring initiatives await your hands, and a land awaits your steps.', catsTitle: 'Browse by category', trendingTitle: 'Trending now',
     highlightsTitle: 'Community highlights', topVolunteers: 'Top volunteers', viewAll: 'View all', activeCities: 'Active cities', featuredTag: 'Featured', nearestTag: 'Nearest',
