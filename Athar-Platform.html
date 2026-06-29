@@ -4067,7 +4067,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v42</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v43</span>
     </div>
   </section>
 
@@ -6112,8 +6112,17 @@ const DB = {
       localStorage.setItem(key, JSON.stringify(value));
       return true;
     } catch (e) {
-      console.error('[DB.set] Failed to save key:', key, e);
-      return false;
+      // Quota exceeded — drop heavy base64 data-URLs (images live on the server)
+      // and retry, so the app never gets blocked by a full local cache.
+      try {
+        const lean = JSON.stringify(value, (k, v) =>
+          (typeof v === 'string' && v.length > 500 && v.indexOf('data:') === 0) ? null : v);
+        localStorage.setItem(key, lean);
+        return true;
+      } catch (e2) {
+        console.error('[DB.set] Failed to save key:', key, e2);
+        return false;
+      }
     }
   },
   setObj(key, value) {
