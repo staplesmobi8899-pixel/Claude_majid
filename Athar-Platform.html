@@ -1232,6 +1232,19 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
 .pf-qico { width: 38px; height: 38px; border-radius: var(--r-md); background: var(--olive-pale); color: var(--olive); display: flex; align-items: center; justify-content: center; }
 .pf-qico svg { width: 20px; height: 20px; }
 .my-camp-tag.organizer { background: rgba(46,61,31,0.1); color: var(--forest); }
+.pf-topbar { max-width: var(--content-max); margin: 0 auto; padding: var(--sp-4) var(--sp-5) 0; display: flex; align-items: center; justify-content: space-between; }
+.pf-top-title { font-size: var(--fs-xl); font-weight: 900; color: var(--charcoal); letter-spacing: -0.02em; }
+.pf-top-actions { display: flex; gap: var(--sp-2); }
+.pf-top-btn { position: relative; width: 40px; height: 40px; border-radius: 50%; background: var(--white); border: 1px solid var(--line-sand-6); box-shadow: var(--glass-float); display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.16s var(--ease-soft); }
+.pf-top-btn:active { transform: scale(0.92); }
+.pf-top-btn svg { width: 20px; height: 20px; stroke: var(--charcoal); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.pf-top-badge { position: absolute; top: 4px; inset-inline-end: 4px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 9px; background: var(--red); color: #fff; font-size: 10px; font-weight: 800; line-height: 16px; text-align: center; display: none; box-shadow: 0 0 0 2px var(--white); }
+.pf-top-badge.show { display: block; }
+.pf-status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: var(--fs-2xs); font-weight: 800; padding: 2px 9px; border-radius: 999px; line-height: 1.5; }
+.pf-status-badge svg { width: 12px; height: 12px; }
+.pf-status-badge.approved { background: var(--olive-pale); color: var(--olive); }
+.pf-status-badge.pending { background: rgba(201,150,46,0.12); color: #9a6f12; }
+.pf-status-badge.rejected { background: rgba(200,76,60,0.1); color: var(--red); }
 
 /* ══════════════════════════════════════════
    PROFILE — Instagram-style header (6.2 redesign)
@@ -3605,6 +3618,21 @@ html, body { overflow-x: hidden; }
 .cert-card-title { font-size: var(--fs-base); font-weight: 700; }
 .cert-card-sub { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: 2px; }
 .cert-card-go { font-size: var(--fs-sm); font-weight: 800; color: var(--forest); flex-shrink: 0; }
+.cert-group-h { display: flex; align-items: center; justify-content: space-between; font-size: var(--fs-xs); font-weight: 800; color: var(--olive); margin: var(--sp-2) 0 2px; }
+.cert-count { background: var(--olive-pale); color: var(--olive); font-size: var(--fs-2xs); font-weight: 800; min-width: 20px; text-align: center; padding: 1px 7px; border-radius: var(--r-full); }
+.cert-card-pending { opacity: 0.92; cursor: default; }
+.cert-card-pending:hover { background: var(--white); box-shadow: none; }
+.cert-seal-pending { background: linear-gradient(135deg, #c0a24e, #d8be78); }
+.cert-seal-empty { width: 56px; height: 56px; font-size: 1.5rem; margin: 0 auto var(--sp-3); }
+.cert-pending-tag { flex-shrink: 0; font-size: var(--fs-2xs); font-weight: 800; color: #9a6f12; background: rgba(201,150,46,0.12); padding: 3px 10px; border-radius: var(--r-full); }
+.cert-actions { display: flex; gap: var(--sp-3); margin-top: var(--sp-5); }
+.cert-actions .ig-btn { flex: 1; }
+@media print {
+  body * { visibility: hidden !important; }
+  #certDoc, #certDoc * { visibility: visible !important; }
+  #certDoc { position: fixed !important; inset: 0 !important; margin: auto !important; box-shadow: none !important; max-width: 100% !important; }
+  .bottom-nav, .modal-bar, .cert-actions { display: none !important; }
+}
 
 .timeline { max-width: var(--content-max); margin: 0 auto; padding: var(--sp-2) var(--sp-5) var(--sp-4); }
 .tl-item { display: flex; gap: var(--sp-4); position: relative; padding-bottom: var(--sp-5); }
@@ -4078,7 +4106,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v44</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v45</span>
     </div>
   </section>
 
@@ -4298,6 +4326,18 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 
   <!-- PROFILE -->
   <div class="page" id="profilePage">
+    <div class="pf-topbar">
+      <span class="pf-top-title" data-i18n="navProfile"></span>
+      <div class="pf-top-actions">
+        <button class="pf-top-btn" type="button" onclick="goPage('notifications')" aria-label="notifications">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          <span class="pf-top-badge" id="pfBellBadge"></span>
+        </button>
+        <button class="pf-top-btn" type="button" onclick="goPage('settings')" aria-label="settings">
+          <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.2a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 4 13H3.8a2 2 0 0 1 0-4H4a1.6 1.6 0 0 0 1.1-2.7l-.1-.1A2 2 0 1 1 7.8 3.4l.1.1A1.6 1.6 0 0 0 10 4V3.8a2 2 0 0 1 4 0V4a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.6 1.6 0 0 0 20 10h.2a2 2 0 0 1 0 4z"/></svg>
+        </button>
+      </div>
+    </div>
     <div class="ig-profile">
       <div class="ig-row">
         <div class="ig-avatar" id="avatarRing" onclick="openAvatarSheet()">
@@ -4310,6 +4350,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
         <div class="ig-name-row">
           <span class="ig-name" id="profileName"></span>
           <span class="ig-role" id="profileRole"></span>
+          <span class="pf-status-badge" id="pfStatusBadge"></span>
         </div>
         <div class="ig-bio" id="profileBio"></div>
         <div class="ig-loc" id="profileLoc"></div>
@@ -5696,13 +5737,13 @@ const T = {
     myCamps: 'حملاتي',
     changePic: 'تغيير الصورة',
     activities: 'الأنشطة', achievements: 'الإنجازات',
-    noBio: 'أضف نبذة عنك', impactTitle: 'أثري', badgesTitle: 'الشارات', communitiesLabel: 'مجتمعات', xpLabel: 'نقطة', nextLevel: 'التالي', maxLevel: 'أعلى مستوى', mcPending: 'قيد التدقيق', mcActive: 'نشطة', mcDone: 'مكتملة', mcParticipated: 'شاركت فيها', mcRejected: 'مرفوضة / ملغاة', qaCamp: 'إنشاء حملة', qaComm: 'إنشاء مجتمع', qaShare: 'مشاركة الملف',
+    noBio: 'أضف نبذة عنك', impactTitle: 'أثري', badgesTitle: 'الشارات', communitiesLabel: 'مجتمعات', xpLabel: 'نقطة', nextLevel: 'التالي', maxLevel: 'أعلى مستوى', mcPending: 'قيد التدقيق', mcActive: 'نشطة', mcDone: 'مكتملة', mcParticipated: 'شاركت فيها', mcRejected: 'مرفوضة / ملغاة', qaCamp: 'إنشاء حملة', qaComm: 'إنشاء مجتمع', qaShare: 'مشاركة الملف', pfStApproved: 'موثّق', pfStPending: 'قيد المراجعة', pfStRejected: 'مرفوض',
     profilePublic: 'ملف عام', profilePrivate: 'ملف خاص', profileNowPublic: 'ملفك أصبح عامًا', profileNowPrivate: 'ملفك أصبح خاصًا', completedLabel: 'مكتملة', citiesLabel: 'مدن', scoreLabel: 'نقاط الأثر',
     editInfo: 'تعديل', saveChanges: 'حفظ التعديلات', cancelEdit: 'إلغاء', infoSaved: 'تم حفظ معلوماتك', bioField: 'نبذة عنك', bioPh: 'اكتب نبذة قصيرة تعرّف بك…', emailLocked: 'البريد الإلكتروني لا يمكن تغييره',
     editProfileBtn: 'تعديل الملف', shareProfileBtn: 'مشاركة الملف', shareCopied: 'تم نسخ رابط ملفك', statCompletedShort: 'حملة منجزة', statHoursShort: 'ساعة', statParticipationShort: 'مشاركة', completedCampsLabel: 'حملات مكتملة', changePhotoCta: 'تغيير صورة الملف', roleJoined: 'مشارَكة', roleOrganizer: 'أنت أنشأت هذه الحملة', createdByVolunteer: 'أُنشئت هذه الحملة بطلب من متطوّع', cantLeaveDone: 'لا يمكن مغادرة حملة مكتملة — ساعاتك محفوظة',
     certsTitle: 'الشهادات', timelineTitle: 'سجل النشاط', noCerts: 'شهاداتك', certsPending: 'قيد الانتظار', noActivity: 'ابدأ رحلتك — انضمّ لأول حملة', viewCertBtn: 'عرض',
     tlJoin: 'انضممت إلى', tlDone: 'أكملت حملة', tlBadge: 'حصلت على شارة', tlAccount: 'بدأت رحلتك في أثر',
-    certHeading: 'شهادة تقدير', certBody1: 'تشهد منصة أثر أنّ', certBody2: 'قد أتمّ بنجاح المشاركة في', certHoursLine: 'بإجمالي ساعات تطوّع', shareCert: 'مشاركة الشهادة', certShared: 'تم نسخ نص الشهادة',
+    certHeading: 'شهادة تقدير', certIssued: 'الشهادات الصادرة', certPendingList: 'قيد الإصدار', certWillIssue: 'تُصدر بعد اكتمال الحملة', certEmptySub: 'أكمل أول حملة لتحصل على شهادتك الأولى', downloadCert: 'تنزيل PDF', certBody1: 'تشهد منصة أثر أنّ', certBody2: 'قد أتمّ بنجاح المشاركة في', certHoursLine: 'بإجمالي ساعات تطوّع', shareCert: 'مشاركة الشهادة', certShared: 'تم نسخ نص الشهادة',
     settingsTitle: 'الإعدادات', settingsSub: 'المظهر · اللغة · الخصوصية · الدعم', helpTitle: 'كيف يعمل أثر؟', helpSub: 'دليل سريع لأقسام التطبيق',
     setAppearance: 'المظهر', setDark: 'الوضع الداكن', setDarkSub: 'مظهر مريح للعين ليلًا', setLang: 'اللغة', setLangSub: 'لغة الواجهة',
     setPrivacyGroup: 'الخصوصية', setNotifPrefs: 'تفضيلات الإشعارات', setNtCampaign: 'الحملات والمشاركة', setNtCommunity: 'تفاعلات المجتمع', setNtAchievement: 'الإنجازات', setNtAnnounce: 'إعلانات الإدارة', setQuiet: 'الوضع الصامت', setQuietSub: 'إيقاف التنبيهات المنبثقة', setPush: 'تنبيهات المتصفح', setPushOn: 'مفعّلة', setPushOff: 'اضغط للتفعيل', setPushNo: 'غير مدعومة', setPublic: 'ملف عام', setPublicSub: 'السماح للآخرين بزيارة ملفك', setNotif: 'الإشعارات', setNotifSub: 'تنبيهات الحملات والتحديثات',
@@ -5887,13 +5928,13 @@ const T = {
     myCamps: 'My Campaigns',
     changePic: 'Change Photo',
     activities: 'Activities', achievements: 'Achievements',
-    noBio: 'Add a short bio', impactTitle: 'My impact', badgesTitle: 'Badges', communitiesLabel: 'Communities', xpLabel: 'XP', nextLevel: 'Next', maxLevel: 'Max level', mcPending: 'Pending review', mcActive: 'Active', mcDone: 'Completed', mcParticipated: 'Participated', mcRejected: 'Rejected / Cancelled', qaCamp: 'Create campaign', qaComm: 'Create community', qaShare: 'Share profile',
+    noBio: 'Add a short bio', impactTitle: 'My impact', badgesTitle: 'Badges', communitiesLabel: 'Communities', xpLabel: 'XP', nextLevel: 'Next', maxLevel: 'Max level', mcPending: 'Pending review', mcActive: 'Active', mcDone: 'Completed', mcParticipated: 'Participated', mcRejected: 'Rejected / Cancelled', qaCamp: 'Create campaign', qaComm: 'Create community', qaShare: 'Share profile', pfStApproved: 'Verified', pfStPending: 'Under review', pfStRejected: 'Rejected',
     profilePublic: 'Public profile', profilePrivate: 'Private profile', profileNowPublic: 'Your profile is now public', profileNowPrivate: 'Your profile is now private', completedLabel: 'Completed', citiesLabel: 'Cities', scoreLabel: 'Impact score',
     editInfo: 'Edit', saveChanges: 'Save changes', cancelEdit: 'Cancel', infoSaved: 'Your info was saved', bioField: 'About you', bioPh: 'Write a short bio about yourself…', emailLocked: 'Email cannot be changed',
     editProfileBtn: 'Edit profile', shareProfileBtn: 'Share profile', shareCopied: 'Profile link copied', statCompletedShort: 'Completed', statHoursShort: 'Hours', statParticipationShort: 'Participations', completedCampsLabel: 'Completed campaigns', changePhotoCta: 'Change profile photo', roleJoined: 'Participating', roleOrganizer: 'You created this campaign', createdByVolunteer: 'This campaign was created by a volunteer', cantLeaveDone: 'Cannot leave a completed campaign — your hours are saved',
     certsTitle: 'Certificates', timelineTitle: 'Activity', noCerts: 'Your certificates', certsPending: 'Pending', noActivity: 'Start your journey — join your first campaign', viewCertBtn: 'View',
     tlJoin: 'Joined', tlDone: 'Completed', tlBadge: 'Earned a badge', tlAccount: 'Started your ATHAR journey',
-    certHeading: 'Certificate of Appreciation', certBody1: 'ATHAR certifies that', certBody2: 'has successfully participated in', certHoursLine: 'total volunteer hours', shareCert: 'Share certificate', certShared: 'Certificate text copied',
+    certHeading: 'Certificate of Appreciation', certIssued: 'Issued', certPendingList: 'Pending issue', certWillIssue: 'Issued once the campaign completes', certEmptySub: 'Complete your first campaign to earn your first certificate', downloadCert: 'Download PDF', certBody1: 'ATHAR certifies that', certBody2: 'has successfully participated in', certHoursLine: 'total volunteer hours', shareCert: 'Share certificate', certShared: 'Certificate text copied',
     settingsTitle: 'Settings', settingsSub: 'Appearance · Language · Privacy · Support', helpTitle: 'How ATHAR works', helpSub: 'A quick guide to the app',
     setAppearance: 'Appearance', setDark: 'Dark mode', setDarkSub: 'Easier on the eyes at night', setLang: 'Language', setLangSub: 'Interface language',
     setPrivacyGroup: 'Privacy', setNotifPrefs: 'Notification preferences', setNtCampaign: 'Campaigns & participation', setNtCommunity: 'Community interactions', setNtAchievement: 'Achievements', setNtAnnounce: 'Admin announcements', setQuiet: 'Quiet mode', setQuietSub: 'Mute pop-up alerts', setPush: 'Browser notifications', setPushOn: 'Enabled', setPushOff: 'Tap to enable', setPushNo: 'Not supported', setPublic: 'Public profile', setPublicSub: 'Let others visit your profile', setNotif: 'Notifications', setNotifSub: 'Campaign alerts and updates',
@@ -8113,6 +8154,27 @@ function renderProfile() {
     const isAr = State.lang === 'ar';
     const roleEl = document.getElementById('profileRole');
     if (roleEl) roleEl.textContent = Permissions.roleLabel(u);
+    const stBadge = document.getElementById('pfStatusBadge');
+    if (stBadge) {
+      if (State.isAdmin) { stBadge.style.display = 'none'; }
+      else {
+        const stMap = {
+          approved: ['approved', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg>', t('pfStApproved')],
+          pending:  ['pending',  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>', t('pfStPending')],
+          rejected: ['rejected', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="7" x2="17" y2="17"/><line x1="17" y1="7" x2="7" y2="17"/></svg>', t('pfStRejected')]
+        };
+        const st = stMap[u.status] || stMap.pending;
+        stBadge.style.display = 'inline-flex';
+        stBadge.className = 'pf-status-badge ' + st[0];
+        stBadge.innerHTML = st[1] + '<span>' + st[2] + '</span>';
+      }
+    }
+    const pfBell = document.getElementById('pfBellBadge');
+    if (pfBell) {
+      const nU = (typeof NotificationService !== 'undefined') ? NotificationService.unreadCount(u.id) : 0;
+      if (nU > 0) { pfBell.textContent = nU > 9 ? '9+' : String(nU); pfBell.classList.add('show'); }
+      else { pfBell.classList.remove('show'); }
+    }
     const bioEl = document.getElementById('profileBio');
     if (bioEl) bioEl.textContent = u.bio || t('noBio');
     const priv = document.getElementById('profilePrivacy');
@@ -11556,17 +11618,42 @@ function renderCerts(u) {
   const box = document.getElementById('profileCerts');
   if (!box) return;
   const certs = CertificateService.getFor(u);
-  if (!certs.length) { box.innerHTML = '<div class="empty-state"><div class="empty-title">' + t('noCerts') + '</div><span class="cert-pending-chip">' + t('certsPending') + '</span></div>'; return; }
-  box.innerHTML = certs.map(c =>
-    '<div class="cert-card" onclick="openCert(\'' + c.campId + '\')">' +
-      '<div class="cert-seal">' + icon('star') + '</div>' +
-      '<div class="cert-card-body">' +
-        '<div class="cert-card-title">' + c.title + '</div>' +
-        '<div class="cert-card-sub">' + c.hours + ' ' + t('statHoursShort') + ' · ' + (c.date || '') + '</div>' +
-      '</div>' +
-      '<span class="cert-card-go">' + t('viewCertBtn') + '</span>' +
-    '</div>'
-  ).join('');
+  const joined = (u.joinedCamps || []).map(id => CampaignService.getById(id)).filter(Boolean);
+  const pendingCamps = joined.filter(c => c.status !== 'done');
+  if (!certs.length && !pendingCamps.length) {
+    box.innerHTML = '<div class="empty-state"><div class="cert-seal cert-seal-empty">' + icon('star') + '</div>' +
+      '<div class="empty-title">' + t('noCerts') + '</div>' +
+      '<div class="empty-sub">' + t('certEmptySub') + '</div></div>';
+    return;
+  }
+  let html = '';
+  if (certs.length) {
+    html += '<div class="cert-group-h">' + t('certIssued') + '<span class="cert-count">' + certs.length + '</span></div>';
+    html += certs.map(c =>
+      '<div class="cert-card" onclick="openCert(\'' + c.campId + '\')">' +
+        '<div class="cert-seal">' + icon('star') + '</div>' +
+        '<div class="cert-card-body">' +
+          '<div class="cert-card-title">' + c.title + '</div>' +
+          '<div class="cert-card-sub">' + c.hours + ' ' + t('statHoursShort') + ' · ' + (c.date || '') + '</div>' +
+        '</div>' +
+        '<span class="cert-card-go">' + t('viewCertBtn') + '</span>' +
+      '</div>'
+    ).join('');
+  }
+  if (pendingCamps.length) {
+    html += '<div class="cert-group-h">' + t('certPendingList') + '<span class="cert-count">' + pendingCamps.length + '</span></div>';
+    html += pendingCamps.map(c =>
+      '<div class="cert-card cert-card-pending">' +
+        '<div class="cert-seal cert-seal-pending">' + icon('clock') + '</div>' +
+        '<div class="cert-card-body">' +
+          '<div class="cert-card-title">' + Models.getCampText(c).title + '</div>' +
+          '<div class="cert-card-sub">' + t('certWillIssue') + '</div>' +
+        '</div>' +
+        '<span class="cert-pending-tag">' + t('certsPending') + '</span>' +
+      '</div>'
+    ).join('');
+  }
+  box.innerHTML = html;
 }
 
 function renderTimeline(u) {
@@ -11605,9 +11692,17 @@ function openCert(campId) {
         '<div class="cert-doc-hours">' + t('certHoursLine') + ': <b>' + cert.hours + ' ' + t('statHoursShort') + '</b></div>' +
         (cert.date ? '<div class="cert-doc-date">' + cert.date + '</div>' : '') +
       '</div>' +
-      '<button type="button" class="ig-btn primary" style="width:100%;margin-top:var(--sp-5);" onclick="shareCert(\'' + campId + '\')">' + t('shareCert') + '</button>';
+      '<div class="cert-actions">' +
+        '<button type="button" class="ig-btn" onclick="downloadCert(\'' + campId + '\')">' + t('downloadCert') + '</button>' +
+        '<button type="button" class="ig-btn primary" onclick="shareCert(\'' + campId + '\')">' + t('shareCert') + '</button>' +
+      '</div>';
   }
   openModal('certModal');
+}
+
+function downloadCert(campId) {
+  if (!document.getElementById('certDoc')) return;
+  try { window.print(); } catch (e) { toast(t('certShared'), 'success'); }
 }
 
 function shareCert(campId) {
