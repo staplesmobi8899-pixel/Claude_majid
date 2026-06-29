@@ -1220,6 +1220,17 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
 .my-camp-info-sub { font-size: var(--fs-sm); color: var(--charcoal-50); }
 .my-camp-tag { font-size: var(--fs-2xs); font-weight: 800; padding: 1px var(--sp-2); border-radius: var(--r-full); letter-spacing: 0.3px; }
 .my-camp-tag.joined { background: var(--olive-pale); color: var(--olive); }
+.mc-group-h { display: flex; align-items: center; justify-content: space-between; font-size: var(--fs-xs);
+  font-weight: 800; color: var(--olive); margin: var(--sp-3) 0 2px; padding-top: var(--sp-2);
+  border-top: 1px solid var(--line-sand-6); }
+.mc-group-h:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+.mc-count { background: var(--olive-pale); color: var(--olive); font-size: var(--fs-2xs); font-weight: 800;
+  min-width: 20px; text-align: center; padding: 1px 7px; border-radius: var(--r-full); }
+.pf-quick { max-width: var(--content-max); margin: 0 auto var(--sp-4); padding: 0 var(--sp-5); display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3); }
+.pf-qbtn { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: var(--sp-4) var(--sp-2); background: var(--white); border: 1px solid var(--line-sand-6); border-radius: var(--r-xl); box-shadow: var(--glass-float); font-family: inherit; font-size: var(--fs-2xs); font-weight: 800; color: var(--charcoal); cursor: pointer; transition: transform 0.16s var(--ease-soft); -webkit-tap-highlight-color: transparent; text-align: center; }
+.pf-qbtn:active { transform: scale(0.95); }
+.pf-qico { width: 38px; height: 38px; border-radius: var(--r-md); background: var(--olive-pale); color: var(--olive); display: flex; align-items: center; justify-content: center; }
+.pf-qico svg { width: 20px; height: 20px; }
 .my-camp-tag.organizer { background: rgba(46,61,31,0.1); color: var(--forest); }
 
 /* ══════════════════════════════════════════
@@ -4067,7 +4078,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v43</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v44</span>
     </div>
   </section>
 
@@ -4316,6 +4327,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
     <div class="ig-section-h" data-i18n="impactTitle"></div>
     <div class="pf-stats-card" id="pfStatsCard"></div>
     <div class="pf-rank-card" id="pfRankCard"></div>
+    <div class="pf-quick" id="pfQuick"></div>
     <div class="ig-section-h" data-i18n="badgesTitle"></div>
     <div class="badges-scroll" id="profileBadges"></div>
     <div class="ig-section-h" data-i18n="certsTitle"></div>
@@ -5684,7 +5696,7 @@ const T = {
     myCamps: 'حملاتي',
     changePic: 'تغيير الصورة',
     activities: 'الأنشطة', achievements: 'الإنجازات',
-    noBio: 'أضف نبذة عنك', impactTitle: 'أثري', badgesTitle: 'الشارات', communitiesLabel: 'مجتمعات', xpLabel: 'نقطة', nextLevel: 'التالي', maxLevel: 'أعلى مستوى',
+    noBio: 'أضف نبذة عنك', impactTitle: 'أثري', badgesTitle: 'الشارات', communitiesLabel: 'مجتمعات', xpLabel: 'نقطة', nextLevel: 'التالي', maxLevel: 'أعلى مستوى', mcPending: 'قيد التدقيق', mcActive: 'نشطة', mcDone: 'مكتملة', mcParticipated: 'شاركت فيها', mcRejected: 'مرفوضة / ملغاة', qaCamp: 'إنشاء حملة', qaComm: 'إنشاء مجتمع', qaShare: 'مشاركة الملف',
     profilePublic: 'ملف عام', profilePrivate: 'ملف خاص', profileNowPublic: 'ملفك أصبح عامًا', profileNowPrivate: 'ملفك أصبح خاصًا', completedLabel: 'مكتملة', citiesLabel: 'مدن', scoreLabel: 'نقاط الأثر',
     editInfo: 'تعديل', saveChanges: 'حفظ التعديلات', cancelEdit: 'إلغاء', infoSaved: 'تم حفظ معلوماتك', bioField: 'نبذة عنك', bioPh: 'اكتب نبذة قصيرة تعرّف بك…', emailLocked: 'البريد الإلكتروني لا يمكن تغييره',
     editProfileBtn: 'تعديل الملف', shareProfileBtn: 'مشاركة الملف', shareCopied: 'تم نسخ رابط ملفك', statCompletedShort: 'حملة منجزة', statHoursShort: 'ساعة', statParticipationShort: 'مشاركة', completedCampsLabel: 'حملات مكتملة', changePhotoCta: 'تغيير صورة الملف', roleJoined: 'مشارَكة', roleOrganizer: 'أنت أنشأت هذه الحملة', createdByVolunteer: 'أُنشئت هذه الحملة بطلب من متطوّع', cantLeaveDone: 'لا يمكن مغادرة حملة مكتملة — ساعاتك محفوظة',
@@ -5875,7 +5887,7 @@ const T = {
     myCamps: 'My Campaigns',
     changePic: 'Change Photo',
     activities: 'Activities', achievements: 'Achievements',
-    noBio: 'Add a short bio', impactTitle: 'My impact', badgesTitle: 'Badges', communitiesLabel: 'Communities', xpLabel: 'XP', nextLevel: 'Next', maxLevel: 'Max level',
+    noBio: 'Add a short bio', impactTitle: 'My impact', badgesTitle: 'Badges', communitiesLabel: 'Communities', xpLabel: 'XP', nextLevel: 'Next', maxLevel: 'Max level', mcPending: 'Pending review', mcActive: 'Active', mcDone: 'Completed', mcParticipated: 'Participated', mcRejected: 'Rejected / Cancelled', qaCamp: 'Create campaign', qaComm: 'Create community', qaShare: 'Share profile',
     profilePublic: 'Public profile', profilePrivate: 'Private profile', profileNowPublic: 'Your profile is now public', profileNowPrivate: 'Your profile is now private', completedLabel: 'Completed', citiesLabel: 'Cities', scoreLabel: 'Impact score',
     editInfo: 'Edit', saveChanges: 'Save changes', cancelEdit: 'Cancel', infoSaved: 'Your info was saved', bioField: 'About you', bioPh: 'Write a short bio about yourself…', emailLocked: 'Email cannot be changed',
     editProfileBtn: 'Edit profile', shareProfileBtn: 'Share profile', shareCopied: 'Profile link copied', statCompletedShort: 'Completed', statHoursShort: 'Hours', statParticipationShort: 'Participations', completedCampsLabel: 'Completed campaigns', changePhotoCta: 'Change profile photo', roleJoined: 'Participating', roleOrganizer: 'You created this campaign', createdByVolunteer: 'This campaign was created by a volunteer', cantLeaveDone: 'Cannot leave a completed campaign — your hours are saved',
@@ -8039,10 +8051,21 @@ function renderMyCamps() {
     // Create page: only campaigns the user organized
     if (box1) box1.innerHTML = created.length ? created.map(c => row(c, 'organizer')).join('') : empty;
 
-    // Profile: joined first, then organized
+    // Profile: grouped by lifecycle (only non-empty groups shown)
     if (box2) {
-      const combined = joined.map(c => row(c, 'joined')).concat(created.map(c => row(c, 'organizer'))).join('');
-      box2.innerHTML = combined || empty;
+      const inSet = id => joinedIds.indexOf(id) !== -1;
+      const groups = [
+        { label: t('mcPending'),      items: created.filter(c => c.status === 'pending') },
+        { label: t('mcActive'),       items: created.filter(c => c.status === 'approved' || c.status === 'under_process') },
+        { label: t('mcDone'),         items: all.filter(c => c.status === 'done' && (c.createdBy === uid || inSet(c.id))) },
+        { label: t('mcParticipated'), items: joined.filter(c => c.status !== 'done') },
+        { label: t('mcRejected'),     items: created.filter(c => c.status === 'rejected' || c.status === 'cancelled') }
+      ];
+      const html = groups.filter(g => g.items.length).map(g =>
+        '<div class="mc-group-h">' + g.label + '<span class="mc-count">' + g.items.length + '</span></div>' +
+        g.items.map(c => row(c, c.createdBy === uid ? 'organizer' : 'joined')).join('')
+      ).join('');
+      box2.innerHTML = html || empty;
     }
   } catch (e) {
     console.error('[renderMyCamps] Error:', e);
@@ -8148,6 +8171,11 @@ function renderProfile() {
         '<div class="pf-rank-track"><div class="pf-rank-fill" style="width:' + r.pct + '%"></div></div>' +
         '<div class="pf-rank-next">' + (r.next ? (r.into + ' / ' + r.span + ' ' + t('xpLabel') + ' \u00b7 ' + t('nextLevel') + ' ' + (isAr ? r.next.ar : r.next.en)) : t('maxLevel')) + '</div>';
     }
+    const qk = document.getElementById('pfQuick');
+    if (qk) qk.innerHTML =
+      '<button class="pf-qbtn" onclick="goPage(\'create\')"><span class="pf-qico">' + icon('flag') + '</span>' + t('qaCamp') + '</button>' +
+      '<button class="pf-qbtn" onclick="openCreateCommunity()"><span class="pf-qico">' + icon('people') + '</span>' + t('qaComm') + '</button>' +
+      '<button class="pf-qbtn" onclick="shareProfile()"><span class="pf-qico">' + icon('share') + '</span>' + t('qaShare') + '</button>';
     const badges = document.getElementById('profileBadges');
     if (badges) {
       const unlocked = new Set(AchievementService.getUnlocked(u));
