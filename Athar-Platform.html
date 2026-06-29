@@ -1570,6 +1570,9 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
 .menu-texts { flex: 1; min-width: 0; }
 .menu-title { font-size: var(--fs-base); font-weight: 700; }
 .menu-sub { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: 0.1rem; }
+.menu-meta { font-size: var(--fs-2xs); font-weight: 800; color: var(--olive); background: var(--olive-pale); min-width: 22px; text-align: center; padding: 2px 8px; border-radius: var(--r-full); flex: none; }
+.menu-meta:empty { display: none; }
+.menu-meta.unread { color: #fff; background: var(--red); }
 
 .menu-arrow {
   font-size: var(--fs-lg);
@@ -4132,7 +4135,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v52</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v53</span>
     </div>
   </section>
 
@@ -4401,14 +4404,39 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
     <div class="cert-list" id="profileCerts"></div>
     <div class="ig-section-h" data-i18n="timelineTitle"></div>
     <div class="timeline" id="profileTimeline"></div>
+    <div class="ig-section-h" data-i18n="dashTitle"></div>
     <div class="profile-menu">
       <div class="menu-card">
-        <div class="menu-row" onclick="openHelpGuide()">
-          <div class="menu-icon"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.7"/><line x1="12" y1="17" x2="12" y2="17"/></svg></div>
+        <div class="menu-row" onclick="toggleMenu('m-camps')">
+          <div class="menu-icon"><svg class="ic" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><line x1="8.5" y1="9" x2="15.5" y2="9"/><line x1="8.5" y1="13" x2="15.5" y2="13"/><line x1="8.5" y1="17" x2="12.5" y2="17"/></svg></div>
           <div class="menu-texts">
-            <div class="menu-title" data-i18n="helpTitle"></div>
-            <div class="menu-sub" data-i18n="helpSub"></div>
+            <div class="menu-title" data-i18n="menuCamps"></div>
+            <div class="menu-sub" data-i18n="menuCampsSub"></div>
           </div>
+          <span class="menu-meta" id="dashCampsN"></span>
+          <div class="menu-arrow" id="arr-m-camps">›</div>
+        </div>
+        <div class="menu-section-body" id="m-camps">
+          <div id="profileCampsBox"></div>
+        </div>
+
+        <div class="menu-row" onclick="goPage('community')">
+          <div class="menu-icon"><svg class="ic" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.4c2.6.2 5 1.9 5 4.6"/></svg></div>
+          <div class="menu-texts">
+            <div class="menu-title" data-i18n="communitiesLabel"></div>
+            <div class="menu-sub" data-i18n="dashCommsSub"></div>
+          </div>
+          <span class="menu-meta" id="dashCommsN"></span>
+          <div class="menu-arrow">›</div>
+        </div>
+
+        <div class="menu-row" onclick="goPage('notifications')">
+          <div class="menu-icon"><svg class="ic" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+          <div class="menu-texts">
+            <div class="menu-title" data-i18n="notifTitle"></div>
+            <div class="menu-sub" data-i18n="dashNotifSub"></div>
+          </div>
+          <span class="menu-meta unread" id="dashNotifN"></span>
           <div class="menu-arrow">›</div>
         </div>
 
@@ -4424,19 +4452,14 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
           <div id="idPhotoBox"></div>
         </div>
 
-        <div class="menu-row" onclick="toggleMenu('m-camps')">
-          <div class="menu-icon"><svg class="ic" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><line x1="8.5" y1="9" x2="15.5" y2="9"/><line x1="8.5" y1="13" x2="15.5" y2="13"/><line x1="8.5" y1="17" x2="12.5" y2="17"/></svg></div>
+        <div class="menu-row" onclick="openHelpGuide()">
+          <div class="menu-icon"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.7"/><line x1="12" y1="17" x2="12" y2="17"/></svg></div>
           <div class="menu-texts">
-            <div class="menu-title" data-i18n="menuCamps"></div>
-            <div class="menu-sub" data-i18n="menuCampsSub"></div>
+            <div class="menu-title" data-i18n="helpTitle"></div>
+            <div class="menu-sub" data-i18n="helpSub"></div>
           </div>
-          <div class="menu-arrow" id="arr-m-camps">›</div>
+          <div class="menu-arrow">›</div>
         </div>
-        <div class="menu-section-body" id="m-camps">
-          <div id="profileCampsBox"></div>
-        </div>
-
-
 
         <div class="menu-row" id="menuAdminRow" style="display:none;" onclick="goPage('admin')">
           <div class="menu-icon"><svg class="ic" viewBox="0 0 24 24"><path d="M12 21s7.5-3.5 7.5-9.5V5.5L12 2.8 4.5 5.5v6C4.5 17.5 12 21 12 21z"/></svg></div>
@@ -5756,7 +5779,7 @@ const T = {
     myCamps: 'حملاتي',
     changePic: 'تغيير الصورة',
     activities: 'الأنشطة', achievements: 'الإنجازات',
-    noBio: 'أضف نبذة عنك', impactTitle: 'أثري', badgesTitle: 'الشارات', communitiesLabel: 'مجتمعات', xpLabel: 'نقطة', nextLevel: 'التالي', maxLevel: 'أعلى مستوى', mcPending: 'قيد التدقيق', mcActive: 'نشطة', mcDone: 'مكتملة', mcParticipated: 'شاركت فيها', mcRejected: 'مرفوضة / ملغاة', qaCamp: 'إنشاء حملة', qaComm: 'إنشاء مجتمع', qaShare: 'مشاركة الملف', pfStApproved: 'موثّق', pfStPending: 'قيد المراجعة', pfStRejected: 'مرفوض',
+    noBio: 'أضف نبذة عنك', impactTitle: 'أثري', badgesTitle: 'الشارات', communitiesLabel: 'مجتمعات', dashTitle: 'لوحة التحكّم', dashCommsSub: 'مجتمعاتك ومشاركاتك', dashNotifSub: 'آخر التنبيهات والتحديثات', xpLabel: 'نقطة', nextLevel: 'التالي', maxLevel: 'أعلى مستوى', mcPending: 'قيد التدقيق', mcActive: 'نشطة', mcDone: 'مكتملة', mcParticipated: 'شاركت فيها', mcRejected: 'مرفوضة / ملغاة', qaCamp: 'إنشاء حملة', qaComm: 'إنشاء مجتمع', qaShare: 'مشاركة الملف', pfStApproved: 'موثّق', pfStPending: 'قيد المراجعة', pfStRejected: 'مرفوض',
     profilePublic: 'ملف عام', profilePrivate: 'ملف خاص', profileNowPublic: 'ملفك أصبح عامًا', profileNowPrivate: 'ملفك أصبح خاصًا', completedLabel: 'مكتملة', citiesLabel: 'مدن', scoreLabel: 'نقاط الأثر',
     editInfo: 'تعديل', saveChanges: 'حفظ التعديلات', cancelEdit: 'إلغاء', infoSaved: 'تم حفظ معلوماتك', bioField: 'نبذة عنك', bioPh: 'اكتب نبذة قصيرة تعرّف بك…', emailLocked: 'البريد الإلكتروني لا يمكن تغييره',
     editProfileBtn: 'تعديل الملف', shareProfileBtn: 'مشاركة الملف', shareCopied: 'تم نسخ رابط ملفك', statCompletedShort: 'حملة منجزة', statHoursShort: 'ساعة', statParticipationShort: 'مشاركة', completedCampsLabel: 'حملات مكتملة', changePhotoCta: 'تغيير صورة الملف', roleJoined: 'مشارَكة', roleOrganizer: 'أنت أنشأت هذه الحملة', createdByVolunteer: 'أُنشئت هذه الحملة بطلب من متطوّع', cantLeaveDone: 'لا يمكن مغادرة حملة مكتملة — ساعاتك محفوظة',
@@ -5947,7 +5970,7 @@ const T = {
     myCamps: 'My Campaigns',
     changePic: 'Change Photo',
     activities: 'Activities', achievements: 'Achievements',
-    noBio: 'Add a short bio', impactTitle: 'My impact', badgesTitle: 'Badges', communitiesLabel: 'Communities', xpLabel: 'XP', nextLevel: 'Next', maxLevel: 'Max level', mcPending: 'Pending review', mcActive: 'Active', mcDone: 'Completed', mcParticipated: 'Participated', mcRejected: 'Rejected / Cancelled', qaCamp: 'Create campaign', qaComm: 'Create community', qaShare: 'Share profile', pfStApproved: 'Verified', pfStPending: 'Under review', pfStRejected: 'Rejected',
+    noBio: 'Add a short bio', impactTitle: 'My impact', badgesTitle: 'Badges', communitiesLabel: 'Communities', dashTitle: 'Dashboard', dashCommsSub: 'Your communities & activity', dashNotifSub: 'Latest alerts & updates', xpLabel: 'XP', nextLevel: 'Next', maxLevel: 'Max level', mcPending: 'Pending review', mcActive: 'Active', mcDone: 'Completed', mcParticipated: 'Participated', mcRejected: 'Rejected / Cancelled', qaCamp: 'Create campaign', qaComm: 'Create community', qaShare: 'Share profile', pfStApproved: 'Verified', pfStPending: 'Under review', pfStRejected: 'Rejected',
     profilePublic: 'Public profile', profilePrivate: 'Private profile', profileNowPublic: 'Your profile is now public', profileNowPrivate: 'Your profile is now private', completedLabel: 'Completed', citiesLabel: 'Cities', scoreLabel: 'Impact score',
     editInfo: 'Edit', saveChanges: 'Save changes', cancelEdit: 'Cancel', infoSaved: 'Your info was saved', bioField: 'About you', bioPh: 'Write a short bio about yourself…', emailLocked: 'Email cannot be changed',
     editProfileBtn: 'Edit profile', shareProfileBtn: 'Share profile', shareCopied: 'Profile link copied', statCompletedShort: 'Completed', statHoursShort: 'Hours', statParticipationShort: 'Participations', completedCampsLabel: 'Completed campaigns', changePhotoCta: 'Change profile photo', roleJoined: 'Participating', roleOrganizer: 'You created this campaign', createdByVolunteer: 'This campaign was created by a volunteer', cantLeaveDone: 'Cannot leave a completed campaign — your hours are saved',
@@ -8207,6 +8230,22 @@ function renderProfile() {
       const nU = (typeof NotificationService !== 'undefined') ? NotificationService.unreadCount(u.id) : 0;
       if (nU > 0) { pfBell.textContent = nU > 9 ? '9+' : String(nU); pfBell.classList.add('show'); }
       else { pfBell.classList.remove('show'); }
+    }
+    // Dashboard live meta counts
+    const allC = (typeof CampaignService !== 'undefined') ? CampaignService.getAll() : [];
+    const joinedIds = u.joinedCamps || [];
+    const myCampsN = allC.filter(c => c.createdBy === u.id || joinedIds.indexOf(c.id) !== -1).length;
+    const dCamps = document.getElementById('dashCampsN');
+    if (dCamps) dCamps.textContent = myCampsN ? String(myCampsN) : '';
+    const dComms = document.getElementById('dashCommsN');
+    if (dComms) {
+      const cN = (typeof CommunityGroupService !== 'undefined') ? CommunityGroupService.getAll().filter(g => (g.members || []).indexOf(u.id) !== -1).length : 0;
+      dComms.textContent = cN ? String(cN) : '';
+    }
+    const dNotif = document.getElementById('dashNotifN');
+    if (dNotif) {
+      const uN = (typeof NotificationService !== 'undefined') ? NotificationService.unreadCount(u.id) : 0;
+      dNotif.textContent = uN ? (uN > 9 ? '9+' : String(uN)) : '';
     }
     const bioEl = document.getElementById('profileBio');
     if (bioEl) bioEl.textContent = u.bio || t('noBio');
