@@ -3624,6 +3624,9 @@ html, body { overflow-x: hidden; }
 .cert-card-pending:hover { background: var(--white); box-shadow: none; }
 .cert-seal-pending { background: linear-gradient(135deg, #c0a24e, #d8be78); }
 .cert-seal-empty { width: 56px; height: 56px; font-size: 1.5rem; margin: 0 auto var(--sp-3); }
+.cert-soon-state { opacity: 0.9; }
+.cert-soon-state .cert-seal-empty { background: var(--sand-dark); color: var(--charcoal-50); }
+.cert-soon-chip { display: inline-block; margin-top: var(--sp-2); font-size: var(--fs-xs); font-weight: 800; color: var(--charcoal-50); background: var(--sand-dark); border-radius: var(--r-full); padding: 4px var(--sp-4); letter-spacing: 0.02em; }
 .cert-pending-tag { flex-shrink: 0; font-size: var(--fs-2xs); font-weight: 800; color: #9a6f12; background: rgba(201,150,46,0.12); padding: 3px 10px; border-radius: var(--r-full); }
 .cert-actions { display: flex; gap: var(--sp-3); margin-top: var(--sp-5); }
 .cert-actions .ig-btn { flex: 1; }
@@ -4109,7 +4112,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v46</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v47</span>
     </div>
   </section>
 
@@ -5748,7 +5751,7 @@ const T = {
     editProfileBtn: 'تعديل الملف', shareProfileBtn: 'مشاركة الملف', shareCopied: 'تم نسخ رابط ملفك', statCompletedShort: 'حملة منجزة', statHoursShort: 'ساعة', statParticipationShort: 'مشاركة', completedCampsLabel: 'حملات مكتملة', changePhotoCta: 'تغيير صورة الملف', roleJoined: 'مشارَكة', roleOrganizer: 'أنت أنشأت هذه الحملة', createdByVolunteer: 'أُنشئت هذه الحملة بطلب من متطوّع', cantLeaveDone: 'لا يمكن مغادرة حملة مكتملة — ساعاتك محفوظة',
     certsTitle: 'الشهادات', timelineTitle: 'سجل النشاط', noCerts: 'شهاداتك', certsPending: 'قيد الانتظار', noActivity: 'ابدأ رحلتك — انضمّ لأول حملة', viewCertBtn: 'عرض',
     tlJoin: 'انضممت إلى', tlDone: 'أكملت حملة', tlBadge: 'حصلت على شارة', tlCert: 'حصلت على شهادة', tlCommunity: 'انضممت إلى مجتمع', tlMilestone: 'ساعة تطوّع — إنجاز', tlAccount: 'بدأت رحلتك في أثر',
-    certHeading: 'شهادة تقدير', certIssued: 'الشهادات الصادرة', certPendingList: 'قيد الإصدار', certWillIssue: 'تُصدر بعد اكتمال الحملة', certEmptySub: 'أكمل أول حملة لتحصل على شهادتك الأولى', downloadCert: 'تنزيل PDF', certBody1: 'تشهد منصة أثر أنّ', certBody2: 'قد أتمّ بنجاح المشاركة في', certHoursLine: 'بإجمالي ساعات تطوّع', shareCert: 'مشاركة الشهادة', certShared: 'تم نسخ نص الشهادة',
+    certHeading: 'شهادة تقدير', certIssued: 'الشهادات الصادرة', certPendingList: 'قيد الإصدار', certWillIssue: 'تُصدر بعد اكتمال الحملة', certEmptySub: 'أكمل أول حملة لتحصل على شهادتك الأولى', comingSoon: 'قريباً', downloadCert: 'تنزيل PDF', certBody1: 'تشهد منصة أثر أنّ', certBody2: 'قد أتمّ بنجاح المشاركة في', certHoursLine: 'بإجمالي ساعات تطوّع', shareCert: 'مشاركة الشهادة', certShared: 'تم نسخ نص الشهادة',
     settingsTitle: 'الإعدادات', settingsSub: 'المظهر · اللغة · الخصوصية · الدعم', helpTitle: 'كيف يعمل أثر؟', helpSub: 'دليل سريع لأقسام التطبيق',
     setAppearance: 'المظهر', setDark: 'الوضع الداكن', setDarkSub: 'مظهر مريح للعين ليلًا', setLang: 'اللغة', setLangSub: 'لغة الواجهة',
     setPrivacyGroup: 'الخصوصية', setNotifPrefs: 'تفضيلات الإشعارات', setNtCampaign: 'الحملات والمشاركة', setNtCommunity: 'تفاعلات المجتمع', setNtAchievement: 'الإنجازات', setNtAnnounce: 'إعلانات الإدارة', setQuiet: 'الوضع الصامت', setQuietSub: 'إيقاف التنبيهات المنبثقة', setPush: 'تنبيهات المتصفح', setPushOn: 'مفعّلة', setPushOff: 'اضغط للتفعيل', setPushNo: 'غير مدعومة', setPublic: 'ملف عام', setPublicSub: 'السماح للآخرين بزيارة ملفك', setNotif: 'الإشعارات', setNotifSub: 'تنبيهات الحملات والتحديثات',
@@ -5939,7 +5942,7 @@ const T = {
     editProfileBtn: 'Edit profile', shareProfileBtn: 'Share profile', shareCopied: 'Profile link copied', statCompletedShort: 'Completed', statHoursShort: 'Hours', statParticipationShort: 'Participations', completedCampsLabel: 'Completed campaigns', changePhotoCta: 'Change profile photo', roleJoined: 'Participating', roleOrganizer: 'You created this campaign', createdByVolunteer: 'This campaign was created by a volunteer', cantLeaveDone: 'Cannot leave a completed campaign — your hours are saved',
     certsTitle: 'Certificates', timelineTitle: 'Activity', noCerts: 'Your certificates', certsPending: 'Pending', noActivity: 'Start your journey — join your first campaign', viewCertBtn: 'View',
     tlJoin: 'Joined', tlDone: 'Completed', tlBadge: 'Earned a badge', tlCert: 'Earned a certificate', tlCommunity: 'Joined a community', tlMilestone: 'volunteer hours milestone', tlAccount: 'Started your ATHAR journey',
-    certHeading: 'Certificate of Appreciation', certIssued: 'Issued', certPendingList: 'Pending issue', certWillIssue: 'Issued once the campaign completes', certEmptySub: 'Complete your first campaign to earn your first certificate', downloadCert: 'Download PDF', certBody1: 'ATHAR certifies that', certBody2: 'has successfully participated in', certHoursLine: 'total volunteer hours', shareCert: 'Share certificate', certShared: 'Certificate text copied',
+    certHeading: 'Certificate of Appreciation', certIssued: 'Issued', certPendingList: 'Pending issue', certWillIssue: 'Issued once the campaign completes', certEmptySub: 'Complete your first campaign to earn your first certificate', comingSoon: 'Coming soon', downloadCert: 'Download PDF', certBody1: 'ATHAR certifies that', certBody2: 'has successfully participated in', certHoursLine: 'total volunteer hours', shareCert: 'Share certificate', certShared: 'Certificate text copied',
     settingsTitle: 'Settings', settingsSub: 'Appearance · Language · Privacy · Support', helpTitle: 'How ATHAR works', helpSub: 'A quick guide to the app',
     setAppearance: 'Appearance', setDark: 'Dark mode', setDarkSub: 'Easier on the eyes at night', setLang: 'Language', setLangSub: 'Interface language',
     setPrivacyGroup: 'Privacy', setNotifPrefs: 'Notification preferences', setNtCampaign: 'Campaigns & participation', setNtCommunity: 'Community interactions', setNtAchievement: 'Achievements', setNtAnnounce: 'Admin announcements', setQuiet: 'Quiet mode', setQuietSub: 'Mute pop-up alerts', setPush: 'Browser notifications', setPushOn: 'Enabled', setPushOff: 'Tap to enable', setPushNo: 'Not supported', setPublic: 'Public profile', setPublicSub: 'Let others visit your profile', setNotif: 'Notifications', setNotifSub: 'Campaign alerts and updates',
@@ -11633,9 +11636,17 @@ function shareProfile() {
 }
 
 /* ── CERTIFICATES + ACTIVITY TIMELINE (Phase 6.3) ── */
+/* Certificates feature not live yet — flip to true to enable issuing. */
+const CERTS_ENABLED = false;
 function renderCerts(u) {
   const box = document.getElementById('profileCerts');
   if (!box) return;
+  if (!CERTS_ENABLED) {
+    box.innerHTML = '<div class="empty-state cert-soon-state"><div class="cert-seal cert-seal-empty">' + icon('star') + '</div>' +
+      '<div class="empty-title">' + t('noCerts') + '</div>' +
+      '<div class="cert-soon-chip">' + t('comingSoon') + '</div></div>';
+    return;
+  }
   const certs = CertificateService.getFor(u);
   const joined = (u.joinedCamps || []).map(id => CampaignService.getById(id)).filter(Boolean);
   const pendingCamps = joined.filter(c => c.status !== 'done');
