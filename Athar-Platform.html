@@ -3858,6 +3858,18 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
   }
 }
 
+/* ── Liquid-glass content cards across all pages (matches profile) ──
+   White content cards only; colored/image hero cards keep their brand look. */
+.camp-card, .cm-card, .cg-card, .dstat, .impact-tile, .ig-impact .impact-tile,
+.set-card, .adm-card, .adm-stat-card, .adm-kpi, .notif-item,
+.cm-fcom, .cm-svol, .cm-srow, .partner-slot.filled {
+  background: var(--card-glass);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  backdrop-filter: blur(20px) saturate(1.4);
+  border-color: var(--card-glass-line);
+  box-shadow: var(--glass-soft);
+}
+
 /* Small chips / tags */
 .cat-chip, .cm-tag, .value-chip, .adm-chip, .status-chip, .adm-st, .adm-rolechip, .cm-story-chip,
 .partner-slot, .ig-role, .badge.on .badge-ico, .cm-impact-chip, .my-camp-tag {
@@ -4120,7 +4132,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v51</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v52</span>
     </div>
   </section>
 
