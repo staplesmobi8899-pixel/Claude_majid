@@ -3636,13 +3636,16 @@ html, body { overflow-x: hidden; }
 
 .timeline { max-width: var(--content-max); margin: 0 auto; padding: var(--sp-2) var(--sp-5) var(--sp-4); }
 .tl-item { display: flex; gap: var(--sp-4); position: relative; padding-bottom: var(--sp-5); }
-.tl-marker { position: relative; flex-shrink: 0; width: 16px; display: flex; justify-content: center; }
-.tl-marker::before { content: ''; position: absolute; top: 16px; bottom: -4px; width: 2px; background: var(--sand-dark); }
+.tl-marker { position: relative; flex-shrink: 0; width: 30px; display: flex; justify-content: center; }
+.tl-marker::before { content: ''; position: absolute; top: 32px; bottom: -6px; width: 2px; background: var(--line-sand-strong); }
 .tl-item:last-child .tl-marker::before { display: none; }
-.tl-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent-btn); margin-top: 4px; border: 2px solid var(--warm-white); z-index: 1; }
-.tl-item.done .tl-dot { background: var(--forest); }
-.tl-item.badge .tl-dot { background: var(--gold); }
-.tl-item.account .tl-dot { background: var(--charcoal-20); }
+.tl-ico { width: 30px; height: 30px; border-radius: 50%; background: var(--olive-pale); color: var(--olive); display: flex; align-items: center; justify-content: center; border: 2px solid var(--warm-white); z-index: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.tl-ico svg { width: 15px; height: 15px; stroke-width: 2.2; }
+.tl-item.done .tl-ico { background: rgba(46,61,31,0.1); color: var(--forest); }
+.tl-item.cert .tl-ico { background: linear-gradient(135deg, var(--forest), var(--olive)); color: #fff; }
+.tl-item.badge .tl-ico, .tl-item.milestone .tl-ico { background: rgba(201,150,46,0.14); color: #9a6f12; }
+.tl-item.community .tl-ico { background: var(--olive-pale); color: var(--olive); }
+.tl-item.account .tl-ico { background: var(--sand-dark); color: var(--charcoal-50); }
 .tl-body { flex: 1; min-width: 0; padding-bottom: var(--sp-1); }
 .tl-title { font-size: var(--fs-sm); font-weight: 700; color: var(--charcoal); line-height: 1.5; }
 .tl-date { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: 2px; }
@@ -4106,7 +4109,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v45</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v46</span>
     </div>
   </section>
 
@@ -4373,6 +4376,8 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
     <div class="badges-scroll" id="profileBadges"></div>
     <div class="ig-section-h" data-i18n="certsTitle"></div>
     <div class="cert-list" id="profileCerts"></div>
+    <div class="ig-section-h" data-i18n="timelineTitle"></div>
+    <div class="timeline" id="profileTimeline"></div>
     <div class="profile-menu">
       <div class="menu-card">
         <div class="menu-row" onclick="openHelpGuide()">
@@ -5742,7 +5747,7 @@ const T = {
     editInfo: 'تعديل', saveChanges: 'حفظ التعديلات', cancelEdit: 'إلغاء', infoSaved: 'تم حفظ معلوماتك', bioField: 'نبذة عنك', bioPh: 'اكتب نبذة قصيرة تعرّف بك…', emailLocked: 'البريد الإلكتروني لا يمكن تغييره',
     editProfileBtn: 'تعديل الملف', shareProfileBtn: 'مشاركة الملف', shareCopied: 'تم نسخ رابط ملفك', statCompletedShort: 'حملة منجزة', statHoursShort: 'ساعة', statParticipationShort: 'مشاركة', completedCampsLabel: 'حملات مكتملة', changePhotoCta: 'تغيير صورة الملف', roleJoined: 'مشارَكة', roleOrganizer: 'أنت أنشأت هذه الحملة', createdByVolunteer: 'أُنشئت هذه الحملة بطلب من متطوّع', cantLeaveDone: 'لا يمكن مغادرة حملة مكتملة — ساعاتك محفوظة',
     certsTitle: 'الشهادات', timelineTitle: 'سجل النشاط', noCerts: 'شهاداتك', certsPending: 'قيد الانتظار', noActivity: 'ابدأ رحلتك — انضمّ لأول حملة', viewCertBtn: 'عرض',
-    tlJoin: 'انضممت إلى', tlDone: 'أكملت حملة', tlBadge: 'حصلت على شارة', tlAccount: 'بدأت رحلتك في أثر',
+    tlJoin: 'انضممت إلى', tlDone: 'أكملت حملة', tlBadge: 'حصلت على شارة', tlCert: 'حصلت على شهادة', tlCommunity: 'انضممت إلى مجتمع', tlMilestone: 'ساعة تطوّع — إنجاز', tlAccount: 'بدأت رحلتك في أثر',
     certHeading: 'شهادة تقدير', certIssued: 'الشهادات الصادرة', certPendingList: 'قيد الإصدار', certWillIssue: 'تُصدر بعد اكتمال الحملة', certEmptySub: 'أكمل أول حملة لتحصل على شهادتك الأولى', downloadCert: 'تنزيل PDF', certBody1: 'تشهد منصة أثر أنّ', certBody2: 'قد أتمّ بنجاح المشاركة في', certHoursLine: 'بإجمالي ساعات تطوّع', shareCert: 'مشاركة الشهادة', certShared: 'تم نسخ نص الشهادة',
     settingsTitle: 'الإعدادات', settingsSub: 'المظهر · اللغة · الخصوصية · الدعم', helpTitle: 'كيف يعمل أثر؟', helpSub: 'دليل سريع لأقسام التطبيق',
     setAppearance: 'المظهر', setDark: 'الوضع الداكن', setDarkSub: 'مظهر مريح للعين ليلًا', setLang: 'اللغة', setLangSub: 'لغة الواجهة',
@@ -5933,7 +5938,7 @@ const T = {
     editInfo: 'Edit', saveChanges: 'Save changes', cancelEdit: 'Cancel', infoSaved: 'Your info was saved', bioField: 'About you', bioPh: 'Write a short bio about yourself…', emailLocked: 'Email cannot be changed',
     editProfileBtn: 'Edit profile', shareProfileBtn: 'Share profile', shareCopied: 'Profile link copied', statCompletedShort: 'Completed', statHoursShort: 'Hours', statParticipationShort: 'Participations', completedCampsLabel: 'Completed campaigns', changePhotoCta: 'Change profile photo', roleJoined: 'Participating', roleOrganizer: 'You created this campaign', createdByVolunteer: 'This campaign was created by a volunteer', cantLeaveDone: 'Cannot leave a completed campaign — your hours are saved',
     certsTitle: 'Certificates', timelineTitle: 'Activity', noCerts: 'Your certificates', certsPending: 'Pending', noActivity: 'Start your journey — join your first campaign', viewCertBtn: 'View',
-    tlJoin: 'Joined', tlDone: 'Completed', tlBadge: 'Earned a badge', tlAccount: 'Started your ATHAR journey',
+    tlJoin: 'Joined', tlDone: 'Completed', tlBadge: 'Earned a badge', tlCert: 'Earned a certificate', tlCommunity: 'Joined a community', tlMilestone: 'volunteer hours milestone', tlAccount: 'Started your ATHAR journey',
     certHeading: 'Certificate of Appreciation', certIssued: 'Issued', certPendingList: 'Pending issue', certWillIssue: 'Issued once the campaign completes', certEmptySub: 'Complete your first campaign to earn your first certificate', downloadCert: 'Download PDF', certBody1: 'ATHAR certifies that', certBody2: 'has successfully participated in', certHoursLine: 'total volunteer hours', shareCert: 'Share certificate', certShared: 'Certificate text copied',
     settingsTitle: 'Settings', settingsSub: 'Appearance · Language · Privacy · Support', helpTitle: 'How ATHAR works', helpSub: 'A quick guide to the app',
     setAppearance: 'Appearance', setDark: 'Dark mode', setDarkSub: 'Easier on the eyes at night', setLang: 'Language', setLangSub: 'Interface language',
@@ -7207,11 +7212,25 @@ const ActivityService = {
     joined.forEach(c => {
       const title = Models.getCampText(c).title;
       ev.push({ type: 'join', campId: c.id, title, date: c.date || '' });
-      if (c.status === 'done') ev.push({ type: 'done', campId: c.id, title, date: c.completedAt || c.date || '' });
+      if (c.status === 'done') {
+        ev.push({ type: 'done', campId: c.id, title, date: c.completedAt || c.date || '' });
+        ev.push({ type: 'cert', campId: c.id, title, date: c.completedAt || c.date || '' });
+      }
     });
     (user.achievements || []).forEach(k => {
       const m = AchievementService.meta(k);
       if (m) ev.push({ type: 'badge', title: (State.lang === 'ar' ? m.ar : m.en), date: '' });
+    });
+    // community memberships
+    if (typeof CommunityGroupService !== 'undefined') {
+      CommunityGroupService.getAll().filter(g => (g.members || []).indexOf(user.id) !== -1).forEach(g => {
+        ev.push({ type: 'community', groupId: g.id, title: g.name || (State.lang === 'ar' ? g.nameAr : g.nameEn) || '', date: '' });
+      });
+    }
+    // volunteer-hour milestones (50 / 100 / 250 / 500)
+    const hrs = user.volunteerHours || 0;
+    [50, 100, 250, 500].filter(m => hrs >= m).forEach(m => {
+      ev.push({ type: 'milestone', title: String(m), date: '' });
     });
     if (user.joinedDate || user.createdAt) ev.push({ type: 'account', title: '', date: user.joinedDate || (user.createdAt || '').split('T')[0] });
     // newest first; undated events sink to the bottom
@@ -11661,13 +11680,14 @@ function renderTimeline(u) {
   if (!box) return;
   const ev = ActivityService.getTimeline(u);
   if (!ev.length) { box.innerHTML = '<div class="empty-state"><div class="empty-title">' + t('noActivity') + '</div></div>'; return; }
-  const labelOf = { join: t('tlJoin'), done: t('tlDone'), badge: t('tlBadge'), account: t('tlAccount') };
+  const labelOf = { join: t('tlJoin'), done: t('tlDone'), cert: t('tlCert'), badge: t('tlBadge'), community: t('tlCommunity'), milestone: t('tlMilestone'), account: t('tlAccount') };
+  const iconOf = { join: 'people', done: 'check', cert: 'star', badge: 'trophy', community: 'sprout', milestone: 'clock', account: 'flag' };
   box.innerHTML = ev.map(e => {
     const head = labelOf[e.type] || '';
-    const main = e.title ? (head + ' ' + e.title) : head;
+    const main = e.type === 'milestone' ? (e.title + ' ' + head) : (e.title ? (head + ' ' + e.title) : head);
     const click = e.campId ? ' onclick="openDetail(\'' + e.campId + '\')" style="cursor:pointer;"' : '';
     return '<div class="tl-item ' + e.type + '"' + click + '>' +
-      '<div class="tl-marker"><span class="tl-dot"></span></div>' +
+      '<div class="tl-marker"><span class="tl-ico">' + icon(iconOf[e.type] || 'star') + '</span></div>' +
       '<div class="tl-body"><div class="tl-title">' + main + '</div>' +
       (e.date ? '<div class="tl-date">' + e.date + '</div>' : '') + '</div>' +
     '</div>';
