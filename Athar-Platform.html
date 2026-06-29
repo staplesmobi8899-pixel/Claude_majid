@@ -4137,7 +4137,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v54</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v55</span>
     </div>
   </section>
 
@@ -8431,6 +8431,18 @@ function admStatusChip(status) {
   const s = map[status] || { ar: status, en: status };
   return '<span class="adm-st ' + status + '">' + (isAr ? s.ar : s.en) + '</span>';
 }
+/** User accounts only ever have 3 states (+banned) — keep them distinct from campaign statuses. */
+function admUserStatusChip(status) {
+  const isAr = State.lang === 'ar';
+  const map = {
+    pending:  { ar: 'قيد التدقيق', en: 'Under review' },
+    approved: { ar: 'مقبول',       en: 'Approved' },
+    rejected: { ar: 'مرفوض',       en: 'Rejected' },
+    banned:   { ar: 'محظور',       en: 'Banned' }
+  };
+  const s = map[status] || map.pending;
+  return '<span class="adm-st ' + status + '">' + (isAr ? s.ar : s.en) + '</span>';
+}
 /** Clean role chip for a user */
 function admRoleChip(u) {
   return '<span class="adm-rolechip">' + Permissions.roleLabel(u) + '</span>';
@@ -8777,7 +8789,7 @@ function admStatDetail(kind) {
     const userRow = u =>
       '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0;border-bottom:1px solid var(--line);cursor:pointer;" onclick="admViewUser(\'' + u.id + '\')">' +
         '<span style="flex:1;font-size:var(--fs-base);font-weight:700;color:var(--charcoal);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (u.name || '') + '</span>' +
-        admStatusChip(u.status) +
+        admUserStatusChip(u.status) +
       '</div>';
     const campRow = c => {
       const txt = Models.getCampText(c);
@@ -8832,7 +8844,7 @@ function admViewUser(id) {
       '<div class="adm-mhead">' +
         '<div class="adm-mava">' + ava + '</div>' +
         '<div class="adm-mname">' + (u.name || '') + '</div>' +
-        '<div class="adm-mchips">' + admStatusChip(banned ? 'banned' : u.status) + admRoleChip(u) + '</div>' +
+        '<div class="adm-mchips">' + admUserStatusChip(banned ? 'banned' : u.status) + admRoleChip(u) + '</div>' +
       '</div>' +
       row(isAr ? 'البريد' : 'Email', u.email) +
       row(isAr ? 'الهاتف' : 'Phone', fmtPhone(u.phone)) +
@@ -9196,7 +9208,7 @@ function admRenderUsers() {
           '<div class="admin-card-head">' +
             '<div class="admin-ava">' + ava + '</div>' +
             '<div class="admin-info">' +
-              '<div class="admin-info-name">' + (u.name || '') + ' ' + admStatusChip(banned ? 'banned' : u.status) + ' ' + admRoleChip(u) + '</div>' +
+              '<div class="admin-info-name">' + (u.name || '') + ' ' + admUserStatusChip(banned ? 'banned' : u.status) + ' ' + admRoleChip(u) + '</div>' +
               '<div class="admin-info-row">' + (u.email || '') + '</div>' +
               '<div class="admin-info-row">' + [u.city, u.country].filter(Boolean).join('، ') + ' · ' + (u.volunteerHours || 0) + (isAr ? ' س' : ' h') + '</div>' +
             '</div>' +
