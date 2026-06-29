@@ -58,9 +58,9 @@
   --shadow-xl: 0 24px 60px rgba(0,0,0,0.16);
   /* Liquid-Glass button system — layered ambient float + inner sheen */
   --glass-float: 0 8px 20px rgba(46,61,31,0.16), 0 2px 6px rgba(46,61,31,0.12);
-  --glass-soft: 0 2px 10px rgba(46,61,31,0.05), 0 1px 2px rgba(46,61,31,0.03);
-  --card-glass: rgba(255,255,255,0.58);
-  --card-glass-line: rgba(255,255,255,0.7);
+  --glass-soft: 0 6px 18px rgba(46,61,31,0.08), 0 1px 3px rgba(46,61,31,0.05);
+  --card-glass: rgba(255,255,255,0.72);
+  --card-glass-line: rgba(255,255,255,0.85);
   --glass-sheen: inset 0 1.5px 0.5px rgba(255,255,255,0.42), inset 0 -2px 5px rgba(20,28,12,0.16);
   --glass-press-shadow: 0 2px 7px rgba(46,61,31,0.18);
   --glass-press-inner: inset 0 2px 6px rgba(18,26,10,0.30), inset 0 1.5px 0.5px rgba(255,255,255,0.34);
@@ -462,6 +462,8 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
   display: none;
   background: transparent;
 }
+/* Warm sand canvas on the profile so the light glass cards gain real contrast */
+#profilePage.page { background: linear-gradient(180deg, rgba(220,203,172,0.55) 0%, rgba(231,217,194,0.34) 60%, rgba(231,217,194,0.22) 100%); }
 .page.active {
   display: block;
   position: relative;
@@ -4120,7 +4122,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v48</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v49</span>
     </div>
   </section>
 
