@@ -3431,6 +3431,8 @@ html, body { overflow-x: hidden; }
   min-height: 200px; display: flex; align-items: flex-end; background-size: cover; background-position: center;
   box-shadow: var(--shadow-md); }
 .featured-card.featured-noimg { background: linear-gradient(135deg, var(--forest), var(--olive)); }
+.featured-card.featured-emergency { box-shadow: 0 0 0 2px rgba(179,38,30,0.55), var(--elev-card); animation: emgGlow 2.6s ease-in-out infinite; }
+.featured-tag.featured-tag-emg { background: rgba(179,38,30,0.95); color: #fff; }
 .featured-body { position: relative; z-index: 1; padding: var(--sp-5); width: 100%; color: var(--off-white); }
 .featured-tag { display: inline-block; padding: var(--sp-1) var(--sp-3); border-radius: var(--r-full);
   background: rgba(255,255,255,0.2); font-size: var(--fs-xs); font-weight: 800; margin-bottom: var(--sp-2); }
@@ -4135,7 +4137,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v53</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v54</span>
     </div>
   </section>
 
@@ -4418,16 +4420,6 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
         </div>
         <div class="menu-section-body" id="m-camps">
           <div id="profileCampsBox"></div>
-        </div>
-
-        <div class="menu-row" onclick="goPage('community')">
-          <div class="menu-icon"><svg class="ic" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.4c2.6.2 5 1.9 5 4.6"/></svg></div>
-          <div class="menu-texts">
-            <div class="menu-title" data-i18n="communitiesLabel"></div>
-            <div class="menu-sub" data-i18n="dashCommsSub"></div>
-          </div>
-          <span class="menu-meta" id="dashCommsN"></span>
-          <div class="menu-arrow">›</div>
         </div>
 
         <div class="menu-row" onclick="goPage('notifications')">
@@ -5465,6 +5457,18 @@ const Sync = {
       saved = UserService.save(minimal);
     }
     console.log('[Sync] users loaded:', lean.length, 'saved:', saved);
+    // Keep the signed-in user's own status/role in sync with the server,
+    // so a freshly-approved account can act without re-logging in.
+    if (State.cu && State.cu.id && !State.cu.isGuest && !State.isAdmin) {
+      const freshMe = lean.find(u => u.id === State.cu.id);
+      if (freshMe) {
+        State.cu.status = freshMe.status;
+        State.cu.role = freshMe.role;
+        if ('banned' in freshMe) State.cu.banned = freshMe.banned;
+        try { DB.setObj(CONFIG.DB_KEYS.SESSION, State.cu); } catch (e) {}
+        try { if (document.getElementById('profilePage') && document.getElementById('profilePage').classList.contains('active')) renderProfile(); } catch (e) {}
+      }
+    }
   },
   async pullCampaigns() {
     if (!sb) return;
@@ -7014,7 +7018,10 @@ const CampaignService = {
   /** Join a campaign — returns { success, message } */
   join(campId, user) {
     if (!user) return { success: false, message: t('errorLogin') };
-    if (user.status !== 'approved') return { success: false, message: t('errorStatus') };
+    const freshU = (typeof UserService !== 'undefined' && UserService.getById(user.id)) || null;
+    const uStatus = (freshU && freshU.status) || user.status;
+    if (freshU && freshU.status) user.status = freshU.status;
+    if (uStatus !== 'approved') return { success: false, message: t('errorStatus') };
 
     const camps = this.getAll();
     const ci = camps.findIndex(c => c.id === campId);
@@ -7177,6 +7184,11 @@ const DiscoveryService = {
     if (upcoming.length) return upcoming[0];
     const past = dated.sort((a, b) => b.date.localeCompare(a.date));
     return past[0] || this._base()[0] || null;
+  },
+  emergencyTop() {
+    const e = this._base().filter(c => Models.displayStatus(c) === 'emergency');
+    if (!e.length) return null;
+    return e.sort((a, b) => String(a.date || '9999').localeCompare(String(b.date || '9999')))[0];
   },
   recommended(user, n = 6) {
     const interests = new Set((user && user.interests) || []);
@@ -7947,15 +7959,22 @@ const HomeUI = {
   },
   featured() {
     const el = document.getElementById('homeFeatured'); if (!el) return;
-    const f = DiscoveryService.nearest();
+    const emg = DiscoveryService.emergencyTop();
+    const f = emg || DiscoveryService.nearest();
     if (!f) { el.innerHTML = ''; return; }
+    const isEmg = !!emg;
     const tx = Models.getCampText(f);
     const pct = f.needed ? Math.min(100, Math.round((f.volunteers || 0) / f.needed * 100)) : 0;
-    const bg = "background-image:linear-gradient(rgba(46,61,31,0.15),rgba(46,61,31,0.75)),url('" + Models.campImage(f) + "')";
+    const bg = isEmg
+      ? "background-image:linear-gradient(rgba(120,18,12,0.32),rgba(120,18,12,0.80)),url('" + Models.campImage(f) + "')"
+      : "background-image:linear-gradient(rgba(46,61,31,0.15),rgba(46,61,31,0.75)),url('" + Models.campImage(f) + "')";
+    const tag = isEmg
+      ? '<span class="featured-tag featured-tag-emg">' + icon('alert') + ' ' + t('emergencyTag') + '</span>'
+      : '<span class="featured-tag"> ' + t('nearestTag') + '</span>';
     el.innerHTML =
-      '<div class="featured-card" onclick="openDetail(\'' + f.id + '\')" style="' + bg + '">' +
+      '<div class="featured-card' + (isEmg ? ' featured-emergency' : '') + '" onclick="openDetail(\'' + f.id + '\')" style="' + bg + '">' +
         '<div class="featured-body">' +
-          '<span class="featured-tag"> ' + t('nearestTag') + '</span>' +
+          tag +
           '<div class="featured-title">' + tx.title + '</div>' +
           '<div class="featured-meta">' + icon('calendar') + ' ' + (f.date || '') + ' · ' + icon('pin') + ' ' + (f.location || '') + ' · ' + icon('people') + ' ' + (f.volunteers || 0) + '/' + (f.needed || 0) + '</div>' +
           '<div class="featured-prog"><span style="width:' + pct + '%"></span></div>' +
@@ -8237,11 +8256,6 @@ function renderProfile() {
     const myCampsN = allC.filter(c => c.createdBy === u.id || joinedIds.indexOf(c.id) !== -1).length;
     const dCamps = document.getElementById('dashCampsN');
     if (dCamps) dCamps.textContent = myCampsN ? String(myCampsN) : '';
-    const dComms = document.getElementById('dashCommsN');
-    if (dComms) {
-      const cN = (typeof CommunityGroupService !== 'undefined') ? CommunityGroupService.getAll().filter(g => (g.members || []).indexOf(u.id) !== -1).length : 0;
-      dComms.textContent = cN ? String(cN) : '';
-    }
     const dNotif = document.getElementById('dashNotifN');
     if (dNotif) {
       const uN = (typeof NotificationService !== 'undefined') ? NotificationService.unreadCount(u.id) : 0;
@@ -8251,12 +8265,9 @@ function renderProfile() {
     if (bioEl) bioEl.textContent = u.bio || t('noBio');
     const priv = document.getElementById('profilePrivacy');
     if (priv) {
-      if (State.isAdmin) { priv.innerHTML = ''; }
-      else {
-        const isPublic = !!u.profilePublic;
-        priv.innerHTML = '<button class="privacy-toggle' + (isPublic ? ' on' : '') + '" onclick="toggleProfileVisibility()">' +
-          '<span class="privacy-dot"></span><span>' + (isPublic ? t('profilePublic') : t('profilePrivate')) + '</span></button>';
-      }
+      const isPublic = !!u.profilePublic;
+      priv.innerHTML = '<button class="privacy-toggle' + (isPublic ? ' on' : '') + '" onclick="toggleProfileVisibility()">' +
+        '<span class="privacy-dot"></span><span>' + (isPublic ? t('profilePublic') : t('profilePrivate')) + '</span></button>';
     }
 
     const stats = StatsService.compute(u);
@@ -10469,9 +10480,13 @@ function doLogout() {
 /* ── Guest gate: actions that need a real account (Phase 2) ── */
 function requireAuth() {
   // Signed-in but not yet approved: can browse, can't interact
-  if (State.cu && !State.isGuest && !State.isAdmin && State.cu.status && State.cu.status !== 'approved') {
-    toast(t('pendingBanner'), 'warning');
-    return false;
+  if (State.cu && !State.isGuest && !State.isAdmin) {
+    const freshMe = (typeof UserService !== 'undefined' && UserService.getById(State.cu.id)) || null;
+    if (freshMe && freshMe.status && freshMe.status !== State.cu.status) State.cu.status = freshMe.status;
+    if (State.cu.status && State.cu.status !== 'approved') {
+      toast(t('pendingBanner'), 'warning');
+      return false;
+    }
   }
   if (State.cu && !State.isGuest) return true;
   document.getElementById('appScreen').classList.remove('show');
