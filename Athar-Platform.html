@@ -58,9 +58,9 @@
   --shadow-xl: 0 24px 60px rgba(0,0,0,0.16);
   /* Liquid-Glass button system — layered ambient float + inner sheen */
   --glass-float: 0 8px 20px rgba(46,61,31,0.16), 0 2px 6px rgba(46,61,31,0.12);
-  --glass-soft: 0 10px 24px rgba(46,61,31,0.11), 0 2px 6px rgba(46,61,31,0.07);
-  --card-glass: rgba(255,255,255,0.96);
-  --card-glass-line: var(--line-sand-strong);
+  --glass-soft: 0 8px 22px rgba(46,61,31,0.10), 0 1px 3px rgba(46,61,31,0.06);
+  --card-glass: rgba(255,255,255,0.55);
+  --card-glass-line: rgba(255,255,255,0.55);
   --glass-sheen: inset 0 1.5px 0.5px rgba(255,255,255,0.42), inset 0 -2px 5px rgba(20,28,12,0.16);
   --glass-press-shadow: 0 2px 7px rgba(46,61,31,0.18);
   --glass-press-inner: inset 0 2px 6px rgba(18,26,10,0.30), inset 0 1.5px 0.5px rgba(255,255,255,0.34);
@@ -1230,7 +1230,7 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
 .mc-count { background: var(--olive-pale); color: var(--olive); font-size: var(--fs-2xs); font-weight: 800;
   min-width: 20px; text-align: center; padding: 1px 7px; border-radius: var(--r-full); }
 .pf-quick { max-width: var(--content-max); margin: 0 auto var(--sp-4); padding: 0 var(--sp-5); display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3); }
-.pf-qbtn { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: var(--sp-4) var(--sp-2); background: var(--card-glass); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid var(--card-glass-line); border-radius: var(--r-xl); box-shadow: var(--glass-soft); font-family: inherit; font-size: var(--fs-2xs); font-weight: 800; color: var(--charcoal); cursor: pointer; transition: transform 0.16s var(--ease-soft); -webkit-tap-highlight-color: transparent; text-align: center; }
+.pf-qbtn { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: var(--sp-4) var(--sp-2); background: var(--card-glass); -webkit-backdrop-filter: blur(20px) saturate(1.4); backdrop-filter: blur(20px) saturate(1.4); border: 1px solid var(--card-glass-line); border-radius: var(--r-xl); box-shadow: var(--glass-soft); font-family: inherit; font-size: var(--fs-2xs); font-weight: 800; color: var(--charcoal); cursor: pointer; transition: transform 0.16s var(--ease-soft); -webkit-tap-highlight-color: transparent; text-align: center; }
 .pf-qbtn:active { transform: scale(0.95); }
 .pf-qico { width: 38px; height: 38px; border-radius: var(--r-md); background: var(--olive-pale); color: var(--olive); display: flex; align-items: center; justify-content: center; }
 .pf-qico svg { width: 20px; height: 20px; }
@@ -1238,7 +1238,7 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
 .pf-topbar { max-width: var(--content-max); margin: 0 auto; padding: var(--sp-4) var(--sp-5) 0; display: flex; align-items: center; justify-content: space-between; }
 .pf-top-title { font-size: var(--fs-xl); font-weight: 900; color: var(--charcoal); letter-spacing: -0.02em; }
 .pf-top-actions { display: flex; gap: var(--sp-2); }
-.pf-top-btn { position: relative; width: 40px; height: 40px; border-radius: 50%; background: var(--card-glass); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid var(--card-glass-line); box-shadow: var(--glass-soft); display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.16s var(--ease-soft); }
+.pf-top-btn { position: relative; width: 40px; height: 40px; border-radius: 50%; background: var(--card-glass); -webkit-backdrop-filter: blur(20px) saturate(1.4); backdrop-filter: blur(20px) saturate(1.4); border: 1px solid var(--card-glass-line); box-shadow: var(--glass-soft); display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.16s var(--ease-soft); }
 .pf-top-btn:active { transform: scale(0.92); }
 .pf-top-btn svg { width: 20px; height: 20px; stroke: var(--charcoal); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .pf-top-badge { position: absolute; top: 4px; inset-inline-end: 4px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 9px; background: var(--red); color: #fff; font-size: 10px; font-weight: 800; line-height: 16px; text-align: center; display: none; box-shadow: 0 0 0 2px var(--white); }
@@ -1535,8 +1535,8 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
 
 .menu-card {
   background: var(--card-glass);
-  -webkit-backdrop-filter: blur(16px) saturate(1.05);
-  backdrop-filter: blur(16px) saturate(1.05);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  backdrop-filter: blur(20px) saturate(1.4);
   border: 1px solid var(--card-glass-line);
   border-radius: var(--r-xl);
   box-shadow: var(--glass-soft);
@@ -3574,7 +3574,7 @@ html, body { overflow-x: hidden; }
 .badge-ico .ic { width: 24px; height: 24px; }
 /* ── Premium profile: stats card · rank · badges ── */
 .pf-stats-card, .pf-rank-card { max-width: var(--content-max); margin: 0 auto var(--sp-4);
-  background: var(--card-glass); -webkit-backdrop-filter: blur(16px) saturate(1.05); backdrop-filter: blur(16px) saturate(1.05);
+  background: var(--card-glass); -webkit-backdrop-filter: blur(20px) saturate(1.4); backdrop-filter: blur(20px) saturate(1.4);
   border: 1px solid var(--card-glass-line); border-radius: var(--r-2xl); box-shadow: var(--glass-soft); }
 .pf-stats-card { display: grid; grid-template-columns: repeat(5, 1fr); padding: var(--sp-5) var(--sp-2); }
 .pf-stat { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; padding: 0 2px; position: relative; min-width: 0; }
@@ -3596,7 +3596,7 @@ html, body { overflow-x: hidden; }
 .pf-rank-next { font-size: var(--fs-xs); color: var(--charcoal-50); margin-top: var(--sp-2); text-align: center; }
 .badges-scroll { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--sp-5) var(--sp-6); display: flex; gap: var(--sp-3); overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .badges-scroll::-webkit-scrollbar { display: none; }
-.badges-scroll .badge { flex: none; width: 94px; text-align: center; padding: var(--sp-4) var(--sp-2); background: var(--card-glass); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid var(--card-glass-line); border-radius: var(--r-xl); opacity: 0.5; filter: grayscale(0.5); transition: opacity 0.25s, filter 0.25s, transform 0.16s var(--ease-soft); }
+.badges-scroll .badge { flex: none; width: 94px; text-align: center; padding: var(--sp-4) var(--sp-2); background: var(--card-glass); -webkit-backdrop-filter: blur(20px) saturate(1.4); backdrop-filter: blur(20px) saturate(1.4); border: 1px solid var(--card-glass-line); border-radius: var(--r-xl); opacity: 0.5; filter: grayscale(0.5); transition: opacity 0.25s, filter 0.25s, transform 0.16s var(--ease-soft); }
 .badges-scroll .badge.on { opacity: 1; filter: none; box-shadow: var(--glass-soft); }
 .badges-scroll .badge:active { transform: scale(0.96); }
 .badges-scroll .badge-ico { width: 48px; height: 48px; margin: 0 auto var(--sp-2); border-radius: var(--r-full); display: flex; align-items: center; justify-content: center; background: var(--sand); color: var(--charcoal-50); }
@@ -3615,7 +3615,7 @@ html, body { overflow-x: hidden; }
   background: var(--olive-pale); border-radius: var(--r-full);
   padding: 2px var(--sp-3); }
 .cert-card { display: flex; align-items: center; gap: var(--sp-4);
-  background: var(--card-glass); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  background: var(--card-glass); -webkit-backdrop-filter: blur(20px) saturate(1.4); backdrop-filter: blur(20px) saturate(1.4);
   border: 1px solid var(--card-glass-line); border-radius: var(--r-lg); box-shadow: var(--glass-soft);
   padding: var(--sp-4); cursor: pointer; transition: background 0.15s, box-shadow 0.15s; }
 .cert-card:hover { background: var(--sand); box-shadow: 0 4px 14px rgba(0,0,0,0.05); }
@@ -4120,7 +4120,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v50</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v51</span>
     </div>
   </section>
 
