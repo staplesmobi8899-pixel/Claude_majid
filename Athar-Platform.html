@@ -4141,7 +4141,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v61</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v62</span>
     </div>
   </section>
 
@@ -7685,7 +7685,7 @@ const CommunityService = {
   },
   getFeed() {
     this._syncAuto();
-    return this.getAll().filter(p => !p.communityId && p.type !== 'auto').sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    return this.getAll().filter(p => !p.communityId && p.type === 'post').sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
   },
   getCommunityFeed(communityId) {
     return this.getAll().filter(p => p.communityId === communityId).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
@@ -11254,7 +11254,15 @@ function handleSharePost(postId) {
 function cmRenderStories() {
   const box = document.getElementById('cmStories'); if (!box) return;
   const stories = CommunityService.getStories();
-  box.innerHTML = stories.length ? stories.map(cmPostCard).join('') : '<div class="empty-state"><div class="empty-title">' + t('cmEmptyStories') + '</div></div>';
+  const isAr = State.lang === 'ar';
+  const adminComposer = State.isAdmin
+    ? '<div class="cm-composer"><div class="cm-composer-top">' +
+        '<div class="cm-ava">' + cmAvatar(CommunityService._author(State.cu)) + '</div>' +
+        '<button class="cm-composer-input" onclick="openCmCompose(false,null,\'story\')">' + (isAr ? 'انشر قصة أثر…' : 'Post an impact story…') + '</button>' +
+      '</div></div>'
+    : '';
+  const list = stories.length ? stories.map(cmPostCard).join('') : '<div class="empty-state"><div class="empty-title">' + t('cmEmptyStories') + '</div></div>';
+  box.innerHTML = adminComposer + list;
 }
 /** Public-safe display name: masks private accounts (first letter + ****), except for admin/self. */
 function publicName(user) {
@@ -11329,12 +11337,12 @@ function cmRenderHighlights() {
 }
 
 /* Compose */
-function openCmCompose(withPhoto, communityId) {
+function openCmCompose(withPhoto, communityId, presetType) {
   if (!State.cu || State.isGuest) { requireAuth(); return; }
   CommunityUI.type = 'post'; CommunityUI.media = []; CommunityUI.before = null; CommunityUI.after = null;
   CommunityUI.composeCommunity = communityId || null;
   const txt = document.getElementById('cmText'); if (txt) txt.value = '';
-  cmSetType('post');
+  cmSetType((presetType === 'story' && State.isAdmin) ? 'story' : 'post');
   // Impact stories are admin-only — hide the type toggle for regular users
   const toggle = document.querySelector('.cm-type-toggle');
   if (toggle) toggle.style.display = State.isAdmin ? 'flex' : 'none';
