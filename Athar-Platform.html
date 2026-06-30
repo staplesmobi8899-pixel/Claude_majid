@@ -4141,7 +4141,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v63</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v64</span>
     </div>
   </section>
 
@@ -6783,8 +6783,12 @@ const Permissions = {
     const m = this.meta(this.roleOf(user) || CONFIG.DEFAULT_ROLE);
     return State.lang === 'ar' ? m.ar : m.en;
   },
-  /** Roles assignable from the admin UI (excludes guest; super_admin is bootstrap-only) */
-  assignable() { return ['volunteer', 'campaign_organizer', 'partner', 'moderator', 'admin']; },
+  /** Roles assignable from the admin UI. Only the owner (super_admin) can grant 'admin'. */
+  assignable(actor) {
+    const base = ['volunteer', 'campaign_organizer', 'partner', 'moderator'];
+    if (actor && this.roleOf(actor) === 'super_admin') base.push('admin');
+    return base;
+  },
   can(user, action) {
     const role = this.roleOf(user);
     if (!role) return false;
@@ -8947,6 +8951,10 @@ function admViewUser(id) {
     if (!u) return;
     const isAr = State.lang === 'ar';
     const isBoot = u.email === CONFIG.ADMIN_EMAIL;
+    const iAmSuper = Permissions.roleOf(State.cu) === 'super_admin';
+    const targetRole = Permissions.roleOf(u);
+    const lockRole = (targetRole === 'super_admin') || (targetRole === 'admin' && !iAmSuper);
+    const lockBan  = lockRole || isBoot;
     const banned = UserService.isBanned(u) || u.status === 'banned';
     const ava = u.profilePic
       ? '<img src="' + u.profilePic + '" alt="">'
@@ -8980,17 +8988,17 @@ function admViewUser(id) {
     if (actions) html += '<div class="adm-mactions">' + actions + '</div>';
 
     // Assign role
-    if (!isBoot && Permissions.can(State.cu, 'assign_role')) {
+    if (!isBoot && !lockRole && Permissions.can(State.cu, 'assign_role')) {
       const cur = Permissions.roleOf(u);
       html += '<div class="adm-msection"><div class="adm-msection-h">' + (isAr ? 'الدور' : 'Role') + '</div><div class="adm-roles">' +
-        Permissions.assignable().map(r =>
+        Permissions.assignable(State.cu).map(r =>
           '<button class="adm-role-opt' + (r === cur ? ' on' : '') + '" onclick="admAssignRole(\'' + u.id + '\',\'' + r + '\')">' +
             (isAr ? CONFIG.ROLES[r].ar : CONFIG.ROLES[r].en) + '</button>'
         ).join('') + '</div></div>';
     }
 
     // Suspend / ban
-    if (!isBoot) {
+    if (!lockBan) {
       if (banned) {
         html += '<div class="adm-ban-note">' + (isAr ? 'محظور' : 'Banned') + ((u.banned && u.banned.until) ? (' \u00b7 ' + (isAr ? 'حتى ' : 'until ') + fmtDate(u.banned.until)) : '') + '</div>' +
           '<div class="adm-mactions"><button class="adm-btn ghost" onclick="handleUnbanUser(\'' + u.id + '\')">' + (isAr ? 'رفع الحظر' : 'Unban') + '</button></div>';
@@ -9046,7 +9054,14 @@ function admSaveUser(id) {
 
 function admAssignRole(id, role) {
   if (!Permissions.can(State.cu, 'assign_role')) return;
-  if (!Permissions.assignable().includes(role)) return;
+  if (!Permissions.assignable(State.cu).includes(role)) return;   // only owner can grant 'admin'
+  const target = UserService.getById(id);
+  const tRole = target ? Permissions.roleOf(target) : null;
+  const iAmSuper = Permissions.roleOf(State.cu) === 'super_admin';
+  if (tRole === 'super_admin' || (tRole === 'admin' && !iAmSuper)) {
+    toast(State.lang === 'ar' ? 'لا يمكنك تعديل هذا الحساب' : 'You cannot modify this account', 'error');
+    return;
+  }
   UserService.updateById(id, { role: role });
   const label = State.lang === 'ar' ? CONFIG.ROLES[role].ar : CONFIG.ROLES[role].en;
   NotificationService.add(id, 'تم تحديث دورك إلى: ' + CONFIG.ROLES[role].ar, 'Your role was updated to: ' + CONFIG.ROLES[role].en, 'account');
@@ -11637,6 +11652,13 @@ function handleJoin(id) {
 /* ── ADMIN ACTIONS ── */
 function handleBanUser(id, days) {
   if (!State.isAdmin) return;
+  const target = UserService.getById(id);
+  const tRole = target ? Permissions.roleOf(target) : null;
+  const iAmSuper = Permissions.roleOf(State.cu) === 'super_admin';
+  if (tRole === 'super_admin' || (tRole === 'admin' && !iAmSuper)) {
+    toast(State.lang === 'ar' ? 'لا يمكنك حظر هذا الحساب' : 'You cannot ban this account', 'error');
+    return;
+  }
   UserService.ban(id, days, 'no-show');
   NotificationService.add(id, 'تم تعليق حسابك لمدة ' + days + ' أيام بسبب عدم الحضور.', 'Your account is suspended for ' + days + ' days due to no-show.', 'ban');
   toast(t('userBanned'), 'success');
