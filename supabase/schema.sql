@@ -358,3 +358,24 @@ create policy "storage delete own" on storage.objects
 --    update public.profiles set role='admin', status='approved'
 --    where email = 'YOUR_EMAIL_HERE';
 -- ============================================================
+
+-- ============================================================
+--  REPORTS  (user-filed reports; admin-only read/update)
+-- ============================================================
+create table if not exists public.reports (
+  id           uuid primary key default gen_random_uuid(),
+  target_type  text,
+  target_id    text,
+  reason       text,
+  note         text,
+  reporter_id  uuid references public.profiles(id) on delete set null,
+  status       text not null default 'open',
+  created_at   timestamptz not null default now()
+);
+alter table public.reports enable row level security;
+drop policy if exists "reports insert" on public.reports;
+create policy "reports insert" on public.reports for insert with check ( auth.uid() is not null );
+drop policy if exists "reports read admin" on public.reports;
+create policy "reports read admin" on public.reports for select using ( public.is_admin() );
+drop policy if exists "reports update admin" on public.reports;
+create policy "reports update admin" on public.reports for update using ( public.is_admin() );
