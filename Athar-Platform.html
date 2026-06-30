@@ -1614,13 +1614,13 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
   display: block; font-size: var(--fs-xs); font-weight: 700;
   color: var(--charcoal-50); margin-bottom: var(--sp-2); letter-spacing: 0.3px;
 }
-.edit-field input, .edit-field textarea {
+.edit-field input, .edit-field textarea, .edit-field select {
   width: 100%; padding: var(--sp-3) var(--sp-4);
   border: 1.5px solid var(--sand-dark); border-radius: var(--r-md);
   background: var(--white); color: var(--charcoal);
   font-family: inherit; font-size: var(--fs-base); resize: vertical;
 }
-.edit-field input:focus, .edit-field textarea:focus {
+.edit-field input:focus, .edit-field textarea:focus, .edit-field select:focus {
   outline: none; border-color: var(--forest);
 }
 .edit-field input:disabled { background: var(--sand); color: var(--charcoal-50); }
@@ -3857,7 +3857,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
   box-shadow: var(--elev-card);
 }
 @media (hover: hover) {
-  .cm-card:hover, .cert-card:hover, .offer-card:hover, .adm-stat-card:hover, .featured-card:hover {
+  .cm-card:hover, .cert-card:hover, .adm-stat-card:hover, .featured-card:hover {
     box-shadow: var(--elev-card-hover);
     transform: translateY(-2px);
   }
@@ -3918,14 +3918,18 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
   transform: scale(0.96);
 }
 /* Cards — subtle touch lift / press */
-.camp-card, .cm-card, .cg-card, .offer-card, .adm-card, .featured-card, .cert-card,
+.camp-card, .cm-card, .cg-card, .adm-card, .featured-card, .cert-card,
 .cm-fcom, .cm-svol, .topvol-row, .my-camp-row, .cm-srow {
   transition: transform 0.16s var(--ease-soft);
 }
-.camp-card:active, .cm-card:active, .cg-card:active, .offer-card:active, .adm-card:active,
+.camp-card:active, .cm-card:active, .cg-card:active, .adm-card:active,
 .featured-card:active, .cert-card:active, .cm-fcom:active, .cm-svol:active, .my-camp-row:active, .cm-srow:active {
   transform: scale(0.985);
 }
+/* About info cards are static content — no tap/hover feedback */
+.offer-card, .about-block { cursor: default; }
+.offer-card:active, .about-block:active { transform: none; }
+.offer-card:hover, .about-block:hover { transform: none; box-shadow: var(--elev-card); }
 
 /* Floating glass bottom navigation */
 .bottom-nav {
@@ -4137,7 +4141,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v55</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v56</span>
     </div>
   </section>
 
@@ -4206,7 +4210,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
               <option value="Syria" data-i18n-opt="countrySy" selected></option>
             </select></div>
           <div class="auth-field"><label class="auth-label" data-i18n="city"></label>
-            <input class="auth-input" name="city" type="text"></div>
+            <select class="auth-input" name="city" data-gov></select></div>
           <div class="auth-field"><label class="auth-label" data-i18n="dob"></label>
             <div class="dob-group">
               <select class="auth-input" name="dobDay"><option value="" data-i18n-opt="dobDay"></option></select>
@@ -5437,6 +5441,34 @@ function campChangesToDb(ch) {
 /* uuid check — only push real DB rows (skip 'admin'/'guest'/legacy ids) */
 function isUuid(id) { return typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id); }
 function newId() { return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('c' + Date.now() + Math.random().toString(36).slice(2, 8)); }
+/* Plain numeric date (D/M/YYYY) — no month name; localized digits per language. */
+function fmtDate(iso) {
+  if (!iso) return '';
+  const s = String(iso);
+  const d = new Date(s.length <= 10 ? s + 'T00:00:00' : s);
+  if (isNaN(d.getTime())) return s;
+  let out = d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear();
+  if (State.lang === 'ar') out = out.replace(/[0-9]/g, c => '\u0660\u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669'[+c]);
+  return out;
+}
+/* Syrian governorate <option> list (value = canonical Arabic name). */
+function govOptions(selected, withAll) {
+  const isAr = State.lang === 'ar';
+  let html = withAll ? ('<option value="all">' + (isAr ? 'كل المحافظات' : 'All governorates') + '</option>') : '';
+  (CONFIG.GOVERNORATES || []).forEach(g => {
+    const on = (selected && (g.ar === selected || g.en === selected)) ? ' selected' : '';
+    html += '<option value="' + g.ar + '"' + on + '>' + (isAr ? g.ar : g.en) + '</option>';
+  });
+  return html;
+}
+function fillGovSelects() {
+  const isAr = State.lang === 'ar';
+  document.querySelectorAll('select[data-gov]').forEach(sel => {
+    const cur = sel.value || sel.getAttribute('data-selected') || '';
+    sel.innerHTML = '<option value="">' + (isAr ? 'اختر المحافظة' : 'Select governorate') + '</option>' + govOptions(cur, false);
+    if (cur) sel.value = cur;
+  });
+}
 
 /* ---- Sync: pull shared data from Supabase into the local cache ---- */
 const Sync = {
@@ -5642,6 +5674,15 @@ const CONFIG = {
     super_admin:        { ar: 'المدير العام',  en: 'Super Admin',       level: 100, permissions: ['*'] }
   },
   ROLE_ALIASES: { campaign_leader: 'campaign_organizer' },
+  GOVERNORATES: [
+    { ar: 'دمشق', en: 'Damascus' }, { ar: 'ريف دمشق', en: 'Rif Dimashq' },
+    { ar: 'حلب', en: 'Aleppo' }, { ar: 'حمص', en: 'Homs' },
+    { ar: 'اللاذقية', en: 'Latakia' }, { ar: 'طرطوس', en: 'Tartus' },
+    { ar: 'حماة', en: 'Hama' }, { ar: 'دير الزور', en: 'Deir ez-Zor' },
+    { ar: 'درعا', en: 'Daraa' }, { ar: 'السويداء', en: 'As-Suwayda' },
+    { ar: 'إدلب', en: 'Idlib' }, { ar: 'القامشلي', en: 'Qamishli' },
+    { ar: 'الرقة', en: 'Raqqa' }, { ar: 'الحسكة', en: 'Al-Hasakah' }
+  ],
 
   CAUSES: {
     environment: { ar: 'البيئة',        en: 'Environment' },
@@ -5864,7 +5905,7 @@ const T = {
     notifTitle: 'الإشعارات', notifSub: 'كل جديد يخصّك في مكان واحد.', notifEmptyTitle: 'لا إشعارات بعد', notifEmptyMsg: 'سنخبرك هنا عند وجود تحديثات على مبادراتك ونشاطك.',
     signupTitle: 'انضم لأَثَرْ', signupBtn: 'انضم الآن',
     loginTitle: 'مرحبًا بعودتك', loginBtn2: 'دخول',
-    fullName: 'الاسم الثلاثي', password: 'كلمة المرور', country: 'الدولة', city: 'المدينة',
+    fullName: 'الاسم الثلاثي', password: 'كلمة المرور', country: 'الدولة', city: 'المحافظة',
     dob: 'تاريخ الميلاد', profilePic: 'صورة شخصية (اختياري)', idPhoto: 'صورة الهوية — وجهين',
     specialNeeds: 'احتياجات خاصة (اختياري)',
     countrySy: 'سوريا', countryLb: 'لبنان', countryJo: 'الأردن', countryPs: 'فلسطين',
@@ -6055,7 +6096,7 @@ const T = {
     notifTitle: 'Notifications', notifSub: 'Everything that matters to you, in one place.', notifEmptyTitle: 'No notifications yet', notifEmptyMsg: 'We will let you know here when there are updates on your initiatives and activity.',
     signupTitle: 'Join ATHAR', signupBtn: 'Join Now',
     loginTitle: 'Welcome Back', loginBtn2: 'Sign In',
-    fullName: 'Full Name', password: 'Password', country: 'Country', city: 'City',
+    fullName: 'Full Name', password: 'Password', country: 'Country', city: 'Governorate',
     dob: 'Date of Birth', profilePic: 'Profile Photo (Optional)', idPhoto: 'ID Photo — Both Sides',
     specialNeeds: 'Special Needs (Optional)',
     countrySy: 'Syria', countryLb: 'Lebanon', countryJo: 'Jordan', countryPs: 'Palestine',
@@ -7428,7 +7469,7 @@ function submitReport() {
 }
 
 /* ── COMMUNITY (Phase 9 — social feed, posts, stories, reactions, comments, auto-updates) ── */
-const REACTIONS = ['like', 'support'];
+const REACTIONS = ['like'];
 const REACTION_META = {
   like:    { ar: 'إعجاب', en: 'Like' },
   support: { ar: 'دعم',   en: 'Support' }
@@ -7860,7 +7901,7 @@ function campCardHTML(c) {
     const cat      = Models.catLabel(c) || 'مبادرة';
     const catIcon  = (catMeta && catMeta.icon) ? icon(catMeta.icon) + ' ' : '';
     const location = c.location  || '';
-    const date     = c.date      || '';
+    const date     = fmtDate(c.date);
     const phone    = fmtPhone(c.creatorPhone);
     const vol      = c.volunteers   || 0;
     const needed   = c.needed       || 0;
@@ -7976,7 +8017,7 @@ const HomeUI = {
         '<div class="featured-body">' +
           tag +
           '<div class="featured-title">' + tx.title + '</div>' +
-          '<div class="featured-meta">' + icon('calendar') + ' ' + (f.date || '') + ' · ' + icon('pin') + ' ' + (f.location || '') + ' · ' + icon('people') + ' ' + (f.volunteers || 0) + '/' + (f.needed || 0) + '</div>' +
+          '<div class="featured-meta">' + icon('calendar') + ' ' + fmtDate(f.date) + ' · ' + icon('pin') + ' ' + (f.location || '') + ' · ' + icon('people') + ' ' + (f.volunteers || 0) + '/' + (f.needed || 0) + '</div>' +
           '<div class="featured-prog"><span style="width:' + pct + '%"></span></div>' +
         '</div>' +
       '</div>';
@@ -8094,7 +8135,7 @@ const ExploreUI = {
     const sel = document.getElementById('exploreCity'); if (!sel) return;
     const cur = this.filters.city;
     let html = '<option value="all">' + t('allCities') + '</option>';
-    DiscoveryService.cities().forEach(c => { html += '<option value="' + c + '">' + c + '</option>'; });
+    html += govOptions('', false);
     sel.innerHTML = html; sel.value = cur;
   },
   renderResults() {
@@ -8463,7 +8504,7 @@ function admTimeAgo(iso) {
   if (h < 24)   return isAr ? ('منذ ' + h + ' س') : (h + 'h ago');
   const d = Math.floor(h / 24);
   if (d < 30)   return isAr ? ('منذ ' + d + ' يوم') : (d + 'd ago');
-  return new Date(iso).toLocaleDateString();
+  return fmtDate(iso);
 }
 
 function admBar(label, value, max, color) {
@@ -8848,12 +8889,12 @@ function admViewUser(id) {
       '</div>' +
       row(isAr ? 'البريد' : 'Email', u.email) +
       row(isAr ? 'الهاتف' : 'Phone', fmtPhone(u.phone)) +
-      row(isAr ? 'المدينة' : 'City', [u.city, u.country].filter(Boolean).join('، ')) +
+      row(isAr ? 'المحافظة' : 'Governorate', [u.city, u.country].filter(Boolean).join('، ')) +
       row(isAr ? 'الميلاد' : 'DOB', u.dob) +
       row(isAr ? 'احتياجات خاصة' : 'Special needs', u.special) +
       row(isAr ? 'ساعات التطوّع' : 'Volunteer hrs', String(u.volunteerHours || 0)) +
       row(isAr ? 'حملات منضمّ لها' : 'Joined camps', String((u.joinedCamps || []).length)) +
-      row(isAr ? 'تاريخ التسجيل' : 'Registered', u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '') +
+      row(isAr ? 'تاريخ التسجيل' : 'Registered', fmtDate(u.createdAt)) +
       (u.idPhoto ? '<div style="margin-top:var(--sp-3);"><img src="' + u.idPhoto + '" style="width:100%;border-radius:var(--r-md);cursor:pointer;" onclick="openImageViewer(\'' + u.idPhoto + '\')"></div>' : '');
 
     // Primary actions
@@ -8878,7 +8919,7 @@ function admViewUser(id) {
     // Suspend / ban
     if (!isBoot) {
       if (banned) {
-        html += '<div class="adm-ban-note">' + (isAr ? 'محظور حتى ' : 'Banned until ') + new Date(u.banned.until).toLocaleDateString() + '</div>' +
+        html += '<div class="adm-ban-note">' + (isAr ? 'محظور حتى ' : 'Banned until ') + fmtDate(u.banned.until) + '</div>' +
           '<div class="adm-mactions"><button class="adm-btn ghost" onclick="handleUnbanUser(\'' + u.id + '\')">' + (isAr ? 'رفع الحظر' : 'Unban') + '</button></div>';
       } else {
         html += '<div class="adm-msection"><div class="adm-msection-h">' + (isAr ? 'تعليق الحساب — اختر المدة' : 'Suspend account — choose duration') + '</div><div class="adm-roles">' +
@@ -8905,7 +8946,7 @@ function admEditUser(id) {
     '<div class="adm-msection-h" style="font-size:var(--fs-lg);margin-bottom:var(--sp-4);">' + (isAr ? 'تعديل: ' : 'Edit: ') + (u.name || '') + '</div>' +
     field('eu-name',  isAr ? 'الاسم' : 'Name', u.name) +
     field('eu-phone', isAr ? 'الهاتف' : 'Phone', u.phone, 'tel') +
-    field('eu-city',  isAr ? 'المدينة' : 'City', u.city) +
+    '<div class="edit-field"><label>' + (isAr ? 'المحافظة' : 'Governorate') + '</label><select id="eu-city">' + govOptions(u.city, false) + '</select></div>' +
     field('eu-dob',   isAr ? 'الميلاد' : 'DOB', u.dob, 'date') +
     '<div class="adm-mactions">' +
       '<button class="adm-btn primary" onclick="admSaveUser(\'' + u.id + '\')">' + (isAr ? 'حفظ' : 'Save') + '</button>' +
@@ -9091,7 +9132,7 @@ function admViewPartner(id) {
       row(isAr ? 'البريد' : 'Email', p.email) +
       row(isAr ? 'الهاتف' : 'Phone', fmtPhone(p.phone)) +
       row(isAr ? 'نوع الجهة' : 'Type', typeMap[p.type] || p.type) +
-      row(isAr ? 'التاريخ' : 'Date', p.date ? new Date(p.date).toLocaleDateString() : '') +
+      row(isAr ? 'التاريخ' : 'Date', fmtDate(p.date)) +
       (p.msg ? '<div style="margin-top:var(--sp-4);padding:var(--sp-4);background:var(--sand);border-radius:var(--r-md);font-size:var(--fs-base);color:var(--charcoal-80);line-height:1.6;">' + p.msg + '</div>' : '') +
       (actions ? '<div class="adm-mactions">' + actions + '</div>' : '')
     );
@@ -9342,7 +9383,7 @@ function admRenderPartners() {
             '<div class="admin-info">' +
               '<div class="admin-info-name">' + (p.org || '') + ' ' + admStatusChip(p.status) + (p.featured ? ' <span class="adm-rolechip">' + (isAr ? 'مميّز' : 'Featured') + '</span>' : '') + '</div>' +
               '<div class="admin-info-row">' + (p.contact || '') + ' · ' + (p.email || '') + '</div>' +
-              '<div class="admin-info-row">' + (p.date ? new Date(p.date).toLocaleDateString() : '') + '</div>' +
+              '<div class="admin-info-row">' + (fmtDate(p.date)) + '</div>' +
             '</div>' +
           '</div>' + quick +
         '</div>';
@@ -9650,7 +9691,7 @@ function renderDetail(id) {
       '<section class="detail-section"><h3 class="detail-h">' + t('storyTitle') + '</h3><p class="detail-story">' + (txt.desc || '') + '</p></section>' +
       '<section class="detail-section"><h3 class="detail-h">' + t('reqTitle') + '</h3><ul class="detail-reqs">' + reqs.map(r => '<li>' + r + '</li>').join('') + '</ul></section>' +
       '<section class="detail-section"><h3 class="detail-h">' + t('detailsTitle') + '</h3><div class="detail-info-grid">' +
-        '<div class="detail-info-card"><div class="detail-info-label">' + t('dateLabel') + '</div><div class="detail-info-value">' + icon('calendar') + ' ' + (c.date || '') + '</div></div>' +
+        '<div class="detail-info-card"><div class="detail-info-label">' + t('dateLabel') + '</div><div class="detail-info-value">' + icon('calendar') + ' ' + fmtDate(c.date) + '</div></div>' +
         '<div class="detail-info-card"><div class="detail-info-label">' + t('durationLabel') + '</div><div class="detail-info-value">' + icon('clock') + ' ' + (c.volunteerHours || 0) + ' ' + (isAr ? 'ساعات' : 'hrs') + '</div></div>' +
         '<div class="detail-info-card"><div class="detail-info-label">' + t('locationLabel') + '</div><div class="detail-info-value">' + icon('pin') + ' ' + (c.location || '') + '</div></div>' +
         '<div class="detail-info-card"><div class="detail-info-label">' + t('contactLabel') + '</div><div class="detail-info-value" style="color:var(--olive)">' + (c.creatorPhone ? icon('phone') + ' ' + fmtPhone(c.creatorPhone) : '—') + '</div></div>' +
@@ -10079,6 +10120,7 @@ function applyI18n() {
     if (page === 'profile') renderProfile();
     if (page === 'admin')   renderAdmin();
     populateCategories();
+    try { fillGovSelects(); } catch (e) {}
   } catch (e) { console.error('[applyI18n] Error:', e); }
 }
 
@@ -10457,7 +10499,7 @@ async function doLogin(e) {
       if (!identifier.trim()) showFieldError(form, 'email', t('errorRequired'));
       if (!password.trim())   showFieldError(form, 'password', t('errorRequired'));
     } else if (res.error === 'banned') {
-      const until = (res.user && res.user.banned) ? new Date(res.user.banned.until).toLocaleDateString() : '';
+      const until = (res.user && res.user.banned) ? fmtDate(res.user.banned.until) : '';
       toast(t('bannedMsg') + ' ' + until, 'error');
     } else if (res.error === 'rejected') {
       toast(t('rejectedBanner'), 'error');
@@ -10600,9 +10642,7 @@ function cmMediaGrid(media) {
 function cmActionBar(p) {
   const uid = State.cu ? State.cu.id : null;
   const likeN = CommunityService.reactionCount(p, 'like');
-  const supN  = CommunityService.reactionCount(p, 'support');
   const likeOn = uid && CommunityService.hasReacted(p, 'like', uid);
-  const supOn  = uid && CommunityService.hasReacted(p, 'support', uid);
   const commentN = (p.comments || []).length;
   const saved = isPostSaved(p.id);
   const btn = (cls, icon, label, count, on, onclick) =>
@@ -10611,7 +10651,6 @@ function cmActionBar(p) {
   return '<div class="cm-actions-bar">' +
     '<div class="cm-actions-left">' +
       btn('like', 'like', REACTION_META.like[State.lang] || 'Like', likeN, likeOn, "handleReact('" + p.id + "','like')") +
-      btn('support', 'support', REACTION_META.support[State.lang] || 'Support', supN, supOn, "handleReact('" + p.id + "','support')") +
       btn('comment', 'comment', t('cmComment'), commentN, false, "cmToggleComments('" + p.id + "')") +
       btn('share', 'share', t('cmReport'), 0, false, "handleSharePost('" + p.id + "')") +
     '</div>' +
@@ -11671,7 +11710,7 @@ function openEditProfile() {
       '<input id="ed-phone" type="tel" inputmode="numeric" placeholder="9XXXXXXXX" value="' + esc(phoneLocal(u.phone)) + '"></div>' +
       '<div class="edit-err" id="err-phone"></div></div>' +
     '<div class="edit-field"><label>' + t('city') + '</label>' +
-      '<input id="ed-city" type="text" value="' + esc(u.city) + '"><div class="edit-err" id="err-city"></div></div>' +
+      '<select id="ed-city" class="edit-select">' + govOptions(u.city, false) + '</select><div class="edit-err" id="err-city"></div></div>' +
     '<div class="edit-field"><label>' + t('dob') + '</label>' +
       '<input id="ed-dob" type="date" value="' + esc(u.dob) + '"></div>' +
     '<div class="edit-field"><label>' + t('bioField') + '</label>' +
