@@ -4141,7 +4141,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v59</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v60</span>
     </div>
   </section>
 
@@ -5282,6 +5282,7 @@ function profileToUser(p, fallbackEmail) {
     bio: p.bio || '',
     profilePic: p.profile_pic || null,
     dob: p.dob || '',
+    banned: p.ban_until ? { until: p.ban_until, reason: '' } : (p.status === 'banned' ? { until: null, reason: '' } : null),
     role: p.role || CONFIG.DEFAULT_ROLE,
     status: p.status || 'pending',
     volunteerHours: Number(p.volunteer_hours) || 0,
@@ -7257,7 +7258,7 @@ const DiscoveryService = {
     if (sort === 'popular') a.sort((x, y) => (y.volunteers || 0) - (x.volunteers || 0));
     else if (sort === 'urgent') a.sort((x, y) => String(x.date || '9999').localeCompare(String(y.date || '9999')));
     else if (sort === 'farthest') a.sort((x, y) => String(y.date || '0').localeCompare(String(x.date || '0')));
-    else a.sort((x, y) => String(y.createdAt || '').localeCompare(String(x.createdAt || '')));
+    else a.sort((x, y) => String(x.date || '9999-12-31').localeCompare(String(y.date || '9999-12-31')));
     // Emergency campaigns get priority visibility (stable: keep relative order otherwise)
     const emg = c => (Models.displayStatus(c) === 'emergency') ? 0 : 1;
     a.sort((x, y) => emg(x) - emg(y));
@@ -8185,7 +8186,7 @@ function openTopVolunteers() {
 
 /* ── Explore experience (Phase 4.1) ── */
 const ExploreUI = {
-  filters: { search: '', category: 'all', city: 'all', sort: 'recent' },
+  filters: { search: '', category: 'all', city: 'all', sort: 'urgent' },
   render() { this.renderChips(); this.renderCityOptions(); this.renderResults(); },
   enter() {
     this.renderChips(); this.renderCityOptions();
@@ -8946,7 +8947,7 @@ function admViewUser(id) {
     if (!u) return;
     const isAr = State.lang === 'ar';
     const isBoot = u.email === CONFIG.ADMIN_EMAIL;
-    const banned = UserService.isBanned(u);
+    const banned = UserService.isBanned(u) || u.status === 'banned';
     const ava = u.profilePic
       ? '<img src="' + u.profilePic + '" alt="">'
       : '<span class="ig-avatar-initial">' + ((u.name || '?').trim().charAt(0) || '?') + '</span>';
@@ -8991,7 +8992,7 @@ function admViewUser(id) {
     // Suspend / ban
     if (!isBoot) {
       if (banned) {
-        html += '<div class="adm-ban-note">' + (isAr ? 'محظور حتى ' : 'Banned until ') + fmtDate(u.banned.until) + '</div>' +
+        html += '<div class="adm-ban-note">' + (isAr ? 'محظور' : 'Banned') + ((u.banned && u.banned.until) ? (' \u00b7 ' + (isAr ? 'حتى ' : 'until ') + fmtDate(u.banned.until)) : '') + '</div>' +
           '<div class="adm-mactions"><button class="adm-btn ghost" onclick="handleUnbanUser(\'' + u.id + '\')">' + (isAr ? 'رفع الحظر' : 'Unban') + '</button></div>';
       } else {
         html += '<div class="adm-msection"><div class="adm-msection-h">' + (isAr ? 'تعليق الحساب — اختر المدة' : 'Suspend account — choose duration') + '</div><div class="adm-roles">' +
@@ -9317,7 +9318,7 @@ function admRenderUsers() {
         const ava = u.profilePic
           ? '<img src="' + u.profilePic + '" alt="">'
           : '<span class="ig-avatar-initial">' + ((u.name || '?').trim().charAt(0) || '?') + '</span>';
-        const banned = UserService.isBanned(u);
+        const banned = UserService.isBanned(u) || u.status === 'banned';
         return '<div class="admin-card" onclick="admViewUser(\'' + u.id + '\')" style="cursor:pointer;">' +
           '<div class="admin-card-head">' +
             '<div class="admin-ava">' + ava + '</div>' +
@@ -10517,7 +10518,7 @@ function handleMarkAllRead() {
 function renderNotifications() {
   const box = document.getElementById('notifList'); if (!box) return;
   const isAr = State.lang === 'ar';
-  const list = State.cu ? NotificationService.getFor(State.cu.id).slice().reverse() : [];
+  const list = State.cu ? NotificationService.getFor(State.cu.id).slice().sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)) : [];
   const active = Presence.activeCount(5);
   const head = '<div class="notif-head">' +
     '<span class="notif-presence"><span class="notif-live-dot"></span>' + (isAr ? (active + ' نشِط الآن') : (active + ' active now')) + '</span>' +
