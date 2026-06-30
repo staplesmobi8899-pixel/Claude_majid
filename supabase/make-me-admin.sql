@@ -7,7 +7,6 @@
 --  just promote your own real account.
 --
 --  HOW TO RUN: Supabase Dashboard → SQL Editor → paste → Run.
---  Replace YOUR_EMAIL_HERE with the email you log into ATHAR with.
 -- ============================================================
 
 -- (Run this once, if you haven't already, so admins are recognized by RLS.)
@@ -24,9 +23,9 @@ $$;
 -- Promote your personal account to admin.
 update public.profiles
 set role = 'admin', status = 'approved'
-where email = 'YOUR_EMAIL_HERE';
+where email = 'majedikhwan24@gmail.com';
 
 -- Verify — should return one row with role = admin.
 select email, name, role, status
 from public.profiles
-where email = 'YOUR_EMAIL_HERE';
+where email = 'majedikhwan24@gmail.com';
