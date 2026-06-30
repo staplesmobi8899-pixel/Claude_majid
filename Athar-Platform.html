@@ -4141,7 +4141,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v57</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v58</span>
     </div>
   </section>
 
@@ -6610,6 +6610,7 @@ const RealtimeService = {
   adapter: 'local',
   _subs: [],
   _inited: false,
+  _channel: null,
   init() {
     if (this._inited) return; this._inited = true;
     try {
@@ -6619,7 +6620,27 @@ const RealtimeService = {
         this.emit({ type: 'storage', key: e.key });
       });
     } catch (err) {}
-    // Future: if (this.adapter === 'supabase') supabase.channel(...).on(...).subscribe();
+    // Supabase Realtime — live DB changes pushed to every open client (100% live sync)
+    try {
+      if (typeof sb !== 'undefined' && sb && typeof sb.channel === 'function') {
+        this.adapter = 'supabase';
+        const tables = ['profiles', 'campaigns', 'campaign_participants', 'posts',
+          'post_reactions', 'post_comments', 'communities', 'community_members',
+          'notifications', 'partners'];
+        const ch = sb.channel('athar-live-' + Math.random().toString(36).slice(2, 8));
+        tables.forEach((tbl) => {
+          ch.on('postgres_changes', { event: '*', schema: 'public', table: tbl },
+            (payload) => { this.emit({ type: 'db', table: tbl, payload: payload }); });
+        });
+        ch.subscribe((status) => {
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+            // realtime dropped — the periodic + on-focus pull keep data fresh
+            console.warn('[Realtime] channel status:', status);
+          }
+        });
+        this._channel = ch;
+      }
+    } catch (err) { console.error('[Realtime] subscribe failed:', err); }
   },
   subscribe(fn) { this._subs.push(fn); return () => { this._subs = this._subs.filter(s => s !== fn); }; },
   emit(evt) { this._subs.forEach(s => { try { s(evt); } catch (e) {} }); }
@@ -6669,17 +6690,44 @@ const Presence = {
 
 /** Orchestrates the live experience: cross-tab refresh + in-session polling, without thrash. */
 const LiveService = {
-  POLL_MS: 12000,
+  POLL_MS: 12000,      // local heartbeat (presence + bell)
+  PULL_MS: 20000,      // safety re-pull from server (fallback if realtime drops)
   _timer: null,
+  _pullTimer: null,
+  _pullPending: null,
+  _started: false,
   _sig: '',
   start() {
+    Presence.beat();
+    if (this._started) return;       // set up timers + realtime exactly once
+    this._started = true;
     RealtimeService.init();
     RealtimeService.subscribe((evt) => this.onChange(evt));
-    if (this._timer) clearInterval(this._timer);
     this._timer = setInterval(() => this.tick(), this.POLL_MS);
-    Presence.beat();
+    this._pullTimer = setInterval(() => this.pullNow('poll'), this.PULL_MS);
+    try {
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) this.pullNow('focus'); });
+      window.addEventListener('focus', () => this.pullNow('focus'));
+      window.addEventListener('online', () => this.pullNow('online'));
+    } catch (e) {}
   },
-  onChange() { try { updateBell(); this.refreshActive(); } catch (e) {} },
+  /** Debounced live pull from Supabase, then refresh the active page. */
+  pullNow(reason) {
+    if (typeof sb === 'undefined' || !sb) return;
+    if (!State.cu || State.isGuest) return;
+    if (this._pullPending) clearTimeout(this._pullPending);
+    const delay = (reason === 'db') ? 400 : 0;   // coalesce bursts of realtime events
+    this._pullPending = setTimeout(() => {
+      this._pullPending = null;
+      Promise.resolve(Sync.pullAll()).then(() => {
+        try { updateBell(); this.refreshActive(true); } catch (e) {}
+      }).catch(() => {});
+    }, delay);
+  },
+  onChange(evt) {
+    if (evt && evt.type === 'db') { this.pullNow('db'); return; }
+    try { updateBell(); this.refreshActive(); } catch (e) {}
+  },
   tick() { try { Presence.beat(); updateBell(); this.refreshActive(); } catch (e) {} },
   /** Signature of feed-affecting data to avoid needless re-renders. */
   _feedSig() {
@@ -6688,17 +6736,27 @@ const LiveService = {
     posts.forEach(p => { c += (p.comments || []).length; if (p.reactions) REACTIONS.forEach(k => r += (p.reactions[k] || []).length); });
     return posts.length + ':' + r + ':' + c;
   },
-  refreshActive() {
+  /** Re-render the active page. force=true (after a server pull) refreshes list pages too. */
+  refreshActive(force) {
+    // Never disrupt an open modal/sheet or active typing
+    if (document.body && document.body.classList.contains('modal-open')) return;
+    const ae = document.activeElement;
+    if (ae && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) return;
     const page = State.currentPage;
-    // Don't disrupt while typing a comment
-    const typing = document.activeElement && /INPUT|TEXTAREA/.test(document.activeElement.tagName);
     if (page === 'community') {
       const sig = this._feedSig();
-      if (sig !== this._sig && !typing) { this._sig = sig; if (typeof cmRenderFeed === 'function') { cmRenderFeed(); cmRenderHighlights(); } }
+      if (force || sig !== this._sig) { this._sig = sig; if (typeof cmRenderFeed === 'function') { cmRenderFeed(); cmRenderHighlights(); } }
     } else if (page === 'notifications') {
-      if (!typing) renderNotifications();
+      if (typeof renderNotifications === 'function') renderNotifications();
     } else if (page === 'detail' && State.detailCampId) {
       if (typeof renderDetail === 'function') renderDetail(State.detailCampId);
+    } else if (force) {
+      try {
+        if (page === 'home' && typeof renderCampaigns === 'function') renderCampaigns();
+        else if (page === 'explore' && typeof ExploreUI !== 'undefined') ExploreUI.renderResults();
+        else if (page === 'profile' && typeof renderProfile === 'function') renderProfile();
+        else if (page === 'admin' && typeof renderAdmin === 'function') renderAdmin();
+      } catch (e) {}
     }
   }
 };
