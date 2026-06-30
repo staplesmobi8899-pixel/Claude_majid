@@ -4141,7 +4141,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v56</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v57</span>
     </div>
   </section>
 
@@ -5062,8 +5062,12 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
           <select name="category" id="createCatSelect" required><option value="" data-i18n-opt="chooseCat"></option></select></div>
         <div class="field"><label data-i18n="dateLabel"></label><input name="date" type="date" id="campDate" required></div>
       </div>
-      <div class="field"><label data-i18n="locationLabel"></label>
-        <input name="location" type="text" placeholder="مثال: ساحة الأمويين - دمشق" required></div>
+      <div class="field-row">
+        <div class="field"><label data-i18n="govLabel"></label>
+          <select name="location" data-gov required></select></div>
+        <div class="field"><label data-i18n="addressLabel"></label>
+          <input name="address" type="text" placeholder="مثال: ساحة الأمويين" required></div>
+      </div>
       <div class="field-row">
         <div class="field"><label data-i18n="neededLabel"></label><input name="needed" type="number" min="1" placeholder="20" required></div>
         <div class="field"><label data-i18n="hoursLabel"></label><input name="hours" type="number" min="0.5" step="0.5" placeholder="4" required></div>
@@ -5441,15 +5445,16 @@ function campChangesToDb(ch) {
 /* uuid check — only push real DB rows (skip 'admin'/'guest'/legacy ids) */
 function isUuid(id) { return typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id); }
 function newId() { return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('c' + Date.now() + Math.random().toString(36).slice(2, 8)); }
-/* Plain numeric date (D/M/YYYY) — no month name; localized digits per language. */
+/* Date as: day + month-name + year. Levantine month names in Arabic, short month in English. */
+const MONTHS_AR = ['كانون الثاني','شباط','آذار','نيسان','أيار','حزيران','تموز','آب','أيلول','تشرين الأول','تشرين الثاني','كانون الأول'];
+const MONTHS_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function fmtDate(iso) {
   if (!iso) return '';
   const s = String(iso);
   const d = new Date(s.length <= 10 ? s + 'T00:00:00' : s);
   if (isNaN(d.getTime())) return s;
-  let out = d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear();
-  if (State.lang === 'ar') out = out.replace(/[0-9]/g, c => '\u0660\u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669'[+c]);
-  return out;
+  const mn = (State.lang === 'ar' ? MONTHS_AR : MONTHS_EN)[d.getMonth()];
+  return d.getDate() + ' ' + mn + ' ' + d.getFullYear();
 }
 /* Syrian governorate <option> list (value = canonical Arabic name). */
 function govOptions(selected, withAll) {
@@ -5911,7 +5916,7 @@ const T = {
     countrySy: 'سوريا', countryLb: 'لبنان', countryJo: 'الأردن', countryPs: 'فلسطين',
     newInitiative: 'مبادرة جديدة',
     campTitleLabel: 'عنوان المبادرة', categoryLabel: 'الفئة', dateLabel: 'التاريخ',
-    locationLabel: 'الموقع', volNeeded: 'عدد المتطوعين المطلوب', hoursPerVol: 'عدد الساعات لكل متطوع', description: 'الوصف',
+    locationLabel: 'الموقع', govLabel: 'المحافظة', addressLabel: 'العنوان التفصيلي', volNeeded: 'عدد المتطوعين المطلوب', hoursPerVol: 'عدد الساعات لكل متطوع', description: 'الوصف',
     campImg: 'صورة المبادرة (اختياري)', publishBtn: 'أرسل المبادرة',
     catClean: 'تنظيف', catPlant: 'تشجير', catImprove: 'تحسين', catSupport: 'دعم', catEdu: 'تعليم',
     volLabel: 'المتطوعون', organizerLabel: 'المنظم', progress: 'التقدم', contactLabel: 'للتواصل',
@@ -6102,7 +6107,7 @@ const T = {
     countrySy: 'Syria', countryLb: 'Lebanon', countryJo: 'Jordan', countryPs: 'Palestine',
     newInitiative: 'New Initiative',
     campTitleLabel: 'Initiative Title', categoryLabel: 'Category', dateLabel: 'Date',
-    locationLabel: 'Location', volNeeded: 'Volunteers Needed', hoursPerVol: 'Volunteer Hours per Person', description: 'Description',
+    locationLabel: 'Location', govLabel: 'Governorate', addressLabel: 'Address', volNeeded: 'Volunteers Needed', hoursPerVol: 'Volunteer Hours per Person', description: 'Description',
     campImg: 'Campaign Image (Optional)', publishBtn: 'Submit Initiative',
     catClean: 'Cleaning', catPlant: 'Planting', catImprove: 'Improvement', catSupport: 'Support', catEdu: 'Education',
     volLabel: 'Volunteers', organizerLabel: 'Organizer', progress: 'Progress', contactLabel: 'Contact',
@@ -6328,7 +6333,7 @@ const Models = {
       ar:           { title, desc, cat: catAr },
       en:           { title, desc, cat: catEn },
       category:     catKey,
-      location:     String(data.location || '').trim(),
+      location:     (function(){ const g = String(data.location || '').trim(); const a = String(data.address || '').trim(); return a ? (g + '\n' + a) : g; })(),
       date:         String(data.date     || '').trim(),
       needed:       Math.max(1, parseInt(data.needed) || 1),
       volunteers:   0,
@@ -6420,6 +6425,9 @@ const Models = {
     const tx = this.getCampText(c); return tx.cat || '';
   },
   isCommunity(c) { return !!(c && (c.community || (c.createdBy && c.createdBy !== 'admin'))); },
+  govOf(c)  { return String((c && c.location) || '').split('\n')[0].trim(); },
+  addrOf(c) { return String((c && c.location) || '').split('\n').slice(1).join('\n').trim(); },
+  locText(c) { const g = this.govOf(c), a = this.addrOf(c); return a ? (g + ' \u00b7 ' + a) : g; },
   campImage(c) {
     if (c && c.img) return c.img;
     const kw = { planting:'tree,planting,nature', cleaning:'cleanup,trash,environment',
@@ -7198,7 +7206,7 @@ const DiscoveryService = {
       list = list.filter(c => sv.indexOf(c.id) !== -1);
     }
     if (category && category !== 'all') list = list.filter(c => Models.catKey(c.category) === category);
-    if (city && city !== 'all') list = list.filter(c => c.location === city);
+    if (city && city !== 'all') list = list.filter(c => Models.govOf(c) === city);
     const q = String(search || '').trim().toLowerCase();
     if (q) list = list.filter(c => {
       const tx = Models.getCampText(c);
@@ -7216,7 +7224,7 @@ const DiscoveryService = {
   trending(n = 6) { return this._sort(this._base(), 'popular').slice(0, n); },
   nearby(city, n = 6) {
     const base = this._base();
-    return (city ? base.filter(c => c.location === city) : base).slice(0, n);
+    return (city ? base.filter(c => Models.govOf(c) === city) : base).slice(0, n);
   },
   nearest() {
     const today = new Date().toISOString().slice(0, 10);
@@ -7900,7 +7908,7 @@ function campCardHTML(c) {
     const catMeta  = Models.catMeta(c);
     const cat      = Models.catLabel(c) || 'مبادرة';
     const catIcon  = (catMeta && catMeta.icon) ? icon(catMeta.icon) + ' ' : '';
-    const location = c.location  || '';
+    const location = Models.locText(c);
     const date     = fmtDate(c.date);
     const phone    = fmtPhone(c.creatorPhone);
     const vol      = c.volunteers   || 0;
@@ -9679,7 +9687,7 @@ function renderDetail(id) {
         (Models.isCommunity(c) ? '<span class="detail-cat-pill community">' + icon('sprout') + ' ' + t('communityReq') + '</span>' : '') + '</div>' +
       ((isFull && c.status === 'under_process') ? '<div class="detail-limit-note">' + icon('check') + ' ' + t('limitReached') + '</div>' : '') +
       '<h1 class="detail-title">' + (txt.title || '') + '</h1>' +
-      '<div class="detail-org">' + icon('person') + ' ' + (c.creatorName || '') + ' · ' + icon('pin') + ' ' + (c.location || '') + '</div>' +
+      '<div class="detail-org">' + icon('person') + ' ' + (c.creatorName || '') + ' · ' + icon('pin') + ' ' + Models.locText(c) + '</div>' +
       '<div class="detail-actions">' + actionBtn +
         '<button class="detail-icon-btn" onclick="handleShare(\'' + id + '\')" aria-label="share">' + icon('share') + '</button></div>' +
       '<div class="detail-stats">' +
@@ -9693,7 +9701,7 @@ function renderDetail(id) {
       '<section class="detail-section"><h3 class="detail-h">' + t('detailsTitle') + '</h3><div class="detail-info-grid">' +
         '<div class="detail-info-card"><div class="detail-info-label">' + t('dateLabel') + '</div><div class="detail-info-value">' + icon('calendar') + ' ' + fmtDate(c.date) + '</div></div>' +
         '<div class="detail-info-card"><div class="detail-info-label">' + t('durationLabel') + '</div><div class="detail-info-value">' + icon('clock') + ' ' + (c.volunteerHours || 0) + ' ' + (isAr ? 'ساعات' : 'hrs') + '</div></div>' +
-        '<div class="detail-info-card"><div class="detail-info-label">' + t('locationLabel') + '</div><div class="detail-info-value">' + icon('pin') + ' ' + (c.location || '') + '</div></div>' +
+        '<div class="detail-info-card"><div class="detail-info-label">' + t('locationLabel') + '</div><div class="detail-info-value">' + icon('pin') + ' ' + Models.locText(c) + '</div></div>' +
         '<div class="detail-info-card"><div class="detail-info-label">' + t('contactLabel') + '</div><div class="detail-info-value" style="color:var(--olive)">' + (c.creatorPhone ? icon('phone') + ' ' + fmtPhone(c.creatorPhone) : '—') + '</div></div>' +
       '</div></section>' +
       '<section class="detail-section"><h3 class="detail-h">' + t('participantsTitle') + ' (' + parts.length + ')</h3><div class="detail-parts">' + partHtml + '</div></section>' +
@@ -11490,6 +11498,7 @@ async function doCreate(e) {
     title:    form.querySelector('[name="title"]')?.value    || '',
     category: form.querySelector('[name="category"]')?.value || '',
     location: form.querySelector('[name="location"]')?.value || '',
+    address:  form.querySelector('[name="address"]')?.value  || '',
     date:     form.querySelector('[name="date"]')?.value     || '',
     needed:   form.querySelector('[name="needed"]')?.value   || '',
     hours:    form.querySelector('[name="hours"]')?.value    || '2',
