@@ -4141,7 +4141,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v58</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v59</span>
     </div>
   </section>
 
@@ -5281,6 +5281,7 @@ function profileToUser(p, fallbackEmail) {
     country: p.country || '',
     bio: p.bio || '',
     profilePic: p.profile_pic || null,
+    dob: p.dob || '',
     role: p.role || CONFIG.DEFAULT_ROLE,
     status: p.status || 'pending',
     volunteerHours: Number(p.volunteer_hours) || 0,
@@ -5388,6 +5389,7 @@ function userChangesToDb(ch) {
   if ('volunteerHours' in ch) m.volunteer_hours = ch.volunteerHours;
   if ('profilePic' in ch) m.profile_pic = ch.profilePic;
   if ('profilePublic' in ch) m.profile_public = ch.profilePublic;
+  if ('dob' in ch) m.dob = ch.dob || null;
   if ('savedCampaigns' in ch) m.saved_campaigns = ch.savedCampaigns;
   if ('savedPosts' in ch) m.saved_posts = ch.savedPosts;
   if ('banned' in ch) {
@@ -6521,7 +6523,11 @@ const UserService = {
     NotificationService.add(id, 'تم تفعيل حسابك! أهلاً بك في أثر.', 'Your account is now active! Welcome to ATHAR.', 'approval');
     return r;
   },
-  reject(id)  { return this.updateById(id, { status: 'rejected' }); },
+  reject(id)  {
+    const r = this.updateById(id, { status: 'rejected' });
+    NotificationService.add(id, 'عذراً، لم تتم الموافقة على طلب حسابك.', 'Sorry, your account request was not approved.', 'account');
+    return r;
+  },
   ban(id, days, reason) {
     const until = new Date(Date.now() + (Number(days) || 7) * 86400000).toISOString();
     return this.updateById(id, { banned: { until, reason: reason || '', bannedAt: new Date().toISOString() } });
@@ -6948,7 +6954,7 @@ const AuthService = {
       if (uid) {
         await sb.from('profiles').update({
           name: data.name, phone: data.phone || '', city: data.city || '',
-          country: data.country || '', status: 'pending'
+          country: data.country || '', dob: data.dob || null, status: 'pending'
         }).eq('id', uid);
       }
       // Notify all admins of the new account awaiting approval
@@ -9042,6 +9048,7 @@ function admAssignRole(id, role) {
   if (!Permissions.assignable().includes(role)) return;
   UserService.updateById(id, { role: role });
   const label = State.lang === 'ar' ? CONFIG.ROLES[role].ar : CONFIG.ROLES[role].en;
+  NotificationService.add(id, 'تم تحديث دورك إلى: ' + CONFIG.ROLES[role].ar, 'Your role was updated to: ' + CONFIG.ROLES[role].en, 'account');
   toast((State.lang === 'ar' ? 'تم تعيين الدور: ' : 'Role assigned: ') + label, 'success');
   renderAdmin();
   admViewUser(id);
@@ -11630,6 +11637,7 @@ function handleBanUser(id, days) {
 function handleUnbanUser(id) {
   if (!State.isAdmin) return;
   UserService.unban(id);
+  NotificationService.add(id, 'تم رفع الحظر عن حسابك. أهلاً بعودتك!', 'Your account suspension has been lifted. Welcome back!', 'account');
   toast(t('userUnbanned'), 'success');
   admViewUser(id);
   if (typeof renderAdmin === 'function') renderAdmin();
