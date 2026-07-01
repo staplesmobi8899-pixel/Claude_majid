@@ -4141,7 +4141,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v67</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v68</span>
     </div>
   </section>
 
@@ -5299,6 +5299,8 @@ function profileToUser(p, fallbackEmail) {
     dob: p.dob || '',
     banned: p.ban_until ? { until: p.ban_until, reason: '' } : (p.status === 'banned' ? { until: null, reason: '' } : null),
     rejectionReason: p.rejection_reason || '',
+    special: p.special_needs || '',
+    idPhoto: p.id_photo || null,
     role: p.role || CONFIG.DEFAULT_ROLE,
     status: p.status || 'pending',
     volunteerHours: Number(p.volunteer_hours) || 0,
@@ -5350,7 +5352,12 @@ async function loadProfile(uid, email) {
   if (!sb || !uid) return null;
   const { data, error } = await sb.from('profiles').select('*').eq('id', uid).single();
   if (error) { console.error('[loadProfile]', error.message); return null; }
-  return profileToUser(data, email);
+  const u = profileToUser(data, email);
+  try {
+    const idr = await sb.from('id_documents').select('id_photo').eq('user_id', uid).single();
+    if (idr.data && idr.data.id_photo) u.idPhoto = idr.data.id_photo;
+  } catch (e) {}
+  return u;
 }
 
 /* Resolve the account email for a phone-number login.
@@ -5968,7 +5975,7 @@ const T = {
     complete: 'مكتمل', of: 'من',
     successSent: ' تم الإرسال بنجاح!', successJoined: ' انضممت!',
     successAccount: ' تم إنشاء حسابك!',
-    errorEmail: 'البريد الإلكتروني مستخدم مسبقاً',
+    errorEmail: 'لديك حساب بالفعل بهذا البريد الإلكتروني', errorPhoneExists: 'لديك حساب بالفعل بهذا الرقم',
     errorPhone: 'رقم الهاتف مستخدم مسبقاً',
     errorLogin: 'بيانات الدخول غير صحيحة',
     errorStatus: 'حسابك لا يزال قيد التدقيق',
@@ -6159,7 +6166,7 @@ const T = {
     complete: 'complete', of: 'of',
     successSent: ' Sent successfully!', successJoined: ' Joined!',
     successAccount: ' Account created!',
-    errorEmail: 'Email already in use',
+    errorEmail: 'You already have an account with this email', errorPhoneExists: 'You already have an account with this phone',
     errorPhone: 'Phone number already in use',
     errorLogin: 'Invalid credentials',
     errorStatus: 'Your account is still under review',
@@ -6979,6 +6986,13 @@ const AuthService = {
     const { valid, errors } = Validators.signup(data);
     if (!valid) return { ok: false, errors };
     if (sb) {
+      // Block duplicate phone (email dup is caught by auth.signUp below)
+      if (data.phone) {
+        try {
+          const ex = await sb.from('profiles').select('id').eq('phone', data.phone).limit(1);
+          if (ex.data && ex.data.length) return { ok: false, errors: { phone: t('errorPhoneExists') } };
+        } catch (e) {}
+      }
       // Real Supabase signup (email + password)
       const { data: au, error } = await sb.auth.signUp({
         email: data.email,
@@ -6990,20 +7004,29 @@ const AuthService = {
         return { ok: false, errors: { email: msg } };
       }
       const uid = au.user && au.user.id;
-      // Trigger created the base profile row; fill in the extra fields.
+      // Upload the profile photo to storage; keep all details on the server.
+      let pic = data.profilePic || null;
+      try { if (pic) pic = await uploadImage(pic, 'avatars'); } catch (e) {}
       if (uid) {
         await sb.from('profiles').update({
           name: data.name, phone: data.phone || '', city: data.city || '',
-          country: data.country || '', dob: data.dob || null, status: 'pending'
+          country: data.country || '', dob: data.dob || null,
+          profile_pic: pic, special_needs: data.special || '', status: 'pending'
         }).eq('id', uid);
+        // ID photo → private table (only the user + admins can read it)
+        if (data.idPhoto) {
+          try { await sb.from('id_documents').upsert({ user_id: uid, id_photo: data.idPhoto }); } catch (e) {}
+        }
       }
-      // Notify all admins of the new account awaiting approval
+      // Notify all admins/owners of the new account awaiting approval
       try {
-        const ad = await sb.from('profiles').select('id').eq('role', 'admin');
+        const ad = await sb.from('profiles').select('id').in('role', ['admin', 'super_admin']);
         (ad.data || []).forEach(a => NotificationService.add(a.id, 'طلب حساب جديد بانتظار موافقتك: ' + (data.name || ''), 'New account awaiting your approval: ' + (data.name || ''), 'account'));
       } catch (e) {}
       const user = profileToUser({ id: uid, email: data.email, name: data.name,
-        phone: data.phone, city: data.city, country: data.country, status: 'pending' }, data.email);
+        phone: data.phone, city: data.city, country: data.country, dob: data.dob,
+        profile_pic: pic, special_needs: data.special, status: 'pending' }, data.email);
+      user.idPhoto = data.idPhoto || null;
       mirrorUser(user);
       return { ok: true, user };
     }
@@ -9024,7 +9047,7 @@ function admViewUser(id) {
       row(isAr ? 'ساعات التطوّع' : 'Volunteer hrs', String(u.volunteerHours || 0)) +
       row(isAr ? 'حملات منضمّ لها' : 'Joined camps', String((u.joinedCamps || []).length)) +
       row(isAr ? 'تاريخ التسجيل' : 'Registered', fmtDate(u.createdAt)) +
-      (u.idPhoto ? '<div style="margin-top:var(--sp-3);"><img src="' + u.idPhoto + '" style="width:100%;border-radius:var(--r-md);cursor:pointer;" onclick="openImageViewer(\'' + u.idPhoto + '\')"></div>' : '');
+      '<div id="admIdPhoto-' + u.id + '" style="margin-top:var(--sp-3);"></div>';
 
     // Primary actions
     let actions = '';
@@ -9065,9 +9088,26 @@ function admViewUser(id) {
     }
 
     admOpenModal(html);
+    try { admLoadIdPhoto(u.id); } catch (e) {}
   } catch (e) {
     console.error('[admViewUser] Error:', e);
   }
+}
+
+/* Load a user's ID photo (private table) into the admin detail view. */
+async function admLoadIdPhoto(uid) {
+  const isAr = State.lang === 'ar';
+  let src = null;
+  const cached = UserService.getById(uid);
+  if (cached && cached.idPhoto) src = cached.idPhoto;
+  if (!src && sb) {
+    try { const r = await sb.from('id_documents').select('id_photo').eq('user_id', uid).single(); if (r.data) src = r.data.id_photo; } catch (e) {}
+  }
+  const box = document.getElementById('admIdPhoto-' + uid);
+  if (!box) return;
+  box.innerHTML = src
+    ? '<div class="adm-msection-h">' + (isAr ? 'صورة الهوية' : 'ID photo') + '</div><img src="' + src + '" style="width:100%;border-radius:var(--r-md);cursor:pointer;" onclick="openImageViewer(\'' + src + '\')">'
+    : '<div style="color:var(--charcoal-50);font-size:var(--fs-sm);">' + (isAr ? 'لا توجد صورة هوية مرفوعة' : 'No ID photo uploaded') + '</div>';
 }
 
 /* Edit user data (admin) */
@@ -10341,8 +10381,8 @@ async function doSignup(e) {
   try {
     const ppFile = form.querySelector('[name="profilePic"]');
     const idFile = form.querySelector('[name="idPhoto"]');
-    data.profilePic = ppFile?.files[0] ? await b64(ppFile.files[0]) : null;
-    data.idPhoto    = idFile?.files[0] ? await b64(idFile.files[0]) : null;
+    data.profilePic = ppFile?.files[0] ? await compressImage(ppFile.files[0], 800, 0.8) : null;
+    data.idPhoto    = idFile?.files[0] ? await compressImage(idFile.files[0], 1200, 0.82) : null;
 
     const res = await AuthService.register(data);
     if (!res.ok) {
