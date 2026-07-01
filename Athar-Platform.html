@@ -4141,7 +4141,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v70</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v71</span>
     </div>
   </section>
 
@@ -9147,7 +9147,7 @@ function admEditUser(id) {
   );
 }
 
-function admSaveUser(id) {
+async function admSaveUser(id) {
   if (!Permissions.can(State.cu, 'manage_users')) return;
   const g = fid => { const el = document.getElementById(fid); return el ? el.value.trim() : ''; };
   const name = g('eu-name'), phone = g('eu-phone'), city = g('eu-city'), dob = g('eu-dob');
@@ -9157,7 +9157,16 @@ function admSaveUser(id) {
   if (!Validators.isName(name)) { setErr('eu-name', t('errorNameLength')); ok = false; }
   if (!Validators.isRequired(phone) || !Validators.isPhone(phone)) { setErr('eu-phone', t('errorRequired')); ok = false; }
   if (!ok) return;
-  UserService.updateById(id, { name, phone: normPhoneSY(phone), city, dob });
+  const patch = { name, phone: normPhoneSY(phone), city, dob };
+  // Local mirror first (instant UI)
+  UserService.updateById(id, patch);
+  // Confirm the server write so a later sync can't revert it — and surface any error.
+  if (sb && isUuid(id)) {
+    try {
+      const r = await sb.from('profiles').update(userChangesToDb(patch)).eq('id', id);
+      if (r.error) { toast((State.lang === 'ar' ? 'فشل الحفظ: ' : 'Save failed: ') + r.error.message, 'error'); return; }
+    } catch (e) { toast(State.lang === 'ar' ? 'فشل الحفظ — تحقّق من الاتصال' : 'Save failed — check connection', 'error'); return; }
+  }
   toast(State.lang === 'ar' ? 'تم حفظ بيانات المستخدم' : 'User saved', 'success');
   renderAdmin();
   admViewUser(id);
