@@ -39,6 +39,8 @@ drop policy if exists "id doc self update" on public.id_documents;
 create policy "id doc self update" on public.id_documents for update using ( auth.uid() = user_id );
 drop policy if exists "id doc read self or admin" on public.id_documents;
 create policy "id doc read self or admin" on public.id_documents for select using ( auth.uid() = user_id or public.is_admin() );
+drop policy if exists "id doc write admin" on public.id_documents;
+create policy "id doc write admin" on public.id_documents for all using ( public.is_admin() ) with check ( public.is_admin() );
 
 -- ---- site_content ----
 create table if not exists public.site_content (

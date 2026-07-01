@@ -4141,7 +4141,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v71</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v72</span>
     </div>
   </section>
 
@@ -9140,6 +9140,8 @@ function admEditUser(id) {
     field('eu-phone', isAr ? 'الهاتف' : 'Phone', u.phone, 'tel') +
     '<div class="edit-field"><label>' + (isAr ? 'المحافظة' : 'Governorate') + '</label><select id="eu-city">' + govOptions(u.city, false) + '</select></div>' +
     field('eu-dob',   isAr ? 'الميلاد' : 'DOB', u.dob, 'date') +
+    '<div class="edit-field"><label>' + (isAr ? 'صورة الهوية (رفع/استبدال)' : 'ID photo (upload/replace)') + '</label>' +
+      '<input id="eu-idphoto" type="file" accept="image/*"></div>' +
     '<div class="adm-mactions">' +
       '<button class="adm-btn primary" onclick="admSaveUser(\'' + u.id + '\')">' + (isAr ? 'حفظ' : 'Save') + '</button>' +
       '<button class="adm-btn ghost" onclick="admViewUser(\'' + u.id + '\')">' + (isAr ? 'إلغاء' : 'Cancel') + '</button>' +
@@ -9166,6 +9168,16 @@ async function admSaveUser(id) {
       const r = await sb.from('profiles').update(userChangesToDb(patch)).eq('id', id);
       if (r.error) { toast((State.lang === 'ar' ? 'فشل الحفظ: ' : 'Save failed: ') + r.error.message, 'error'); return; }
     } catch (e) { toast(State.lang === 'ar' ? 'فشل الحفظ — تحقّق من الاتصال' : 'Save failed — check connection', 'error'); return; }
+  }
+  // Optional ID photo upload/replace (private id_documents table)
+  const idEl = document.getElementById('eu-idphoto');
+  if (idEl && idEl.files && idEl.files[0] && sb && isUuid(id)) {
+    try {
+      const b64img = await compressImage(idEl.files[0], 1200, 0.82);
+      const r2 = await sb.from('id_documents').upsert({ user_id: id, id_photo: b64img });
+      if (r2.error) { toast((State.lang === 'ar' ? 'فشل رفع صورة الهوية: ' : 'ID upload failed: ') + r2.error.message, 'error'); }
+      else { const cached = UserService.getById(id); if (cached) cached.idPhoto = b64img; }
+    } catch (e) { toast(State.lang === 'ar' ? 'فشل رفع صورة الهوية' : 'ID upload failed', 'error'); }
   }
   toast(State.lang === 'ar' ? 'تم حفظ بيانات المستخدم' : 'User saved', 'success');
   renderAdmin();
