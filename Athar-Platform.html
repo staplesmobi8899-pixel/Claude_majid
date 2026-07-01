@@ -4141,7 +4141,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v65</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v66</span>
     </div>
   </section>
 
@@ -4243,6 +4243,21 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <p class="auth-pending-msg" data-i18n="pendingMsg"></p>
       <div class="auth-actions">
         <button class="auth-btn auth-btn-primary" onclick="Auth.go('login')" data-i18n="backToLogin"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- REJECTED -->
+  <section class="auth-view" data-view="rejected" id="authRejected">
+    <div class="auth-welcome">
+      <div class="pending-icon" aria-hidden="true" style="color:var(--red);">
+        <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="8" y1="8" x2="16" y2="16"></line><line x1="16" y1="8" x2="8" y2="16"></line></svg>
+      </div>
+      <h2 class="auth-title" id="rejectedTitle"></h2>
+      <p class="auth-pending-msg" id="rejectedReasonMsg"></p>
+      <div class="auth-actions">
+        <button class="auth-btn auth-btn-primary" id="reviewAgainBtn" data-i18n="reviewAgainBtn"></button>
+        <button class="auth-btn auth-btn-ghost" onclick="Auth.go('login')" data-i18n="backToLogin"></button>
       </div>
     </div>
   </section>
@@ -5283,6 +5298,7 @@ function profileToUser(p, fallbackEmail) {
     profilePic: p.profile_pic || null,
     dob: p.dob || '',
     banned: p.ban_until ? { until: p.ban_until, reason: '' } : (p.status === 'banned' ? { until: null, reason: '' } : null),
+    rejectionReason: p.rejection_reason || '',
     role: p.role || CONFIG.DEFAULT_ROLE,
     status: p.status || 'pending',
     volunteerHours: Number(p.volunteer_hours) || 0,
@@ -5391,6 +5407,7 @@ function userChangesToDb(ch) {
   if ('profilePic' in ch) m.profile_pic = ch.profilePic;
   if ('profilePublic' in ch) m.profile_public = ch.profilePublic;
   if ('dob' in ch) m.dob = ch.dob || null;
+  if ('rejectionReason' in ch) m.rejection_reason = ch.rejectionReason || null;
   if ('savedCampaigns' in ch) m.saved_campaigns = ch.savedCampaigns;
   if ('savedPosts' in ch) m.saved_posts = ch.savedPosts;
   if ('banned' in ch) {
@@ -5701,6 +5718,12 @@ const CONFIG = {
     { ar: 'إدلب', en: 'Idlib' }, { ar: 'القامشلي', en: 'Qamishli' },
     { ar: 'الرقة', en: 'Raqqa' }, { ar: 'الحسكة', en: 'Al-Hasakah' }
   ],
+  REJECT_REASONS: {
+    wrong_info:   { ar: 'معلومات شخصية خاطئة', en: 'Incorrect personal information' },
+    missing_info: { ar: 'معلومات شخصية ناقصة', en: 'Incomplete personal information' },
+    unclear_id:   { ar: 'صورة هوية غير واضحة', en: 'Unclear ID photo' },
+    other:        { ar: 'أسباب أخرى', en: 'Other reasons' }
+  },
 
   CAUSES: {
     environment: { ar: 'البيئة',        en: 'Environment' },
@@ -5924,7 +5947,7 @@ const T = {
     signupTitle: 'انضم لأَثَرْ', signupBtn: 'انضم الآن',
     loginTitle: 'مرحبًا بعودتك', loginBtn2: 'دخول',
     fullName: 'الاسم الثلاثي', password: 'كلمة المرور', country: 'الدولة', city: 'المحافظة',
-    dob: 'تاريخ الميلاد', profilePic: 'صورة شخصية (اختياري)', idPhoto: 'صورة الهوية — وجهين',
+    dob: 'تاريخ الميلاد', profilePic: 'صورة شخصية (اختياري)', idPhoto: 'صورة الهوية الأمامية (إلزامية)',
     specialNeeds: 'احتياجات خاصة (اختياري)',
     countrySy: 'سوريا', countryLb: 'لبنان', countryJo: 'الأردن', countryPs: 'فلسطين',
     newInitiative: 'مبادرة جديدة',
@@ -5937,7 +5960,7 @@ const T = {
     joinBtn: 'انضمام', joinedBtn: ' منضم', unavailBtn: 'غير متاح', leaveCampBtn: 'مغادرة الحملة', campFull: 'العدد مكتمل', campRunning: 'قيد التنفيذ', cancelCampBtn: 'إلغاء الحملة', hideCampBtn: 'إخفاء', unhideCampBtn: 'إظهار', cancelCampConfirm: 'هل تريد إلغاء هذه الحملة؟', campCancelled: 'تم إلغاء الحملة', campHidden: 'تم إخفاء الحملة', campShown: 'تم إظهار الحملة',
     pendingBanner: ' حسابك قيد التدقيق — بانتظار موافقة المسؤول',
     approvedBanner: ' حسابك مفعّل — مرحبًا بك في أَثَرْ',
-    rejectedBanner: ' تم رفض حسابك — تواصل مع المسؤول',
+    rejectedBanner: ' تم رفض حسابك — تواصل مع المسؤول', errorIdRequired: 'صورة الهوية الأمامية إلزامية', reviewAgainBtn: 'مراجعة وإعادة التقديم', rejectedReasonLabel: 'سبب الرفض', resubmitDone: 'تم إرسال طلبك مجددًا — قيد المراجعة',
     noData: 'لا توجد بيانات بعد',
     downloadId: ' تحميل الصورة',
     approveBtn: ' قبول', rejectBtn: 'رفض',
@@ -6115,7 +6138,7 @@ const T = {
     signupTitle: 'Join ATHAR', signupBtn: 'Join Now',
     loginTitle: 'Welcome Back', loginBtn2: 'Sign In',
     fullName: 'Full Name', password: 'Password', country: 'Country', city: 'Governorate',
-    dob: 'Date of Birth', profilePic: 'Profile Photo (Optional)', idPhoto: 'ID Photo — Both Sides',
+    dob: 'Date of Birth', profilePic: 'Profile Photo (Optional)', idPhoto: 'Front ID Photo (required)',
     specialNeeds: 'Special Needs (Optional)',
     countrySy: 'Syria', countryLb: 'Lebanon', countryJo: 'Jordan', countryPs: 'Palestine',
     newInitiative: 'New Initiative',
@@ -6128,7 +6151,7 @@ const T = {
     joinBtn: 'Join', joinedBtn: ' Joined', unavailBtn: 'Unavailable', leaveCampBtn: 'Leave campaign', campFull: 'Full', campRunning: 'In progress', cancelCampBtn: 'Cancel campaign', hideCampBtn: 'Hide', unhideCampBtn: 'Show', cancelCampConfirm: 'Cancel this campaign?', campCancelled: 'Campaign cancelled', campHidden: 'Campaign hidden', campShown: 'Campaign shown',
     pendingBanner: ' Your account is under review — awaiting admin approval',
     approvedBanner: ' Your account is active — welcome to ATHAR',
-    rejectedBanner: ' Your account was rejected — contact the admin',
+    rejectedBanner: ' Your account was rejected — contact the admin', errorIdRequired: 'Front ID photo is required', reviewAgainBtn: 'Review & resubmit', rejectedReasonLabel: 'Rejection reason', resubmitDone: 'Your request was resubmitted — under review',
     noData: 'No data yet',
     downloadId: ' Download Photo',
     approveBtn: ' Approve', rejectBtn: 'Reject',
@@ -6530,13 +6553,15 @@ const UserService = {
   },
 
   approve(id) {
-    const r = this.updateById(id, { status: 'approved', joinedDate: new Date().toISOString() });
+    const r = this.updateById(id, { status: 'approved', joinedDate: new Date().toISOString(), rejectionReason: null });
     NotificationService.add(id, 'تم تفعيل حسابك! أهلاً بك في أثر.', 'Your account is now active! Welcome to ATHAR.', 'approval');
     return r;
   },
-  reject(id)  {
-    const r = this.updateById(id, { status: 'rejected' });
-    NotificationService.add(id, 'عذراً، لم تتم الموافقة على طلب حسابك.', 'Sorry, your account request was not approved.', 'account');
+  reject(id, reason) {
+    reason = reason || 'other';
+    const rl = CONFIG.REJECT_REASONS[reason] || CONFIG.REJECT_REASONS.other;
+    const r = this.updateById(id, { status: 'rejected', rejectionReason: reason });
+    NotificationService.add(id, 'عذراً، تم رفض طلب حسابك. السبب: ' + rl.ar, 'Sorry, your account request was rejected. Reason: ' + rl.en, 'account');
     return r;
   },
   ban(id, days, reason) {
@@ -8876,7 +8901,7 @@ function admRenderOverview(users, camps, partners) {
             '</div>' +
             '<div class="admin-actions">' +
               '<button class="approve-btn" onclick="event.stopPropagation();handleApproveUser(\'' + u.id + '\')">' + (isAr ? 'قبول' : 'Approve') + '</button>' +
-              '<button class="reject-btn" onclick="event.stopPropagation();handleRejectUser(\'' + u.id + '\')">' + (isAr ? 'رفض' : 'Reject') + '</button>' +
+              '<button class="reject-btn" onclick="event.stopPropagation();openRejectReasons(\'' + u.id + '\')">' + (isAr ? 'رفض' : 'Reject') + '</button>' +
             '</div>' +
           '</div>';
       });
@@ -9005,7 +9030,7 @@ function admViewUser(id) {
     let actions = '';
     if (u.status === 'pending') {
       actions += '<button class="adm-btn ok" onclick="handleApproveUser(\'' + u.id + '\');admCloseModal()">' + (isAr ? 'قبول' : 'Approve') + '</button>' +
-                 '<button class="adm-btn danger" onclick="handleRejectUser(\'' + u.id + '\');admCloseModal()">' + (isAr ? 'رفض' : 'Reject') + '</button>';
+                 '<button class="adm-btn danger" onclick="openRejectReasons(\'' + u.id + '\')">' + (isAr ? 'رفض' : 'Reject') + '</button>';
     }
     if (!isBoot) actions += '<button class="adm-btn ghost" onclick="admEditUser(\'' + u.id + '\')">' + (isAr ? 'تعديل البيانات' : 'Edit') + '</button>';
     if (actions) html += '<div class="adm-mactions">' + actions + '</div>';
@@ -9369,7 +9394,7 @@ function admRenderUsers() {
           (u.status === 'pending'
             ? '<div class="admin-actions">' +
                 '<button class="approve-btn" onclick="event.stopPropagation();handleApproveUser(\'' + u.id + '\')">' + (isAr ? 'قبول' : 'Approve') + '</button>' +
-                '<button class="reject-btn" onclick="event.stopPropagation();handleRejectUser(\'' + u.id + '\')">' + (isAr ? 'رفض' : 'Reject') + '</button>' +
+                '<button class="reject-btn" onclick="event.stopPropagation();openRejectReasons(\'' + u.id + '\')">' + (isAr ? 'رفض' : 'Reject') + '</button>' +
               '</div>'
             : '') +
         '</div>';
@@ -10288,7 +10313,9 @@ async function doSignup(e) {
 
   // Validate (early, before loading/file reads)
   const { valid, errors } = Validators.signup(data);
-  if (!valid) {
+  const _idEl = form.querySelector('[name="idPhoto"]');
+  if (!(_idEl && _idEl.files && _idEl.files[0])) errors.idPhoto = t('errorIdRequired');
+  if (Object.keys(errors).length) {
     Object.entries(errors).forEach(([field, msg]) => showFieldError(form, field, msg));
     btn && (btn.disabled = false);
     return;
@@ -10614,7 +10641,17 @@ async function doLogin(e) {
       const until = (res.user && res.user.banned) ? fmtDate(res.user.banned.until) : '';
       toast(t('bannedMsg') + ' ' + until, 'error');
     } else if (res.error === 'rejected') {
-      toast(t('rejectedBanner'), 'error');
+      _rejectedUser = res.user || null;
+      const isAr = State.lang === 'ar';
+      const rk = (res.user && res.user.rejectionReason) || 'other';
+      const rl = CONFIG.REJECT_REASONS[rk] || CONFIG.REJECT_REASONS.other;
+      const tEl = document.getElementById('rejectedTitle');
+      if (tEl) tEl.textContent = isAr ? 'تم رفض طلبك' : 'Your request was rejected';
+      const mEl = document.getElementById('rejectedReasonMsg');
+      if (mEl) mEl.textContent = t('rejectedReasonLabel') + ': ' + (isAr ? rl.ar : rl.en);
+      const rb = document.getElementById('reviewAgainBtn');
+      if (rb) rb.onclick = function () { reviewAgain(); };
+      Auth.go('rejected');
     } else if (res.error === 'supa') {
       toast(res.message || t('errorLogin'), 'error');
       showFieldError(form, 'email', ' ');
@@ -10631,6 +10668,22 @@ async function doLogin(e) {
   closeModal('loginModal');
   enterApp();
   Sync.refresh();
+}
+
+let _rejectedUser = null;
+async function reviewAgain() {
+  const u = _rejectedUser;
+  if (!u || !u.id) { Auth.go('login'); return; }
+  // The user authenticated during login (Supabase session is active) — resubmit as pending.
+  UserService.updateById(u.id, { status: 'pending', rejectionReason: null });
+  try {
+    if (sb) {
+      const ad = await sb.from('profiles').select('id').in('role', ['admin', 'super_admin']);
+      (ad.data || []).forEach(a => NotificationService.add(a.id, 'أعاد مستخدم تقديم طلبه: ' + (u.name || ''), 'A user resubmitted their request: ' + (u.name || ''), 'account'));
+    }
+  } catch (e) {}
+  toast(t('resubmitDone'), 'success');
+  Auth.go('pending');
 }
 
 function doLogout() {
@@ -11702,10 +11755,19 @@ function handleApproveUser(id) {
   if (result) { toast(t('approved'), 'success'); renderAdmin(); }
 }
 
-function handleRejectUser(id) {
+function handleRejectUser(id, reason) {
   if (!Permissions.can(State.cu, 'manage_users')) return;
-  const result = UserService.reject(id);
+  const result = UserService.reject(id, reason);
   if (result) { toast(t('rejected'), 'warning'); renderAdmin(); }
+}
+/* Ask the admin to pick a rejection reason before rejecting a user. */
+function openRejectReasons(id) {
+  const isAr = State.lang === 'ar';
+  const btns = Object.keys(CONFIG.REJECT_REASONS).map(k =>
+    '<button class="adm-btn ghost" style="width:100%;margin-bottom:8px;text-align:start;" onclick="handleRejectUser(\'' + id + '\',\'' + k + '\');admCloseModal()">' +
+      (isAr ? CONFIG.REJECT_REASONS[k].ar : CONFIG.REJECT_REASONS[k].en) + '</button>').join('');
+  admOpenModal('<div class="adm-msection-h" style="font-size:var(--fs-lg);margin-bottom:12px;">' + (isAr ? 'سبب الرفض' : 'Rejection reason') + '</div>' + btns +
+    '<button class="adm-btn" style="width:100%;margin-top:6px;" onclick="admCloseModal()">' + (isAr ? 'إلغاء' : 'Cancel') + '</button>');
 }
 
 function handleApproveCamp(id) {

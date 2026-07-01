@@ -31,6 +31,7 @@ create table if not exists public.profiles (
   bio             text,
   profile_pic     text,
   dob             date,
+  rejection_reason text,
   role            text not null default 'volunteer',   -- volunteer | campaign_leader | partner | moderator | admin
   status          text not null default 'pending',     -- pending | approved | rejected | banned
   ban_until       timestamptz,
