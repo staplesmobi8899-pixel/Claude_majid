@@ -381,3 +381,16 @@ drop policy if exists "reports read admin" on public.reports;
 create policy "reports read admin" on public.reports for select using ( public.is_admin() );
 drop policy if exists "reports update admin" on public.reports;
 create policy "reports update admin" on public.reports for update using ( public.is_admin() );
+
+
+-- ============================================================
+--  SITE CONTENT  (admin-edited About / policies / FAQ)
+-- ============================================================
+create table if not exists public.site_content (
+  id text primary key, data jsonb, updated_at timestamptz not null default now()
+);
+alter table public.site_content enable row level security;
+drop policy if exists "content read" on public.site_content;
+create policy "content read" on public.site_content for select using ( true );
+drop policy if exists "content write admin" on public.site_content;
+create policy "content write admin" on public.site_content for all using ( public.is_admin() ) with check ( public.is_admin() );

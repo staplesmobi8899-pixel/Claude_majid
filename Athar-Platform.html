@@ -4141,7 +4141,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v68</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v69</span>
     </div>
   </section>
 
@@ -5604,6 +5604,13 @@ const Sync = {
     m[State.cu.id] = (data || []).map(n => ({ id: n.id, ar: n.ar, en: n.en, type: n.type, read: n.read, createdAt: n.created_at, link: null }));
     NotificationService._save(m);
   },
+  async pullContent() {
+    if (!sb) return;
+    try {
+      const { data, error } = await sb.from('site_content').select('data').eq('id', 'main').single();
+      if (!error && data && data.data) DB.setObj(CONFIG.DB_KEYS.CONTENT, data.data);
+    } catch (e) {}
+  },
   async pullReports() {
     if (!sb || !State.isAdmin) return;   // only admins may read reports (RLS)
     const { data, error } = await sb.from('reports').select('*').order('created_at', { ascending: false });
@@ -5623,6 +5630,7 @@ const Sync = {
       await this.pullPartners();
       await this.pullNotifications();
       await this.pullReports();
+      await this.pullContent();
       try { updateBell(); } catch (e) {}
     } catch (e) { console.error('[Sync.pullAll]', e); }
   },
@@ -6675,7 +6683,7 @@ const RealtimeService = {
         this.adapter = 'supabase';
         const tables = ['profiles', 'campaigns', 'campaign_participants', 'posts',
           'post_reactions', 'post_comments', 'communities', 'community_members',
-          'notifications', 'partners', 'reports'];
+          'notifications', 'partners', 'reports', 'site_content'];
         const ch = sb.channel('athar-live-' + Math.random().toString(36).slice(2, 8));
         tables.forEach((tbl) => {
           ch.on('postgres_changes', { event: '*', schema: 'public', table: tbl },
@@ -7510,6 +7518,11 @@ const ContentService = {
   /** Editable text keys (mirror the i18n keys they override) */
   KEYS: ['abStoryP1', 'abStoryP2', 'abStoryP3', 'visionText', 'abMissionIntro', 'abPhiloText', 'policyPrivacyBody', 'policyTermsBody'],
   _all() { return DB.getObj(CONFIG.DB_KEYS.CONTENT) || {}; },
+  _save(all) {
+    DB.setObj(CONFIG.DB_KEYS.CONTENT, all);
+    if (sb) sb.from('site_content').upsert({ id: 'main', data: all, updated_at: new Date().toISOString() })
+      .then(function (r) { if (r.error) console.error('[content.upsert]', r.error.message); });
+  },
   get(key, lang) {
     const all = this._all(); const l = all[lang || State.lang] || {};
     return l[key];
@@ -7518,12 +7531,12 @@ const ContentService = {
     const all = this._all(); const lg = lang || State.lang;
     if (!all[lg]) all[lg] = {};
     all[lg][key] = val;
-    DB.setObj(CONFIG.DB_KEYS.CONTENT, all);
+    this._save(all);
   },
   /** Override-aware text: returns admin override or falls back to i18n default */
   text(key) { const v = this.get(key); return (v != null && v !== '') ? v : t(key); },
   getFaq(lang) { const all = this._all(); const l = all[lang || State.lang] || {}; return Array.isArray(l.faq) ? l.faq : null; },
-  setFaq(arr, lang) { const all = this._all(); const lg = lang || State.lang; if (!all[lg]) all[lg] = {}; all[lg].faq = arr; DB.setObj(CONFIG.DB_KEYS.CONTENT, all); }
+  setFaq(arr, lang) { const all = this._all(); const lg = lang || State.lang; if (!all[lg]) all[lg] = {}; all[lg].faq = arr; this._save(all); }
 };
 
 /* ── COMMUNITY MODERATION (Phase 8.7 — scalable scaffold for posts/comments/reports) ── */
