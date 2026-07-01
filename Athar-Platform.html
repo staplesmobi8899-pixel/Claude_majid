@@ -4141,7 +4141,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v66</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v67</span>
     </div>
   </section>
 
@@ -9031,6 +9031,13 @@ function admViewUser(id) {
     if (u.status === 'pending') {
       actions += '<button class="adm-btn ok" onclick="handleApproveUser(\'' + u.id + '\');admCloseModal()">' + (isAr ? 'قبول' : 'Approve') + '</button>' +
                  '<button class="adm-btn danger" onclick="openRejectReasons(\'' + u.id + '\')">' + (isAr ? 'رفض' : 'Reject') + '</button>';
+    } else if (u.status === 'rejected') {
+      if (u.rejectionReason) {
+        const rl = CONFIG.REJECT_REASONS[u.rejectionReason] || CONFIG.REJECT_REASONS.other;
+        html += '<div class="adm-ban-note">' + (isAr ? 'سبب الرفض: ' : 'Rejection reason: ') + (isAr ? rl.ar : rl.en) + '</div>';
+      }
+      actions += '<button class="adm-btn ok" onclick="handleApproveUser(\'' + u.id + '\');admCloseModal()">' + (isAr ? 'قبول' : 'Approve') + '</button>' +
+                 '<button class="adm-btn ghost" onclick="handleReopenUser(\'' + u.id + '\')">' + (isAr ? 'إعادة التدقيق' : 'Re-review') + '</button>';
     }
     if (!isBoot) actions += '<button class="adm-btn ghost" onclick="admEditUser(\'' + u.id + '\')">' + (isAr ? 'تعديل البيانات' : 'Edit') + '</button>';
     if (actions) html += '<div class="adm-mactions">' + actions + '</div>';
@@ -9396,7 +9403,12 @@ function admRenderUsers() {
                 '<button class="approve-btn" onclick="event.stopPropagation();handleApproveUser(\'' + u.id + '\')">' + (isAr ? 'قبول' : 'Approve') + '</button>' +
                 '<button class="reject-btn" onclick="event.stopPropagation();openRejectReasons(\'' + u.id + '\')">' + (isAr ? 'رفض' : 'Reject') + '</button>' +
               '</div>'
-            : '') +
+            : (u.status === 'rejected'
+              ? '<div class="admin-actions">' +
+                  '<button class="approve-btn" onclick="event.stopPropagation();handleApproveUser(\'' + u.id + '\')">' + (isAr ? 'قبول' : 'Approve') + '</button>' +
+                  '<button class="approve-btn" style="background:var(--sand-dark);color:var(--charcoal);" onclick="event.stopPropagation();handleReopenUser(\'' + u.id + '\')">' + (isAr ? 'إعادة التدقيق' : 'Re-review') + '</button>' +
+                '</div>'
+              : '')) +
         '</div>';
       }).join('');
   } catch (e) {
@@ -11758,7 +11770,16 @@ function handleApproveUser(id) {
 function handleRejectUser(id, reason) {
   if (!Permissions.can(State.cu, 'manage_users')) return;
   const result = UserService.reject(id, reason);
-  if (result) { toast(t('rejected'), 'warning'); renderAdmin(); }
+  if (result) { toast(t('rejected'), 'warning'); renderAdmin(); try { admViewUser(id); } catch (e) {} }
+}
+/* Re-open a rejected account for review (back to pending). */
+function handleReopenUser(id) {
+  if (!Permissions.can(State.cu, 'manage_users')) return;
+  UserService.updateById(id, { status: 'pending', rejectionReason: null });
+  NotificationService.add(id, 'تمت إعادة فتح طلبك للتدقيق.', 'Your request has been re-opened for review.', 'account');
+  toast(State.lang === 'ar' ? 'تمت إعادة الطلب للتدقيق' : 'Moved back to review', 'success');
+  renderAdmin();
+  try { admViewUser(id); } catch (e) {}
 }
 /* Ask the admin to pick a rejection reason before rejecting a user. */
 function openRejectReasons(id) {
