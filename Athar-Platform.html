@@ -4151,7 +4151,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v76</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v77</span>
     </div>
   </section>
 
@@ -12395,6 +12395,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Restore session (centralized in AuthService) — async for Supabase
     Promise.resolve(AuthService.restoreSession()).then(function (u) {
       if (u) { enterApp(); Sync.refresh(); }
+      else if (typeof sb !== 'undefined' && sb) {
+        // Not logged in: still load public data so Home/Explore aren't empty.
+        Promise.resolve(Sync.pullAll()).then(function () {
+          try { if (State.currentPage) Router.go(State.currentPage, { replace: true }); } catch (e) {}
+        }).catch(function () {});
+      }
     }).catch(function (e) { console.error('[restoreSession]', e); });
 
     // Attach modal backdrop close handlers
