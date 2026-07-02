@@ -4141,7 +4141,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v72</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v73</span>
     </div>
   </section>
 
@@ -5465,6 +5465,8 @@ function campChangesToDb(ch) {
   if ('status' in ch) m.status = ch.status;
   if ('emergency' in ch) m.emergency = ch.emergency;
   if ('img' in ch) m.img = ch.img;
+  if ('creatorPhone' in ch) m.creator_phone = ch.creatorPhone;
+  if ('creatorName' in ch) m.creator_name = ch.creatorName;
   if ('completedAt' in ch) m.completed_at = ch.completedAt;
   m.updated_at = new Date().toISOString();
   return m;
@@ -7150,7 +7152,7 @@ const CampaignService = {
   reject(id) {
     const c = this.getById(id);
     const r = this.updateById(id, { status: 'rejected' });
-    if (c && c.createdBy) NotificationService.add(c.createdBy, 'تم رفض حملتك', 'Your campaign has been rejected', 'campaign');
+    if (c && c.createdBy) NotificationService.add(c.createdBy, 'تم رفض حملتك، يرجى التواصل معنا', 'Your campaign was rejected — please contact us', 'campaign');
     return r;
   },
   archive(id) { return this.updateById(id, { status: 'archived' }); },
@@ -9259,9 +9261,11 @@ function admViewCamp(id) {
       row(isAr ? 'الظهور للعموم' : 'Public visibility', (['approved', 'under_process', 'done'].includes(c.status)) ? (isAr ? 'ظاهرة' : 'Visible') : (isAr ? 'مخفية' : 'Hidden')) +
       partsHtml +
       (actions ? '<div class="adm-mactions">' + actions + '</div>' : '') +
-      '<div class="adm-mactions">' +
+      '<div class="adm-mactions" style="flex-wrap:wrap;">' +
         '<button class="adm-btn ghost" onclick="admEditCamp(\'' + c.id + '\')">' + (isAr ? 'تعديل' : 'Edit') + '</button>' +
-        (c.status !== 'archived' ? '<button class="adm-btn ghost" onclick="handleArchive(\'' + c.id + '\')">' + (isAr ? 'أرشفة' : 'Archive') + '</button>' : '') +
+        ((c.status === 'approved' || c.status === 'under_process') ? '<button class="adm-btn done" onclick="handleManageDone(\'' + c.id + '\')">' + (isAr ? 'تم إنجازها' : 'Mark done') + '</button>' : '') +
+        ((c.status !== 'cancelled' && c.status !== 'done') ? '<button class="adm-btn danger" onclick="handleCancelCamp(\'' + c.id + '\')">' + (isAr ? 'إلغاء الحملة' : 'Cancel') + '</button>' : '') +
+        '<button class="adm-btn ghost" onclick="handleHideCamp(\'' + c.id + '\')">' + (c.status === 'archived' ? (isAr ? 'إظهار' : 'Unhide') : (isAr ? 'إخفاء / أرشفة' : 'Hide / Archive')) + '</button>' +
       '</div>'
     );
   } catch (e) {
@@ -9286,13 +9290,16 @@ function admEditCamp(id) {
     '<div class="edit-field"><label>' + t('neededLabel') + '</label><input id="ecNeeded" type="number" min="1" value="' + (c.needed || 1) + '"></div>' +
     '<div class="edit-field"><label>' + t('dateLabel') + '</label><input id="ecDate" type="date" value="' + (c.date || '') + '"></div>' +
     '<div class="edit-field"><label>' + t('categoryLabel') + '</label><select id="ecCat">' + cats + '</select></div>' +
+    '<div class="edit-field"><label>' + (isAr ? 'هاتف المنظّم' : 'Organizer phone') + '</label><input id="ecPhone" value="' + esc(c.creatorPhone) + '"></div>' +
+    '<div class="edit-field"><label>' + (isAr ? 'ساعات لكل متطوّع' : 'Hours per volunteer') + '</label><input id="ecHours" type="number" min="0.5" step="0.5" value="' + (c.volunteerHours || 2) + '"></div>' +
+    '<div class="edit-field"><label>' + (isAr ? 'صورة الحملة (رفع/استبدال)' : 'Campaign image (upload/replace)') + '</label><input id="ecImg" type="file" accept="image/*"></div>' +
     '<div class="adm-mactions">' +
       '<button class="adm-btn primary" onclick="saveCampEdit(\'' + id + '\')">' + t('saveChanges') + '</button>' +
       '<button class="adm-btn ghost" onclick="admViewCamp(\'' + id + '\')">' + (isAr ? 'إلغاء' : 'Cancel') + '</button>' +
     '</div>'
   );
 }
-function saveCampEdit(id) {
+async function saveCampEdit(id) {
   if (!Permissions.can(State.cu, 'manage_campaigns')) return;
   const g = i => document.getElementById(i);
   if (!g('ecTitle')) return;
@@ -9301,14 +9308,21 @@ function saveCampEdit(id) {
   const desc  = g('ecDesc').value.trim();
   const cat   = g('ecCat').value;
   const m = CONFIG.CAMP_CATEGORIES[cat] || {};
-  CampaignService.updateById(id, {
+  const patch = {
     ar: { title, desc, cat: m.ar || cat },
     en: { title, desc, cat: m.en || cat },
     category: cat,
     location: g('ecLoc').value.trim(),
     needed: Math.max(1, parseInt(g('ecNeeded').value) || 1),
     date: g('ecDate').value
-  });
+  };
+  if (g('ecPhone')) patch.creatorPhone = g('ecPhone').value.trim();
+  if (g('ecHours')) patch.volunteerHours = Math.max(0.5, parseFloat(g('ecHours').value) || 2);
+  const imgEl = g('ecImg');
+  if (imgEl && imgEl.files && imgEl.files[0]) {
+    try { let img = await compressImage(imgEl.files[0], 1400, 0.82); if (sb) img = await uploadImage(img, 'campaigns'); patch.img = img; } catch (e) {}
+  }
+  CampaignService.updateById(id, patch);
   const ec = CampaignService.getById(id);
   if (ec && ec.createdBy && ec.createdBy !== 'admin' && (!State.cu || ec.createdBy !== State.cu.id)) {
     NotificationService.add(ec.createdBy, 'تم تحديث مبادرتك من قِبل الإدارة', 'Your campaign was updated by admin', 'campaign');
@@ -9513,7 +9527,9 @@ function admRenderCampaigns() {
         { k: 'approved',      ar: 'موافق عليها',  en: 'Approved',    n: all.filter(c => c.status === 'approved').length },
         { k: 'under_process', ar: 'قيد التنفيذ',  en: 'In Progress', n: all.filter(c => c.status === 'under_process').length },
         { k: 'done',          ar: 'منجزة',        en: 'Done',        n: all.filter(c => c.status === 'done').length },
-        { k: 'archived',      ar: 'مؤرشفة',       en: 'Archived',    n: all.filter(c => c.status === 'archived').length }
+        { k: 'archived',      ar: 'مؤرشفة',       en: 'Archived',    n: all.filter(c => c.status === 'archived').length },
+        { k: 'rejected',      ar: 'مرفوضة',        en: 'Rejected',    n: all.filter(c => c.status === 'rejected').length },
+        { k: 'cancelled',     ar: 'ملغاة',         en: 'Cancelled',   n: all.filter(c => c.status === 'cancelled').length }
       ];
       chips.innerHTML = opts.map(o =>
         '<button class="adm-chip' + (AdminUI.campFilter === o.k ? ' active' : '') + '" onclick="admSetCampFilter(\'' + o.k + '\')">' + (isAr ? o.ar : o.en) + ' (' + o.n + ')</button>'
@@ -10037,6 +10053,9 @@ function handleCancelCamp(id) {
   if (!Permissions.canManageCampaign(State.cu, c)) return;
   if (!confirm(t('cancelCampConfirm'))) return;
   CampaignService.updateById(id, { status: 'cancelled' });
+  // Notify everyone who had joined + the creator
+  (c && c.joinedUsers ? c.joinedUsers : []).forEach(uid => NotificationService.add(uid, 'تم إلغاء حملة كنت مشاركًا بها', 'A campaign you joined was cancelled', 'campaign'));
+  if (c && c.createdBy) NotificationService.add(c.createdBy, 'تم إلغاء حملتك', 'Your campaign was cancelled', 'campaign');
   toast(t('campCancelled'), 'success');
   try { renderCampaigns(); } catch (e) {}
   try { if (typeof ExploreUI !== 'undefined') ExploreUI.render(); } catch (e) {}
