@@ -117,9 +117,9 @@
   --scrim:            rgba(0,0,0,0.5);
 
   /* ── PHASE 11 — status accents (dark-aware) + motion system ── */
-  --info:    var(--info);  --info-bg:   rgba(29,78,216,0.14);
-  --purple:  var(--purple);  --purple-bg: rgba(124,58,237,0.14);
-  --gold:    var(--gold);
+  --info:    #1d4ed8;  --info-bg:   rgba(29,78,216,0.14);
+  --purple:  #7c3aed;  --purple-bg: rgba(124,58,237,0.14);
+  --gold:    #c9962e;
   --ease:    cubic-bezier(0.4, 0, 0.2, 1);
   --t-fast:  0.15s;
   --t-med:   0.25s;
@@ -2036,8 +2036,9 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
 .adm-st.under_process { background:rgba(29,78,216,0.14);  color:var(--info); }
 .adm-st.emergency     { background:rgba(179,38,30,0.14);  color:#b3261e; }
 .adm-status-control { margin: var(--sp-3) 0; }
-.adm-status-btns { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
-.adm-btn.current { opacity: 0.5; outline: 2px solid var(--olive); }
+.adm-status-btns { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2); }
+.adm-status-btns .adm-btn { min-width: 0; }
+.adm-btn.current { opacity: 0.92; outline: 2px solid var(--olive); }
 .adm-st.done          { background:rgba(124,58,237,0.14); color:var(--purple); }
 .adm-st.rejected      { background:var(--red-bg);     color:var(--red-fg); }
 .adm-st.banned        { background:var(--red-bg);     color:var(--red-fg); }
@@ -2059,7 +2060,8 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
 .adm-dlabel { flex:none; min-width:96px; font-weight:700; color:var(--charcoal-50); }
 .adm-dval { font-weight:700; color:var(--charcoal); word-break:break-word; }
 
-.adm-mactions { display:flex; gap:var(--sp-3); margin-top:var(--sp-5); flex-wrap:wrap; }
+.adm-mactions { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-2); margin-top:var(--sp-4); }
+.adm-mactions .adm-btn { min-width:0; }
 .adm-btn { flex:1 1 auto; min-width:120px; padding:var(--sp-3) var(--sp-4); border-radius:var(--r-full); font-weight:800; font-size:var(--fs-base); cursor:pointer; font-family:inherit; border:none; transition:opacity 0.15s; }
 .adm-btn:hover { opacity:0.9; }
 .adm-btn.primary { background:var(--accent-btn); color:#fff; }
@@ -4141,7 +4143,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v74</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v75</span>
     </div>
   </section>
 
@@ -9229,9 +9231,6 @@ function admViewCamp(id) {
         ' onclick="handleSetCampStatus(\'' + c.id + '\',\'' + s + '\')">' + lbl + '</button>';
     });
     actions += '</div></div>';
-    if (c.status === 'approved' || c.status === 'under_process') {
-      actions += '<div class="adm-status-btns" style="margin-top:var(--sp-2);"><button class="adm-btn ' + (c.emergency ? 'danger' : 'ghost') + '" onclick="handleToggleEmergency(\'' + c.id + '\')">' + (c.emergency ? t('clearEmergencyBtn') : t('markEmergencyBtn')) + '</button></div>';
-    }
 
     // Participants block
     let partsHtml = '<div class="adm-msection"><div class="adm-msection-h">' + (isAr ? 'المشاركون' : 'Participants') + ' (' + parts.length + ')</div>';
@@ -9261,11 +9260,13 @@ function admViewCamp(id) {
       row(isAr ? 'الظهور للعموم' : 'Public visibility', (['approved', 'under_process', 'done'].includes(c.status)) ? (isAr ? 'ظاهرة' : 'Visible') : (isAr ? 'مخفية' : 'Hidden')) +
       partsHtml +
       (actions ? '<div class="adm-mactions">' + actions + '</div>' : '') +
-      '<div class="adm-mactions" style="flex-wrap:wrap;">' +
+      '<div class="adm-msection-h" style="margin-top:var(--sp-4);">' + (isAr ? 'إجراءات' : 'Actions') + '</div>' +
+      '<div class="adm-mactions">' +
         '<button class="adm-btn ghost" onclick="admEditCamp(\'' + c.id + '\')">' + (isAr ? 'تعديل' : 'Edit') + '</button>' +
-        ((c.status === 'approved' || c.status === 'under_process') ? '<button class="adm-btn done" onclick="handleManageDone(\'' + c.id + '\')">' + (isAr ? 'تم إنجازها' : 'Mark done') + '</button>' : '') +
-        ((c.status !== 'cancelled' && c.status !== 'done') ? '<button class="adm-btn danger" onclick="handleCancelCamp(\'' + c.id + '\')">' + (isAr ? 'إلغاء الحملة' : 'Cancel') + '</button>' : '') +
+        ((c.status === 'approved' || c.status === 'under_process') ? '<button class="adm-btn ok" onclick="handleManageDone(\'' + c.id + '\')">' + (isAr ? 'تم إنجازها' : 'Mark done') + '</button>' : '') +
+        ((c.status === 'approved' || c.status === 'under_process') ? '<button class="adm-btn ' + (c.emergency ? 'danger' : 'ghost') + '" onclick="handleToggleEmergency(\'' + c.id + '\')">' + (c.emergency ? t('clearEmergencyBtn') : t('markEmergencyBtn')) + '</button>' : '') +
         '<button class="adm-btn ghost" onclick="handleHideCamp(\'' + c.id + '\')">' + (c.status === 'archived' ? (isAr ? 'إظهار' : 'Unhide') : (isAr ? 'إخفاء / أرشفة' : 'Hide / Archive')) + '</button>' +
+        ((c.status !== 'cancelled' && c.status !== 'done') ? '<button class="adm-btn danger" onclick="handleCancelCamp(\'' + c.id + '\')">' + (isAr ? 'إلغاء الحملة' : 'Cancel') + '</button>' : '') +
       '</div>'
     );
   } catch (e) {
