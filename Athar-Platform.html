@@ -4469,7 +4469,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v108</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v109</span>
     </div>
   </section>
 
@@ -10526,7 +10526,7 @@ const ROUTES = {
   home:          { title: null,             onEnter: () => HomeUI.enter() },
   explore:       { title: 'navExplore',     onEnter: () => ExploreUI.enter() },
   community:     { title: 'communityTitle', onEnter: () => renderCommunity() },
-  notifications: { title: 'notifTitle', back: true, onEnter: () => { renderNotifications(); } },
+  notifications: { title: 'notifTitle', back: true, onEnter: () => { renderNotifications(); if (State.cu && !State.isGuest) { setTimeout(function () { NotificationService.markAllRead(State.cu.id); updateBell(); }, 500); } } },
   create:        { title: 'createTitle', back: true, auth: true, onEnter: () => { renderCampaigns(); renderMyCamps(); } },
   detail:        { title: 'detailHeaderTitle', back: true, onEnter: () => {} },
   profile:       { title: 'navProfile',     onEnter: () => renderProfile() },
