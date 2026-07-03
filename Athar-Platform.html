@@ -4100,6 +4100,43 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 .cm-fab, .fab { background-image: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1)); }
 
 /* ═══════════════════════════════════════════════════════════════
+   COMMUNITY PAGE — reference design (scoped to #communityPage ONLY)
+   Olive-active tabs, olive create CTA, softer cards.
+   ═══════════════════════════════════════════════════════════════ */
+#communityPage .cm-title { color: #2F3A2E; }
+
+/* Tabs — light inactive, olive active */
+#communityPage .cm-tab {
+  background: #EDEAE2; color: #5b6b4d;
+  border: 1px solid rgba(122,143,106,0.16);
+  transition: transform .18s cubic-bezier(.34,1.42,.5,1), background .2s;
+}
+#communityPage .cm-tab.active {
+  background: #7A8F6A; color: #fff; border-color: transparent;
+  box-shadow: 0 6px 16px rgba(122,143,106,0.26);
+}
+#communityPage .cm-tab:active { transform: scale(.96); }
+
+/* Create-community CTA — olive card */
+#communityPage .cg-create-btn {
+  background: #7A8F6A; color: #fff;
+  border-radius: 20px;
+  padding: var(--sp-5);
+  box-shadow: 0 8px 22px rgba(122,143,106,0.28);
+  font-weight: 800;
+  margin-bottom: var(--sp-4);
+  transition: transform .2s cubic-bezier(.34,1.42,.5,1), background .2s;
+}
+#communityPage .cg-create-btn:active { transform: scale(.98); background: #6b7f57; }
+
+/* Community cards — softer depth */
+#communityPage .cg-card {
+  border-radius: 20px;
+  border: 1px solid rgba(122,143,106,0.14);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+}
+
+/* ═══════════════════════════════════════════════════════════════
    DETAIL PAGE — reference design (scoped to #detailPage ONLY)
    Warm beige base, cream cards, olive CTA, skills as chips.
    ═══════════════════════════════════════════════════════════════ */
@@ -4368,7 +4405,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v101</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v102</span>
     </div>
   </section>
 
