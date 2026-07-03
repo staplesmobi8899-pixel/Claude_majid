@@ -921,6 +921,8 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
 .camp-state.pending { background: rgba(201,150,46,0.12); color: #9a6f12; }
 .camp-state.rejected { background: rgba(200,76,60,0.10); color: var(--red); }
 .camp-state.emg { background: rgba(179,38,30,0.12); color: #b3261e; }
+.camp-state.full { background: rgba(201,150,46,0.14); color: #9a6f12; }
+.camp-adm-btn.done { color: var(--forest); background: rgba(46,61,31,0.06); }
 
 .join-btn {
   height: 36px;
@@ -4151,7 +4153,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v77</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v79</span>
     </div>
   </section>
 
@@ -5984,7 +5986,7 @@ const T = {
     catClean: 'تنظيف', catPlant: 'تشجير', catImprove: 'تحسين', catSupport: 'دعم', catEdu: 'تعليم',
     volLabel: 'المتطوعون', organizerLabel: 'المنظم', progress: 'التقدم', contactLabel: 'للتواصل',
     sApproved: 'متاحة', sPending: 'قيد التدقيق', sRejected: 'مرفوضة', sDone: 'منتهية',
-    joinBtn: 'انضمام', joinedBtn: ' منضم', unavailBtn: 'غير متاح', leaveCampBtn: 'مغادرة الحملة', campFull: 'العدد مكتمل', campRunning: 'قيد التنفيذ', campWaiting: 'بانتظار متطوّعين', cancelCampBtn: 'إلغاء الحملة', hideCampBtn: 'إخفاء', unhideCampBtn: 'إظهار', cancelCampConfirm: 'هل تريد إلغاء هذه الحملة؟', campCancelled: 'تم إلغاء الحملة', campHidden: 'تم إخفاء الحملة', campShown: 'تم إظهار الحملة',
+    joinBtn: 'انضمام', joinedBtn: ' منضم', unavailBtn: 'غير متاح', leaveCampBtn: 'مغادرة الحملة', campFull: 'العدد مكتمل', campRunning: 'قيد التنفيذ', campWaiting: 'بانتظار متطوّعين', campDoneState: 'منجزة', campMarkDone: 'تم إنجازها', campCountFull: 'العدد مكتمل', cancelCampBtn: 'إلغاء الحملة', hideCampBtn: 'إخفاء', unhideCampBtn: 'إظهار', cancelCampConfirm: 'هل تريد إلغاء هذه الحملة؟', campCancelled: 'تم إلغاء الحملة', campHidden: 'تم إخفاء الحملة', campShown: 'تم إظهار الحملة',
     pendingBanner: ' حسابك قيد التدقيق — بانتظار موافقة المسؤول',
     approvedBanner: ' حسابك مفعّل — مرحبًا بك في أَثَرْ',
     rejectedBanner: ' تم رفض حسابك — تواصل مع المسؤول', errorIdRequired: 'صورة الهوية الأمامية إلزامية', reviewAgainBtn: 'مراجعة وإعادة التقديم', rejectedReasonLabel: 'سبب الرفض', resubmitDone: 'تم إرسال طلبك مجددًا — قيد المراجعة',
@@ -6175,7 +6177,7 @@ const T = {
     catClean: 'Cleaning', catPlant: 'Planting', catImprove: 'Improvement', catSupport: 'Support', catEdu: 'Education',
     volLabel: 'Volunteers', organizerLabel: 'Organizer', progress: 'Progress', contactLabel: 'Contact',
     sApproved: 'Available', sPending: 'Under Review', sRejected: 'Rejected', sDone: 'Completed',
-    joinBtn: 'Join', joinedBtn: ' Joined', unavailBtn: 'Unavailable', leaveCampBtn: 'Leave campaign', campFull: 'Full', campRunning: 'In progress', campWaiting: 'Waiting for volunteers', cancelCampBtn: 'Cancel campaign', hideCampBtn: 'Hide', unhideCampBtn: 'Show', cancelCampConfirm: 'Cancel this campaign?', campCancelled: 'Campaign cancelled', campHidden: 'Campaign hidden', campShown: 'Campaign shown',
+    joinBtn: 'Join', joinedBtn: ' Joined', unavailBtn: 'Unavailable', leaveCampBtn: 'Leave campaign', campFull: 'Full', campRunning: 'In progress', campWaiting: 'Waiting for volunteers', campDoneState: 'Done', campMarkDone: 'Mark done', campCountFull: 'Full', cancelCampBtn: 'Cancel campaign', hideCampBtn: 'Hide', unhideCampBtn: 'Show', cancelCampConfirm: 'Cancel this campaign?', campCancelled: 'Campaign cancelled', campHidden: 'Campaign hidden', campShown: 'Campaign shown',
     pendingBanner: ' Your account is under review — awaiting admin approval',
     approvedBanner: ' Your account is active — welcome to ATHAR',
     rejectedBanner: ' Your account was rejected — contact the admin', errorIdRequired: 'Front ID photo is required', reviewAgainBtn: 'Review & resubmit', rejectedReasonLabel: 'Rejection reason', resubmitDone: 'Your request was resubmitted — under review',
@@ -8088,16 +8090,20 @@ function campCardHTML(c) {
     // Days remaining until the campaign date (float; <=1 means it is about to run)
     let daysUntil = 999;
     if (c.date) { const dd = (new Date(c.date + 'T00:00:00') - new Date()) / 86400000; if (!isNaN(dd)) daysUntil = dd; }
-    const running = isOpen && (full || c.status === 'under_process' || daysUntil <= 1);
-    // Status chip (separate from the action button): waiting → running → done/…
+    // Has the campaign day arrived (today >= campaign date)?
+    const _today = new Date().toISOString().slice(0, 10);
+    const dateReached = !!(c.date && c.date <= _today);
+    // Status chip: waiting → full (count met, before the day) → in progress (count met + day) → done
     let stateLabel = '', stateCls = '';
-    if (isEmergency)                       { stateLabel = t('emergencyTag'); stateCls = 'emg'; }
-    else if (isOpen && running)            { stateLabel = t('campRunning');  stateCls = 'running'; }
-    else if (c.status === 'approved')      { stateLabel = t('campWaiting');  stateCls = 'waiting'; }
-    else if (c.status === 'done')          { stateLabel = t('sDone');        stateCls = 'done'; }
-    else if (c.status === 'pending')       { stateLabel = t('sPending');     stateCls = 'pending'; }
-    else if (c.status === 'rejected')      { stateLabel = t('sRejected');    stateCls = 'rejected'; }
+    if (isEmergency)                         { stateLabel = t('emergencyTag'); stateCls = 'emg'; }
+    else if (c.status === 'done')            { stateLabel = t('campDoneState'); stateCls = 'done'; }
+    else if (isOpen && full && dateReached)  { stateLabel = t('campRunning');   stateCls = 'running'; }
+    else if (isOpen && full)                 { stateLabel = t('campCountFull'); stateCls = 'full'; }
+    else if (isOpen)                         { stateLabel = t('campWaiting');   stateCls = 'waiting'; }
+    else if (c.status === 'pending')         { stateLabel = t('sPending');      stateCls = 'pending'; }
+    else if (c.status === 'rejected')        { stateLabel = t('sRejected');     stateCls = 'rejected'; }
     const statusChip = stateLabel ? `<span class="camp-state ${stateCls}">${stateLabel}</span>` : '';
+    const inProgress = isOpen && full && dateReached;
     // Action button — only the join/leave action for this user (state lives in the chip)
     if (joined && isOpen) {
       joinBtnHtml = CampaignService.canLeave(c)
@@ -8131,6 +8137,7 @@ function campCardHTML(c) {
           <div class="camp-pct"><strong>${pct}%</strong> ${t('complete')}</div>
         </div>
         ${State.isAdmin ? `<div class="camp-admin-row">
+          ${inProgress ? `<button class="camp-adm-btn done" onclick="event.stopPropagation();handleManageDone('${c.id}')">${t('campMarkDone')}</button>` : ''}
           <button class="camp-adm-btn cancel" onclick="event.stopPropagation();handleCancelCamp('${c.id}')">${t('cancelCampBtn')}</button>
           <button class="camp-adm-btn hide" onclick="event.stopPropagation();handleHideCamp('${c.id}')">${c.status === 'archived' ? t('unhideCampBtn') : t('hideCampBtn')}</button>
         </div>` : ''}
