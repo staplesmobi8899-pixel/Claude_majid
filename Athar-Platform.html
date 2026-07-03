@@ -4239,7 +4239,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v95</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v96</span>
     </div>
   </section>
 
@@ -8672,13 +8672,15 @@ function renderProfile() {
     }
 
     const statusBanner = document.getElementById('statusBanner');
-    if (statusBanner && !State.isAdmin) {
+    if (statusBanner) {
       const bannerMap = {
         pending:  ['banner-pending',  t('pendingBanner')],
         approved: ['banner-approved', t('approvedBanner')],
         rejected: ['banner-rejected', t('rejectedBanner')]
       };
-      if (State.isGuest || u.status === 'guest') {
+      if (State.isAdmin) {
+        statusBanner.innerHTML = '';
+      } else if (State.isGuest || u.status === 'guest') {
         statusBanner.innerHTML = `<div class="status-banner banner-guest">${t('guestBanner')}<button type="button" class="banner-guest-btn" onclick="doLogout()">${t('loginCta')}</button></div>`;
       } else {
         const [cls, txt] = bannerMap[u.status] || bannerMap.pending;
