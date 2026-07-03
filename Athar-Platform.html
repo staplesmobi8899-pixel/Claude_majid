@@ -4153,7 +4153,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v85</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v86</span>
     </div>
   </section>
 
@@ -9068,6 +9068,10 @@ function admViewUser(id) {
     const row = (label, val) => val
       ? '<div class="adm-drow"><span class="adm-dlabel">' + label + '</span><span class="adm-dval">' + val + '</span></div>' : '';
     const rowA = (label, val) => '<div class="adm-drow"><span class="adm-dlabel">' + label + '</span><span class="adm-dval">' + (val || '\u2014') + '</span></div>';
+    // Joined campaigns + hours from the synced participant data (source of truth), not the local mirror
+    const _joinedList = CampaignService.getAll().filter(c => (c.joinedUsers || []).indexOf(u.id) !== -1);
+    const _joinedCount = _joinedList.length;
+    const _hours = Math.max(Number(u.volunteerHours) || 0, _joinedList.reduce((sum, c) => sum + (Number(c.volunteerHours) || 0), 0));
 
     let html =
       '<div class="adm-mhead">' +
@@ -9080,8 +9084,8 @@ function admViewUser(id) {
       rowA(isAr ? 'المحافظة' : 'Governorate', [u.city, u.country].filter(Boolean).join('، ')) +
       rowA(isAr ? 'الميلاد' : 'DOB', u.dob ? fmtDate(u.dob) : '') +
       row(isAr ? 'احتياجات خاصة' : 'Special needs', u.special) +
-      rowA(isAr ? 'ساعات التطوّع' : 'Volunteer hrs', String(u.volunteerHours || 0)) +
-      rowA(isAr ? 'حملات منضمّ لها' : 'Joined camps', String((u.joinedCamps || []).length)) +
+      rowA(isAr ? 'ساعات التطوّع' : 'Volunteer hrs', String(_hours)) +
+      rowA(isAr ? 'حملات منضمّ لها' : 'Joined camps', String(_joinedCount)) +
       rowA(isAr ? 'تاريخ التسجيل' : 'Registered', u.createdAt ? fmtDate(u.createdAt) : '') +
       '<div id="admIdPhoto-' + u.id + '" style="margin-top:var(--sp-3);"></div>';
 
