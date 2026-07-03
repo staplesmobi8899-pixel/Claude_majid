@@ -4099,6 +4099,16 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 /* FAB extra gloss */
 .cm-fab, .fab { background-image: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1)); }
 
+/* Community filled cards -> clean olive (was dark forest+texture). Scoped. */
+#communityPage .cm-composer,
+#communityPage .cm-stories-wrap,
+#communityPage .cm-high-card,
+#communityPage .cm-high-summary {
+  background: #7A8F6A;
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 8px 24px rgba(47,58,46,0.12);
+}
+
 /* Community detail — olive join CTA (scoped) */
 #communityPage .cg-action {
   background: #7A8F6A; color: #fff;
@@ -4422,7 +4432,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v103</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v104</span>
     </div>
   </section>
 
