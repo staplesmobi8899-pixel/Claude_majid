@@ -204,7 +204,9 @@ body {
   background: var(--warm-white);
   color: var(--charcoal);
   min-height: 100vh;
+  /* 'clip' does NOT create a scroll container (iOS: 'hidden' breaks position:fixed → nav sticks mid-page) */
   overflow-x: hidden;
+  overflow-x: clip;
   overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -4153,7 +4155,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v89</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v90</span>
     </div>
   </section>
 
@@ -10259,8 +10261,10 @@ const Router = {
       Header.update(name);
       if (route.onEnter) route.onEnter();
       const _sy = this._scroll[name] || 0;
+      const _doc = document.documentElement;
+      _doc.style.scrollBehavior = 'auto';   // restore instantly — smooth scroll makes the fixed nav lag
       window.scrollTo(0, _sy);
-      requestAnimationFrame(function () { window.scrollTo(0, _sy); });
+      requestAnimationFrame(function () { window.scrollTo(0, _sy); _doc.style.scrollBehavior = ''; });
     } catch (e) { console.error('[Router.go] Error:', e); }
   },
   back() {
