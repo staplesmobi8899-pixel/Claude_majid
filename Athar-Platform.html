@@ -4100,6 +4100,49 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 .cm-fab, .fab { background-image: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1)); }
 
 /* ═══════════════════════════════════════════════════════════════
+   DETAIL PAGE — reference design (scoped to #detailPage ONLY)
+   Warm beige base, cream cards, olive CTA, skills as chips.
+   ═══════════════════════════════════════════════════════════════ */
+#detailPage { background: linear-gradient(180deg, #F7F5F0 0%, #EDEAE2 100%) !important; }
+#detailPage .detail-title, #detailPage .detail-h { color: #2F3A2E; }
+
+/* Stat + info cards — cream, soft depth */
+#detailPage .dstat,
+#detailPage .detail-info-card {
+  background: rgba(255,255,255,0.82);
+  border: 1px solid rgba(122,143,106,0.16);
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+}
+#detailPage .dstat-n { color: #7A8F6A; }
+
+/* Primary CTA — olive with spring press */
+#detailPage .detail-join-btn {
+  background: #7A8F6A;
+  box-shadow: 0 8px 20px rgba(122,143,106,0.30);
+  transition: transform .2s cubic-bezier(.34,1.42,.5,1), background .2s, box-shadow .2s;
+}
+#detailPage .detail-join-btn:active { transform: scale(.97); background: #6b7f57; }
+
+/* Share / icon button — light glass */
+#detailPage .detail-icon-btn {
+  background: rgba(255,255,255,0.82);
+  border: 1px solid rgba(122,143,106,0.20);
+  color: #2F3A2E;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
+
+/* Required skills — chips instead of a bulleted list */
+#detailPage .detail-reqs { flex-direction: row; flex-wrap: wrap; gap: var(--sp-2); }
+#detailPage .detail-reqs li {
+  background: #EDEAE2; color: #5b6b4d;
+  padding: var(--sp-2) var(--sp-4); border-radius: 999px;
+  font-size: var(--fs-sm); font-weight: 700;
+  border: 1px solid rgba(122,143,106,0.16);
+}
+#detailPage .detail-reqs li::before { display: none; content: none; }
+
+/* ═══════════════════════════════════════════════════════════════
    EXPLORE PAGE — reference design (scoped to #explorePage ONLY)
    Light glass search + filters, olive-active category chips, header.
    ═══════════════════════════════════════════════════════════════ */
@@ -4325,7 +4368,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v99</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v100</span>
     </div>
   </section>
 
