@@ -62,3 +62,16 @@ begin
     exception when duplicate_object then null; when undefined_table then null; end;
   end loop;
 end $$;
+
+-- ---- is_admin() + profiles update policy (lets appointed admins edit users) ----
+create or replace function public.is_admin()
+returns boolean language sql stable security definer set search_path = public
+as $$
+  select exists (
+    select 1 from public.profiles
+    where id = auth.uid() and role in ('admin', 'super_admin')
+  );
+$$;
+drop policy if exists "profiles update self or admin" on public.profiles;
+create policy "profiles update self or admin" on public.profiles
+  for update using ( auth.uid() = id or public.is_admin() );

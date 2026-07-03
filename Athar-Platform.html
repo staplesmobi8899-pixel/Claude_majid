@@ -3321,7 +3321,10 @@ select.auth-input { -webkit-appearance: none; appearance: none; }
 .notif-list { max-width: var(--content-max); margin: 0 auto; padding: var(--sp-2) var(--sp-4) var(--sp-7); }
 .notif-item { display: flex; gap: var(--sp-3); align-items: flex-start; padding: var(--sp-4);
   border-radius: var(--r-lg); background: var(--white); border: 1px solid var(--line-sand); margin-bottom: var(--sp-3); }
-.notif-item.unread { background: var(--olive-pale); border-color: rgba(90,107,58,0.22); }
+.notif-item.unread { background: rgba(122,143,106,0.14); border-color: rgba(122,143,106,0.30); }
+.notif-item.unread .notif-text { font-weight: 800; }
+.notif-item .notif-dot { background: var(--charcoal-20); box-shadow: none; }
+.notif-item.unread .notif-dot { background: #7A8F6A; box-shadow: 0 0 0 3px rgba(122,143,106,0.20); }
 .notif-dot { width: 8px; height: 8px; border-radius: var(--r-full); background: var(--charcoal-20); margin-top: 6px; flex: none; }
 .notif-item.unread .notif-dot { background: var(--accent-btn); }
 .notif-body { flex: 1; min-width: 0; }
@@ -4459,7 +4462,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v105</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v106</span>
     </div>
   </section>
 
