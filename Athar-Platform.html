@@ -4153,7 +4153,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v80</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v81</span>
     </div>
   </section>
 
@@ -4331,7 +4331,6 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
   <!-- HOME -->
   <div class="page active" id="homePage">
     <div class="home-greet" id="homeGreet"></div>
-    <div class="home-section" id="homeFeatured"></div>
     <div class="home-section">
       <div class="section-header"><div class="section-title" data-i18n="catsTitle"></div></div>
       <div class="cat-chips" id="homeCats"></div>
@@ -4339,7 +4338,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
     <div class="home-section">
       <div class="section-header">
         <div class="section-title" data-i18n="trendingTitle"></div>
-        <span class="section-link" onclick="goPage('explore')" data-i18n="seeAll"></span>
+        <span class="section-link" onclick="goPage('explore')" data-i18n="exploreMore"></span>
       </div>
       <div id="homeTrending"></div>
     </div>
@@ -5965,7 +5964,7 @@ const T = {
     sortRecent: 'الأحدث', sortPopular: 'الأكثر تفاعلاً', sortUrgent: 'الأقرب موعداً', sortFarthest: 'الأبعد موعداً', sortSaved: '♡ لوقت لاحق',
     noResults: 'لا توجد نتائج', noResultsSub: 'جرّب كلمات أو فلاتر مختلفة.',
     greetSub: 'مبادرات مُلهمة تنتظر مشاركتك، وأرضٌ تنتظر خطوتك.', catsTitle: 'تصفّح حسب الفئة', trendingTitle: 'الأكثر تفاعلاً',
-    highlightsTitle: 'إضاءات المجتمع', topVolunteers: 'أبرز المتطوعين', viewAll: 'عرض الكل', activeCities: 'مدن نشطة', featuredTag: 'مميّزة', nearestTag: 'أقرب حملة',
+    highlightsTitle: 'إضاءات المجتمع', topVolunteers: 'أبرز المتطوعين', viewAll: 'عرض الكل', exploreMore: 'استكشف المزيد', activeCities: 'مدن نشطة', featuredTag: 'مميّزة', nearestTag: 'أقرب حملة',
     communityTitle: 'المجتمع', communitySub: 'مساحة صُنّاع الأثر — شارك، الهم، وانتمِ.', communitySoonTitle: 'مجتمع أثر قريباً', communitySoonMsg: 'نبني مساحة تجمع المتطوعين لمشاركة قصصهم وإلهام بعضهم. ترقّبوا.',
     cmTabFeed: 'الموجز', cmTabStories: 'قصص الأثر', cmTabCommunities: 'المجتمعات', cmTabHighlights: 'الأبرز',
     cgCreate: 'إنشاء مجتمع', cgMembers: 'عضو', cgJoined: 'منضمّ', cgEmpty: 'لا مجتمعات بعد — كن أول من ينشئ مجتمعًا', cgJoin: 'انضمام', cgLeave: 'مغادرة', cgPending: 'بانتظار الموافقة', cgBack: 'المجتمعات', cgNoPosts: 'لا منشورات بعد في هذا المجتمع', cgOwner: 'المنشئ', cgRemove: 'إزالة', cgEdit: 'تعديل', cgDelete: 'حذف المجتمع', cgRequests: 'طلبات الانضمام', cgApprove: 'موافقة', cgReject: 'رفض', cgPin: 'تثبيت', cgUnpin: 'إلغاء التثبيت', cgPinned: 'مثبّت', cgAlready: 'أنت عضو بالفعل', cgCoverBtn: 'صورة الغلاف', cgNameLabel: 'اسم المجتمع', cgDescLabel: 'وصف المجتمع', cgPrivateLabel: 'مجتمع خاص (موافقة على الأعضاء)', cgSubmit: 'حفظ', cgCreatedToast: 'تم إنشاء المجتمع', cgSavedToast: 'تم حفظ التعديلات', cgDeletedToast: 'تم حذف المجتمع', cgJoinedToast: 'انضممت للمجتمع', cgLeftToast: 'غادرت المجتمع', cgRequestSent: 'تم إرسال طلب الانضمام',
@@ -6156,7 +6155,7 @@ const T = {
     sortRecent: 'Recent', sortPopular: 'Most active', sortUrgent: 'Soonest', sortFarthest: 'Latest date', sortSaved: '♡ For later',
     noResults: 'No results', noResultsSub: 'Try different keywords or filters.',
     greetSub: 'Inspiring initiatives await your hands, and a land awaits your steps.', catsTitle: 'Browse by category', trendingTitle: 'Trending now',
-    highlightsTitle: 'Community highlights', topVolunteers: 'Top volunteers', viewAll: 'View all', activeCities: 'Active cities', featuredTag: 'Featured', nearestTag: 'Nearest',
+    highlightsTitle: 'Community highlights', topVolunteers: 'Top volunteers', viewAll: 'View all', exploreMore: 'Explore more', activeCities: 'Active cities', featuredTag: 'Featured', nearestTag: 'Nearest',
     communityTitle: 'Community', communitySub: 'A space for changemakers — share, inspire, belong.', communitySoonTitle: 'ATHAR Community is coming', communitySoonMsg: 'We are building a space for volunteers to share stories and inspire each other. Stay tuned.',
     cmTabFeed: 'Feed', cmTabStories: 'Impact Stories', cmTabCommunities: 'Communities', cmTabHighlights: 'Highlights',
     cgCreate: 'Create community', cgMembers: 'members', cgJoined: 'Joined', cgEmpty: 'No communities yet — be the first to create one', cgJoin: 'Join', cgLeave: 'Leave', cgPending: 'Awaiting approval', cgBack: 'Communities', cgNoPosts: 'No posts in this community yet', cgOwner: 'Owner', cgRemove: 'Remove', cgEdit: 'Edit', cgDelete: 'Delete community', cgRequests: 'Join requests', cgApprove: 'Approve', cgReject: 'Reject', cgPin: 'Pin', cgUnpin: 'Unpin', cgPinned: 'Pinned', cgAlready: 'You are already a member', cgCoverBtn: 'Cover image', cgNameLabel: 'Community name', cgDescLabel: 'Community description', cgPrivateLabel: 'Private community (approve members)', cgSubmit: 'Save', cgCreatedToast: 'Community created', cgSavedToast: 'Changes saved', cgDeletedToast: 'Community deleted', cgJoinedToast: 'You joined the community', cgLeftToast: 'You left the community', cgRequestSent: 'Join request sent',
@@ -8215,9 +8214,10 @@ const HomeUI = {
   },
   trending() {
     const el = document.getElementById('homeTrending'); if (!el) return;
-    const list = DiscoveryService.trending(4);
-    el.innerHTML = list.length
-      ? '<div class="camps-grid">' + list.map(c => campCardHTML(c)).join('') + '</div>'
+    // Show a single priority campaign: an emergency one if any, else the nearest.
+    const one = DiscoveryService.emergencyTop() || DiscoveryService.nearest();
+    el.innerHTML = one
+      ? '<div class="camps-grid">' + campCardHTML(one) + '</div>'
       : emptyState('', t('noData'), t('noDataSub'));
   },
   highlights() {
