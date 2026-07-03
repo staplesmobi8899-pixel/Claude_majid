@@ -4153,7 +4153,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v79</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v80</span>
     </div>
   </section>
 
@@ -8109,7 +8109,8 @@ function campCardHTML(c) {
       joinBtnHtml = CampaignService.canLeave(c)
         ? `<button class="join-btn js-leave" onclick="event.stopPropagation();handleLeave('${c.id}')">${t('leaveCampBtn')}</button>`
         : `<button class="join-btn js-leave-off" onclick="event.stopPropagation();toast(t('cantLeave'),'warning')">${t('leaveCampBtn')}</button>`;
-    } else if (isOpen && !full && daysUntil > 1) {
+    } else if (isOpen && !full) {
+      // open & not full → Join is available (matches the 'Waiting for volunteers' chip)
       joinBtnHtml = `<button class="join-btn" onclick="event.stopPropagation();handleJoin('${c.id}')">${t('joinBtn')}</button>`;
     }
 
