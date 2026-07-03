@@ -4099,6 +4099,23 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 /* FAB extra gloss */
 .cm-fab, .fab { background-image: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1)); }
 
+/* Community detail — olive join CTA (scoped) */
+#communityPage .cg-action {
+  background: #7A8F6A; color: #fff;
+  box-shadow: 0 6px 16px rgba(122,143,106,0.26);
+  transition: transform .2s cubic-bezier(.34,1.42,.5,1), background .2s;
+}
+#communityPage .cg-action.ghost { background: #EDEAE2; color: #5b6b4d; box-shadow: none; }
+#communityPage .cg-action:active { transform: scale(.97); background: #6b7f57; }
+
+/* Create-community modal — olive submit (scoped to #communityModal) */
+#communityModal .dark-submit {
+  background: #7A8F6A !important; color: #fff !important;
+  box-shadow: 0 8px 20px rgba(122,143,106,0.28);
+  transition: transform .2s cubic-bezier(.34,1.42,.5,1), background .2s;
+}
+#communityModal .dark-submit:active { transform: scale(.98); background: #6b7f57 !important; }
+
 /* ═══════════════════════════════════════════════════════════════
    COMMUNITY PAGE — reference design (scoped to #communityPage ONLY)
    Olive-active tabs, olive create CTA, softer cards.
@@ -4405,7 +4422,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v102</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v103</span>
     </div>
   </section>
 
