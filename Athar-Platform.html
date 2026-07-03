@@ -4153,7 +4153,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v88</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v89</span>
     </div>
   </section>
 
@@ -8054,6 +8054,25 @@ function openImageViewer(src) {
    ══════════════════════════════════════════ */
 
 /** Render a single campaign card HTML */
+/* Single source of truth for a campaign's display state — used by cards AND detail. */
+function campStateInfo(c) {
+  const vol = c.volunteers || 0, needed = c.needed || 0;
+  const full = vol >= needed && needed > 0;
+  const isOpen = (c.status === 'approved' || c.status === 'under_process');
+  const today = new Date().toISOString().slice(0, 10);
+  const dateReached = !!(c.date && c.date <= today);
+  const isEmergency = Models.displayStatus(c) === 'emergency';
+  if (isEmergency)                   return { label: t('emergencyTag'),  cls: 'emg' };
+  if (c.status === 'done')           return { label: t('campDoneState'), cls: 'done' };
+  if (isOpen && full && dateReached) return { label: t('campRunning'),   cls: 'running' };
+  if (isOpen && full)                return { label: t('campCountFull'), cls: 'full' };
+  if (isOpen)                        return { label: t('campWaiting'),   cls: 'waiting' };
+  if (c.status === 'pending')        return { label: t('sPending'),      cls: 'pending' };
+  if (c.status === 'rejected')       return { label: t('sRejected'),     cls: 'rejected' };
+  if (c.status === 'cancelled')      return { label: (State.lang === 'ar' ? 'ملغاة' : 'Cancelled'), cls: 'rejected' };
+  if (c.status === 'archived')       return { label: (State.lang === 'ar' ? 'مؤرشفة' : 'Archived'), cls: 'pending' };
+  return { label: '', cls: '' };
+}
 function campCardHTML(c) {
   try {
     const joined = CampaignService.isJoined(c);
@@ -8087,16 +8106,8 @@ function campCardHTML(c) {
     // Has the campaign day arrived (today >= campaign date)?
     const _today = new Date().toISOString().slice(0, 10);
     const dateReached = !!(c.date && c.date <= _today);
-    // Status chip: waiting → full (count met, before the day) → in progress (count met + day) → done
-    let stateLabel = '', stateCls = '';
-    if (isEmergency)                         { stateLabel = t('emergencyTag'); stateCls = 'emg'; }
-    else if (c.status === 'done')            { stateLabel = t('campDoneState'); stateCls = 'done'; }
-    else if (isOpen && full && dateReached)  { stateLabel = t('campRunning');   stateCls = 'running'; }
-    else if (isOpen && full)                 { stateLabel = t('campCountFull'); stateCls = 'full'; }
-    else if (isOpen)                         { stateLabel = t('campWaiting');   stateCls = 'waiting'; }
-    else if (c.status === 'pending')         { stateLabel = t('sPending');      stateCls = 'pending'; }
-    else if (c.status === 'rejected')        { stateLabel = t('sRejected');     stateCls = 'rejected'; }
-    const statusChip = stateLabel ? `<span class="camp-state ${stateCls}">${stateLabel}</span>` : '';
+    const _st = campStateInfo(c);   // single source of truth (same as the detail page)
+    const statusChip = _st.label ? `<span class="camp-state ${_st.cls}">${_st.label}</span>` : '';
     const inProgress = isOpen && full && dateReached;
     // Action button — only the join/leave action for this user (state lives in the chip)
     if (joined && isOpen) {
@@ -9902,20 +9913,14 @@ function renderDetail(id) {
   const dOpen = (c.status === 'approved' || c.status === 'under_process');
   let dDays = 999;
   if (c.date) { const dd = (new Date(c.date + 'T00:00:00') - new Date()) / 86400000; if (!isNaN(dd)) dDays = dd; }
-  if (!dOpen) {
-    actionBtn = '<button class="detail-join-btn" disabled>' + si[State.lang] + '</button>';
-  } else if (dDays <= 1) {
-    actionBtn = '<button class="detail-join-btn" disabled>' + t('campRunning') + '</button>';
-  } else if (isFull) {
-    actionBtn = joined
-      ? '<button class="detail-join-btn leave" onclick="handleLeave(\'' + id + '\')">' + t('leaveCampBtn') + '</button>'
-      : '<button class="detail-join-btn" disabled>' + t('campFull') + '</button>';
-  } else if (joined) {
+  if (joined && dOpen) {
     actionBtn = CampaignService.canLeave(c)
       ? '<button class="detail-join-btn leave" onclick="handleLeave(\'' + id + '\')">' + t('leaveCampBtn') + '</button>'
       : '<button class="detail-join-btn leave" onclick="toast(t(\'cantLeave\'),\'warning\')">' + t('leaveCampBtn') + '</button>';
-  } else {
+  } else if (dOpen && !isFull) {
     actionBtn = '<button class="detail-join-btn" onclick="handleJoin(\'' + id + '\')">' + t('joinBtn') + '</button>';
+  } else {
+    actionBtn = '<button class="detail-join-btn" disabled>' + campStateInfo(c).label + '</button>';
   }
 
   const reqs = [t('req1'), t('req2'), t('req3')];
@@ -9937,7 +9942,7 @@ function renderDetail(id) {
 
   document.getElementById('detailBody').innerHTML =
     '<div class="detail-body-inner">' +
-      '<div class="detail-badges"><span class="camp-badge ' + si.cls + '">' + si[State.lang] + '</span>' +
+      (function(){ var st = campStateInfo(c); return '<div class="detail-badges"><span class="camp-badge camp-state ' + st.cls + '">' + st.label + '</span>'; })() +
         (isEmergency ? '<span class="camp-badge status-emergency">' + icon('alert') + ' ' + t('emergencyTag') + '</span>' : '') +
         Models.daysLeftBadge(c) +
         (cm ? '<span class="detail-cat-pill">' + (cm.icon ? icon(cm.icon) + ' ' : '') + (isAr ? cm.ar : cm.en) + '</span>' : '') +
