@@ -4153,7 +4153,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v81</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v82</span>
     </div>
   </section>
 
@@ -8214,11 +8214,26 @@ const HomeUI = {
   },
   trending() {
     const el = document.getElementById('homeTrending'); if (!el) return;
-    // Show a single priority campaign: an emergency one if any, else the nearest.
-    const one = DiscoveryService.emergencyTop() || DiscoveryService.nearest();
-    el.innerHTML = one
-      ? '<div class="camps-grid">' + campCardHTML(one) + '</div>'
-      : emptyState('', t('noData'), t('noDataSub'));
+    // A single priority campaign as a compact hero card (name + date only).
+    const emg = DiscoveryService.emergencyTop();
+    const c = emg || DiscoveryService.nearest();
+    if (!c) { el.innerHTML = emptyState('', t('noData'), t('noDataSub')); return; }
+    const isEmg = !!emg;
+    const tx = Models.getCampText(c);
+    const bg = isEmg
+      ? "background-image:linear-gradient(rgba(120,18,12,0.32),rgba(120,18,12,0.80)),url('" + Models.campImage(c) + "')"
+      : "background-image:linear-gradient(rgba(46,61,31,0.15),rgba(46,61,31,0.75)),url('" + Models.campImage(c) + "')";
+    const tag = isEmg
+      ? '<span class="featured-tag featured-tag-emg">' + icon('alert') + ' ' + t('emergencyTag') + '</span>'
+      : '<span class="featured-tag"> ' + t('nearestTag') + '</span>';
+    el.innerHTML =
+      '<div class="featured-card' + (isEmg ? ' featured-emergency' : '') + '" onclick="openDetail(\'' + c.id + '\')" style="' + bg + '">' +
+        '<div class="featured-body">' +
+          tag +
+          '<div class="featured-title">' + tx.title + '</div>' +
+          '<div class="featured-meta">' + icon('calendar') + ' ' + fmtDate(c.date) + '</div>' +
+        '</div>' +
+      '</div>';
   },
   highlights() {
     const el = document.getElementById('homeHighlights'); if (!el) return;
