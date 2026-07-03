@@ -3957,7 +3957,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
   will-change: transform;
   -webkit-backface-visibility: hidden;
 }
-#appScreen { padding-bottom: 86px; }
+#appScreen { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
 .nav-btn svg, .nav-btn .ic { transition: transform 0.22s var(--spring); }
 .nav-btn.active svg, .nav-btn.active .ic { transform: translateY(-2px) scale(1.08); }
 /* Liquid-glass selected capsule (ATHAR olive tint) */
@@ -4153,7 +4153,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v86</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v87</span>
     </div>
   </section>
 
