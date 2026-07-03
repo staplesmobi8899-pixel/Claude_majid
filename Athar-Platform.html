@@ -4239,7 +4239,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v94</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v95</span>
     </div>
   </section>
 
@@ -4502,7 +4502,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
         <div class="ig-bio" id="profileBio"></div>
         <div class="ig-loc" id="profileLoc"></div>
       </div>
-      <div class="ig-actions">
+      <div class="ig-actions" id="profileActions">
         <button class="ig-btn primary" onclick="openEditProfile()" type="button" data-i18n="editProfileBtn"></button>
         <button class="ig-btn" onclick="shareProfile()" type="button" data-i18n="shareProfileBtn"></button>
       </div>
@@ -8589,7 +8589,10 @@ function renderProfile() {
       dNotif.textContent = uN ? (uN > 9 ? '9+' : String(uN)) : '';
     }
     const bioEl = document.getElementById('profileBio');
-    if (bioEl) bioEl.textContent = u.bio || t('noBio');
+    if (bioEl) {
+      if (State.isGuest || u.status === 'guest') { bioEl.style.display = 'none'; }
+      else { bioEl.style.display = ''; bioEl.textContent = u.bio || t('noBio'); }
+    }
 
     const stats = StatsService.compute(u);
 
@@ -8638,7 +8641,8 @@ function renderProfile() {
         '<div class="pf-rank-next">' + (r.next ? (r.into + ' / ' + r.span + ' ' + t('xpLabel') + ' \u00b7 ' + t('nextLevel') + ' ' + (isAr ? r.next.ar : r.next.en)) : t('maxLevel')) + '</div>';
     }
     const qk = document.getElementById('pfQuick');
-    if (qk) qk.innerHTML =
+    if (qk && (State.isGuest || u.status === 'guest')) { qk.innerHTML = ''; qk.style.display = 'none'; }
+    else if (qk) qk.innerHTML =
       '<button class="pf-qbtn" onclick="goPage(\'create\')"><span class="pf-qico">' + icon('flag') + '</span>' + t('qaCamp') + '</button>' +
       '<button class="pf-qbtn" onclick="openCreateCommunity()"><span class="pf-qico">' + icon('people') + '</span>' + t('qaComm') + '</button>' +
       '<button class="pf-qbtn" onclick="shareProfile()"><span class="pf-qico">' + icon('share') + '</span>' + t('qaShare') + '</button>';
@@ -8681,6 +8685,8 @@ function renderProfile() {
         statusBanner.innerHTML = `<div class="status-banner ${cls}">${txt}</div>`;
       }
     }
+    const profileActions = document.getElementById('profileActions');
+    if (profileActions) profileActions.style.display = (State.isGuest || u.status === 'guest') ? 'none' : '';
 
     const idPhotoBox = document.getElementById('idPhotoBox');
     if (idPhotoBox) {
