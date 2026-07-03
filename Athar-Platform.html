@@ -4153,7 +4153,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v84</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v85</span>
     </div>
   </section>
 
@@ -4522,10 +4522,6 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 
       <div class="set-group-h" data-i18n="setPrivacyGroup"></div>
       <div class="set-card">
-        <div class="set-row" id="setPrivacyRow">
-          <div class="set-texts"><div class="set-title" data-i18n="setPublic"></div><div class="set-sub" data-i18n="setPublicSub"></div></div>
-          <button class="switch" id="swPrivacy" onclick="toggleProfileVisibilityFromSettings()" role="switch" aria-label="public profile"><span class="switch-knob"></span></button>
-        </div>
         <div class="set-row">
           <div class="set-texts"><div class="set-title" data-i18n="setNotif"></div><div class="set-sub" data-i18n="setNotifSub"></div></div>
           <button class="switch" id="swNotif" onclick="toggleNotifPref()" role="switch" aria-label="notifications"><span class="switch-knob"></span></button>
@@ -11489,21 +11485,13 @@ function cmRenderStories() {
 /** Public-safe display name: masks private accounts (first letter + ****), except for admin/self. */
 function publicName(user) {
   if (!user) return '';
-  const name = (user.name || '').trim();
-  if (!name) return '';
-  if (State.isAdmin) return name;
-  if (State.cu && user.id && user.id === State.cu.id) return name;
-  if (user.profilePublic) return name;
-  return maskName(name);
+  return (user.name || '').trim();   // private/public accounts removed — names are shown
 }
 
 /** Mask a name to its first 1–2 letters + stars (privacy). Admin/self/public bypass via publicName. */
 function maskName(name) {
-  const n = (name || '').trim();
-  if (!n) return '';
-  const keep = n.length <= 3 ? 1 : 2;
-  const stars = '*'.repeat(Math.max(3, n.length - keep));
-  return n.slice(0, keep) + '‎' + stars;
+  // Private/public accounts removed — names are always shown.
+  return (name || '').trim();
 }
 
 function cmRenderHighlights() {
