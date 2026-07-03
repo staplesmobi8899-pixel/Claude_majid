@@ -4153,7 +4153,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v83</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v84</span>
     </div>
   </section>
 
@@ -4420,7 +4420,6 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
         <button class="ig-btn primary" onclick="openEditProfile()" type="button" data-i18n="editProfileBtn"></button>
         <button class="ig-btn" onclick="shareProfile()" type="button" data-i18n="shareProfileBtn"></button>
       </div>
-      <div class="profile-privacy" id="profilePrivacy"></div>
       <input type="file" id="avatarInput" accept="image/*" class="hidden-file" onchange="uploadAvatar(event)">
     </div>
     <div class="status-banner-wrap">
@@ -8498,12 +8497,6 @@ function renderProfile() {
     }
     const bioEl = document.getElementById('profileBio');
     if (bioEl) bioEl.textContent = u.bio || t('noBio');
-    const priv = document.getElementById('profilePrivacy');
-    if (priv) {
-      const isPublic = !!u.profilePublic;
-      priv.innerHTML = '<button class="privacy-toggle' + (isPublic ? ' on' : '') + '" onclick="toggleProfileVisibility()">' +
-        '<span class="privacy-dot"></span><span>' + (isPublic ? t('profilePublic') : t('profilePrivate')) + '</span></button>';
-    }
 
     const stats = StatsService.compute(u);
 
