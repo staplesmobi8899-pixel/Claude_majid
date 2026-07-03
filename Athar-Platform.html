@@ -4100,6 +4100,45 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 .cm-fab, .fab { background-image: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1)); }
 
 /* ═══════════════════════════════════════════════════════════════
+   EXPLORE PAGE — reference design (scoped to #explorePage ONLY)
+   Light glass search + filters, olive-active category chips, header.
+   ═══════════════════════════════════════════════════════════════ */
+#explorePage .explore-head { margin-bottom: var(--sp-4); }
+#explorePage .explore-title { font-size: var(--fs-2xl); font-weight: 800; color: #2F3A2E; }
+#explorePage .explore-sub { font-size: var(--fs-sm); color: rgba(63,70,58,0.55); margin-top: var(--sp-1); }
+
+/* Search bar — light glass */
+#explorePage .search-bar {
+  background: rgba(255,255,255,0.74);
+  border: 1px solid rgba(122,143,106,0.20);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+#explorePage .search-bar svg { stroke: #7A8F6A; }
+#explorePage .search-bar input { color: #2F3A2E; }
+#explorePage .search-bar input::placeholder { color: rgba(63,70,58,0.45); }
+
+/* Filter selects — light glass */
+#explorePage .explore-filters select {
+  background: rgba(255,255,255,0.74);
+  border: 1px solid rgba(122,143,106,0.20);
+  color: #2F3A2E;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+/* Category chips — inactive light, active olive */
+#explorePage #exploreChips .cat-chip {
+  background: #EDEAE2; color: #5b6b4d;
+  border: 1px solid rgba(122,143,106,0.16);
+  transition: transform .18s cubic-bezier(.34,1.42,.5,1), background .2s;
+}
+#explorePage #exploreChips .cat-chip.active {
+  background: #7A8F6A; color: #fff; border-color: transparent;
+  box-shadow: 0 6px 16px rgba(122,143,106,0.26);
+}
+#explorePage #exploreChips .cat-chip:active { transform: scale(.96); }
+
+/* ═══════════════════════════════════════════════════════════════
    HOME PAGE — reference design (scoped to #homePage ONLY)
    Clean mid-olive (#7A8F6A) surfaces, soft rounding + shadows.
    Replaces the dark forest + fingerprint texture on this page only.
@@ -4286,7 +4325,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v98</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v99</span>
     </div>
   </section>
 
@@ -4484,6 +4523,10 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
   <!-- EXPLORE -->
   <div class="page" id="explorePage">
     <div class="explore-top">
+      <div class="explore-head">
+        <div class="explore-title" data-i18n="exploreHeadTitle"></div>
+        <div class="explore-sub" data-i18n="exploreHeadSub"></div>
+      </div>
       <div class="search-bar">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input id="exploreSearch" type="search" autocomplete="off" oninput="ExploreUI.search(this.value)" data-i18n-ph="searchPlaceholder">
@@ -6088,7 +6131,7 @@ const T = {
     communityReq: 'بطلب من المجتمع', editCamp: 'تعديل الحملة',
     savedTitle: 'المحفوظات', savedSub: 'المبادرات التي حفظتها', noSaved: 'لا توجد مبادرات محفوظة بعد',
     hoursLabel: 'الساعات المطلوبة', campGallery: 'معرض الصور (اختياري)', galleryTitle: 'معرض الصور', campTitleLabel: 'عنوان الحملة', neededLabel: 'عدد المتطوعين المقدّر', categoryLabel: 'الفئة', saveChanges: 'حفظ التعديلات', changesSaved: 'تم حفظ التعديلات ',
-    allCats: 'الكل', allCities: 'كل المدن', searchPlaceholder: 'ابحث عن مبادرة، فئة، أو مدينة...',
+    allCats: 'الكل', allCities: 'كل المدن', searchPlaceholder: 'ابحث عن مبادرة، فئة، أو مدينة...', exploreHeadTitle: 'استكشاف المبادرات', exploreHeadSub: 'ابحث، شارك، واصنع أثراً حقيقيًا',
     sortRecent: 'الأحدث', sortPopular: 'الأكثر تفاعلاً', sortUrgent: 'الأقرب موعداً', sortFarthest: 'الأبعد موعداً', sortSaved: '♡ لوقت لاحق',
     noResults: 'لا توجد نتائج', noResultsSub: 'جرّب كلمات أو فلاتر مختلفة.',
     greetSub: 'مبادرات مُلهمة تنتظر مشاركتك، وأرضٌ تنتظر خطوتك.', catsTitle: 'تصفّح حسب الفئة', trendingTitle: 'الأكثر تفاعلاً',
@@ -6279,7 +6322,7 @@ const T = {
     communityReq: 'Community request', editCamp: 'Edit campaign',
     savedTitle: 'Saved', savedSub: 'Initiatives you bookmarked', noSaved: 'No saved initiatives yet',
     hoursLabel: 'Hours needed', campGallery: 'Gallery (optional)', galleryTitle: 'Gallery', campTitleLabel: 'Campaign title', neededLabel: 'Estimated volunteers', categoryLabel: 'Category', saveChanges: 'Save changes', changesSaved: 'Changes saved ',
-    allCats: 'All', allCities: 'All cities', searchPlaceholder: 'Search initiatives, categories, or cities...',
+    allCats: 'All', allCities: 'All cities', searchPlaceholder: 'Search initiatives, categories, or cities...', exploreHeadTitle: 'Explore initiatives', exploreHeadSub: 'Search, join, and make real impact',
     sortRecent: 'Recent', sortPopular: 'Most active', sortUrgent: 'Soonest', sortFarthest: 'Latest date', sortSaved: '♡ For later',
     noResults: 'No results', noResultsSub: 'Try different keywords or filters.',
     greetSub: 'Inspiring initiatives await your hands, and a land awaits your steps.', catsTitle: 'Browse by category', trendingTitle: 'Trending now',
