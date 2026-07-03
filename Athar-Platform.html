@@ -4095,76 +4095,6 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 
 /* FAB extra gloss */
 .cm-fab, .fab { background-image: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1)); }
-
-/* ═══════════════════════════════════════════════════════════════
-   REFERENCE POLISH v91 — warm-beige premium pass (light mode only)
-   Softer cream surfaces, generous rounding, gentle shadows, sage CTAs.
-   Scoped to :not([data-theme="dark"]) so dark mode is untouched.
-   Identity preserved: olive + beige, no branding/typography change.
-   ═══════════════════════════════════════════════════════════════ */
-html:not([data-theme="dark"]) {
-  --accent-btn: #6f8353;                 /* sage-olive CTA (reference) */
-  --card-surface: #f7f3ea;               /* warm cream card */
-  --card-line:    rgba(120,108,82,0.16); /* soft warm hairline */
-  --card-shadow:  0 6px 22px rgba(64,58,40,0.07), 0 1px 3px rgba(64,58,40,0.05);
-  --card-radius:  22px;
-}
-/* Warm page base — reference cream instead of cold near-white */
-html:not([data-theme="dark"]) body { background: #ebe4d6; }
-html:not([data-theme="dark"]) .bottom-nav { background: #f4efe4; }
-
-/* Cream cards with soft shadow + generous radius across every page */
-html:not([data-theme="dark"]) .camp-card,
-html:not([data-theme="dark"]) .adm-card,
-html:not([data-theme="dark"]) .set-card,
-html:not([data-theme="dark"]) .detail-info-card,
-html:not([data-theme="dark"]) .offer-card,
-html:not([data-theme="dark"]) .about-block,
-html:not([data-theme="dark"]) .cm-high-card,
-html:not([data-theme="dark"]) .cm-ba-cell,
-html:not([data-theme="dark"]) .admin-card {
-  background: var(--card-surface);
-  border: 1px solid var(--card-line);
-  border-radius: var(--card-radius);
-  box-shadow: var(--card-shadow);
-}
-html:not([data-theme="dark"]) .camp-card { overflow: hidden; }
-html:not([data-theme="dark"]) .camp-card:hover {
-  box-shadow: 0 14px 34px rgba(64,58,40,0.12);
-  border-color: var(--card-line);
-}
-
-/* Sage-olive primary CTAs on every page (auth included) with soft lift */
-html:not([data-theme="dark"]) .detail-join-btn,
-html:not([data-theme="dark"]) .submit-btn,
-html:not([data-theme="dark"]) .auth-btn-primary {
-  background: var(--accent-btn) !important;
-  color: #fff !important;
-  box-shadow: 0 8px 18px rgba(90,107,58,0.26);
-}
-html:not([data-theme="dark"]) .detail-join-btn:hover,
-html:not([data-theme="dark"]) .submit-btn:hover,
-html:not([data-theme="dark"]) .auth-btn-primary:hover {
-  background: #63764a !important;
-  box-shadow: 0 10px 24px rgba(90,107,58,0.32);
-}
-
-/* Warm cream form fields — rounded, soft border (reference forms) */
-html:not([data-theme="dark"]) .edit-field input,
-html:not([data-theme="dark"]) .edit-field textarea,
-html:not([data-theme="dark"]) .edit-field select,
-html:not([data-theme="dark"]) .auth-input {
-  background: #faf7f0;
-  border: 1px solid var(--card-line);
-  border-radius: 14px;
-}
-html:not([data-theme="dark"]) .edit-field input:focus,
-html:not([data-theme="dark"]) .edit-field textarea:focus,
-html:not([data-theme="dark"]) .edit-field select:focus,
-html:not([data-theme="dark"]) .auth-input:focus {
-  border-color: var(--olive-light);
-  box-shadow: 0 0 0 3px rgba(138,155,110,0.18);
-}
 </style>
 </head>
 <body>
@@ -4225,7 +4155,7 @@ html:not([data-theme="dark"]) .auth-input:focus {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v91</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v90</span>
     </div>
   </section>
 
