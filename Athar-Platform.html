@@ -4100,6 +4100,53 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 .cm-fab, .fab { background-image: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1)); }
 
 /* ═══════════════════════════════════════════════════════════════
+   HOME PAGE — reference design (scoped to #homePage ONLY)
+   Clean mid-olive (#7A8F6A) surfaces, soft rounding + shadows.
+   Replaces the dark forest + fingerprint texture on this page only.
+   ═══════════════════════════════════════════════════════════════ */
+#homePage .greet-hi { color: #2F3A2E; }
+#homePage .section-link { color: #7A8F6A; font-weight: 700; }
+
+/* Category chips — clean olive pills */
+#homePage #homeCats .cat-chip {
+  background: #7A8F6A;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 999px;
+  color: #fff; font-weight: 700;
+  box-shadow: 0 6px 16px rgba(122,143,106,0.26);
+  transition: transform .18s cubic-bezier(.34,1.42,.5,1), box-shadow .2s, background .2s;
+}
+#homePage #homeCats .cat-chip:active { transform: scale(.96); background: #6b7f57; box-shadow: 0 3px 10px rgba(122,143,106,0.22); }
+
+/* Community-highlight + stat cards — mid-olive, clean, soft depth */
+#homePage .hl-card,
+#homePage .hl-stat {
+  background: linear-gradient(160deg, #8A9B6E 0%, #7A8F6A 55%, #6E8258 100%);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 22px;
+  box-shadow: 0 8px 24px rgba(47,58,46,0.14);
+}
+#homePage .hl-rank, #homePage .hl-rank.top { background: rgba(255,255,255,0.22); color: #fff; }
+#homePage .hl-val { color: rgba(255,255,255,0.9); }
+#homePage .hl-viewall { background: rgba(255,255,255,0.20); }
+#homePage .hl-viewall:active { background: rgba(255,255,255,0.30); }
+#homePage .hl-stat-num { color: #fff; }
+
+/* Active cities — chips on the page background (first = active olive) */
+#homePage .hl-cities-sec { max-width: var(--content-max); margin: var(--sp-5) auto 0; }
+#homePage .hl-cities { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-2); }
+#homePage .hl-city {
+  background: #EDEAE2; color: #5b6b4d;
+  border: 1px solid rgba(122,143,106,0.18);
+  padding: var(--sp-2) var(--sp-4); border-radius: 999px;
+  font-size: var(--fs-sm); font-weight: 700;
+}
+#homePage .hl-city.active {
+  background: #7A8F6A; color: #fff; border-color: transparent;
+  box-shadow: 0 6px 16px rgba(122,143,106,0.26);
+}
+
+/* ═══════════════════════════════════════════════════════════════
    LOGIN PAGE — reference design (scoped to #authLogin ONLY)
    Liquid Glass · beige #F7F5F0 · olive #7A8F6A · soft shadows.
    No other page or logic is affected.
@@ -4239,7 +4286,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v96</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v97</span>
     </div>
   </section>
 
@@ -8351,7 +8398,7 @@ const HomeUI = {
         '<span class="hl-stat-label">' + (isAr ? 'متطوّع نشيط' : 'Active volunteers') + '</span></div>' +
       '</div>';
     const cities = (State.lang === 'ar') ? ['دمشق', 'ريف دمشق'] : ['Damascus', 'Rif Dimashq'];   // fixed active cities for now
-    const cityHtml = cities.length ? '<div class="hl-card"><div class="hl-h">' + t('activeCities') + '</div><div class="hl-cities">' + cities.map(c => '<span class="hl-city">' + c + '</span>').join('') + '</div></div>' : '';
+    const cityHtml = cities.length ? '<div class="hl-cities-sec"><div class="section-header"><div class="section-title">' + t('activeCities') + '</div></div><div class="hl-cities">' + cities.map((c, ci) => '<span class="hl-city' + (ci === 0 ? ' active' : '') + '">' + c + '</span>').join('') + '</div></div>' : '';
     el.innerHTML = '<div class="hl-card"><div class="hl-h">' + t('topVolunteers') + '</div>' + top + viewAll + '</div>' + statHtml + cityHtml;
   }
 };
