@@ -4095,6 +4095,87 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 
 /* FAB extra gloss */
 .cm-fab, .fab { background-image: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1)); }
+
+/* ═══════════════════════════════════════════════════════════════
+   LOGIN PAGE — reference design (scoped to #authLogin ONLY)
+   Liquid Glass · beige #F7F5F0 · olive #7A8F6A · soft shadows.
+   No other page or logic is affected.
+   ═══════════════════════════════════════════════════════════════ */
+#authLogin { background: linear-gradient(180deg, #F7F5F0 0%, #EFECE3 60%, #E9E5DA 100%); }
+
+/* Card: soft translucent glass panel */
+#authLogin .auth-card {
+  background: rgba(255,255,255,0.42);
+  border: 1px solid rgba(255,255,255,0.55);
+  border-radius: 26px;
+  box-shadow: 0 10px 40px rgba(63,70,58,0.08);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  padding: var(--sp-8) var(--sp-6);
+}
+
+/* Headings — strong contrast per spec */
+#authLogin .auth-title { color: #3F463A; }
+#authLogin .auth-sub   { color: rgba(63,70,58,0.62); }
+
+/* Segmented email/phone — glass, olive active */
+#authLogin .auth-seg { background: rgba(122,143,106,0.10); }
+#authLogin .auth-seg-btn.active { background: #7A8F6A; color: #fff; box-shadow: 0 4px 12px rgba(122,143,106,0.30); }
+
+/* Inputs — white glass, rounded 16px, soft shadow, leading icon */
+#authLogin .auth-input {
+  height: 54px;
+  background: rgba(255,255,255,0.72);
+  border: 1px solid rgba(122,143,106,0.20);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  color: #3F463A;
+  padding-inline-start: 48px;
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 20px 20px;
+}
+[dir="ltr"] #authLogin .auth-input { background-position: left 15px center; }
+#authLogin #authIdInput { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A8F6A' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='4' width='20' height='16' rx='3'/%3E%3Cpath d='M2 7l10 6 10-6'/%3E%3C/svg%3E"); }
+#authLogin .pw-wrap .auth-input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A8F6A' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='10' width='16' height='11' rx='2.5'/%3E%3Cpath d='M8 10V7a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E"); }
+#authLogin .auth-input:focus {
+  border-color: #7A8F6A;
+  box-shadow: 0 0 0 3px rgba(122,143,106,0.18), 0 4px 20px rgba(0,0,0,0.05);
+  outline: none;
+}
+#authLogin .auth-input::placeholder { color: rgba(63,70,58,0.42); }
+#authLogin .auth-label { color: rgba(63,70,58,0.7); }
+
+/* Primary button — olive glass pill + directional arrow + spring press */
+#authLogin .auth-btn-primary {
+  position: relative;
+  background: #7A8F6A;
+  color: #fff;
+  border-radius: 999px;
+  box-shadow: 0 8px 22px rgba(122,143,106,0.34), inset 0 1px 0 rgba(255,255,255,0.25);
+  transition: transform 0.2s cubic-bezier(0.34,1.42,0.5,1), background 0.2s, box-shadow 0.2s;
+}
+#authLogin .auth-btn-primary::after {
+  content: ''; position: absolute; top: 50%; inset-inline-end: 22px;
+  width: 22px; height: 22px; transform: translateY(-50%);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M12 5l7 7-7 7'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+[dir="rtl"] #authLogin .auth-btn-primary::after { transform: translateY(-50%) scaleX(-1); }
+#authLogin .auth-btn-primary:hover { background: #859873; box-shadow: 0 10px 26px rgba(122,143,106,0.40); }
+#authLogin .auth-btn-primary:active { transform: scale(0.97); background: #6b7f57; box-shadow: 0 4px 12px rgba(122,143,106,0.28); }
+
+/* Links + footer */
+#authLogin .auth-link { color: #7A8F6A; font-weight: 700; }
+#authLogin .auth-check { color: rgba(63,70,58,0.7); }
+#authLogin .auth-foot  { color: rgba(63,70,58,0.6); }
+
+/* Back button — glass */
+#authLogin .auth-back {
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(122,143,106,0.20);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  color: #3F463A;
+}
 </style>
 </head>
 <body>
@@ -4155,7 +4236,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v92</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v93</span>
     </div>
   </section>
 
