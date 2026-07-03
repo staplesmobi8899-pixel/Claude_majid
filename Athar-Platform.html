@@ -1678,6 +1678,9 @@ body.modal-open .bottom-nav, body.modal-open .cm-fab-wrap, body.modal-open .fab,
 .banner-pending  { background: #fef9ec; color: #92400e; }
 .banner-approved { background: #f0fdf4; color: #166534; }
 .banner-rejected { background: #fef2f2; color: #991b1b; }
+.banner-guest { background: rgba(122,143,106,0.12); color: #3F463A; display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); flex-wrap: wrap; }
+.banner-guest-btn { flex: none; border: none; cursor: pointer; background: #7A8F6A; color: #fff; font-family: inherit; font-weight: 700; font-size: var(--fs-sm); padding: var(--sp-2) var(--sp-4); border-radius: var(--r-full); box-shadow: 0 4px 12px rgba(122,143,106,0.28); transition: transform .15s, background .2s; }
+.banner-guest-btn:active { transform: scale(0.96); background: #6b7f57; }
 
 /* ══════════════════════════════════════════
    ABOUT PAGE
@@ -4236,7 +4239,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v93</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v94</span>
     </div>
   </section>
 
@@ -6066,7 +6069,7 @@ const T = {
     joinBtn: 'انضمام', joinedBtn: ' منضم', unavailBtn: 'غير متاح', leaveCampBtn: 'مغادرة الحملة', campFull: 'العدد مكتمل', campRunning: 'قيد التنفيذ', campWaiting: 'بانتظار متطوّعين', campDoneState: 'منجزة', campMarkDone: 'تم إنجازها', campCountFull: 'العدد مكتمل', cancelCampBtn: 'إلغاء الحملة', hideCampBtn: 'إخفاء', unhideCampBtn: 'إظهار', cancelCampConfirm: 'هل تريد إلغاء هذه الحملة؟', campCancelled: 'تم إلغاء الحملة', campHidden: 'تم إخفاء الحملة', campShown: 'تم إظهار الحملة',
     pendingBanner: ' حسابك قيد التدقيق — بانتظار موافقة المسؤول',
     approvedBanner: ' حسابك مفعّل — مرحبًا بك في أَثَرْ',
-    rejectedBanner: ' تم رفض حسابك — تواصل مع المسؤول', errorIdRequired: 'صورة الهوية الأمامية إلزامية', reviewAgainBtn: 'مراجعة وإعادة التقديم', rejectedReasonLabel: 'سبب الرفض', resubmitDone: 'تم إرسال طلبك مجددًا — قيد المراجعة',
+    rejectedBanner: ' تم رفض حسابك — تواصل مع المسؤول', guestBanner: 'أنت تتصفّح كضيف — سجّل الدخول لإنشاء ملفك. ', errorIdRequired: 'صورة الهوية الأمامية إلزامية', reviewAgainBtn: 'مراجعة وإعادة التقديم', rejectedReasonLabel: 'سبب الرفض', resubmitDone: 'تم إرسال طلبك مجددًا — قيد المراجعة',
     noData: 'لا توجد بيانات بعد',
     downloadId: ' تحميل الصورة',
     approveBtn: ' قبول', rejectBtn: 'رفض',
@@ -6257,7 +6260,7 @@ const T = {
     joinBtn: 'Join', joinedBtn: ' Joined', unavailBtn: 'Unavailable', leaveCampBtn: 'Leave campaign', campFull: 'Full', campRunning: 'In progress', campWaiting: 'Waiting for volunteers', campDoneState: 'Done', campMarkDone: 'Mark done', campCountFull: 'Full', cancelCampBtn: 'Cancel campaign', hideCampBtn: 'Hide', unhideCampBtn: 'Show', cancelCampConfirm: 'Cancel this campaign?', campCancelled: 'Campaign cancelled', campHidden: 'Campaign hidden', campShown: 'Campaign shown',
     pendingBanner: ' Your account is under review — awaiting admin approval',
     approvedBanner: ' Your account is active — welcome to ATHAR',
-    rejectedBanner: ' Your account was rejected — contact the admin', errorIdRequired: 'Front ID photo is required', reviewAgainBtn: 'Review & resubmit', rejectedReasonLabel: 'Rejection reason', resubmitDone: 'Your request was resubmitted — under review',
+    rejectedBanner: ' Your account was rejected — contact the admin', guestBanner: "You're browsing as a guest — sign in to build your profile. ", errorIdRequired: 'Front ID photo is required', reviewAgainBtn: 'Review & resubmit', rejectedReasonLabel: 'Rejection reason', resubmitDone: 'Your request was resubmitted — under review',
     noData: 'No data yet',
     downloadId: ' Download Photo',
     approveBtn: ' Approve', rejectBtn: 'Reject',
@@ -8555,7 +8558,7 @@ function renderProfile() {
     if (roleEl) roleEl.textContent = Permissions.roleLabel(u);
     const stBadge = document.getElementById('pfStatusBadge');
     if (stBadge) {
-      if (State.isAdmin) { stBadge.style.display = 'none'; }
+      if (State.isAdmin || State.isGuest || u.status === 'guest') { stBadge.style.display = 'none'; }
       else {
         const stMap = {
           approved: ['approved', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg>', t('pfStApproved')],
@@ -8671,8 +8674,12 @@ function renderProfile() {
         approved: ['banner-approved', t('approvedBanner')],
         rejected: ['banner-rejected', t('rejectedBanner')]
       };
-      const [cls, txt] = bannerMap[u.status] || bannerMap.pending;
-      statusBanner.innerHTML = `<div class="status-banner ${cls}">${txt}</div>`;
+      if (State.isGuest || u.status === 'guest') {
+        statusBanner.innerHTML = `<div class="status-banner banner-guest">${t('guestBanner')}<button type="button" class="banner-guest-btn" onclick="doLogout()">${t('loginCta')}</button></div>`;
+      } else {
+        const [cls, txt] = bannerMap[u.status] || bannerMap.pending;
+        statusBanner.innerHTML = `<div class="status-banner ${cls}">${txt}</div>`;
+      }
     }
 
     const idPhotoBox = document.getElementById('idPhotoBox');
