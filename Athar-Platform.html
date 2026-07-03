@@ -4153,7 +4153,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v82</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v83</span>
     </div>
   </section>
 
@@ -8258,7 +8258,7 @@ const HomeUI = {
         '<span class="hl-stat-num">' + activeVols.toLocaleString('en-US') + '</span>' +
         '<span class="hl-stat-label">' + (isAr ? 'متطوّع نشيط' : 'Active volunteers') + '</span></div>' +
       '</div>';
-    const cities = DiscoveryService.cities();
+    const cities = (State.lang === 'ar') ? ['دمشق', 'ريف دمشق'] : ['Damascus', 'Rif Dimashq'];   // fixed active cities for now
     const cityHtml = cities.length ? '<div class="hl-card"><div class="hl-h">' + t('activeCities') + '</div><div class="hl-cities">' + cities.map(c => '<span class="hl-city">' + c + '</span>').join('') + '</div></div>' : '';
     el.innerHTML = '<div class="hl-card"><div class="hl-h">' + t('topVolunteers') + '</div>' + top + viewAll + '</div>' + statHtml + cityHtml;
   }
