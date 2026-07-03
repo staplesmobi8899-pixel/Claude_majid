@@ -4257,11 +4257,18 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 
 /* Filter selects — light glass */
 #explorePage .explore-filters select {
-  background: rgba(255,255,255,0.74);
+  -webkit-appearance: none; appearance: none;
+  background-color: rgba(255,255,255,0.74);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A8F6A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='8 10 12 6 16 10'/%3E%3Cpolyline points='8 14 12 18 16 14'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 14px center;
+  background-size: 16px 16px;
   border: 1px solid rgba(122,143,106,0.20);
   color: #2F3A2E;
   box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  padding-inline-start: 40px;
 }
+[dir="ltr"] #explorePage .explore-filters select { background-position: right 14px center; padding-inline-start: var(--sp-4); padding-inline-end: 40px; }
 
 /* Category chips — inactive light, active olive */
 #explorePage #exploreChips .cat-chip {
@@ -4462,7 +4469,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v106</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v108</span>
     </div>
   </section>
 
