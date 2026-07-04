@@ -4549,6 +4549,10 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 #loginScreen .auth-btn-primary:hover { background: #859873 !important; }
 #loginScreen .auth-btn-primary:active { transform: scale(0.98); background: #6b7f57 !important; }
 #loginScreen .auth-link, #loginScreen .auth-guest-link, #loginScreen .auth-foot-link { color: #7A8F6A; }
+
+/* Partner logos: brand-green outline + proper logo fit (scoped #aboutPage) */
+#aboutPage .partner-slot.filled { border-style: solid !important; border-width: 1.5px !important; border-color: #7A8F6A !important; background: #FFFFFF !important; }
+#aboutPage .partner-slot img { max-width: 82%; max-height: 66%; width: auto; height: auto; object-fit: contain; display: block; }
 </style>
 </head>
 <body>
@@ -4609,7 +4613,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v116</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v117</span>
     </div>
   </section>
 
@@ -9904,7 +9908,7 @@ async function admNewPartnerLogoPicked(event) {
   const file = event.target.files[0];
   if (!file) return;
   try {
-    AdminUI.newPartnerLogo = await b64(file);
+    AdminUI.newPartnerLogo = await compressImage(file, 240, 0.72);
     const nm = document.getElementById('admNewPartnerLogoName');
     if (nm) nm.innerHTML = '<img src="' + AdminUI.newPartnerLogo + '" class="adm-logo-preview" alt=""> ' + file.name;
     toast(State.lang === 'ar' ? 'تم إرفاق الشعار' : 'Logo attached', 'success');
@@ -9916,13 +9920,13 @@ async function admAddPartner() {
   const errEl = document.getElementById('admNewPartnerErr');
   const org = orgEl ? orgEl.value.trim() : '';
   if (errEl) errEl.textContent = '';
-  if (!org) { if (errEl) errEl.textContent = t('errorRequired'); return; }
   // Read the logo at submit time (robust against pick→submit timing)
   let logo = AdminUI.newPartnerLogo || null;
   const fileInput = document.getElementById('admNewPartnerLogo');
   if (!logo && fileInput && fileInput.files && fileInput.files[0]) {
-    try { logo = await b64(fileInput.files[0]); } catch (e) {}
+    try { logo = await compressImage(fileInput.files[0], 240, 0.72); } catch (e) {}
   }
+  if (!org && !logo) { if (errEl) errEl.textContent = t('errorRequired'); return; }
   const p = Models.createPartner({ org: org, type: 'ngo' });
   p.status = 'approved';
   p.featured = true;
