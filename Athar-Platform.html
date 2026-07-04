@@ -4673,7 +4673,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v123</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v124</span>
     </div>
   </section>
 
@@ -9106,10 +9106,18 @@ function renderProfile() {
 
     const idPhotoBox = document.getElementById('idPhotoBox');
     if (idPhotoBox) {
-      idPhotoBox.innerHTML = u.idPhoto
-        ? `<img src="${u.idPhoto}" style="width:100%;max-width:300px;border-radius:var(--r-md);border:1.5px solid var(--sand-dark);margin-bottom:1rem;display:block;">
-           <a href="${u.idPhoto}" download="ID.jpg" class="submit-btn">${t('downloadId')}</a>`
-        : `<p style="color:var(--charcoal-50);">${t('noData')}</p>`;
+      const _renderId = function (src) {
+        idPhotoBox.innerHTML = src
+          ? '<img src="' + src + '" style="width:100%;max-width:300px;border-radius:var(--r-md);border:1.5px solid var(--sand-dark);margin-bottom:1rem;display:block;"><a href="' + src + '" download="ID.jpg" class="submit-btn">' + t('downloadId') + '</a>'
+          : '<p style="color:var(--charcoal-50);">' + t('noData') + '</p>';
+      };
+      if (u.idPhoto) { _renderId(u.idPhoto); }
+      else if (typeof sb !== 'undefined' && sb && u.id) {
+        _renderId(null);
+        sb.from('id_documents').select('id_photo').eq('user_id', u.id).single().then(function (r) {
+          if (r && r.data && r.data.id_photo) { u.idPhoto = r.data.id_photo; try { UserService.updateById(u.id, { idPhoto: r.data.id_photo }); } catch (e) {} _renderId(r.data.id_photo); }
+        }).catch(function () {});
+      } else { _renderId(null); }
     }
 
     renderMyCamps();
