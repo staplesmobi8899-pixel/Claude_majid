@@ -4161,6 +4161,315 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 #aboutPage .about-list li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 /* Light hairline under each section heading */
 #aboutPage .about-block h2 { border-bottom: 1px solid #E8E4D9; padding-bottom: 10px; }
+
+
+/* #1 Signup terms checkbox */
+.auth-terms { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-sm); color: rgba(46,61,31,0.78); cursor: pointer; margin-bottom: var(--sp-2); }
+.auth-terms input { width: 18px; height: 18px; accent-color: var(--olive); flex: none; }
+.auth-terms-err { color: var(--red); font-size: var(--fs-xs); min-height: 1em; margin-bottom: var(--sp-2); }
+
+/* #5 About philosophy card is display-only — no press feedback */
+.value-chip { cursor: default; }
+.value-chip:active, .about-block-cream:active, .about-block-cream *:active { transform: none; }
+
+/* #6 Public shared profile */
+#publicProfileModal .pp-empty { text-align: center; color: var(--charcoal-50); padding: var(--sp-8) var(--sp-4); font-weight: 700; }
+.pp-head { text-align: center; padding: var(--sp-3) 0 var(--sp-5); }
+.pp-ava { width: 84px; height: 84px; border-radius: 50%; margin: 0 auto var(--sp-3); overflow: hidden; background: var(--olive-pale); display: flex; align-items: center; justify-content: center; }
+.pp-ava img { width: 100%; height: 100%; object-fit: cover; }
+.pp-ava span { font-size: 2rem; font-weight: 800; color: var(--olive); }
+.pp-name { font-size: var(--fs-xl); font-weight: 900; color: #2F3A2E; }
+.pp-role { font-size: var(--fs-sm); color: var(--charcoal-50); margin-top: 2px; }
+.pp-stats { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); margin-bottom: var(--sp-5); }
+.pp-stat { background: #7A8F6A; color: #fff; border-radius: 18px; padding: var(--sp-4); text-align: center; box-shadow: 0 6px 18px rgba(122,143,106,0.22); }
+.pp-stat-n { font-size: var(--fs-2xl); font-weight: 900; line-height: 1; }
+.pp-stat-l { font-size: var(--fs-xs); font-weight: 700; opacity: 0.9; margin-top: var(--sp-1); }
+.pp-badges-h { font-size: var(--fs-sm); font-weight: 800; color: #2F3A2E; margin-bottom: var(--sp-3); }
+.pp-badges { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+.pp-badge { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 76px; text-align: center; }
+.pp-badge-ico { width: 48px; height: 48px; border-radius: 50%; background: var(--olive-pale); color: var(--olive); display: flex; align-items: center; justify-content: center; }
+.pp-badge-l { font-size: var(--fs-2xs); color: var(--charcoal-80); font-weight: 700; }
+
+/* Community filled cards -> clean olive (was dark forest+texture). Scoped. */
+#communityPage .cm-composer,
+#communityPage .cm-stories-wrap,
+#communityPage .cm-high-card,
+#communityPage .cm-high-summary {
+  background: #7A8F6A;
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 8px 24px rgba(47,58,46,0.12);
+}
+
+/* Community detail — olive join CTA (scoped) */
+#communityPage .cg-action {
+  background: #7A8F6A; color: #fff;
+  box-shadow: 0 6px 16px rgba(122,143,106,0.26);
+  transition: transform .2s cubic-bezier(.34,1.42,.5,1), background .2s;
+}
+#communityPage .cg-action.ghost { background: #EDEAE2; color: #5b6b4d; box-shadow: none; }
+#communityPage .cg-action:active { transform: scale(.97); background: #6b7f57; }
+
+/* Create-community modal — olive submit (scoped to #communityModal) */
+#communityModal .dark-submit {
+  background: #7A8F6A !important; color: #fff !important;
+  box-shadow: 0 8px 20px rgba(122,143,106,0.28);
+  transition: transform .2s cubic-bezier(.34,1.42,.5,1), background .2s;
+}
+#communityModal .dark-submit:active { transform: scale(.98); background: #6b7f57 !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   COMMUNITY PAGE — reference design (scoped to #communityPage ONLY)
+   Olive-active tabs, olive create CTA, softer cards.
+   ═══════════════════════════════════════════════════════════════ */
+#communityPage .cm-title { color: #2F3A2E; }
+
+/* Tabs — light inactive, olive active */
+#communityPage .cm-tab {
+  background: #EDEAE2; color: #5b6b4d;
+  border: 1px solid rgba(122,143,106,0.16);
+  transition: transform .18s cubic-bezier(.34,1.42,.5,1), background .2s;
+}
+#communityPage .cm-tab.active {
+  background: #7A8F6A; color: #fff; border-color: transparent;
+  box-shadow: 0 6px 16px rgba(122,143,106,0.26);
+}
+#communityPage .cm-tab:active { transform: scale(.96); }
+
+/* Create-community CTA — olive card */
+#communityPage .cg-create-btn {
+  background: #7A8F6A; color: #fff;
+  border-radius: 20px;
+  padding: var(--sp-5);
+  box-shadow: 0 8px 22px rgba(122,143,106,0.28);
+  font-weight: 800;
+  margin-bottom: var(--sp-4);
+  transition: transform .2s cubic-bezier(.34,1.42,.5,1), background .2s;
+}
+#communityPage .cg-create-btn:active { transform: scale(.98); background: #6b7f57; }
+
+/* Community cards — softer depth */
+#communityPage .cg-card {
+  border-radius: 20px;
+  border: 1px solid rgba(122,143,106,0.14);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DETAIL PAGE — reference design (scoped to #detailPage ONLY)
+   Warm beige base, cream cards, olive CTA, skills as chips.
+   ═══════════════════════════════════════════════════════════════ */
+#detailPage { background: linear-gradient(180deg, #F7F5F0 0%, #EDEAE2 100%) !important; }
+#detailPage .detail-title, #detailPage .detail-h { color: #2F3A2E; }
+
+/* Stat + info cards — cream, soft depth */
+#detailPage .dstat,
+#detailPage .detail-info-card {
+  background: rgba(255,255,255,0.82);
+  border: 1px solid rgba(122,143,106,0.16);
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+}
+#detailPage .dstat-n { color: #7A8F6A; }
+
+/* Primary CTA — olive with spring press */
+#detailPage .detail-join-btn {
+  background: #7A8F6A;
+  box-shadow: 0 8px 20px rgba(122,143,106,0.30);
+  transition: transform .2s cubic-bezier(.34,1.42,.5,1), background .2s, box-shadow .2s;
+}
+#detailPage .detail-join-btn:active { transform: scale(.97); background: #6b7f57; }
+
+/* Share / icon button — light glass */
+#detailPage .detail-icon-btn {
+  background: rgba(255,255,255,0.82);
+  border: 1px solid rgba(122,143,106,0.20);
+  color: #2F3A2E;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
+
+/* Required skills — chips instead of a bulleted list */
+#detailPage .detail-reqs { flex-direction: row; flex-wrap: wrap; gap: var(--sp-2); }
+#detailPage .detail-reqs li {
+  background: #EDEAE2; color: #5b6b4d;
+  padding: var(--sp-2) var(--sp-4); border-radius: 999px;
+  font-size: var(--fs-sm); font-weight: 700;
+  border: 1px solid rgba(122,143,106,0.16);
+}
+#detailPage .detail-reqs li::before { display: none; content: none; }
+
+/* ═══════════════════════════════════════════════════════════════
+   EXPLORE PAGE — reference design (scoped to #explorePage ONLY)
+   Light glass search + filters, olive-active category chips, header.
+   ═══════════════════════════════════════════════════════════════ */
+#explorePage .explore-head { margin-bottom: var(--sp-4); }
+#explorePage .explore-title { font-size: var(--fs-2xl); font-weight: 800; color: #2F3A2E; }
+#explorePage .explore-sub { font-size: var(--fs-sm); color: rgba(63,70,58,0.55); margin-top: var(--sp-1); }
+
+/* Search bar — light glass */
+#explorePage .search-bar {
+  background: rgba(255,255,255,0.74);
+  border: 1px solid rgba(122,143,106,0.20);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+#explorePage .search-bar svg { stroke: #7A8F6A; }
+#explorePage .search-bar input { color: #2F3A2E; }
+#explorePage .search-bar input::placeholder { color: rgba(63,70,58,0.45); }
+
+/* Filter selects — light glass */
+#explorePage .explore-filters select {
+  -webkit-appearance: none; appearance: none;
+  background-color: rgba(255,255,255,0.74);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A8F6A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='8 10 12 6 16 10'/%3E%3Cpolyline points='8 14 12 18 16 14'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 14px center;
+  background-size: 16px 16px;
+  border: 1px solid rgba(122,143,106,0.20);
+  color: #2F3A2E;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  padding-inline-start: 40px;
+}
+[dir="ltr"] #explorePage .explore-filters select { background-position: right 14px center; padding-inline-start: var(--sp-4); padding-inline-end: 40px; }
+
+/* Category chips — inactive light, active olive */
+#explorePage #exploreChips .cat-chip {
+  background: #EDEAE2; color: #5b6b4d;
+  border: 1px solid rgba(122,143,106,0.16);
+  transition: transform .18s cubic-bezier(.34,1.42,.5,1), background .2s;
+}
+#explorePage #exploreChips .cat-chip.active {
+  background: #7A8F6A; color: #fff; border-color: transparent;
+  box-shadow: 0 6px 16px rgba(122,143,106,0.26);
+}
+#explorePage #exploreChips .cat-chip:active { transform: scale(.96); }
+
+/* ═══════════════════════════════════════════════════════════════
+   HOME PAGE — reference design (scoped to #homePage ONLY)
+   Clean mid-olive (#7A8F6A) surfaces, soft rounding + shadows.
+   Replaces the dark forest + fingerprint texture on this page only.
+   ═══════════════════════════════════════════════════════════════ */
+#homePage .greet-hi { color: #2F3A2E; }
+#homePage .section-link { color: #7A8F6A; font-weight: 700; }
+
+/* Category chips — clean olive pills */
+#homePage #homeCats .cat-chip {
+  background: #7A8F6A;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 999px;
+  color: #fff; font-weight: 700;
+  box-shadow: 0 6px 16px rgba(122,143,106,0.26);
+  transition: transform .18s cubic-bezier(.34,1.42,.5,1), box-shadow .2s, background .2s;
+}
+#homePage #homeCats .cat-chip:active { transform: scale(.96); background: #6b7f57; box-shadow: 0 3px 10px rgba(122,143,106,0.22); }
+
+/* Community-highlight + stat cards — mid-olive, clean, soft depth */
+#homePage .hl-card,
+#homePage .hl-stat {
+  background: #7A8F6A;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 22px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+#homePage .hl-rank, #homePage .hl-rank.top { background: rgba(255,255,255,0.22); color: #fff; }
+#homePage .hl-val { color: rgba(255,255,255,0.9); }
+#homePage .hl-viewall { background: rgba(255,255,255,0.20); }
+#homePage .hl-viewall:active { background: rgba(255,255,255,0.30); }
+#homePage .hl-stat-num { color: #fff; }
+
+/* Active cities — chips on the page background (first = active olive) */
+#homePage .hl-cities-sec { max-width: var(--content-max); margin: var(--sp-5) auto 0; }
+#homePage .hl-cities { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-2); }
+#homePage .hl-city {
+  background: #EDEAE2; color: #5b6b4d;
+  border: 1px solid rgba(122,143,106,0.18);
+  padding: var(--sp-2) var(--sp-4); border-radius: 999px;
+  font-size: var(--fs-sm); font-weight: 700;
+}
+#homePage .hl-city.active {
+  background: #7A8F6A; color: #fff; border-color: transparent;
+  box-shadow: 0 6px 16px rgba(122,143,106,0.26);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LOGIN PAGE — reference design (scoped to #authLogin ONLY)
+   Liquid Glass · beige #F7F5F0 · olive #7A8F6A · soft shadows.
+   No other page or logic is affected.
+   ═══════════════════════════════════════════════════════════════ */
+#authLogin { background: linear-gradient(180deg, #F7F5F0 0%, #EFECE3 60%, #E9E5DA 100%); }
+
+/* Card: soft translucent glass panel */
+#authLogin .auth-card {
+  background: rgba(255,255,255,0.42);
+  border: 1px solid rgba(255,255,255,0.55);
+  border-radius: 26px;
+  box-shadow: 0 10px 40px rgba(63,70,58,0.08);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  padding: var(--sp-8) var(--sp-6);
+}
+
+/* Headings — strong contrast per spec */
+#authLogin .auth-title { color: #3F463A; }
+#authLogin .auth-sub   { color: rgba(63,70,58,0.62); }
+
+/* Segmented email/phone — glass, olive active */
+#authLogin .auth-seg { background: rgba(122,143,106,0.10); }
+#authLogin .auth-seg-btn.active { background: #7A8F6A; color: #fff; box-shadow: 0 4px 12px rgba(122,143,106,0.30); }
+
+/* Inputs — white glass, rounded 16px, soft shadow, leading icon */
+#authLogin .auth-input {
+  height: 54px;
+  background: rgba(255,255,255,0.72);
+  border: 1px solid rgba(122,143,106,0.20);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  color: #3F463A;
+  padding-inline-start: 48px;
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 20px 20px;
+}
+[dir="ltr"] #authLogin .auth-input { background-position: left 15px center; }
+#authLogin #authIdInput { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A8F6A' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='4' width='20' height='16' rx='3'/%3E%3Cpath d='M2 7l10 6 10-6'/%3E%3C/svg%3E"); }
+#authLogin .pw-wrap .auth-input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A8F6A' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='10' width='16' height='11' rx='2.5'/%3E%3Cpath d='M8 10V7a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E"); }
+#authLogin .auth-input:focus {
+  border-color: #7A8F6A;
+  box-shadow: 0 0 0 3px rgba(122,143,106,0.18), 0 4px 20px rgba(0,0,0,0.05);
+  outline: none;
+}
+#authLogin .auth-input::placeholder { color: rgba(63,70,58,0.42); }
+#authLogin .auth-label { color: rgba(63,70,58,0.7); }
+
+/* Primary button — olive glass pill + directional arrow + spring press */
+#authLogin .auth-btn-primary {
+  position: relative;
+  background: #7A8F6A;
+  color: #fff;
+  border-radius: 999px;
+  box-shadow: 0 8px 22px rgba(122,143,106,0.34), inset 0 1px 0 rgba(255,255,255,0.25);
+  transition: transform 0.2s cubic-bezier(0.34,1.42,0.5,1), background 0.2s, box-shadow 0.2s;
+}
+#authLogin .auth-btn-primary::after {
+  content: ''; position: absolute; top: 50%; inset-inline-end: 22px;
+  width: 22px; height: 22px; transform: translateY(-50%);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M12 5l7 7-7 7'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+[dir="rtl"] #authLogin .auth-btn-primary::after { transform: translateY(-50%) scaleX(-1); }
+#authLogin .auth-btn-primary:hover { background: #859873; box-shadow: 0 10px 26px rgba(122,143,106,0.40); }
+#authLogin .auth-btn-primary:active { transform: scale(0.97); background: #6b7f57; box-shadow: 0 4px 12px rgba(122,143,106,0.28); }
+
+/* Links + footer */
+#authLogin .auth-link { color: #7A8F6A; font-weight: 700; }
+#authLogin .auth-check { color: rgba(63,70,58,0.7); }
+#authLogin .auth-foot  { color: rgba(63,70,58,0.6); }
+
+/* Back button — glass */
+#authLogin .auth-back {
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(122,143,106,0.20);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  color: #3F463A;
+}
 </style>
 </head>
 <body>
@@ -4221,7 +4530,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v112</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v113</span>
     </div>
   </section>
 
