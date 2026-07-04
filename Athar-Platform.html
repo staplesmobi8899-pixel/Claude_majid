@@ -4379,14 +4379,11 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 /* Active cities — chips on the page background (first = active olive) */
 #homePage .hl-cities-sec { max-width: var(--content-max); margin: var(--sp-5) auto 0; }
 #homePage .hl-cities { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-2); }
-#homePage .hl-city {
-  background: #EDEAE2; color: #5b6b4d;
-  border: 1px solid rgba(122,143,106,0.18);
+#homePage .hl-city, #homePage .hl-city.active {
+  background: #7A8F6A; color: #fff;
+  border: 1px solid transparent;
   padding: var(--sp-2) var(--sp-4); border-radius: 999px;
   font-size: var(--fs-sm); font-weight: 700;
-}
-#homePage .hl-city.active {
-  background: #7A8F6A; color: #fff; border-color: transparent;
   box-shadow: 0 6px 16px rgba(122,143,106,0.26);
 }
 
@@ -4613,7 +4610,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v117</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v118</span>
     </div>
   </section>
 
