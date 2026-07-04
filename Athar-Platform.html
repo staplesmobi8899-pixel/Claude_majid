@@ -4671,7 +4671,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v125</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v126</span>
     </div>
   </section>
 
@@ -7398,6 +7398,7 @@ const AuthService = {
              status: 'approved', volunteerHours: 0, activitiesJoined: 0, achievements: [], joinedCamps: [] };
   },
   startSession(user, persist = true) {
+    try { localStorage.removeItem('athar_signedout'); } catch (e) {}
     State.setUser(user);
     if (persist) {
       DB.setObj(CONFIG.DB_KEYS.SESSION, user);
@@ -7440,7 +7441,8 @@ const AuthService = {
     }
 
     // 3) No cached login (fresh install / cleared data) — ask Supabase directly.
-    if (sb) {
+    let _signedOut = false; try { _signedOut = localStorage.getItem('athar_signedout') === '1'; } catch (e) {}
+    if (sb && !_signedOut) {
       try {
         const { data: { session } } = await sb.auth.getSession();
         if (session && session.user) {
@@ -7559,6 +7561,7 @@ const AuthService = {
     State.setUser(null);
     DB.remove(CONFIG.DB_KEYS.SESSION);
     Persist.del('athar_sess');
+    try { localStorage.setItem('athar_signedout', '1'); } catch (e) {}
   },
   // Phase 2.5 (forgot password) — architecture-ready
   requestReset(identifier) {
