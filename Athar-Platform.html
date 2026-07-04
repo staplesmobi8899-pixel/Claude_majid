@@ -4470,6 +4470,49 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
   box-shadow: 0 4px 14px rgba(0,0,0,0.05);
   color: #3F463A;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   PROFILE PAGE — reference design (scoped to #profilePage ONLY)
+   Olive stats card, clean white level/shortcut cards, white share btn.
+   ═══════════════════════════════════════════════════════════════ */
+#profilePage .pf-stats-card {
+  background: #7A8F6A !important;
+  border: none !important;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  max-width: calc(var(--content-max) - 2.5rem) !important;
+  margin: 0 var(--sp-5) var(--sp-4) !important;
+}
+#profilePage .pf-stats-card .pf-stat-n { color: #fff !important; }
+#profilePage .pf-stats-card .pf-stat-l { color: rgba(255,255,255,0.85) !important; }
+#profilePage .pf-stats-card .pf-stat-ico { background: rgba(255,255,255,0.20) !important; color: #fff !important; }
+#profilePage .pf-stats-card .pf-stat:not(:last-child)::after { background: rgba(255,255,255,0.20) !important; }
+
+/* Level / rank card -> clean white */
+#profilePage .pf-rank-card {
+  background: #FFFFFF !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  border: 1px solid #E7DFD2 !important;
+  border-radius: 20px !important;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05) !important;
+}
+
+/* Quick shortcut cards -> clean white */
+#profilePage .pf-qbtn {
+  background: #FFFFFF !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  border: 1px solid #E7DFD2 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05) !important;
+}
+#profilePage .pf-qico { background: var(--olive-pale); color: #7A8F6A; }
+
+/* Action buttons: edit olive, share white secondary */
+#profilePage .ig-btn:not(.primary) { background: #FFFFFF; color: #2F3A2E; border: 1px solid #E7DFD2; }
+#profilePage .ig-btn.primary { background: #7A8F6A; border-color: #7A8F6A; }
+
+/* Role chip -> olive-light */
+#profilePage .ig-role { background: #E9F0E1; color: #5D6F52; }
 </style>
 </head>
 <body>
@@ -4530,7 +4573,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v113</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v114</span>
     </div>
   </section>
 
