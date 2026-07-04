@@ -4513,6 +4513,32 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 
 /* Role chip -> olive-light */
 #profilePage .ig-role { background: #E9F0E1; color: #5D6F52; }
+
+/* ═══════════════════════════════════════════════════════════════
+   ONBOARDING ("خصّص تجربتك") — match reference (scoped #onboardingScreen)
+   ═══════════════════════════════════════════════════════════════ */
+#onboardingScreen { background: linear-gradient(180deg, #F7F5F0 0%, #EFECE3 60%, #E9E5DA 100%); }
+#onboardingScreen .auth-title { color: #2F3A2E; }
+#onboardingScreen .onb-h { color: #2F3A2E; }
+#onboardingScreen .onb-chip {
+  background: #FFFFFF;
+  border: 1px solid rgba(122,143,106,0.20);
+  color: #5b6b4d;
+  transition: transform .18s cubic-bezier(.34,1.42,.5,1), background .2s;
+}
+#onboardingScreen .onb-chip.selected {
+  background: #7A8F6A; color: #fff; border-color: transparent;
+  box-shadow: 0 6px 16px rgba(122,143,106,0.26);
+}
+#onboardingScreen .onb-chip:active { transform: scale(.96); }
+#onboardingScreen .auth-btn-primary {
+  background: #7A8F6A !important; color: #fff !important;
+  border-radius: 999px;
+  box-shadow: 0 8px 22px rgba(122,143,106,0.34);
+  transition: transform 0.2s cubic-bezier(0.34,1.42,0.5,1), background 0.2s;
+}
+#onboardingScreen .auth-btn-primary:active { transform: scale(0.97); background: #6b7f57 !important; }
+#onboardingScreen .auth-link { color: #7A8F6A; }
 </style>
 </head>
 <body>
@@ -4573,7 +4599,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v114</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v115</span>
     </div>
   </section>
 
@@ -4859,8 +4885,6 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
     <div class="badges-scroll" id="profileBadges"></div>
     <div class="ig-section-h" data-i18n="certsTitle"></div>
     <div class="cert-list" id="profileCerts"></div>
-    <div class="ig-section-h" data-i18n="timelineTitle"></div>
-    <div class="timeline" id="profileTimeline"></div>
     <div class="ig-section-h" data-i18n="dashTitle"></div>
     <div class="profile-menu">
       <div class="menu-card">
@@ -6046,7 +6070,8 @@ const Sync = {
     const { data, error } = await sb.from('notifications').select('*').eq('user_id', State.cu.id).order('created_at', { ascending: false });
     if (error) { console.error('[pullNotifications]', error.message); return; }
     const m = NotificationService._all();
-    m[State.cu.id] = (data || []).map(n => ({ id: n.id, ar: n.ar, en: n.en, type: n.type, read: n.read, createdAt: n.created_at, link: null }));
+    const _prevRead = {}; (m[State.cu.id] || []).forEach(n => { if (n.read) _prevRead[n.id] = true; });
+    m[State.cu.id] = (data || []).map(n => ({ id: n.id, ar: n.ar, en: n.en, type: n.type, read: n.read || !!_prevRead[n.id], createdAt: n.created_at, link: null }));
     NotificationService._save(m);
   },
   async pullContent() {
@@ -9007,7 +9032,6 @@ function renderProfile() {
     }
 
     renderCerts(u);
-    renderTimeline(u);
 
     const profileName = document.getElementById('profileName');
     if (profileName) profileName.textContent = u.name || '';
