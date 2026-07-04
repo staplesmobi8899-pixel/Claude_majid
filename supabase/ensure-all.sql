@@ -10,6 +10,7 @@
 alter table public.profiles add column if not exists dob              date;
 alter table public.profiles add column if not exists special_needs    text;
 alter table public.profiles add column if not exists rejection_reason text;
+alter table public.profiles add column if not exists achievements    jsonb;
 
 -- ---- reports ----
 create table if not exists public.reports (
