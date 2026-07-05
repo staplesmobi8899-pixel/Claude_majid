@@ -4622,6 +4622,19 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 .cg-share-row:active{transform:scale(.98);background:var(--olive-pale);}
 .cg-share-row svg{width:22px;height:22px;color:var(--olive);flex:none;}
 .cg-share-empty{text-align:center;color:var(--charcoal-50);padding:var(--sp-6) var(--sp-3);}
+
+.cm-camp-card{margin:var(--sp-2) 0;border:1px solid var(--line-sand-6);border-radius:var(--r-lg);overflow:hidden;background:var(--white);cursor:pointer;}
+.cm-camp-img{height:120px;overflow:hidden;}
+.cm-camp-img img{width:100%;height:100%;object-fit:cover;display:block;}
+.cm-camp-body{padding:var(--sp-3) var(--sp-4);}
+.cm-camp-title{font-weight:800;color:var(--charcoal);font-size:var(--fs-sm);}
+.cm-camp-meta{font-size:var(--fs-2xs);color:var(--charcoal-50);margin:4px 0 var(--sp-2);display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+.cm-camp-meta svg{width:13px;height:13px;}
+.cm-camp-view{display:inline-block;background:var(--accent-btn);color:#fff;font-weight:800;font-size:var(--fs-xs);padding:var(--sp-2) var(--sp-4);border-radius:var(--r-full);}
+.cg-share-row .cg-share-check{margin-inline-start:auto;width:20px;height:20px;border-radius:50%;border:2px solid var(--line-sand-strong);flex:none;}
+.cg-share-row.on .cg-share-check{background:var(--accent-btn);border-color:var(--accent-btn);}
+.cg-share-row.on{border-color:var(--accent-btn);}
+.cg-share-send{width:100%;margin-top:var(--sp-3);background:var(--accent-btn);color:#fff;border:none;border-radius:var(--r-full);padding:var(--sp-4);font-family:inherit;font-weight:800;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -4682,7 +4695,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v128</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v129</span>
     </div>
   </section>
 
@@ -6475,8 +6488,8 @@ const T = {
     greetSub: 'مبادرات مُلهمة تنتظر مشاركتك، وأرضٌ تنتظر خطوتك.', catsTitle: 'تصفّح حسب الفئة', trendingTitle: 'الأكثر تفاعلاً',
     highlightsTitle: 'إضاءات المجتمع', topVolunteers: 'أبرز المتطوعين', viewAll: 'عرض الكل', exploreMore: 'استكشف المزيد', activeCities: 'مدن نشطة', featuredTag: 'مميّزة', nearestTag: 'أقرب حملة',
     communityTitle: 'المجتمع', communitySub: 'مساحة صُنّاع الأثر — شارك، الهم، وانتمِ.', communitySoonTitle: 'مجتمع أثر قريباً', communitySoonMsg: 'نبني مساحة تجمع المتطوعين لمشاركة قصصهم وإلهام بعضهم. ترقّبوا.',
-    cmTabFeed: 'الموجز', cmTabStories: 'قصص الأثر', cmTabCommunities: 'المجتمعات', cmTabHighlights: 'الأبرز',
-    cgCreate: 'إنشاء مجتمع', cgMembers: 'عضو', cgJoined: 'منضمّ', cgEmpty: 'لا مجتمعات بعد — كن أول من ينشئ مجتمعًا', cgJoin: 'انضمام', cgLeave: 'مغادرة', cgPending: 'بانتظار الموافقة', cgBack: 'المجتمعات', cgNoPosts: 'لا منشورات بعد في هذا المجتمع', cgOwner: 'المنشئ', cgRemove: 'إزالة', cgEdit: 'تعديل', cgDelete: 'حذف المجتمع', cgRequests: 'طلبات الانضمام', cgApprove: 'موافقة', cgReject: 'رفض', cgPin: 'تثبيت', cgUnpin: 'إلغاء التثبيت', cgPinned: 'مثبّت', cgAlready: 'أنت عضو بالفعل', cgCoverBtn: 'صورة الغلاف', cgNameLabel: 'اسم المجتمع', cgDescLabel: 'وصف المجتمع', cgPrivateLabel: 'مجتمع خاص (موافقة على الأعضاء)', cgSubmit: 'حفظ', cgCreatedToast: 'تم إنشاء المجتمع', cgSavedToast: 'تم حفظ التعديلات', cgDeletedToast: 'تم حذف المجتمع', cgJoinedToast: 'انضممت للمجتمع', cgLeftToast: 'غادرت المجتمع', cgRequestSent: 'تم إرسال طلب الانضمام',
+    cmTabFeed: 'الموجز', cmTabStories: 'قصص الأثر', cmTabCommunities: 'المجموعات', cmTabHighlights: 'الأبرز',
+    cgCreate: 'إنشاء مجموعة', cgMembers: 'عضو', cgJoined: 'منضمّ', cgEmpty: 'لا مجتمعات بعد — كن أول من ينشئ مجتمعًا', cgJoin: 'انضمام', cgLeave: 'مغادرة', cgPending: 'بانتظار الموافقة', cgBack: 'المجتمعات', cgNoPosts: 'لا منشورات بعد في هذا المجتمع', cgOwner: 'المنشئ', cgRemove: 'إزالة', cgEdit: 'تعديل', cgDelete: 'حذف المجتمع', cgRequests: 'طلبات الانضمام', cgApprove: 'موافقة', cgReject: 'رفض', cgPin: 'تثبيت', cgUnpin: 'إلغاء التثبيت', cgPinned: 'مثبّت', cgAlready: 'أنت عضو بالفعل', cgCoverBtn: 'صورة الغلاف', cgNameLabel: 'اسم المجتمع', cgDescLabel: 'وصف المجتمع', cgPrivateLabel: 'مجتمع خاص (موافقة على الأعضاء)', cgSubmit: 'حفظ', cgCreatedToast: 'تم إنشاء المجتمع', cgSavedToast: 'تم حفظ التعديلات', cgDeletedToast: 'تم حذف المجتمع', cgJoinedToast: 'انضممت للمجتمع', cgLeftToast: 'غادرت المجتمع', cgRequestSent: 'تم إرسال طلب الانضمام',
     cmShareTitle: 'شارك المجتمع', cmComposerPrompt: 'ما الذي تودّ مشاركته مع المجتمع؟', cmFabPost: 'منشور', cmFabCampaign: 'حملة', cmTypePost: 'منشور', cmTypeStory: 'قصة أثر', cmTextPh: 'شو بدك تشارك مع المجتمع؟', cmAddPhoto: 'إضافة صورة', cmUploading: 'جارٍ الرفع…', cmStorageFull: 'المساحة ممتلئة — جرّب صورة أصغر أو احذف منشورات قديمة', cmPublish: 'نشر', cmSearchPh: 'ابحث عن وسم أو منشور…', cmSearchBtn: 'بحث', cmTrending: 'الوسوم الرائجة', cmRelatedCampaigns: 'حملات ذات صلة', cmRelatedPosts: 'منشورات ذات صلة', cmNoResults: 'لا نتائج مطابقة',
     cmBefore: 'صورة قبل', cmAfter: 'صورة بعد', cmEmptyFeed: 'كن أول من يشارك لحظة أثر', cmEmptyStories: 'لا إنجازات بعد — ستظهر هنا إنجازات المتطوّعين', cmComment: 'تعليق', cmComments: 'التعليقات', cmCommentPh: 'أضف تعليقًا لطيفًا…', cmSend: 'إرسال', cmReport: 'إبلاغ', cmDelete: 'حذف', cmPosted: 'تم النشر ',
     cmAutoDone: 'اكتملت مبادرة', cmAutoNew: 'مبادرة جديدة انطلقت', cmAutoHours: 'أنجز ساعات تطوّع', cmAutoCity: 'وصلت لساعات تطوّع', cmHighMonth: 'حملة أنجزناها هذا الشهر', cmHighTopVols: 'أبرز المتطوّعين', cmHighCities: 'المدن الأنشط', cmHighHeroes: 'أبطال الحملات',
@@ -6666,8 +6679,8 @@ const T = {
     greetSub: 'Inspiring initiatives await your hands, and a land awaits your steps.', catsTitle: 'Browse by category', trendingTitle: 'Trending now',
     highlightsTitle: 'Community highlights', topVolunteers: 'Top volunteers', viewAll: 'View all', exploreMore: 'Explore more', activeCities: 'Active cities', featuredTag: 'Featured', nearestTag: 'Nearest',
     communityTitle: 'Community', communitySub: 'A space for changemakers — share, inspire, belong.', communitySoonTitle: 'ATHAR Community is coming', communitySoonMsg: 'We are building a space for volunteers to share stories and inspire each other. Stay tuned.',
-    cmTabFeed: 'Feed', cmTabStories: 'Impact Stories', cmTabCommunities: 'Communities', cmTabHighlights: 'Highlights',
-    cgCreate: 'Create community', cgMembers: 'members', cgJoined: 'Joined', cgEmpty: 'No communities yet — be the first to create one', cgJoin: 'Join', cgLeave: 'Leave', cgPending: 'Awaiting approval', cgBack: 'Communities', cgNoPosts: 'No posts in this community yet', cgOwner: 'Owner', cgRemove: 'Remove', cgEdit: 'Edit', cgDelete: 'Delete community', cgRequests: 'Join requests', cgApprove: 'Approve', cgReject: 'Reject', cgPin: 'Pin', cgUnpin: 'Unpin', cgPinned: 'Pinned', cgAlready: 'You are already a member', cgCoverBtn: 'Cover image', cgNameLabel: 'Community name', cgDescLabel: 'Community description', cgPrivateLabel: 'Private community (approve members)', cgSubmit: 'Save', cgCreatedToast: 'Community created', cgSavedToast: 'Changes saved', cgDeletedToast: 'Community deleted', cgJoinedToast: 'You joined the community', cgLeftToast: 'You left the community', cgRequestSent: 'Join request sent',
+    cmTabFeed: 'Feed', cmTabStories: 'Impact Stories', cmTabCommunities: 'Groups', cmTabHighlights: 'Highlights',
+    cgCreate: 'Create group', cgMembers: 'members', cgJoined: 'Joined', cgEmpty: 'No communities yet — be the first to create one', cgJoin: 'Join', cgLeave: 'Leave', cgPending: 'Awaiting approval', cgBack: 'Communities', cgNoPosts: 'No posts in this community yet', cgOwner: 'Owner', cgRemove: 'Remove', cgEdit: 'Edit', cgDelete: 'Delete community', cgRequests: 'Join requests', cgApprove: 'Approve', cgReject: 'Reject', cgPin: 'Pin', cgUnpin: 'Unpin', cgPinned: 'Pinned', cgAlready: 'You are already a member', cgCoverBtn: 'Cover image', cgNameLabel: 'Community name', cgDescLabel: 'Community description', cgPrivateLabel: 'Private community (approve members)', cgSubmit: 'Save', cgCreatedToast: 'Community created', cgSavedToast: 'Changes saved', cgDeletedToast: 'Community deleted', cgJoinedToast: 'You joined the community', cgLeftToast: 'You left the community', cgRequestSent: 'Join request sent',
     cmShareTitle: 'Share with community', cmComposerPrompt: 'What would you like to share?', cmFabPost: 'Post', cmFabCampaign: 'Campaign', cmTypePost: 'Post', cmTypeStory: 'Impact story', cmTextPh: 'What do you want to share?', cmAddPhoto: 'Add photo', cmUploading: 'Uploading…', cmStorageFull: 'Storage full — try a smaller image or remove old posts', cmPublish: 'Publish', cmSearchPh: 'Search a hashtag or post…', cmSearchBtn: 'Search', cmTrending: 'Trending tags', cmRelatedCampaigns: 'Related campaigns', cmRelatedPosts: 'Related posts', cmNoResults: 'No matching results',
     cmBefore: 'Before photo', cmAfter: 'After photo', cmEmptyFeed: 'Be the first to share an impact moment', cmEmptyStories: 'No achievements yet — volunteer milestones appear here', cmComment: 'Comment', cmComments: 'Comments', cmCommentPh: 'Add a kind comment…', cmSend: 'Send', cmReport: 'Report', cmDelete: 'Delete', cmPosted: 'Posted ',
     cmAutoDone: 'completed an initiative', cmAutoNew: 'A new initiative launched', cmAutoHours: 'reached volunteer hours', cmAutoCity: 'reached volunteer hours', cmHighMonth: 'completed this month', cmHighTopVols: 'Top volunteers', cmHighCities: 'Most active cities', cmHighHeroes: 'Campaign heroes',
@@ -11597,6 +11610,16 @@ function cmFormatText(text) {
   });
 }
 
+function cmSharedCamp(campId) {
+  var c = CampaignService.getById(campId); if (!c) return '';
+  var isAr = State.lang === 'ar';
+  var tx = Models.getCampText(c); var img = Models.campImage(c);
+  return '<div class="cm-camp-card" onclick="openDetail(&#39;' + campId + '&#39;)">' +
+    (img ? '<div class="cm-camp-img"><img src="' + img + '" loading="lazy"></div>' : '') +
+    '<div class="cm-camp-body"><div class="cm-camp-title">' + escapeHtml(tx.title || '') + '</div>' +
+    '<div class="cm-camp-meta">' + icon('pin') + ' ' + escapeHtml(Models.locText(c)) + ' &middot; ' + icon('calendar') + ' ' + fmtDate(c.date) + ' &middot; ' + icon('people') + ' ' + (c.needed || 0) + '</div>' +
+    '<div class="cm-camp-view">' + (isAr ? 'عرض الحملة' : 'View campaign') + '</div></div></div>';
+}
 function cmPostCard(p) {
   const isAr = State.lang === 'ar';
 
@@ -11630,6 +11653,7 @@ function cmPostCard(p) {
   return '<div class="cm-card">' +
     cmPostHeader(author, sub, chip, menu) +
     (p.text ? '<div class="cm-text">' + cmFormatText(p.text) + '</div>' : '') +
+    (p.campId ? cmSharedCamp(p.campId) : '') +
     ba + cmMediaGrid(p.media) +
     cmActionBar(p) +
     cmCommentsBlock(p) +
@@ -12121,17 +12145,24 @@ function openShareToGroup(campId) {
   var groups = CommunityGroupService.getAll().filter(function (g) { return CommunityGroupService.isMember(g, State.cu.id) || CommunityGroupService.isOwner(g, State.cu.id); });
   var body = document.getElementById('shareGroupBody');
   if (!body) return;
+  window.__shareCamp = campId; window.__sharePick = {};
   body.innerHTML = groups.length
-    ? groups.map(function (g) { return '<button class="cg-share-row" onclick="doShareToGroup(&#39;' + campId + '&#39;,&#39;' + g.id + '&#39;)">' + icon('people') + ' <span>' + escapeHtml(g.name) + '</span></button>'; }).join('')
-    : '<div class="cg-share-empty">' + (isAr ? 'لست عضواً في أي مجتمع بعد. انضم لمجتمع لتشارك الحملات فيه.' : 'You are not a member of any community yet.') + '</div>';
+    ? groups.map(function (g) { return '<button type="button" class="cg-share-row" data-gid="' + g.id + '" onclick="cgToggleShare(this)">' + icon('people') + ' <span>' + escapeHtml(g.name) + '</span><span class="cg-share-check"></span></button>'; }).join('') + '<button type="button" class="cg-share-send" onclick="cgSendShares()">' + (isAr ? 'إرسال للمجموعات المختارة' : 'Send to selected groups') + '</button>'
+    : '<div class="cg-share-empty">' + (isAr ? 'لست عضواً في أي مجموعة بعد. انضم لمجموعة لتشارك الحملات فيها.' : 'You are not a member of any group yet.') + '</div>';
   openModal('shareGroupModal');
 }
+function cgToggleShare(btn) { var id = btn.getAttribute('data-gid'); window.__sharePick = window.__sharePick || {}; window.__sharePick[id] = !window.__sharePick[id]; btn.classList.toggle('on', !!window.__sharePick[id]); }
 function doShareToGroup(campId, groupId) {
   if (!CampaignService.getById(campId)) return;
   CampaignService.updateById(campId, { communityId: groupId, community: true });
-  try { CommunityService.add({ type: 'post', author: State.cu, campId: campId, communityId: groupId, text: (State.lang === 'ar' ? 'شارك حملة في المجموعة — لننسّق ونشارك فيها معاً 💬' : 'Shared a campaign — let us coordinate and join together') }); } catch (e) {}
+  try { CommunityService.add({ type: 'post', author: State.cu, campId: campId, communityId: groupId, text: (State.lang === 'ar' ? 'شارك حملة في المجموعة 💬' : 'Shared a campaign') }); } catch (e) {}
+}
+function cgSendShares() {
+  var camp = window.__shareCamp; var picks = Object.keys(window.__sharePick || {}).filter(function (k) { return window.__sharePick[k]; });
+  if (!picks.length) { toast(State.lang === 'ar' ? 'اختر مجموعة واحدة على الأقل' : 'Pick at least one group', 'warning'); return; }
+  picks.forEach(function (gid) { doShareToGroup(camp, gid); });
   closeModal('shareGroupModal');
-  toast(State.lang === 'ar' ? 'تمت مشاركة الحملة على المجموعة' : 'Campaign shared to the group', 'success');
+  toast(State.lang === 'ar' ? 'تمت مشاركة الحملة' : 'Campaign shared', 'success');
 }
 function openCmCompose(withPhoto, communityId, presetType) {
   if (!State.cu || State.isGuest) { requireAuth(); return; }
