@@ -79,3 +79,6 @@ create policy "profiles update self or admin" on public.profiles
 
 -- campaigns: link a campaign to a community
 alter table public.campaigns add column if not exists community_id text;
+
+-- group admins
+alter table public.communities add column if not exists admins jsonb;

@@ -4635,6 +4635,43 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 .cg-share-row.on .cg-share-check{background:var(--accent-btn);border-color:var(--accent-btn);}
 .cg-share-row.on{border-color:var(--accent-btn);}
 .cg-share-send{width:100%;margin-top:var(--sp-3);background:var(--accent-btn);color:#fff;border:none;border-radius:var(--r-full);padding:var(--sp-4);font-family:inherit;font-weight:800;cursor:pointer;}
+
+.cg-chat{display:flex;flex-direction:column;min-height:60vh;max-width:640px;margin:0 auto;}
+.cg-chat-head{display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-3) var(--sp-4);border-bottom:1px solid var(--line-sand-6);}
+.cg-chat-back{width:34px;height:34px;border:none;background:none;font-size:1.6rem;color:var(--charcoal);cursor:pointer;flex:none;}
+.cg-chat-id{display:flex;align-items:center;gap:var(--sp-3);cursor:pointer;flex:1;min-width:0;}
+.cg-chat-ava{width:42px;height:42px;border-radius:50%;overflow:hidden;background:var(--olive-pale);color:var(--olive);display:flex;align-items:center;justify-content:center;flex:none;}
+.cg-chat-ava img{width:100%;height:100%;object-fit:cover;}
+.cg-chat-name{font-weight:800;color:var(--charcoal);}
+.cg-chat-sub{font-size:var(--fs-xs);color:var(--olive);font-weight:700;}
+.cg-chat-body{padding:var(--sp-4);display:flex;flex-direction:column;gap:var(--sp-3);}
+.cg-chat-empty{text-align:center;color:var(--charcoal-50);padding:var(--sp-8) 0;}
+.cg-msg{display:flex;gap:var(--sp-2);max-width:82%;}
+.cg-msg.mine{align-self:flex-end;flex-direction:row-reverse;}
+.cg-msg.other{align-self:flex-start;}
+.cg-msg-ava{width:30px;height:30px;border-radius:50%;overflow:hidden;flex:none;}
+.cg-msg-ava img{width:100%;height:100%;object-fit:cover;}
+.cg-bub{background:var(--white);border:1px solid var(--line-sand-6);border-radius:16px;padding:var(--sp-3) var(--sp-4);}
+.cg-msg.mine .cg-bub{background:var(--accent-btn);color:#fff;border-color:transparent;}
+.cg-bub-name{font-size:var(--fs-2xs);font-weight:800;color:var(--olive);margin-bottom:2px;}
+.cg-bub-text{font-size:var(--fs-sm);line-height:1.6;word-break:break-word;}
+.cg-bub-time{font-size:.6rem;opacity:.6;margin-top:4px;text-align:end;}
+.cg-chat-bar{display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-3);border-top:1px solid var(--line-sand-6);position:sticky;bottom:0;background:var(--warm-white);}
+.cg-bar-input{flex:1;height:44px;border:1px solid var(--line-sand-strong);border-radius:var(--r-full);padding:0 var(--sp-4);font-family:inherit;font-size:15px;background:var(--white);outline:none;}
+.cg-bar-btn,.cg-bar-send{width:44px;height:44px;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
+.cg-bar-btn{background:var(--olive-pale);color:var(--olive);}
+.cg-bar-send{background:var(--accent-btn);color:#fff;}
+.cg-bar-btn svg,.cg-bar-send svg{width:20px;height:20px;}
+.cg-chat-join{padding:var(--sp-4);}
+.cg-info{text-align:center;}
+.cg-info-ava{width:90px;height:90px;border-radius:50%;overflow:hidden;margin:0 auto var(--sp-3);background:var(--olive-pale);color:var(--olive);display:flex;align-items:center;justify-content:center;}
+.cg-info-ava img{width:100%;height:100%;object-fit:cover;}
+.cg-info-name{font-size:var(--fs-xl);font-weight:900;color:var(--charcoal);}
+.cg-info-desc{color:var(--charcoal-50);font-size:var(--fs-sm);margin:var(--sp-2) 0;}
+.cg-info-meta{color:var(--olive);font-weight:700;font-size:var(--fs-sm);margin-bottom:var(--sp-4);}
+.cg-info .cg-owner-h{text-align:start;}
+.cg-info-btn{width:100%;margin-top:var(--sp-3);border:none;border-radius:var(--r-full);padding:var(--sp-3);font-family:inherit;font-weight:800;cursor:pointer;background:var(--olive-pale);color:var(--olive);}
+.cg-info-btn.danger{background:rgba(200,76,60,.1);color:var(--red);}
 </style>
 </head>
 <body>
@@ -4695,7 +4732,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v129</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v130</span>
     </div>
   </section>
 
@@ -5748,6 +5785,14 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
     <div class="modal-title">مشاركة على مجموعة</div>
     <p class="modal-sub" style="text-align:center;color:var(--charcoal-50);margin-bottom:var(--sp-3);">اختر المجموعة لمشاركة الحملة والتنسيق مع الأعضاء</p>
     <div id="shareGroupBody" class="cg-share-list"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="groupInfoModal">
+  <div class="modal-sheet">
+    <div class="modal-bar"><button type="button" class="modal-close" onclick="closeModal('groupInfoModal')" aria-label="close">&times;</button><div class="modal-handle"></div></div>
+    <div class="modal-title">معلومات المجموعة</div>
+    <div id="groupInfoBody" class="cg-info"></div>
   </div>
 </div>
 
@@ -11729,6 +11774,66 @@ function cmBackToCommunities() {
   cmRenderCommunities();
 }
 
+function openGroupInfo(id) {
+  var g = CommunityGroupService.getById(id); if (!g) return;
+  var isAr = State.lang === 'ar';
+  var uid = State.cu ? State.cu.id : null;
+  var isOwner = CommunityGroupService.isOwner(g, uid);
+  var admins = g.admins || [];
+  var body = document.getElementById('groupInfoBody'); if (!body) return;
+  var rows = (g.members || []).map(function (mid) {
+    var mu = UserService.getById(mid); var isOwnerRow = mid === g.owner; var isAdm = admins.indexOf(mid) !== -1;
+    var role = isOwnerRow ? (isAr ? 'المالك' : 'Owner') : (isAdm ? (isAr ? 'مشرف' : 'Admin') : '');
+    var acts = '';
+    if (isOwner && !isOwnerRow) { acts = isAdm ? '<button class="cg-mini ghost" onclick="cmRemoveAdmin(&#39;' + id + '&#39;,&#39;' + mid + '&#39;)">' + (isAr ? 'إزالة إشراف' : 'Remove admin') + '</button>' : '<button class="cg-mini" onclick="cmMakeAdmin(&#39;' + id + '&#39;,&#39;' + mid + '&#39;)">' + (isAr ? 'تعيين مشرف' : 'Make admin') + '</button>'; }
+    return '<div class="cg-member-row"><span class="cg-member-name">' + escapeHtml((mu && mu.name) || '—') + (role ? ' · ' + role : '') + '</span><span class="cg-member-acts">' + acts + '</span></div>';
+  }).join('');
+  body.innerHTML = '<div class="cg-info-ava">' + (g.cover ? '<img src="' + g.cover + '">' : icon('people')) + '</div>' +
+    '<div class="cg-info-name">' + escapeHtml(g.name) + '</div>' + (g.desc ? '<div class="cg-info-desc">' + escapeHtml(g.desc) + '</div>' : '') +
+    '<div class="cg-info-meta">' + (g.members || []).length + ' ' + t('cgMembers') + '</div>' +
+    '<div class="cg-owner-h">' + t('cgMembers') + '</div>' + rows +
+    (isOwner ? '<button class="cg-info-btn" onclick="openEditCommunity(&#39;' + id + '&#39;)">' + t('cgEdit') + '</button><button class="cg-info-btn danger" onclick="deleteCommunity(&#39;' + id + '&#39;)">' + t('cgDelete') + '</button>' : '<button class="cg-info-btn danger" onclick="leaveCommunity(&#39;' + id + '&#39;)">' + t('cgLeave') + '</button>');
+  openModal('groupInfoModal');
+}
+function cmMakeAdmin(id, uid) {
+  var g = CommunityGroupService.getById(id); if (!g || !CommunityGroupService.isOwner(g, State.cu && State.cu.id)) return;
+  var admins = (g.admins || []).slice(); if (admins.indexOf(uid) === -1) admins.push(uid);
+  CommunityGroupService.update(id, { admins: admins }); openGroupInfo(id);
+  toast(State.lang === 'ar' ? 'تم تعيين مشرف' : 'Admin assigned', 'success');
+}
+function cmRemoveAdmin(id, uid) {
+  var g = CommunityGroupService.getById(id); if (!g || !CommunityGroupService.isOwner(g, State.cu && State.cu.id)) return;
+  var admins = (g.admins || []).filter(function (x) { return x !== uid; });
+  CommunityGroupService.update(id, { admins: admins }); openGroupInfo(id);
+}
+function cgChatHTML(id, g, isAr, mem, isMember, isOwner, actionBtn) {
+  var msgs = CommunityService.getCommunityFeed(id).slice().sort(function (a, b) { return new Date(a.createdAt || 0) - new Date(b.createdAt || 0); });
+  var chat = msgs.length ? msgs.map(function (mm) { return cmChatBubble(mm); }).join('') : '<div class="cg-chat-empty">' + (isAr ? 'لا رسائل بعد — ابدأ المحادثة' : 'No messages yet') + '</div>';
+  var bar = (isMember || isOwner)
+    ? '<div class="cg-chat-bar"><button class="cg-bar-btn" onclick="cgChatPickImg(&#39;' + id + '&#39;)">' + icon('image') + '</button><input class="cg-bar-input" id="cgChatInput" placeholder="' + (isAr ? 'اكتب رسالة' : 'Message') + '" onkeydown="if(event.key===&#39;Enter&#39;){cgChatSend(&#39;' + id + '&#39;)}"><button class="cg-bar-send" onclick="cgChatSend(&#39;' + id + '&#39;)">' + icon('share') + '</button></div>'
+    : (actionBtn ? '<div class="cg-chat-join">' + actionBtn + '</div>' : '');
+  return '<div class="cg-chat"><div class="cg-chat-head"><button class="cg-chat-back" onclick="cmBackToCommunities()">' + (isAr ? '‹' : '›') + '</button>' +
+    '<div class="cg-chat-id" onclick="openGroupInfo(&#39;' + id + '&#39;)"><div class="cg-chat-ava">' + (g.cover ? '<img src="' + g.cover + '">' : icon('people')) + '</div>' +
+    '<div><div class="cg-chat-name">' + escapeHtml(g.name) + '</div><div class="cg-chat-sub">' + mem + ' ' + t('cgMembers') + '</div></div></div></div>' +
+    '<div class="cg-chat-body" id="cgChatBody">' + chat + '</div>' + bar + '</div>';
+}
+function cmChatBubble(p) {
+  var mine = !!(State.cu && p.author && p.author.id === State.cu.id);
+  var nm = (p.author && p.author.name) || '';
+  var inner = (p.text ? '<div class="cg-bub-text">' + cmFormatText(p.text) + '</div>' : '') + (p.campId ? cmSharedCamp(p.campId) : '') + (p.media && p.media.length ? cmMediaGrid(p.media) : '');
+  return '<div class="cg-msg ' + (mine ? 'mine' : 'other') + '">' + (mine ? '' : '<div class="cg-msg-ava">' + cmAvatar(p.author) + '</div>') + '<div class="cg-bub">' + (mine ? '' : '<div class="cg-bub-name">' + escapeHtml(nm) + '</div>') + inner + '<div class="cg-bub-time">' + cmTimeAgo(p.createdAt) + '</div></div></div>';
+}
+function cgChatSend(id) {
+  var inp = document.getElementById('cgChatInput'); if (!inp) return;
+  var txt = (inp.value || '').trim(); if (!txt) return;
+  CommunityService.add({ type: 'post', author: State.cu, communityId: id, text: txt });
+  inp.value = ''; cmRenderCommunityDetail(id);
+}
+function cgChatPickImg(id) {
+  var inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+  inp.onchange = function (e) { var f = e.target.files && e.target.files[0]; if (!f) return; Promise.resolve(compressImage(f, 1200, 0.8)).then(function (img) { CommunityService.add({ type: 'post', author: State.cu, communityId: id, media: [img] }); cmRenderCommunityDetail(id); }); };
+  inp.click();
+}
 function cmRenderCommunityDetail(id) {
   const box = document.getElementById('cmCommunities'); if (!box) return;
   const g = CommunityGroupService.getById(id);
@@ -11795,18 +11900,8 @@ function cmRenderCommunityDetail(id) {
       }).join('')
     : '<div class="empty-state"><div class="empty-title">' + t('cgNoPosts') + '</div></div>';
 
-  box.innerHTML =
-    '<button class="cg-back" onclick="cmBackToCommunities()">' + (isAr ? '‹ ' : '› ') + t('cgBack') + '</button>' +
-    '<div class="cg-detail">' + cover +
-      '<div class="cg-detail-body">' +
-        '<div class="cg-detail-name">' + escapeHtml(g.name) + (g.private ? ' ' + icon('lock', 'cg-lock') : '') + '</div>' +
-        '<div class="cg-detail-meta">' + icon('people') + ' ' + mem + ' ' + t('cgMembers') + '</div>' +
-        (g.desc ? '<div class="cg-detail-desc">' + escapeHtml(g.desc) + '</div>' : '') +
-        (actionBtn ? '<div class="cg-detail-actions">' + actionBtn + '</div>' : '') +
-      '</div>' +
-    '</div>' +
-    ownerBox +
-    '<div class="cg-feed">' + composer + (CampaignService.getAll().filter(function (c) { return c.communityId === id; }).length ? '<div class="cg-camps-h">' + (isAr ? 'حملات المجتمع' : 'Community campaigns') + '</div>' + CampaignService.getAll().filter(function (c) { return c.communityId === id; }).map(function (c) { return campCardHTML(c); }).join('') : '') + feedHtml + '</div>';
+  box.innerHTML = cgChatHTML(id, g, isAr, mem, isMember, isOwner, actionBtn);
+  var _cb = document.getElementById('cgChatBody'); if (_cb) _cb.scrollTop = _cb.scrollHeight;
 }
 
 function joinCommunity(id) {
