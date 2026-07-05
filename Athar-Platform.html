@@ -4672,6 +4672,13 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 .cg-info .cg-owner-h{text-align:start;}
 .cg-info-btn{width:100%;margin-top:var(--sp-3);border:none;border-radius:var(--r-full);padding:var(--sp-3);font-family:inherit;font-weight:800;cursor:pointer;background:var(--olive-pale);color:var(--olive);}
 .cg-info-btn.danger{background:rgba(200,76,60,.1);color:var(--red);}
+
+body.cg-chat-open #bottomNav, body.cg-chat-open .cm-fab-wrap, body.cg-chat-open #createFab, body.cg-chat-open #navbar { display:none !important; }
+body.cg-chat-open #appScreen { padding:0 !important; }
+body.cg-chat-open .cg-chat{position:fixed;inset:0;z-index:600;height:100vh;height:100dvh;max-width:none;background:var(--warm-white);}
+body.cg-chat-open .cg-chat-head{position:sticky;top:0;background:var(--warm-white);padding-top:calc(env(safe-area-inset-top) + var(--sp-3));z-index:5;}
+body.cg-chat-open .cg-chat-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+body.cg-chat-open .cg-chat-bar{position:sticky;bottom:0;padding-bottom:calc(env(safe-area-inset-bottom) + var(--sp-3));}
 </style>
 </head>
 <body>
@@ -4732,7 +4739,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v130</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v131</span>
     </div>
   </section>
 
@@ -5793,6 +5800,14 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
     <div class="modal-bar"><button type="button" class="modal-close" onclick="closeModal('groupInfoModal')" aria-label="close">&times;</button><div class="modal-handle"></div></div>
     <div class="modal-title">معلومات المجموعة</div>
     <div id="groupInfoBody" class="cg-info"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="shareChoiceModal">
+  <div class="modal-sheet">
+    <div class="modal-bar"><button type="button" class="modal-close" onclick="closeModal('shareChoiceModal')" aria-label="close">&times;</button><div class="modal-handle"></div></div>
+    <div class="modal-title">مشاركة الحملة</div>
+    <div id="shareChoiceBody" class="cg-share-list"></div>
   </div>
 </div>
 
@@ -10654,10 +10669,21 @@ function handleLeave(id) {
 
 function handleShare(id) {
   const c = CampaignService.getById(id); if (!c) return;
-  // Primary action: share into one of my community groups (WhatsApp-style)
-  if (State.cu && !State.isGuest && typeof CommunityGroupService !== 'undefined') { openShareToGroup(id); return; }
+  var isAr = State.lang === 'ar';
+  var body = document.getElementById('shareChoiceBody');
+  if (!body) { shareExternal(id); return; }
+  body.innerHTML =
+    '<button class="cg-share-row" onclick="closeModal(&#39;shareChoiceModal&#39;);shareExternal(&#39;' + id + '&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg> <span>' + (isAr ? 'مشاركة خارجية (واتساب، انستغرام…)' : 'Share externally') + '</span></button>' +
+    ((State.cu && !State.isGuest) ? '<button class="cg-share-row" onclick="closeModal(&#39;shareChoiceModal&#39;);openShareToGroup(&#39;' + id + '&#39;)">' + icon('people') + ' <span>' + (isAr ? 'مشاركة داخل مجموعة' : 'Share to a group') + '</span></button>' : '');
+  openModal('shareChoiceModal');
+}
+function shareExternal(id) {
+  const c = CampaignService.getById(id); if (!c) return;
   const txt = Models.getCampText(c);
-  if (navigator.share) { navigator.share({ title: txt.title, text: txt.title + ' — ' + t('shareVia') }).catch(() => {}); }
+  var url = location.origin + location.pathname + '#c/' + id;
+  var data = { title: txt.title, text: txt.title + ' — ATHAR', url: url };
+  if (navigator.share) { navigator.share(data).catch(() => {}); }
+  else if (navigator.clipboard) { navigator.clipboard.writeText(url).then(function () { toast(t('linkCopied'), 'success'); }).catch(function () { toast(t('linkCopied'), 'success'); }); }
   else { toast(t('linkCopied'), 'success'); }
 }
 
@@ -11767,10 +11793,12 @@ function cmRenderCommunities() {
 
 function openCommunity(id) {
   CommunityUI.activeCommunity = id;
+  document.body.classList.add('cg-chat-open');
   cmRenderCommunityDetail(id);
 }
 function cmBackToCommunities() {
   CommunityUI.activeCommunity = null;
+  document.body.classList.remove('cg-chat-open');
   cmRenderCommunities();
 }
 
@@ -11792,8 +11820,17 @@ function openGroupInfo(id) {
     '<div class="cg-info-name">' + escapeHtml(g.name) + '</div>' + (g.desc ? '<div class="cg-info-desc">' + escapeHtml(g.desc) + '</div>' : '') +
     '<div class="cg-info-meta">' + (g.members || []).length + ' ' + t('cgMembers') + '</div>' +
     '<div class="cg-owner-h">' + t('cgMembers') + '</div>' + rows +
+    '<button class="cg-info-btn" onclick="shareGroup(&#39;' + id + '&#39;)">' + (isAr ? 'مشاركة المجموعة مع الأصدقاء' : 'Share group with friends') + '</button>' +
     (isOwner ? '<button class="cg-info-btn" onclick="openEditCommunity(&#39;' + id + '&#39;)">' + t('cgEdit') + '</button><button class="cg-info-btn danger" onclick="deleteCommunity(&#39;' + id + '&#39;)">' + t('cgDelete') + '</button>' : '<button class="cg-info-btn danger" onclick="leaveCommunity(&#39;' + id + '&#39;)">' + t('cgLeave') + '</button>');
   openModal('groupInfoModal');
+}
+function shareGroup(id) {
+  var g = CommunityGroupService.getById(id); if (!g) return;
+  var url = location.origin + location.pathname + '#g/' + id;
+  var data = { title: g.name, text: (State.lang === 'ar' ? 'انضم لمجموعتنا على أثر: ' : 'Join our group on ATHAR: ') + g.name, url: url };
+  if (navigator.share) { navigator.share(data).catch(function () {}); }
+  else if (navigator.clipboard) { navigator.clipboard.writeText(url).then(function () { toast(t('linkCopied'), 'success'); }).catch(function () { toast(t('linkCopied'), 'success'); }); }
+  else { toast(t('linkCopied'), 'success'); }
 }
 function cmMakeAdmin(id, uid) {
   var g = CommunityGroupService.getById(id); if (!g || !CommunityGroupService.isOwner(g, State.cu && State.cu.id)) return;
@@ -11810,7 +11847,7 @@ function cgChatHTML(id, g, isAr, mem, isMember, isOwner, actionBtn) {
   var msgs = CommunityService.getCommunityFeed(id).slice().sort(function (a, b) { return new Date(a.createdAt || 0) - new Date(b.createdAt || 0); });
   var chat = msgs.length ? msgs.map(function (mm) { return cmChatBubble(mm); }).join('') : '<div class="cg-chat-empty">' + (isAr ? 'لا رسائل بعد — ابدأ المحادثة' : 'No messages yet') + '</div>';
   var bar = (isMember || isOwner)
-    ? '<div class="cg-chat-bar"><button class="cg-bar-btn" onclick="cgChatPickImg(&#39;' + id + '&#39;)">' + icon('image') + '</button><input class="cg-bar-input" id="cgChatInput" placeholder="' + (isAr ? 'اكتب رسالة' : 'Message') + '" onkeydown="if(event.key===&#39;Enter&#39;){cgChatSend(&#39;' + id + '&#39;)}"><button class="cg-bar-send" onclick="cgChatSend(&#39;' + id + '&#39;)">' + icon('share') + '</button></div>'
+    ? '<div class="cg-chat-bar"><button class="cg-bar-send" onclick="cgChatSend(&#39;' + id + '&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4L3 11l7 2 2 7 8-16z"/></svg></button><input class="cg-bar-input" id="cgChatInput" placeholder="' + (isAr ? 'اكتب رسالة' : 'Message') + '" onkeydown="if(event.key===&#39;Enter&#39;){cgChatSend(&#39;' + id + '&#39;)}"><button class="cg-bar-btn" onclick="cgChatPickImg(&#39;' + id + '&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M4 18l5-5 4 4 3-3 4 4"/></svg></button></div>'
     : (actionBtn ? '<div class="cg-chat-join">' + actionBtn + '</div>' : '');
   return '<div class="cg-chat"><div class="cg-chat-head"><button class="cg-chat-back" onclick="cmBackToCommunities()">' + (isAr ? '‹' : '›') + '</button>' +
     '<div class="cg-chat-id" onclick="openGroupInfo(&#39;' + id + '&#39;)"><div class="cg-chat-ava">' + (g.cover ? '<img src="' + g.cover + '">' : icon('people')) + '</div>' +
