@@ -76,3 +76,6 @@ $$;
 drop policy if exists "profiles update self or admin" on public.profiles;
 create policy "profiles update self or admin" on public.profiles
   for update using ( auth.uid() = id or public.is_admin() );
+
+-- campaigns: link a campaign to a community
+alter table public.campaigns add column if not exists community_id text;

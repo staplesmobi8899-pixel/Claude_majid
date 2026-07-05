@@ -4611,6 +4611,11 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
 
 /* Remove old dark partner-section frame */
 #aboutPage #partnerSection { background: none !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; overflow: visible !important; margin: 0 auto var(--sp-6) !important; }
+
+.cg-newcamp{display:flex;align-items:center;justify-content:center;gap:var(--sp-2);width:100%;margin-top:var(--sp-2);background:var(--accent-btn);color:#fff;border:none;border-radius:var(--r-lg);padding:var(--sp-3);font-family:inherit;font-weight:800;font-size:var(--fs-sm);cursor:pointer;}
+.cg-newcamp svg{width:18px;height:18px;}
+.cg-newcamp:active{transform:scale(.98);}
+.cg-camps-h{font-size:var(--fs-sm);font-weight:800;color:var(--charcoal);margin:var(--sp-4) 0 var(--sp-3);}
 </style>
 </head>
 <body>
@@ -4671,7 +4676,7 @@ select:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v126</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v127</span>
     </div>
   </section>
 
@@ -5933,7 +5938,7 @@ function campRowToApp(r, parts) {
     en: { title: r.title, desc: r.description || '', cat: cat.en || r.category },
     category: r.category, location: r.location || '', date: r.date || '',
     needed: r.needed || 1, volunteers: joinedUsers.length, volunteerHours: Number(r.volunteer_hours) || 2,
-    status: r.status || 'pending', emergency: !!r.emergency, community: !!r.community,
+    status: r.status || 'pending', emergency: !!r.emergency, community: !!r.community, communityId: r.community_id || null,
     createdBy: r.created_by, creatorName: r.creator_name || '', creatorPhone: r.creator_phone || '',
     img: r.img || null, joinedUsers: joinedUsers, participants: [], attendance: attendance,
     gallery: [], campHours: {},
@@ -5947,7 +5952,7 @@ function campAppToDbInsert(c) {
     description: (c.ar && c.ar.desc) || c.desc || '',
     category: c.category || null, location: c.location || '', date: c.date || null,
     needed: c.needed || 1, volunteer_hours: c.volunteerHours || 2,
-    status: c.status || 'pending', emergency: !!c.emergency, community: !!c.community,
+    status: c.status || 'pending', emergency: !!c.emergency, community: !!c.community, community_id: c.communityId || null,
     created_by: isUuid(c.createdBy) ? c.createdBy : null, creator_name: c.creatorName || '', creator_phone: c.creatorPhone || '',
     img: c.img || null
   };
@@ -11438,7 +11443,7 @@ function renderCommunity() {
 function cmToggleFab() { const w = document.getElementById('cmFab'); if (w) w.classList.toggle('open'); }
 function cmFabAction(kind) {
   const w = document.getElementById('cmFab'); if (w) w.classList.remove('open');
-  if (kind === 'campaign') { if (!requireAuth()) return; openModal('createModal'); }
+  if (kind === 'campaign') { if (!requireAuth()) return; if (typeof CommunityUI !== 'undefined') CommunityUI.campaignCommunity = null; openModal('createModal'); }
   else { openCmCompose(); }
 }
 
@@ -11735,7 +11740,7 @@ function cmRenderCommunityDetail(id) {
 
   // Community feed
   const composer = (isMember || isOwner)
-    ? '<button class="cm-composer-input" onclick="openCmCompose(false,\'' + id + '\')">' + t('cmComposerPrompt') + '</button>'
+    ? '<button class="cm-composer-input" onclick="openCmCompose(false,\'' + id + '\')">' + t('cmComposerPrompt') + '</button>' + cmCampBtn(id)
     : '';
   const posts = CommunityService.getCommunityFeed(id);
   const pinnedIds = g.pinned || [];
@@ -11759,7 +11764,7 @@ function cmRenderCommunityDetail(id) {
       '</div>' +
     '</div>' +
     ownerBox +
-    '<div class="cg-feed">' + composer + feedHtml + '</div>';
+    '<div class="cg-feed">' + composer + (CampaignService.getAll().filter(function (c) { return c.communityId === id; }).length ? '<div class="cg-camps-h">' + (isAr ? 'حملات المجتمع' : 'Community campaigns') + '</div>' + CampaignService.getAll().filter(function (c) { return c.communityId === id; }).map(function (c) { return campCardHTML(c); }).join('') : '') + feedHtml + '</div>';
 }
 
 function joinCommunity(id) {
@@ -12092,6 +12097,15 @@ function cmRenderHighlights() {
 }
 
 /* Compose */
+function openCmCampaign(id) {
+  if (!requireAuth()) return;
+  if (typeof CommunityUI !== 'undefined') CommunityUI.campaignCommunity = id || null;
+  openModal('createModal');
+}
+function cmCampBtn(id) {
+  var isAr = State.lang === 'ar';
+  return '<button class="cg-newcamp" onclick="openCmCampaign(&#39;' + id + '&#39;)">' + icon('flag') + ' ' + (isAr ? 'انشئ حملة لهذا المجتمع' : 'Create a campaign for this community') + '</button>';
+}
 function openCmCompose(withPhoto, communityId, presetType) {
   if (!State.cu || State.isGuest) { requireAuth(); return; }
   CommunityUI.type = 'post'; CommunityUI.media = []; CommunityUI.before = null; CommunityUI.after = null;
@@ -12314,6 +12328,8 @@ function restoreLastView() {
 async function doCreate(e) {
   e.preventDefault();
   if (!requireAuth()) return;
+  const _cmComm = (typeof CommunityUI !== 'undefined' && CommunityUI.campaignCommunity) || null;
+  if (typeof CommunityUI !== 'undefined') CommunityUI.campaignCommunity = null;
   const form = e.target;
   const btn  = form.querySelector('.submit-btn');
   clearFieldErrors(form);
@@ -12352,6 +12368,7 @@ async function doCreate(e) {
     if (sb && img) { try { img = await uploadImage(img, 'campaigns'); } catch (e) {} }
 
     const camp = Models.createCampaign({ ...data, img }, State.cu, State.isAdmin);
+    if (_cmComm) { camp.communityId = _cmComm; camp.community = true; }
     CampaignService.add(camp);
 
     // Increment activity count for creator
