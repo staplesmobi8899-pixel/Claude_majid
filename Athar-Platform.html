@@ -7988,7 +7988,7 @@ const StatsService = {
   compute(user) {
     const empty = { joinedCount: 0, completed: 0, cities: [], citiesCount: 0, createdApproved: 0, categories: [], score: 0 };
     if (!user) return empty;
-    const joined = (user.joinedCamps || []).map(id => CampaignService.getById(id)).filter(Boolean);
+    const joined = CampaignService.getAll().filter(c => (c.joinedUsers || []).indexOf(user.id) !== -1);
     const completed = joined.filter(c => c.status === 'done').length;
     const cities = [...new Set(joined.map(c => c.location).filter(Boolean))];
     const categories = [...new Set(joined.map(c => Models.catKey(c.category)).filter(Boolean))];
@@ -8028,7 +8028,7 @@ const AchievementService = {
 const CertificateService = {
   getFor(user) {
     if (!user) return [];
-    const joined = (user.joinedCamps || []).map(id => CampaignService.getById(id)).filter(Boolean);
+    const joined = CampaignService.getAll().filter(c => (c.joinedUsers || []).indexOf(user.id) !== -1);
     return joined.filter(c => c.status === 'done').map(c => ({
       id: 'cert-' + c.id + '-' + user.id, campId: c.id,
       title: Models.getCampText(c).title, hours: c.volunteerHours || 0,
@@ -8042,7 +8042,7 @@ const ActivityService = {
   getTimeline(user) {
     if (!user) return [];
     const ev = [];
-    const joined = (user.joinedCamps || []).map(id => CampaignService.getById(id)).filter(Boolean);
+    const joined = CampaignService.getAll().filter(c => (c.joinedUsers || []).indexOf(user.id) !== -1);
     joined.forEach(c => {
       const title = Models.getCampText(c).title;
       ev.push({ type: 'join', campId: c.id, title, date: c.date || '' });
