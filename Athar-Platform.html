@@ -4679,6 +4679,9 @@ body.cg-chat-open .cg-chat{position:fixed;inset:0;z-index:600;height:100vh;heigh
 body.cg-chat-open .cg-chat-head{position:sticky;top:0;background:var(--warm-white);padding-top:calc(env(safe-area-inset-top) + var(--sp-3));z-index:5;}
 body.cg-chat-open .cg-chat-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 body.cg-chat-open .cg-chat-bar{position:sticky;bottom:0;padding-bottom:calc(env(safe-area-inset-bottom) + var(--sp-3));}
+
+body.page-detail #bottomNav, body.page-detail .fab, body.page-detail #createFab, body.page-detail .cm-fab-wrap { display:none !important; }
+body.page-detail #detailPage { padding-bottom: env(safe-area-inset-bottom) !important; }
 </style>
 </head>
 <body>
@@ -4739,7 +4742,7 @@ body.cg-chat-open .cg-chat-bar{position:sticky;bottom:0;padding-bottom:calc(env(
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v131</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v132</span>
     </div>
   </section>
 
@@ -5281,7 +5284,7 @@ body.cg-chat-open .cg-chat-bar{position:sticky;bottom:0;padding-bottom:calc(env(
         <button class="cm-fab-opt" onclick="cmFabAction('post')"><span class="cm-fab-opt-label" data-i18n="cmFabPost"></span><span class="cm-fab-opt-ico">+</span></button>
         <button class="cm-fab-opt" onclick="cmFabAction('campaign')"><span class="cm-fab-opt-label" data-i18n="cmFabCampaign"></span><span class="cm-fab-opt-ico">+</span></button>
       </div>
-      <button class="cm-fab" id="cmFabMain" onclick="cmToggleFab()" aria-label="create">+</button>
+      <button class="cm-fab" id="cmFabMain" onclick="openCmCompose()" aria-label="create">+</button>
     </div>
   </div>
 
@@ -10877,6 +10880,7 @@ const Router = {
       if (pg) pg.classList.add('active');
       if (nb) nb.classList.add('active');
       State.setPage(name);
+      document.body.classList.toggle('page-detail', name === 'detail');
       try { DB.setObj(CONFIG.DB_KEYS.LAST_VIEW, { page: name, campId: (name === 'detail' ? State.detailCampId : null) }); } catch (e) {}
       const gf = document.getElementById('createFab'); if (gf) gf.style.display = (name === 'community') ? 'none' : '';
       // Per-page atmospheric background opacity (lighter on dense/text pages for contrast)
