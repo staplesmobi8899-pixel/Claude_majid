@@ -4742,7 +4742,7 @@ body.page-detail #detailPage { padding-bottom: env(safe-area-inset-bottom) !impo
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v135</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v136</span>
     </div>
   </section>
 
@@ -9042,7 +9042,7 @@ function toggleProfileVisibility() {
 function computeRank(u) {
   u = u || State.cu || {};
   const stats = (typeof StatsService !== 'undefined') ? StatsService.compute(u) : { completed: 0 };
-  const hours = u.volunteerHours || 0, parts = u.activitiesJoined || 0, badges = (u.achievements || []).length;
+  const hours = u.volunteerHours || 0, parts = stats.joinedCount || 0, badges = (u.achievements || []).length;
   const xp = Math.round(hours * 3 + (stats.completed || 0) * 30 + parts * 10 + badges * 20);
   const levels = [
     { min: 0,    ar: 'متطوّع جديد', en: 'New Volunteer' },
@@ -9115,7 +9115,7 @@ function renderProfile() {
       const head = [
         [stats.completed,          t('statCompletedShort')],
         [u.volunteerHours || 0,    t('statHoursShort')],
-        [u.activitiesJoined || 0,  t('statParticipationShort')]
+        [stats.joinedCount,  t('statParticipationShort')]
       ];
       statsEl.innerHTML = head.map(s =>
         '<div class="ig-stat"><span class="ig-stat-n">' + s[0] + '</span><span class="ig-stat-l">' + s[1] + '</span></div>'
@@ -9130,7 +9130,7 @@ function renderProfile() {
       const items = [
         ['clock',  u.volunteerHours || 0,   t('statHoursShort')],
         ['check',  stats.completed,         t('completedCampsLabel')],
-        ['people', u.activitiesJoined || 0, t('statParticipationShort')],
+        ['people', stats.joinedCount, t('statParticipationShort')],
         ['sprout', commsN,                  t('communitiesLabel')],
         ['star',   certsN,                  t('certsTitle')]
       ];
