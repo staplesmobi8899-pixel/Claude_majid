@@ -4742,7 +4742,7 @@ body.page-detail #detailPage { padding-bottom: env(safe-area-inset-bottom) !impo
       <span class="auth-foot-sep">·</span>
       <button class="auth-foot-link" onclick="openPolicy('privacy')" data-i18n="setPrivacyPolicy"></button>
       <span class="auth-foot-sep">·</span>
-      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v133</span>
+      <span class="auth-foot-link" id="authBuild" style="opacity:.6">v134</span>
     </div>
   </section>
 
@@ -12027,7 +12027,6 @@ function cmRenderFeed() {
     ? '<div class="cm-feed-list">' + feed.map(cmPostCard).join('') + '</div>'
     : cmFeedEmpty();
   box.innerHTML =
-    cmComposerCard() +
     cmTrendingTags() +
     cmFeaturedCommunities() +
     body +
